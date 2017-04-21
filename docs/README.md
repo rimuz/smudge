@@ -6,7 +6,7 @@ The Smudge Documentation (aka **SmudgeDocs**) has to different sections based on
 
 ## For the users
 - Smudge for dummies
-    - [an Hello World](../README.md#language-overview)
+    - [an Hello World](../Overview.md)
 - The Syntax
     - Basic Syntax
     - Operators
