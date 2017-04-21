@@ -1,5 +1,5 @@
 # The Smudge Programming Language - Documentation
-The Smudge Documentation (aka **SmudgeDocs**) has to different sections based on who's directed to:
+The Smudge Documentation (aka **SmudgeDocs**) has two different sections based on who's directed to:
  - For the users (who develops in Smudge)
  - For the contriburors
  The SmudgeDocs will be competed in 
