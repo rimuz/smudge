@@ -1,0 +1,68 @@
+/*
+ *      Copyright 2016-2017 Riccardo Musso
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ *
+ *      File exec/interpreter/makeOpCodes.h
+ *
+*/
+
+#ifndef _SM_EXEC__INTERPRETER__MAKEOPCODES_H
+#define _SM_EXEC__INTERPRETER__MAKEOPCODES_H
+
+#include "exec/interpreter/defines.h"
+#include "runtime/casts.h"
+
+namespace sm{
+    namespace exec{
+        _OcFunc(MakeVoidList){
+            //TODO
+            ++addr;
+        }
+
+        _OcFunc(MakeVoidTuple){
+            // TODO
+            ++addr;
+        }
+
+        _OcFunc(MakeRef){
+            Object& tos = intp.exprStack.back();
+            if(tos.type == ObjectType::WEAK_REFERENCE
+                    || tos.type == ObjectType::STRONG_REFERENCE){
+                tos.type = ObjectType::STRONG_REFERENCE;
+            } else {
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("cannot get reference from temporary object ")
+                    + runtime::errorString(*intp.rt, tos));
+            }
+            ++addr;
+        }
+
+        _OcFunc(MakeList){
+            // TODO
+            ++addr;
+        }
+
+        _OcFunc(MakeTuple){
+            // TODO
+            ++addr;
+        }
+
+        _OcFunc(MakeDict){
+            // TODO
+            ++addr;
+        }
+    }
+}
+
+#endif
