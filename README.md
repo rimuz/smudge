@@ -58,7 +58,7 @@ So, the import statement above, imports box contained in file `std/io.sm` with t
 The third line simply uses the box `std.io` (through its "link" `io`) by calling its function `println` with the string `Hello, world!`. This functions does nothing more than printing its **argument** and a **newline character** (`\n`) to the `stdout`.
 
 Now, it's time to do something more interesting!
-Take a look at the full [documentation](https://smudgelang.github.io/smudge/docs/) to learn more.
+Take a look at the full [documentation](docs/README.md) to learn more.
 
 ### Licensing
 Smudge is licensed under the Apache License 2.0. To read the conditions take a look to the file `LICENSE` in the main folder.
