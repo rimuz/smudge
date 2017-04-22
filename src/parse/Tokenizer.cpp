@@ -190,8 +190,7 @@ namespace sm{
                 return;
             }
 
-            if(tok.type == newToken
-                    || states.single_quote || states.double_quote){
+            if(tok.type == newToken || newToken == TT_STRING){
                 return;
             }
 
@@ -438,8 +437,9 @@ namespace sm{
                             continue;
                         }
 
-                        submit(tokens, states, TT_STRING);
                         if(!states.single_quote){
+                            submit(tokens, states, TT_USELESS);
+                            submit(tokens, states, TT_STRING);
                             if(!tokens.empty()){
                                 Token* backRef = &tokens.back();
 
@@ -456,9 +456,11 @@ namespace sm{
                             newToken.source = states.source;
                             newToken.type = TT_STRING;
                             tokens.push_back(newToken);
+                        } else {
+                            submit(tokens, states, TT_STRING);
                         }
 
-                        states.single_quote = !states.single_quote;
+                        states.double_quote = !states.double_quote;
                     } else {
                         back->content.push_back('\'');
                         states.back_slash = false;
@@ -470,8 +472,10 @@ namespace sm{
                             continue;
                         }
 
-                        submit(tokens, states, TT_STRING);
                         if(!states.double_quote){
+                            submit(tokens, states, TT_USELESS);
+                            submit(tokens, states, TT_STRING);
+
                             if(!tokens.empty()){
                                 Token* backRef = &tokens.back();
 
@@ -488,8 +492,10 @@ namespace sm{
                             newToken.source = states.source;
                             newToken.type = TT_STRING;
                             tokens.push_back(newToken);
+                        } else {
+                            submit(tokens, states, TT_STRING);
                         }
-
+                    
                         states.double_quote = !states.double_quote;
                     } else {
                         back->content.push_back('\"');
