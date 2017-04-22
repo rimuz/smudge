@@ -850,12 +850,12 @@ namespace sm{
 
     template <class Tp, class A>
     typename string<Tp, A>::iterator string<Tp, A>::findLast(const string<Tp, A>& str){
-        size_t strSize = str.size() -1, i = strSize;
+        size_t strSize = str.size(), i = strSize;
         reverse_iterator it;
         for(it = this->rbegin(); it != this->rend(); ++it){
             if(!i){
-                return (++it).base();
-            } else if(*it == str[i]){
+                return it.base();
+            } else if(*it == str[i-1]){
                 i--;
             } else {
                 i = strSize;
@@ -866,12 +866,12 @@ namespace sm{
 
     template <class Tp, class A>
     typename string<Tp, A>::const_iterator string<Tp, A>::findLast(const string<Tp, A>& str) const{
-        size_t strSize = str.size() -1, i = strSize;
+        size_t strSize = str.size(), i = strSize;
         const_reverse_iterator it;
         for(it = this->rbegin(); it != this->rend(); ++it){
             if(!i){
-                return (++it).base();
-            } else if(*it == str[i]){
+                return it.base();
+            } else if(*it == str[i-1]){
                 i--;
             } else {
                 i = strSize;
