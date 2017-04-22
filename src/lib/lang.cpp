@@ -76,7 +76,7 @@ namespace sm{
                 _OpTuple(StringClass, parse::TT_GREATER, greater),
                 _OpTuple(StringClass, parse::TT_LESS_OR_EQUAL, lessOrEqual),
                 _OpTuple(StringClass, parse::TT_GREATER_OR_EQUAL, greaterOrEqual),
-
+                
                 _MethodTuple(StringClass, idx),
                 _MethodTuple(StringClass, len),
                 _MethodTuple(StringClass, count),
