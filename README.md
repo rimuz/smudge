@@ -6,6 +6,7 @@ Smudge is a **very lightweight** and **general-purpose** interpreted language th
 
 With its C-like syntax, Smudge provides a **simple** but **effective** and **powerful** way to write **elegant** and **modular** code. For newbies Smudge could at first glance appear much more complicated than other programming languages like Python, Ruby, Swift or Go, but, after some practise, they will find coding Smudge **natural** and **fun**. C/C++, Java, JavaScript and C# developers, however, will love Smudge from the beginning.
 
+
 ### How to build
 Smudge can be built with the following commands:
 ```
@@ -16,7 +17,7 @@ make install
 Command `./configure` can take different options, to see them type `./configure --help`
 
 ### Language overview
-Go to this [link] to learn how to write an Hello world program in Smudge. 
+Go to this [link](https://smudgelang.github.io/smudge/) to learn how to write an Hello world program in Smudge.
 
 ### Licensing
 Smudge is licensed under the Apache License 2.0. To read the conditions take a look to the file `LICENSE` in the main folder.
