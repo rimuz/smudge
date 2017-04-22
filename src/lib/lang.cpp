@@ -76,7 +76,7 @@ namespace sm{
                 _OpTuple(StringClass, parse::TT_GREATER, greater),
                 _OpTuple(StringClass, parse::TT_LESS_OR_EQUAL, lessOrEqual),
                 _OpTuple(StringClass, parse::TT_GREATER_OR_EQUAL, greaterOrEqual),
-                
+
                 _MethodTuple(StringClass, idx),
                 _MethodTuple(StringClass, len),
                 _MethodTuple(StringClass, count),
@@ -318,14 +318,14 @@ namespace sm{
                 if(args.empty() || args[0].type != ObjectType::STRING)
                     return Object();
                 return makeInteger(self.s_ptr->str.find(args[0].s_ptr->str)
-                    - args[0].s_ptr->str.begin());
+                    - self.s_ptr->str.begin());
             }
 
             _NativeFunc(find_last){
                 if(args.empty() || args[0].type != ObjectType::STRING)
                     return Object();
                 return makeInteger(self.s_ptr->str.findLast(args[0].s_ptr->str)
-                    - args[0].s_ptr->str.begin());
+                    - self.s_ptr->str.begin());
             }
 
             _NativeFunc(substr){
