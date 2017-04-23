@@ -591,7 +591,7 @@ namespace sm{
         if((found = string<Tp, A>::find(begin, end, str)) != end){
             ret.assign(begin, found);
             ret.insert(ret.end(), rep.begin(), rep.end());
-            ret.insert(ret.end(), found, end);
+            ret.insert(ret.end(), ++found, end);
         } else {
             ret = *this;
         }
