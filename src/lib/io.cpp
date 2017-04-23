@@ -48,7 +48,8 @@ namespace sm{
         _NativeFunc(line);
         _NativeFunc(i_int);
         _NativeFunc(i_float);
-        _NativeFunc(getChar);
+        _NativeFunc(get);
+        _NativeFunc(getc);
         _NativeFunc(next);
         _NativeFunc(nextOp);
         _NativeFunc(open);
@@ -61,6 +62,7 @@ namespace sm{
 
                 FileStream(runtime::GarbageCollector& gc, bool temp, const char* filepath, unsigned _flags);
                 _NativeMethod(close, 0);
+                _NativeMethod(get, 0);
                 _NativeMethod(getc, 0);
                 _NativeMethod(line, 0);
                 _NativeMethod(peek, 0);
@@ -74,6 +76,7 @@ namespace sm{
             };
 
             _NativeFunc(close);
+            _NativeFunc(get);
             _NativeFunc(getc);
             _NativeFunc(line);
             _NativeFunc(peek);
@@ -100,7 +103,8 @@ namespace sm{
             setNativeFn(rt, box, "line", line);
             setNativeFn(rt, box, "int", i_int);
             setNativeFn(rt, box, "float", i_float);
-            setNativeFn(rt, box, "getc", getChar);
+            setNativeFn(rt, box, "get", get);
+            setNativeFn(rt, box, "getc", getc);
             setNativeFn(rt, box, "next", next);
 
             setNativeFn(rt, box, "open", open);
@@ -110,6 +114,7 @@ namespace sm{
 
             cFileStream = setClass(rt, box, "FileStream", {
                 _MethodTuple(FileStreamClass, close),
+                _MethodTuple(FileStreamClass, get),
                 _MethodTuple(FileStreamClass, getc),
                 _MethodTuple(FileStreamClass, line),
                 _MethodTuple(FileStreamClass, peek),
@@ -217,11 +222,19 @@ namespace sm{
             }
         }
 
-        _NativeFunc(getChar){
-            Object obj;
-            obj.type = ObjectType::STRING;
-            obj.i = std::getchar();
-            return obj;
+        _NativeFunc(get){
+            int ch = std::getchar();
+            if(ch == EOF)
+                return Object();
+            char cch = static_cast<char>(ch);
+            return makeString(&cch, &cch +1);
+        }
+
+        _NativeFunc(getc){
+            int ch = std::getchar();
+            if(ch == EOF)
+                return makeInteger(-1);
+            return makeInteger(ch);
         }
 
         _NativeFunc(next){
@@ -261,6 +274,7 @@ namespace sm{
 
         namespace FileStreamClass {
             _BindMethod(FileStream, close, 0);
+            _BindMethod(FileStream, get, 0);
             _BindMethod(FileStream, getc, 0);
             _BindMethod(FileStream, line, 0);
             _BindMethod(FileStream, peek, 0);
@@ -305,8 +319,19 @@ namespace sm{
                 return Object();
             }
 
+            _NativeMethod(FileStream::get, 0){
+                int ch = stream.get();
+                if(ch == EOF)
+                    return Object();
+                char cch = static_cast<char>(ch);
+                return makeString(&cch, &cch +1);
+            }
+
             _NativeMethod(FileStream::getc, 0){
-                return makeInteger(stream.get());
+                int ch = stream.get();
+                if(ch == EOF)
+                    return makeInteger(-1);
+                return makeInteger(ch);
             }
 
             _NativeMethod(FileStream::line, 0){

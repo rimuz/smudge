@@ -69,8 +69,9 @@ namespace sm {
 
         string();
         string(const value_type*);
-        string(const_iterator, const_iterator);
         string(unicode_t);
+        template <class InputIterator>
+        string(InputIterator, InputIterator);
         string(const string<Tp, A>&) = default;
         string(string<Tp, A>&&) = default;
 
@@ -212,7 +213,8 @@ namespace sm{
     }
 
     template <class Tp, class A>
-    string<Tp, A>::string(const_iterator beg, const_iterator end) : base(beg, end) {}
+    template <class InputIterator>
+    string<Tp, A>::string(InputIterator beg, InputIterator end) : base(beg, end) {}
 
     template <class Tp, class A>
     string<Tp, A>::string(unicode_t ch) {
