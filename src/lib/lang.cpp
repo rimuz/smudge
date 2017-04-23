@@ -268,10 +268,9 @@ namespace sm{
                 } else if(args[0].type == ObjectType::INTEGER){
                     integer_t idx = args[0].i;
                     if(idx >= 0){
-                        size_t i = static_cast<size_t>(idx);
                         if(idx >= strSize)
                             return Object();
-                        return makeString(self.s_ptr->str.uCharAt(i));
+                        return makeString(self.s_ptr->str.uCharAt(idx));
                     }
 
                     idx += strSize;
@@ -313,10 +312,9 @@ namespace sm{
                 } else if(args[0].type == ObjectType::INTEGER){
                     integer_t idx = args[0].i;
                     if(idx >= 0){
-                        size_t i = static_cast<size_t>(idx);
                         if(idx >= strSize)
                             return Object();
-                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(i)));
+                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
                     }
 
                     idx += strSize;

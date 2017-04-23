@@ -17,6 +17,7 @@
  *
 */
 
+#include <iostream>
 #include "utils/unicode/utf8.h"
 
 namespace sm {
@@ -47,26 +48,23 @@ namespace sm {
         return (ch & 0xFF00) ? ((ch & 0xFF0000) ? ((ch & 0xFF000000) ? 4 : 3) : 2) : 1;
     }
 
-    //TODO: test!!
     unicode_t uGetCodepoint(unicode_t ch) noexcept{
         if(ch & 0xFF00){
             unicode_t cp = ch & 0x3F;
-            if(ch & 0xFF0000){
+            std::cout << "ok:" << cp << std::endl;
+            if(ch & 0xFF0000) {
                 cp |= ((ch & 0x3F00) >> 2);
-                if(ch & 0xFF000000){
+                if(ch & 0xFF000000)
                     return cp | ((ch & 0x3F0000) >> 4) | ((ch & 0x7000000) >> 6);
-                } else {
+                else
                     return cp | ((ch & 0xF0000) >> 4);
-                }
             } else {
-                return cp | ((ch & 0x1F) >> 2);
+                return cp | ((ch & 0x1F00) >> 2);
             }
-        } else {
-            return ch;
         }
+        return ch;
     }
-
-    //TODO: test!
+    
     unicode_t uByCodepoint(unicode_t cp) noexcept{
         if(cp < 0x80)
             return cp;
