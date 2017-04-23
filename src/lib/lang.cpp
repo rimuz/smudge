@@ -41,6 +41,7 @@ namespace sm{
             _NativeFunc(lessOrEqual);
             _NativeFunc(greaterOrEqual);
             _NativeFunc(plus);
+            _NativeFunc(minus);
             _NativeFunc(mul);
             _NativeFunc(get);
             _NativeFunc(u_get);
@@ -73,6 +74,7 @@ namespace sm{
 
             cString = setClass(rt, box, "String", {
                 _OpTuple(StringClass, parse::TT_PLUS, plus),
+                _OpTuple(StringClass, parse::TT_MINUS, minus),
                 _OpTuple(StringClass, parse::TT_MULT, mul),
                 _OpTuple(StringClass, parse::TT_EQUAL, equal),
                 _OpTuple(StringClass, parse::TT_EQUAL, not_equal),
@@ -140,6 +142,7 @@ namespace sm{
             }
 
             _NativeFunc(count){
+                // TODO!! Support for begin and end given!!
                 return makeInteger(self.s_ptr->str.uSize());
             }
 
@@ -212,6 +215,15 @@ namespace sm{
                 str0.s_ptr->str.insert(str0.s_ptr->str.end(), str1.s_ptr->str.begin(),
                     str1.s_ptr->str.end());
                 return str0;
+            }
+
+            _NativeFunc(minus){
+                integer_t i;
+                if(args.empty() || args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
+                    return Object();
+                if(i >= static_cast<integer_t>(self.s_ptr->str.size()))
+                    return Object();
+                return makeString(self.s_ptr->str.begin(), self.s_ptr->str.end() - i);
             }
 
             _NativeFunc(mul){
