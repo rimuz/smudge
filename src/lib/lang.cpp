@@ -262,18 +262,19 @@ namespace sm{
             _NativeFunc(u_get){
                 if(self.s_ptr->str.empty())
                     return Object();
+                integer_t strSize = self.s_ptr->str.uSize();
                 if(args.empty()){
                     return makeString(self.s_ptr->str.uCharAt(0));
                 } else if(args[0].type == ObjectType::INTEGER){
                     integer_t idx = args[0].i;
                     if(idx >= 0){
                         size_t i = static_cast<size_t>(idx);
-                        if(i >= self.s_ptr->str.size())
+                        if(idx >= strSize)
                             return Object();
                         return makeString(self.s_ptr->str.uCharAt(i));
                     }
 
-                    idx += static_cast<integer_t>(self.s_ptr->str.size());
+                    idx += strSize;
                     if(idx < 0)
                         return Object();
                     return makeString(self.s_ptr->str.uCharAt(idx));
@@ -306,18 +307,19 @@ namespace sm{
             _NativeFunc(u_getc){
                 if(self.s_ptr->str.empty())
                     return Object();
+                integer_t strSize = self.s_ptr->str.uSize();
                 if(args.empty()){
                     return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(0)));
                 } else if(args[0].type == ObjectType::INTEGER){
                     integer_t idx = args[0].i;
                     if(idx >= 0){
                         size_t i = static_cast<size_t>(idx);
-                        if(i >= self.s_ptr->str.size())
+                        if(idx >= strSize)
                             return Object();
                         return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(i)));
                     }
 
-                    idx += static_cast<integer_t>(self.s_ptr->str.size());
+                    idx += strSize;
                     if(idx < 0)
                         return Object();
                     return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
