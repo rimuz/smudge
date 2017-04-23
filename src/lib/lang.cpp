@@ -236,56 +236,47 @@ namespace sm{
             }
 
             _NativeFunc(get){
-                // TODO!!!!!!
+                String::const_iterator begin = self.s_ptr->str.cbegin();
+
                 if(self.s_ptr->str.empty())
                     return Object();
                 if(args.empty()){
-                    return makeInteger(self.s_ptr->str[0]);
+                    return makeString(begin, begin+1);
                 } else if(args[0].type == ObjectType::INTEGER){
                     integer_t idx = args[0].i;
                     if(idx >= 0){
                         size_t i = static_cast<size_t>(idx);
                         if(i >= self.s_ptr->str.size())
                             return Object();
-                        return makeInteger(self.s_ptr->str[i]);
+                        return makeString(begin+i, begin+i+1);
                     }
 
                     idx += static_cast<integer_t>(self.s_ptr->str.size());
                     if(idx < 0)
                         return Object();
-                    return makeInteger(self.s_ptr->str[static_cast<size_t>(idx)]);
+                    return makeString(begin+idx, begin+idx+1);
                 }
                 return Object();
             }
 
             _NativeFunc(u_get){
-                // TODO!!!!!
-                unicode_t ch = 0;
-                String::const_iterator beg, end = self.s_ptr->str.cend();
-
                 if(self.s_ptr->str.empty())
                     return Object();
                 if(args.empty()){
-                    beg = self.s_ptr->str.begin();
-                    String::uGet(beg, end, ch);
-                    return makeInteger(uGetCodepoint(ch));
+                    return makeString(self.s_ptr->str.uCharAt(0));
                 } else if(args[0].type == ObjectType::INTEGER){
                     integer_t idx = args[0].i;
                     if(idx >= 0){
                         size_t i = static_cast<size_t>(idx);
                         if(i >= self.s_ptr->str.size())
                             return Object();
-                        beg = self.s_ptr->str.begin() + i;
-                        String::uGet(beg, end, ch);
-                        return makeInteger(uGetCodepoint(ch));
+                        return makeString(self.s_ptr->str.uCharAt(i));
                     }
 
                     idx += static_cast<integer_t>(self.s_ptr->str.size());
                     if(idx < 0)
                         return Object();
-                    beg = self.s_ptr->str.begin() + idx;
-                    String::uGet(beg, end, ch);
-                    return makeInteger(uGetCodepoint(ch));
+                    return makeString(self.s_ptr->str.uCharAt(idx));
                 }
                 return Object();
             }
@@ -313,32 +304,23 @@ namespace sm{
             }
 
             _NativeFunc(u_getc){
-                unicode_t ch = 0;
-                String::const_iterator beg, end = self.s_ptr->str.cend();
-
                 if(self.s_ptr->str.empty())
                     return Object();
                 if(args.empty()){
-                    beg = self.s_ptr->str.begin();
-                    String::uGet(beg, end, ch);
-                    return makeInteger(uGetCodepoint(ch));
+                    return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(0)));
                 } else if(args[0].type == ObjectType::INTEGER){
                     integer_t idx = args[0].i;
                     if(idx >= 0){
                         size_t i = static_cast<size_t>(idx);
                         if(i >= self.s_ptr->str.size())
                             return Object();
-                        beg = self.s_ptr->str.begin() + i;
-                        String::uGet(beg, end, ch);
-                        return makeInteger(uGetCodepoint(ch));
+                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(i)));
                     }
 
                     idx += static_cast<integer_t>(self.s_ptr->str.size());
                     if(idx < 0)
                         return Object();
-                    beg = self.s_ptr->str.begin() + idx;
-                    String::uGet(beg, end, ch);
-                    return makeInteger(uGetCodepoint(ch));
+                    return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
                 }
                 return Object();
             }
