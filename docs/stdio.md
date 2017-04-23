@@ -29,6 +29,10 @@ Inputs an integer from `stdin`.
 Inputs a floating point number from `stdin`.
 **Returns** the number or `null` if an error occurs during the conversion.
 
+### Function `get ()`
+Reads a character from `stdin`.
+**Returns** a string containing its value or `null` if entered `EOF` (e.g. Ctrl+D on Unix).
+
 ### Function `getc ()`
 Reads a character from `stdin`.
 **Returns** an integer containing its ASCII value or -1 if entered `EOF` (e.g. Ctrl+D on Unix).
