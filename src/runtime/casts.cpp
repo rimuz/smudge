@@ -68,23 +68,21 @@ namespace sm{
             return implicitToFloat(in, out.f);
         }
 
-        bool implicitToString(const Runtime_t& rt, const Object& in, Object& out){
+        Object implicitToString(const Runtime_t& rt, const Object& in){
             switch(in.type){
                 case ObjectType::NONE:
-                    out = makeString("<null>");
-                    return true;
+                    return makeString("<null>");
                 case ObjectType::INTEGER:
-                    out = makeString(std::to_string(in.i).c_str());
-                    return true;
+                    return makeString(std::to_string(in.i).c_str());
+
                 case ObjectType::FLOAT: {
                     std::ostringstream oss;
                     oss << in.f;
-                    out = makeString(oss.str().c_str());
-                    return true;
+                    return makeString(oss.str().c_str());
                 }
+
                 case ObjectType::STRING:
-                    out = in;
-                    return true;
+                    return in;
 
                 case ObjectType::CLASS_INSTANCE:{
                     std::ostringstream oss;
@@ -94,8 +92,7 @@ namespace sm{
                         << " at 0x" << std::setw(8)
                         << std::setfill('0') << std::hex
                         << reinterpret_cast<size_t>(in.i_ptr) << ">";
-                    out = makeString(oss.str().c_str());
-                    return true;
+                    return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::ENUM:{
@@ -103,8 +100,7 @@ namespace sm{
                     oss << "<enum "
                         << _BoxName(rt.boxNames[in.e_ptr->boxName]) << "::"
                         << rt.nameFromId(in.e_ptr->name) << ">";
-                    out = makeString(oss.str().c_str());
-                    return true;
+                    return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::CLASS:{
@@ -112,8 +108,7 @@ namespace sm{
                     oss << "<class "
                         << _BoxName(rt.boxNames[in.c_ptr->boxName]) << "::"
                         << rt.nameFromId(in.c_ptr->name) << ">";
-                    out = makeString(oss.str().c_str());
-                    return true;
+                    return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::FUNCTION:{
@@ -121,15 +116,13 @@ namespace sm{
                     oss << "<function "
                         << _BoxName(rt.boxNames[in.f_ptr->boxName]) << "::"
                         << rt.nameFromId(in.f_ptr->fnName) << "()>";
-                    out = makeString(oss.str().c_str());
-                    return true;
+                    return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::BOX:{
                     std::ostringstream oss;
                     oss << "<box " << _BoxName(rt.boxNames[in.c_ptr->boxName]) << ">";
-                    out = makeString(oss.str().c_str());
-                    return true;
+                    return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::WEAK_REFERENCE:
@@ -143,30 +136,25 @@ namespace sm{
                             << " 0x" << std::setw(_SM_PTR_SIZE*2)
                             << std::setfill('0') << std::hex
                             << reinterpret_cast<size_t>(obj.i_ptr) << ">";
-                        out = makeString(oss.str().c_str());
-                    } else {
-                        out = makeString("<reference>");
+                        return makeString(oss.str().c_str());
                     }
-                    return true;
+                    return makeString("<reference>");
                 }
 
                 default:
-                    out = makeString("<unknown>");
-                    return false;
+                    return makeString("<unknown>");
             }
         }
 
         string_t errorString(const Runtime_t& rt, const Object& in){
-            Object out;
             if(in.type == ObjectType::STRING){
                 return "<string>";
             } if(in.type == ObjectType::INTEGER){
                 return "<int>";
             } if(in.type == ObjectType::FLOAT){
                 return "<float>";
-            } else if(!implicitToString(rt, in, out)){
-                return "<unknown>";
             }
+            Object out = implicitToString(rt, in);
             return string_t(out.s_ptr->str.begin(), out.s_ptr->str.end());
         }
 
