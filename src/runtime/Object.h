@@ -241,6 +241,7 @@ namespace sm{
 
     Object newObject(runtime::GarbageCollector& gc, bool temp = true) noexcept;
     Object makeFunction(Function*) noexcept;
+    Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept;
 
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
@@ -279,14 +280,14 @@ namespace sm{
         return obj;
     }
 
-    inline Object makeBox(Box_t* ptr){
+    inline Object makeBox(Box_t* ptr) noexcept{
         Object obj;
         obj.type = ObjectType::BOX;
         obj.c_ptr = ptr;
         return obj;
     }
 
-    inline Object makeMethod(Object self, Object* func_ptr){
+    inline Object makeMethod(Object self, Object* func_ptr) noexcept{
         Object obj;
         obj.type = ObjectType::METHOD;
         obj.m_ptr = new Method;
@@ -296,7 +297,7 @@ namespace sm{
     }
 
     template <typename ClassType = Instance, typename... ArgTypes>
-    inline Object makeFastInstance(runtime::GarbageCollector& gc, Class* base, bool temp, ArgTypes&&... args){
+    inline Object makeFastInstance(runtime::GarbageCollector& gc, Class* base, bool temp, ArgTypes&&... args) noexcept{
         Object obj;
         obj.type = ObjectType::CLASS_INSTANCE;
         obj.i_ptr = new ClassType(gc, temp, std::forward<ArgTypes>(args)...);

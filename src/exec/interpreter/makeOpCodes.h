@@ -49,8 +49,12 @@ namespace sm{
         }
 
         _OcFunc(MakeList){
-            // TODO
+            unsigned size = (*++addr << 8) | *++addr;
             ++addr;
+            ObjectVec_t::iterator end = intp.exprStack.end();
+            ObjectVec_t::iterator first = end-size;
+            *first = makeList(intp.rt->gc, false, ObjectVec_t(first, end));
+            intp.exprStack.erase(++first, end);
         }
 
         _OcFunc(MakeTuple){

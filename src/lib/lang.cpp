@@ -22,10 +22,12 @@
 #include "utils/unicode/utf8.h"
 #include "lib/stdlib.h"
 #include "runtime/casts.h"
+#include "runtime/Object.h"
 
 namespace sm{
     namespace lib{
         Class* cString = nullptr;
+        Class* cList = nullptr;
 
         namespace StringClass {
             _NativeFunc(idx);
@@ -66,6 +68,20 @@ namespace sm{
             _NativeFunc(u_upper);
             _NativeFunc(u_lower);
             _NativeFunc(clone);
+        }
+
+        namespace ListClass {
+            class List : public Instance {
+            public:
+                ObjectVec_t vec;
+
+                template <class... Tp>
+                List(runtime::GarbageCollector& gc, bool temp, Tp&&...args)
+                    : Instance(gc, temp), vec(std::forward<Tp>(args)...){}
+                _NativeMethod(string, 0);
+            };
+
+            _NativeFunc(string);
         }
 
         _LibDecl(lang){
@@ -112,6 +128,10 @@ namespace sm{
                 _MethodTuple(StringClass, u_upper),
                 _MethodTuple(StringClass, u_lower),
                 _MethodTuple(StringClass, clone),
+            });
+
+            cList = setClass(rt, box, "List", {
+                _MethodTuple(ListClass, string),
             });
 
             return box;
@@ -503,5 +523,17 @@ namespace sm{
                 return makeString(self.s_ptr->str);
             }
         }
+
+        namespace ListClass {
+            _BindMethod(List, string, 0);
+
+            _NativeMethod(List::string, 0){
+                return makeString("LOL");
+            }
+        }
+    }
+
+    Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
+        return makeFastInstance<lib::ListClass::List>(gc, lib::cList, temp, std::move(vec));
     }
 }
