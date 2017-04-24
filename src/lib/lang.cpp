@@ -65,7 +65,6 @@ namespace sm{
             _NativeFunc(lower);
             _NativeFunc(u_upper);
             _NativeFunc(u_lower);
-            _NativeFunc(reverse);
         }
 
         _LibDecl(lang){
@@ -111,7 +110,6 @@ namespace sm{
                 _MethodTuple(StringClass, lower),
                 _MethodTuple(StringClass, u_upper),
                 _MethodTuple(StringClass, u_lower),
-                _MethodTuple(StringClass, reverse),
             });
 
             return box;
@@ -497,11 +495,6 @@ namespace sm{
             }
 
             _NativeFunc(u_lower){
-                return makeString(self.s_ptr->str.uLower());
-            }
-
-            _NativeFunc(reverse){
-                // TODO!!!
                 return makeString(self.s_ptr->str.uLower());
             }
         }
