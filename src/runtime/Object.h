@@ -43,6 +43,7 @@ namespace sm{
     struct InstanceInfo;
     struct Box;
     struct RCString;
+    struct RCList;
     class Object;
 
     /*
@@ -201,7 +202,7 @@ namespace sm{
         std::atomic_uint rcount;
 
         template <class... Tp>
-        RCString(Tp&&... args) : vec(std::forward<Tp>(args)...), rcount(1){}
+        RCList(Tp&&... args) : vec(std::forward<Tp>(args)...), rcount(1){}
     };
 
     /*

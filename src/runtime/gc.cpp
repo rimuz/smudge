@@ -43,8 +43,6 @@ namespace sm{
                 ++s_ptr->rcount;
             } else if(type == METHOD){
                 ++m_ptr->rcount;
-            } else if(type == LIST || type == TUPLE){
-                ++l_ptr->rcount;
             }
         }
     }
@@ -67,10 +65,6 @@ namespace sm{
                 if(!--m_ptr->rcount){
                     delete m_ptr;
                 }
-            } else if(type == LIST || type == TUPLE){
-                if(!--l_ptr->rcount){
-                    delete l_ptr;
-                }
             }
         }
 
@@ -84,8 +78,6 @@ namespace sm{
                 ++s_ptr->rcount;
             } else if(type == METHOD){
                 ++m_ptr->rcount;
-            } else if(type == LIST || type == TUPLE){
-                ++l_ptr->rcount;
             }
         }
         return *this;
@@ -102,10 +94,6 @@ namespace sm{
             } else if(type == METHOD){
                 if(!--m_ptr->rcount){
                     delete m_ptr;
-                }
-            } else if(type == LIST || type == TUPLE){
-                if(!--l_ptr->rcount){
-                    delete l_ptr;
                 }
             }
         }
@@ -130,10 +118,6 @@ namespace sm{
             } else if(type == METHOD){
                 if(!--m_ptr->rcount){
                     delete m_ptr;
-                }
-            } else if(type == LIST || type == TUPLE){
-                if(!--l_ptr->rcount){
-                    delete l_ptr;
                 }
             }
         }
@@ -200,14 +184,6 @@ namespace sm{
         } else if(type == STRING){
             if(!--s_ptr->rcount){
                 delete s_ptr;
-            }
-        } else if(type == METHOD){
-            if(!--m_ptr->rcount){
-                delete m_ptr;
-            }
-        } else if(type == LIST || type == TUPLE){
-            if(!--l_ptr->rcount){
-                delete l_ptr;
             }
         }
     }

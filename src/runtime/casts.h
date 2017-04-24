@@ -36,7 +36,7 @@ namespace sm{
         bool implicitToFloat(const Object& in, float_t& out);
         bool implicitToFloat(const Object& in, Object& out);
 
-        bool implicitToString(const Runtime_t& rt, const Object& in, Object& out);
+        Object implicitToString(const Runtime_t& rt, const Object& in);
         string_t errorString(const Runtime_t& rt, const Object& in);
 
         bool implicitToBool(const Object& in);
