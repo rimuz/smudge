@@ -43,7 +43,6 @@ namespace sm{
     struct InstanceInfo;
     struct Box;
     struct RCString;
-    struct RCList;
     class Object;
 
     /*
@@ -96,7 +95,6 @@ namespace sm{
             Enum* e_ptr;
             Function* f_ptr;
             RCString* s_ptr;
-            RCList* l_ptr;
 
             // objects
             Instance* i_ptr;
@@ -197,14 +195,6 @@ namespace sm{
         RCString(Tp&&... args) : str(std::forward<Tp>(args)...), rcount(1){}
     };
 
-    struct RCList{
-        ObjectVec_t vec;
-        std::atomic_uint rcount;
-
-        template <class... Tp>
-        RCList(Tp&&... args) : vec(std::forward<Tp>(args)...), rcount(1){}
-    };
-
     /*
      * works only in the Heap because of the use of 'delete'!!
     */
@@ -275,22 +265,6 @@ namespace sm{
         Object obj;
         obj.type = ObjectType::STRING;
         obj.s_ptr = new RCString(std::forward<Tp>(args)...);
-        return obj;
-    }
-
-    template <class... Tp>
-    inline Object makeList(Tp&&... args) noexcept{
-        Object obj;
-        obj.type = ObjectType::LIST;
-        obj.s_ptr = new RCList(std::forward<Tp>(args)...);
-        return obj;
-    }
-
-    template <class... Tp>
-    inline Object makeTuple(Tp&&... args) noexcept{
-        Object obj;
-        obj.type = ObjectType::TUPLE;
-        obj.s_ptr = new RCList(std::forward<Tp>(args)...);
         return obj;
     }
 
