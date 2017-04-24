@@ -142,18 +142,16 @@ namespace sm{
         }
 
         _NativeFunc(print){
-            Object str;
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                runtime::implicitToString(*intp.rt, *it, str);
+                Object str = runtime::implicitToString(*intp.rt, *it);
                 std::cout << str.s_ptr->str;
             }
             return makeBox(intp.rt->boxes[thisFn->boxName]);
         }
 
         _NativeFunc(println){
-            Object str;
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                runtime::implicitToString(*intp.rt, *it, str);
+                Object str = runtime::implicitToString(*intp.rt, *it);
                 std::cout << str.s_ptr->str;
             }
             std::cout << std::endl;
@@ -161,18 +159,16 @@ namespace sm{
         }
 
         _NativeFunc(e_print){
-            Object str;
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                runtime::implicitToString(*intp.rt, *it, str);
+                Object str = runtime::implicitToString(*intp.rt, *it);
                 std::cerr << str.s_ptr->str;
             }
             return makeBox(intp.rt->boxes[thisFn->boxName]);
         }
 
         _NativeFunc(e_println){
-            Object str;
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                runtime::implicitToString(*intp.rt, *it, str);
+                Object str = runtime::implicitToString(*intp.rt, *it);
                 std::cerr << str.s_ptr->str;
             }
             std::cerr << std::endl;
@@ -370,8 +366,7 @@ namespace sm{
             }
 
             _NativeMethod(FileStream::write, 1){
-                Object str;
-                runtime::implicitToString(*intp.rt, args[0], str);
+                Object str = runtime::implicitToString(*intp.rt, args[0]);
                 stream.write(str.s_ptr->str.data(), str.s_ptr->str.size());
                 return self;
             }

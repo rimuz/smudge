@@ -65,6 +65,7 @@ namespace sm{
             _NativeFunc(lower);
             _NativeFunc(u_upper);
             _NativeFunc(u_lower);
+            _NativeFunc(clone);
         }
 
         _LibDecl(lang){
@@ -110,6 +111,7 @@ namespace sm{
                 _MethodTuple(StringClass, lower),
                 _MethodTuple(StringClass, u_upper),
                 _MethodTuple(StringClass, u_lower),
+                _MethodTuple(StringClass, clone),
             });
 
             return box;
@@ -208,8 +210,7 @@ namespace sm{
                 if(args.empty())
                     return Object();
                 Object str0 = makeString(self.s_ptr->str);
-                Object str1;
-                runtime::implicitToString(*intp.rt, args[0], str1);
+                Object str1 = runtime::implicitToString(*intp.rt, args[0]);
                 str0.s_ptr->str.insert(str0.s_ptr->str.end(), str1.s_ptr->str.begin(),
                     str1.s_ptr->str.end());
                 return str0;
@@ -496,6 +497,10 @@ namespace sm{
 
             _NativeFunc(u_lower){
                 return makeString(self.s_ptr->str.uLower());
+            }
+
+            _NativeFunc(clone){
+                return makeString(self.s_ptr->str);
             }
         }
     }
