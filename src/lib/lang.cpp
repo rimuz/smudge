@@ -528,7 +528,8 @@ namespace sm{
             _BindMethod(List, string, 0);
 
             _NativeMethod(List::string, 0){
-                return makeString("LOL");
+                // TODO!
+                return Object();
             }
         }
     }

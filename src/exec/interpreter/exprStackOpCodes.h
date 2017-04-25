@@ -172,7 +172,7 @@ namespace sm{
 
                     Class* base = obj.i_ptr->base;
                     it = base->objects.find(id);
-                    if(it != obj.i_ptr->objects.end()){
+                    if(it != base->objects.end()){
                         ref = makeMethod(obj, &it->second);
                         return;
                     }
