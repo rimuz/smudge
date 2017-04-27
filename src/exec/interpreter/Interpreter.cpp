@@ -148,7 +148,7 @@ namespace sm{
 
         Object Interpreter::callFunction(Function* fn, const ObjectVec_t& args,
                 const Object& self, bool inlined){
-            if(!funcStack.empty()){
+            if(!funcStack.empty() &&!inlined){
                 std::cerr << "error: alredy calling function." << std::endl;
                 runtime::Runtime_t::exit(1);
             }
