@@ -146,12 +146,13 @@ namespace sm{
             return obj;
         }
 
-        Object Interpreter::callFunction(Function* fn, const ObjectVec_t& args){
+        Object Interpreter::callFunction(Function* fn, const ObjectVec_t& args,
+                const Object& self, bool inlined){
             if(!funcStack.empty()){
                 std::cerr << "error: alredy calling function." << std::endl;
                 runtime::Runtime_t::exit(1);
             }
-            makeCall(fn, args);
+            makeCall(fn, args, self, inlined);
             return _start();
         }
 
@@ -161,6 +162,11 @@ namespace sm{
                 Object ret = reinterpret_cast<NativeFuncPtr_t>(fn->address)(*this, fn, self, args);
                 exprStack.emplace_back(std::move(ret));
             } else {
+                if(inlined){
+                    funcStack.emplace_back();
+                    funcStack.back().inlined = true;
+                }
+
                 funcStack.emplace_back();
                 CallInfo_t& backInfo = funcStack.back();
                 backInfo.codeBlocks.reserve(5);
@@ -185,7 +191,6 @@ namespace sm{
                 backInfo.addr = rt->code.begin() + fn->address;
                 backInfo.box = rt->boxes[fn->boxName];
                 backInfo.thisObject = self;
-                backInfo.inlined = inlined;
             }
         }
     }

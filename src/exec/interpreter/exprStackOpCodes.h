@@ -155,7 +155,7 @@ namespace sm{
 
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
-                        + "' in " + runtime::errorString(*intp.rt, obj));
+                        + "' in " + runtime::errorString(intp, obj));
                 }
 
                 case ObjectType::CLASS_INSTANCE: {
@@ -179,7 +179,7 @@ namespace sm{
 
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
-                        + "' in " + runtime::errorString(*intp.rt, obj));
+                        + "' in " + runtime::errorString(intp, obj));
                 }
 
                 case ObjectType::STRING:{
@@ -191,7 +191,7 @@ namespace sm{
 
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
-                        + "' in " + runtime::errorString(*intp.rt, obj));
+                        + "' in " + runtime::errorString(intp, obj));
                 }
 
                 case ObjectType::ENUM:{
@@ -204,13 +204,13 @@ namespace sm{
 
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
-                        + "' in " + runtime::errorString(*intp.rt, obj));
+                        + "' in " + runtime::errorString(intp, obj));
                 }
 
                 default:
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
-                        + "' in " + runtime::errorString(*intp.rt, obj));
+                        + "' in " + runtime::errorString(intp, obj));
             }
         }
     }

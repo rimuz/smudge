@@ -58,7 +58,8 @@ namespace sm{
             Interpreter(const Interpreter&) = delete;
             Interpreter(Interpreter&&) = default;
 
-            Object callFunction(Function* fn, const ObjectVec_t& args = ObjectVec_t());
+            Object callFunction(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
+                const Object& self = Object(), bool inlined = false);
             void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
                 const Object& self = Object(), bool inlined = false);
         };

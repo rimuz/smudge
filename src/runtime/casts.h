@@ -21,6 +21,7 @@
 #define _SM__RUNTIME__CASTS_H
 
 #include "runtime/Object.h"
+#include "exec/Interpreter.h"
 #include "utils/String.h"
 #include "typedefs.h"
 
@@ -36,8 +37,8 @@ namespace sm{
         bool implicitToFloat(const Object& in, float_t& out);
         bool implicitToFloat(const Object& in, Object& out);
 
-        Object implicitToString(const Runtime_t& rt, const Object& in);
-        string_t errorString(const Runtime_t& rt, const Object& in);
+        Object implicitToString(exec::Interpreter& intp, const Object& in);
+        string_t errorString(exec::Interpreter& intp, const Object& in);
 
         bool implicitToBool(const Object& in);
 

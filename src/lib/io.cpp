@@ -143,7 +143,7 @@ namespace sm{
 
         _NativeFunc(print){
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(*intp.rt, *it);
+                Object str = runtime::implicitToString(intp, *it);
                 std::cout << str.s_ptr->str;
             }
             return makeBox(intp.rt->boxes[thisFn->boxName]);
@@ -151,7 +151,7 @@ namespace sm{
 
         _NativeFunc(println){
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(*intp.rt, *it);
+                Object str = runtime::implicitToString(intp, *it);
                 std::cout << str.s_ptr->str;
             }
             std::cout << std::endl;
@@ -160,7 +160,7 @@ namespace sm{
 
         _NativeFunc(e_print){
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(*intp.rt, *it);
+                Object str = runtime::implicitToString(intp, *it);
                 std::cerr << str.s_ptr->str;
             }
             return makeBox(intp.rt->boxes[thisFn->boxName]);
@@ -168,7 +168,7 @@ namespace sm{
 
         _NativeFunc(e_println){
             for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(*intp.rt, *it);
+                Object str = runtime::implicitToString(intp, *it);
                 std::cerr << str.s_ptr->str;
             }
             std::cerr << std::endl;
@@ -366,7 +366,7 @@ namespace sm{
             }
 
             _NativeMethod(FileStream::write, 1){
-                Object str = runtime::implicitToString(*intp.rt, args[0]);
+                Object str = runtime::implicitToString(intp, args[0]);
                 stream.write(str.s_ptr->str.data(), str.s_ptr->str.size());
                 return self;
             }

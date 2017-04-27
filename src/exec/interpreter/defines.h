@@ -66,7 +66,7 @@
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <int> and ") \
-                    + runtime::errorString(*intp.rt, tos)); \
+                    + runtime::errorString(intp, tos)); \
             } \
         case ObjectType::FLOAT: \
             if(tos.type == ObjectType::INTEGER){ \
@@ -79,7 +79,7 @@
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <float> and ") \
-                    + runtime::errorString(*intp.rt, tos)); \
+                    + runtime::errorString(intp, tos)); \
             } \
         case ObjectType::CLASS_INSTANCE: { \
             unsigned id = runtime::operatorId(TokenType); \
@@ -89,12 +89,12 @@
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos1, op, id)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
-                    + runtime::errorString(*intp.rt, tos1)); \
+                    + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, op_ptr)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
-                    + runtime::errorString(*intp.rt, tos1)); \
+                    + runtime::errorString(intp, tos1)); \
             } \
             Object instance = std::move(tos1); \
             intp.exprStack.pop_back(); \
@@ -109,12 +109,12 @@
             if(!runtime::find<ObjectType::BOX>(tos1, op, id)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
-                    + runtime::errorString(*intp.rt, tos1)); \
+                    + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, op_ptr)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
-                    + runtime::errorString(*intp.rt, tos1)); \
+                    + runtime::errorString(intp, tos1)); \
             } \
             intp.exprStack.pop_back(); \
             intp.makeCall(op_ptr, args); \
@@ -128,12 +128,12 @@
             if(!runtime::find<ObjectType::STRING>(tos1, op, id)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
-                    + runtime::errorString(*intp.rt, tos1)); \
+                    + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, op_ptr)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
-                    + runtime::errorString(*intp.rt, tos1)); \
+                    + runtime::errorString(intp, tos1)); \
             } \
             Object str = std::move(tos1); \
             intp.exprStack.pop_back(); \
@@ -143,6 +143,6 @@
         default: \
             intp.rt->sources.printStackTrace(intp, error::ERROR, \
                 std::string("cannot find 'operator" #Operator "' in ") \
-                + runtime::errorString(*intp.rt, tos1)); \
+                + runtime::errorString(intp, tos1)); \
     }
 #endif

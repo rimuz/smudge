@@ -72,7 +72,7 @@ namespace sm{
             return implicitToFloat(in, out.f);
         }
 
-        Object implicitToString(const Runtime_t& rt, const Object& in){
+        Object implicitToString(exec::Interpreter& intp, const Object& in){
             switch(in.type){
                 case ObjectType::NONE:
                     return makeString("<null>");
@@ -93,14 +93,25 @@ namespace sm{
                     if(runtime::find<ObjectType::CLASS_INSTANCE>(in, out, lib::idToString)){
                         Function* f_ptr;
                         if(runtime::callable(out, f_ptr)){
-                            intp.makeCall(); // TODO!!!
+                            Object str = intp.callFunction(f_ptr, ObjectVec_t(), out, true);
+                            if(str.type != ObjectType::STRING){
+                                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                                    std::string("method 'to_string()' in ")
+                                    + runtime::errorString(intp, out)
+                                    + " didn't return a string");
+                            }
+                            return str;
+                        } else {
+                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                                std::string("'to_string()' must be a function in ")
+                                + runtime::errorString(intp, out));
                         }
                     }
 
                     std::ostringstream oss;
                     oss << "<instance of "
-                        << _BoxName(rt.boxNames[in.i_ptr->base->boxName]) << "::"
-                        << rt.nameFromId(in.i_ptr->base->name)
+                        << _BoxName(intp.rt->boxNames[in.i_ptr->base->boxName]) << "::"
+                        << intp.rt->nameFromId(in.i_ptr->base->name)
                         << " at 0x" << std::setw(8)
                         << std::setfill('0') << std::hex
                         << reinterpret_cast<size_t>(in.i_ptr) << ">";
@@ -110,30 +121,30 @@ namespace sm{
                 case ObjectType::ENUM:{
                     std::ostringstream oss;
                     oss << "<enum "
-                        << _BoxName(rt.boxNames[in.e_ptr->boxName]) << "::"
-                        << rt.nameFromId(in.e_ptr->name) << ">";
+                        << _BoxName(intp.rt->boxNames[in.e_ptr->boxName]) << "::"
+                        << intp.rt->nameFromId(in.e_ptr->name) << ">";
                     return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::CLASS:{
                     std::ostringstream oss;
                     oss << "<class "
-                        << _BoxName(rt.boxNames[in.c_ptr->boxName]) << "::"
-                        << rt.nameFromId(in.c_ptr->name) << ">";
+                        << _BoxName(intp.rt->boxNames[in.c_ptr->boxName]) << "::"
+                        << intp.rt->nameFromId(in.c_ptr->name) << ">";
                     return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::FUNCTION:{
                     std::ostringstream oss;
                     oss << "<function "
-                        << _BoxName(rt.boxNames[in.f_ptr->boxName]) << "::"
-                        << rt.nameFromId(in.f_ptr->fnName) << "()>";
+                        << _BoxName(intp.rt->boxNames[in.f_ptr->boxName]) << "::"
+                        << intp.rt->nameFromId(in.f_ptr->fnName) << "()>";
                     return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::BOX:{
                     std::ostringstream oss;
-                    oss << "<box " << _BoxName(rt.boxNames[in.c_ptr->boxName]) << ">";
+                    oss << "<box " << _BoxName(intp.rt->boxNames[in.c_ptr->boxName]) << ">";
                     return makeString(oss.str().c_str());
                 }
 
@@ -143,8 +154,8 @@ namespace sm{
                     if(obj.type == ObjectType::CLASS_INSTANCE){
                         std::ostringstream oss;
                         oss << "<ref to object "
-                            << _BoxName(rt.boxNames[obj.i_ptr->base->boxName]) << "::"
-                            << rt.nameFromId(obj.i_ptr->base->name)
+                            << _BoxName(intp.rt->boxNames[obj.i_ptr->base->boxName]) << "::"
+                            << intp.rt->nameFromId(obj.i_ptr->base->name)
                             << " 0x" << std::setw(_SM_PTR_SIZE*2)
                             << std::setfill('0') << std::hex
                             << reinterpret_cast<size_t>(obj.i_ptr) << ">";
@@ -158,15 +169,24 @@ namespace sm{
             }
         }
 
-        string_t errorString(const Runtime_t& rt, const Object& in){
+        string_t errorString(exec::Interpreter& intp, const Object& in){
             if(in.type == ObjectType::STRING){
                 return "<string>";
             } if(in.type == ObjectType::INTEGER){
                 return "<int>";
             } if(in.type == ObjectType::FLOAT){
                 return "<float>";
+            } if(in.type == ObjectType::CLASS_INSTANCE){
+                std::ostringstream oss;
+                oss << "<instance of "
+                    << _BoxName(intp.rt->boxNames[in.i_ptr->base->boxName]) << "::"
+                    << intp.rt->nameFromId(in.i_ptr->base->name)
+                    << " at 0x" << std::setw(8)
+                    << std::setfill('0') << std::hex
+                    << reinterpret_cast<size_t>(in.i_ptr) << ">";
+                return oss.str();
             }
-            Object out = implicitToString(rt, in);
+            Object out = implicitToString(intp, in);
             return string_t(out.s_ptr->str.begin(), out.s_ptr->str.end());
         }
 
