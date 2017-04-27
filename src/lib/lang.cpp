@@ -234,7 +234,7 @@ namespace sm{
                 if(args.empty())
                     return Object();
                 Object str0 = makeString(self.s_ptr->str);
-                Object str1 = runtime::implicitToString(*intp.rt, args[0]);
+                Object str1 = runtime::implicitToString(intp, args[0]);
                 str0.s_ptr->str.insert(str0.s_ptr->str.end(), str1.s_ptr->str.begin(),
                     str1.s_ptr->str.end());
                 return str0;
@@ -535,7 +535,7 @@ namespace sm{
                 Object str = makeString("[");
                 ObjectVec_t::const_iterator it = vec.cbegin();
                 while(1) {
-                    Object str2 = runtime::implicitToString(*intp.rt, *it);
+                    Object str2 = runtime::implicitToString(intp, *it);
                     str.s_ptr->str.append(str2.s_ptr->str);
                     if(++it == vec.cend())
                         break;

@@ -39,7 +39,7 @@ namespace sm{
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     std::string("cannot perform 'operator=' to "
                     "temporary object \"")
-                    + runtime::errorString(*intp.rt, tos1) + "\" (rvalue)");
+                    + runtime::errorString(intp, tos1) + "\" (rvalue)");
             }
 
             tos1.refSet(tos);

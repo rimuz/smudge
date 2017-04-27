@@ -132,7 +132,7 @@ namespace sm{
                     intp.makeCall(func_ptr, args, obj.m_ptr->self);
                 } else {
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
-                        std::string("cannot find 'operator()' in ") + runtime::errorString(*intp.rt, obj));
+                        std::string("cannot find 'operator()' in ") + runtime::errorString(intp, obj));
                 }
             }
         }

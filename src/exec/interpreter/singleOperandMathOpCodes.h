@@ -47,7 +47,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator~' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -64,7 +64,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator~' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -74,7 +74,7 @@ namespace sm{
                 default:
                     intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
                         std::string("'operator~' not applicable for ") +
-                        runtime::errorString(*intp.rt, tos));
+                        runtime::errorString(intp, tos));
             }
         }
 
@@ -104,7 +104,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator!' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -121,7 +121,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator!' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -131,7 +131,7 @@ namespace sm{
                 default:
                     intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
                         std::string("'operator!' not applicable for ") +
-                        runtime::errorString(*intp.rt, tos));
+                        runtime::errorString(intp, tos));
             }
         }
 
@@ -156,7 +156,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary+' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -173,7 +173,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary+' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -183,7 +183,7 @@ namespace sm{
                 default:
                     intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
                         std::string("'operator unary+' not applicable for ") +
-                        runtime::errorString(*intp.rt, tos));
+                        runtime::errorString(intp, tos));
             }
         }
 
@@ -213,7 +213,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary-' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -230,7 +230,7 @@ namespace sm{
                             || !runtime::callable(op, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary-' not applicable for ")
-                            + runtime::errorString(*intp.rt, tos));
+                            + runtime::errorString(intp, tos));
                     }
 
                     intp.makeCall(op_ptr, args, tos);
@@ -240,7 +240,7 @@ namespace sm{
                 default:
                     intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
                         std::string("'operator unary-' not applicable for ") +
-                        runtime::errorString(*intp.rt, tos));
+                        runtime::errorString(intp, tos));
             }
         }
 

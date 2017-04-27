@@ -43,7 +43,7 @@ namespace sm{
             } else {
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     std::string("cannot get reference from temporary object ")
-                    + runtime::errorString(*intp.rt, tos));
+                    + runtime::errorString(intp, tos));
             }
             ++addr;
         }
