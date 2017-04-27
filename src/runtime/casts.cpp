@@ -90,9 +90,11 @@ namespace sm{
 
                 case ObjectType::CLASS_INSTANCE:{
                     Object out;
-
                     if(runtime::find<ObjectType::CLASS_INSTANCE>(in, out, lib::idToString)){
-
+                        Function* f_ptr;
+                        if(runtime::callable(out, f_ptr)){
+                            intp.makeCall(); // TODO!!!
+                        }
                     }
 
                     std::ostringstream oss;
@@ -195,6 +197,7 @@ namespace sm{
                     return false;
                 }
 
+                /*
                 case ObjectType::CLASS_INSTANCE:{
                     if(runtime::find<ObjectType::CLASS_INSTANCE>(obj, obj, runtime::roundId)
                             && obj.type == ObjectType::FUNCTION){
@@ -203,6 +206,7 @@ namespace sm{
                     }
                     return false;
                 }
+                */
 
                 default:
                     return false;
