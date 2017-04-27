@@ -43,6 +43,11 @@ namespace sm{
     namespace exec{
         Object Interpreter::_start(){
             while(!funcStack.empty()){
+                if(funcStack.back().inlined){
+                    funcStack.pop_back();
+                    break;
+                }
+
                 ByteCode_t::const_iterator& addr = funcStack.back().addr;
                 switch(*addr){
                     _OcCase(NOP, Nop);
@@ -150,7 +155,8 @@ namespace sm{
             return _start();
         }
 
-        void Interpreter::makeCall(Function* fn, const ObjectVec_t& args,  const Object& self){
+        void Interpreter::makeCall(Function* fn, const ObjectVec_t& args,
+                const Object& self, bool inlined){
             if(fn->native){
                 Object ret = reinterpret_cast<NativeFuncPtr_t>(fn->address)(*this, fn, self, args);
                 exprStack.emplace_back(std::move(ret));
@@ -179,6 +185,7 @@ namespace sm{
                 backInfo.addr = rt->code.begin() + fn->address;
                 backInfo.box = rt->boxes[fn->boxName];
                 backInfo.thisObject = self;
+                backInfo.inlined = inlined;
             }
         }
     }

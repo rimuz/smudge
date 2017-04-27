@@ -29,6 +29,8 @@ namespace sm{
         Class* cString = nullptr;
         Class* cList = nullptr;
 
+        oid_t idToString;
+
         namespace StringClass {
             _NativeFunc(idx);
             _NativeFunc(len);
@@ -78,15 +80,17 @@ namespace sm{
                 template <class... Tp>
                 List(runtime::GarbageCollector& gc, bool temp, Tp&&...args)
                     : Instance(gc, temp), vec(std::forward<Tp>(args)...){}
-                _NativeMethod(string, 0);
+                _NativeMethod(to_string, 0);
             };
 
-            _NativeFunc(string);
+            _NativeFunc(to_string);
         }
 
         _LibDecl(lang){
             Class* box = new Class;
             box->boxName = nBox;
+
+            idToString = _Id("to_string");
 
             cString = setClass(rt, box, "String", {
                 _OpTuple(StringClass, parse::TT_PLUS, plus),
@@ -131,7 +135,7 @@ namespace sm{
             });
 
             cList = setClass(rt, box, "List", {
-                _MethodTuple(ListClass, string),
+                _MethodTuple(ListClass, to_string),
             });
 
             return box;
@@ -525,9 +529,9 @@ namespace sm{
         }
 
         namespace ListClass {
-            _BindMethod(List, string, 0);
+            _BindMethod(List, to_string, 0);
 
-            _NativeMethod(List::string, 0){
+            _NativeMethod(List::to_string, 0){
                 Object str = makeString("[");
                 ObjectVec_t::const_iterator it = vec.cbegin();
                 while(1) {

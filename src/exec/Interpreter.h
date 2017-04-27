@@ -34,6 +34,13 @@ namespace sm{
             ByteCode_t::const_iterator addr;
             Function* function = nullptr; // for Stack Trace
             Class* box = nullptr;
+            /*
+             * When you call a native function from Smudge, all works.
+             * However, if in that native function you call another Smudge fucntion,
+             * we'll mark this call as 'inlined' to tell the interpreter to return
+             * when we return in Smudge.
+             */
+            bool inlined = false;
         };
 
         using CallStack_t = std::vector<CallInfo_t>;
@@ -52,7 +59,8 @@ namespace sm{
             Interpreter(Interpreter&&) = default;
 
             Object callFunction(Function* fn, const ObjectVec_t& args = ObjectVec_t());
-            void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(), const Object& self = Object());
+            void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
+                const Object& self = Object(), bool inlined = false);
         };
     }
 }
