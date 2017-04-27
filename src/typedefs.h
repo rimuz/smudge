@@ -67,6 +67,7 @@ namespace sm{
     using integer_t = long;
     using float_t = double;
     using string_t = std::string;
+    using oid_t = unsigned; // Object ID
     using NameVec_t = std::vector<unsigned>;
     using ByteCode_t = std::vector<unsigned char>;
     using ByteCodeVec_t = std::vector<ByteCode_t>;

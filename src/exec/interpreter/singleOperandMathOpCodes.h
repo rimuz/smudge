@@ -50,7 +50,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
@@ -67,7 +67,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
@@ -107,7 +107,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
@@ -124,7 +124,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
@@ -159,7 +159,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
@@ -176,7 +176,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
@@ -216,7 +216,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
@@ -233,7 +233,7 @@ namespace sm{
                             + runtime::errorString(*intp.rt, tos));
                     }
 
-                    intp.makeCall(op_ptr, args);
+                    intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 

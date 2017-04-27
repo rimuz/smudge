@@ -29,6 +29,10 @@
 #define _BoxName(Box) (Box.back() == '!' ? Box.substr(0, Box.size()-1) : Box)
 
 namespace sm{
+    namespace lib{
+        extern oid_t idToString;
+    }
+
     namespace runtime{
         bool implicitToInt(const Object& in, integer_t& out){
             switch(in.type){
@@ -85,6 +89,12 @@ namespace sm{
                     return in;
 
                 case ObjectType::CLASS_INSTANCE:{
+                    Object out;
+
+                    if(runtime::find<ObjectType::CLASS_INSTANCE>(in, out, lib::idToString)){
+
+                    }
+
                     std::ostringstream oss;
                     oss << "<instance of "
                         << _BoxName(rt.boxNames[in.i_ptr->base->boxName]) << "::"
