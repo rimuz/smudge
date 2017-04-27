@@ -158,15 +158,15 @@ namespace sm{
 
         void Interpreter::makeCall(Function* fn, const ObjectVec_t& args,
                 const Object& self, bool inlined){
+            if(inlined){
+                funcStack.emplace_back();
+                funcStack.back().inlined = true;
+            }
+
             if(fn->native){
                 Object ret = reinterpret_cast<NativeFuncPtr_t>(fn->address)(*this, fn, self, args);
                 exprStack.emplace_back(std::move(ret));
             } else {
-                if(inlined){
-                    funcStack.emplace_back();
-                    funcStack.back().inlined = true;
-                }
-
                 funcStack.emplace_back();
                 CallInfo_t& backInfo = funcStack.back();
                 backInfo.codeBlocks.reserve(5);

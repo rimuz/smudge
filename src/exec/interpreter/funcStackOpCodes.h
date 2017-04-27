@@ -109,11 +109,12 @@ namespace sm{
             ++addr;
 
             ObjectVec_t::iterator end = intp.exprStack.end();
-            const Object& func = *(end - (param+1));
+            Object func = *(end - (param+1));
             Function* func_ptr;
 
             ObjectVec_t args(end - param, end);
             intp.exprStack.erase(end - (param+1), end);
+
             for(Object& obj : args){
                 if(obj.type == ObjectType::WEAK_REFERENCE){
                     obj = obj.refGet();
