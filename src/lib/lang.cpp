@@ -534,12 +534,14 @@ namespace sm{
             _NativeMethod(List::to_string, 0){
                 Object str = makeString("[");
                 ObjectVec_t::const_iterator it = vec.cbegin();
-                while(1) {
-                    Object str2 = runtime::implicitToString(intp, *it);
-                    str.s_ptr->str.append(str2.s_ptr->str);
-                    if(++it == vec.cend())
-                        break;
-                    str.s_ptr->str.append(", ");
+                if(it != vec.cend()){
+                    while(1) {
+                        Object str2 = runtime::implicitToString(intp, *it);
+                        str.s_ptr->str.append(str2.s_ptr->str);
+                        if(++it == vec.cend())
+                            break;
+                        str.s_ptr->str.append(", ");
+                    }
                 }
                 str.s_ptr->str.push_back(']');
                 return str;
