@@ -1,5 +1,5 @@
 ## The Smudge Programming Language - Documentation of box `std.io`
-Usually imported as `io`, box `std.io` allow you to handle console and file I/O.
+Usually imported as `io`, box `std.io` allows you to handle console and file I/O.
 
 ### Function `print (obj)`
 Prints a text representation of the object given to the `stdout`.
