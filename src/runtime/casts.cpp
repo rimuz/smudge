@@ -93,7 +93,7 @@ namespace sm{
                     if(runtime::find<ObjectType::CLASS_INSTANCE>(in, out, lib::idToString)){
                         Function* f_ptr;
                         if(runtime::callable(out, f_ptr)){
-                            Object str = intp.callFunction(f_ptr, ObjectVec_t(), out, true);
+                            Object str = intp.callFunction(f_ptr, ObjectVec_t(), in, true);
                             if(str.type != ObjectType::STRING){
                                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                                     std::string("method 'to_string()' in ")

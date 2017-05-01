@@ -70,6 +70,7 @@ namespace sm{
             _NativeFunc(u_upper);
             _NativeFunc(u_lower);
             _NativeFunc(clone);
+            _NativeFunc(to_string);
         }
 
         namespace ListClass {
@@ -132,6 +133,7 @@ namespace sm{
                 _MethodTuple(StringClass, u_upper),
                 _MethodTuple(StringClass, u_lower),
                 _MethodTuple(StringClass, clone),
+                _MethodTuple(StringClass, to_string),
             });
 
             cList = setClass(rt, box, "List", {
@@ -526,6 +528,10 @@ namespace sm{
             _NativeFunc(clone){
                 return makeString(self.s_ptr->str);
             }
+
+            _NativeFunc(to_string){
+                return self;
+            }
         }
 
         namespace ListClass {
@@ -536,9 +542,9 @@ namespace sm{
                 ObjectVec_t::const_iterator it = vec.cbegin();
                 if(it != vec.cend()){
                     while(1) {
-                        Object str2 = runtime::implicitToString(intp, *it);
+                        Object str2 = runtime::implicitToString(intp, *it++);
                         str.s_ptr->str.append(str2.s_ptr->str);
-                        if(++it == vec.cend())
+                        if(it == vec.cend())
                             break;
                         str.s_ptr->str.append(", ");
                     }
