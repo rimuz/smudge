@@ -81,9 +81,46 @@ namespace sm{
                 template <class... Tp>
                 List(runtime::GarbageCollector& gc, bool temp, Tp&&...args)
                     : Instance(gc, temp), vec(std::forward<Tp>(args)...){}
+
+                _NativeMethod(bracing, 1);
+                _NativeMethod(plus, 1);
+                _NativeMethod(bitor_op, 1);
+                _NativeMethod(bitand_op, 1);
+
+                _NativeMethod(reserve, 1);
+                _NativeMethod(resize, 1);
+                _NativeMethod(pop, 0);
+                _NativeMethod(push, 1);
+                _NativeMethod(clone, 2);
+                _NativeMethod(tuple, 2);
+                _NativeMethod(append, 1);
+                _NativeMethod(insert, 2);
+                _NativeMethod(insert_list, 2);
+                _NativeMethod(copy_list, 2);
+                _NativeMethod(reverse, 2);
+                _NativeMethod(sort, 2);
+                _NativeMethod(unique, 2);
                 _NativeMethod(to_string, 0);
             };
 
+            _NativeFunc(bracing);
+            _NativeFunc(plus);
+            _NativeFunc(bitor_op);
+            _NativeFunc(bitand_op);
+
+            _NativeFunc(reserve);
+            _NativeFunc(resize);
+            _NativeFunc(pop);
+            _NativeFunc(push);
+            _NativeFunc(clone);
+            _NativeFunc(tuple);
+            _NativeFunc(append);
+            _NativeFunc(insert);
+            _NativeFunc(insert_list);
+            _NativeFunc(copy_list);
+            _NativeFunc(reverse);
+            _NativeFunc(sort);
+            _NativeFunc(unique);
             _NativeFunc(to_string);
         }
 
@@ -137,7 +174,25 @@ namespace sm{
             });
 
             cList = setClass(rt, box, "List", {
+                _MethodTuple(ListClass, bracing),
+                _MethodTuple(ListClass, plus),
+                _MethodTuple(ListClass, bitor_op),
+                _MethodTuple(ListClass, bitand_op),
+
+                _MethodTuple(ListClass, reserve),
+                _MethodTuple(ListClass, resize),
+                _MethodTuple(ListClass, pop),
+                _MethodTuple(ListClass, push),
+                _MethodTuple(ListClass, clone),
+                _MethodTuple(ListClass, tuple),
+                _MethodTuple(ListClass, append),
+                _MethodTuple(ListClass, insert),
+                _MethodTuple(ListClass, insert_list),
+                _MethodTuple(ListClass, copy_list),
+                _MethodTuple(ListClass, reverse),
+                _MethodTuple(ListClass, sort),
                 _MethodTuple(ListClass, to_string),
+                _MethodTuple(ListClass, unique),
             });
 
             return box;
@@ -535,7 +590,93 @@ namespace sm{
         }
 
         namespace ListClass {
+            _BindMethod(List, bracing, 1);
+            _BindMethod(List, plus, 1);
+            _BindMethod(List, bitor_op, 1);
+            _BindMethod(List, bitand_op, 1);
+
+            _BindMethod(List, reserve, 1);
+            _BindMethod(List, resize, 1);
+            _BindMethod(List, pop, 0);
+            _BindMethod(List, push, 1);
+            _BindMethod(List, clone, 2);
+            _BindMethod(List, tuple, 2);
+            _BindMethod(List, append, 1);
+            _BindMethod(List, insert, 2);
+            _BindMethod(List, insert_list, 2);
+            _BindMethod(List, copy_list, 2);
+            _BindMethod(List, reverse, 2);
+            _BindMethod(List, sort, 2);
+            _BindMethod(List, unique, 2);
             _BindMethod(List, to_string, 0);
+
+            _NativeMethod(List::bracing, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::plus, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::bitor_op, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::bitand_op, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::reserve, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::resize, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::pop, 0){
+                return Object();
+            }
+
+            _NativeMethod(List::push, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::clone, 2){
+                return Object();
+            }
+
+            _NativeMethod(List::tuple, 2){
+                return Object();
+            }
+
+            _NativeMethod(List::append, 1){
+                return Object();
+            }
+
+            _NativeMethod(List::insert, 2){
+                return Object();
+            }
+
+            _NativeMethod(List::insert_list, 2){
+                return Object();
+            }
+
+            _NativeMethod(List::copy_list, 2){
+                return Object();
+            }
+
+            _NativeMethod(List::reverse, 2){
+                return Object();
+            }
+
+            _NativeMethod(List::sort, 2){
+                return Object();
+            }
+
+            _NativeMethod(List::unique, 2){
+                return Object();
+            }
 
             _NativeMethod(List::to_string, 0){
                 Object str = makeString("[");
