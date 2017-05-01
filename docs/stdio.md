@@ -53,8 +53,11 @@ Calls function **`next ()`** and sets **`obj`** to its return value. To make the
 A string containing a newline character (`\n`).
 
 ### Function `open (path[, mode = RW])`
-Opens a file stream and creates a **`FileStream`** instance to handle it. **`path`** is a string representation of the file path, while **`mode`** is an integer which value corresponds to the stream opening mode.
-You can obtain the right value of opening mode by combining the following values (with `+` or `|` operators):
+Opens a file stream and creates a **`FileStream`** instance to handle it.
+**`path`** is a string representation of the file path, while **`mode`**
+is an integer which value corresponds to the stream opening mode.
+You can obtain the right value of opening mode by combining the following
+values (with `+` or `|` operators):
 
 |  Var name  |  Value (bin) | Value (hex) |  Description                      |
 |:----------:|:------------:|:-----------:|:---------------------------------:|
@@ -62,13 +65,15 @@ You can obtain the right value of opening mode by combining the following values
 | **`APP`**  |     10       |       2     |  Writes at the end of the file    |
 | **`WRITE`**|    100       |       4     |  Opens an **output** stream.      |
 | **`READ`** |    1000      |       8     |  Opens an **input** stream.       |
-| **`RW`**   |    1100      |       C     | both **`READ`** and **`WRITE`**, default value. |
+| **`RW`**   | 1100 | C | both **`READ`** and **`WRITE`**, default value.     |
 | **`TRUNC`**|    10000     |      10     | Deletes the content of the file   |
 
 **Returns** the instance of **`FileStream`** or `null` if the stream can't be open.
 
 ## Class `FileStream`
-The implementation of the class is native and consist of an object containing an `std::fstream` instanced and open with the given arguments, when an instance of class `FileStream` is deleted, the stream is automatically closed.
+The implementation of the class is native and consist of an object containing
+an `std::fstream` instanced and open with the given arguments, when an
+instance of class `FileStream` is deleted, the stream is automatically closed.
 
 ### Method `close ()`
 Closes the stream.
@@ -95,15 +100,18 @@ Reads all the text from the stream and stores it in a string.
 **Returns** the string: **`read_all()`** never returns `null`.
 
 ### Method `write (obj)`
-Writes a text representation of the object given to the stream at the current position.
+Writes a text representation of the object given to the stream at the current
+position.
 **Returns** the **`FileStream`** instance.
 
 ### Method `count ()`
-**Returns** the number of characters read from the last **input** operation in an integer.
+**Returns** the number of characters read from the last **input** operation in
+an integer.
 **Note**: if called after **`peek()`**, **`count()`** will always return 0.
 
 ### Method `seek (off[, pos = BEG])`
-Sets the position of the next character to be extracted to offset `off` relatively to `pos` that can have one of the following values:
+Sets the position of the next character to be extracted to offset `off`
+relatively to `pos` that can have one of the following values:
 
 | Var name | Value (dec/hex) | Description |
 |:--------:|:---------------:|:-----------:|
