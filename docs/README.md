@@ -5,6 +5,17 @@ on who's directed to:
  - For the contriburors
  The SmudgeDocs will be competed in
 
+## How to read the `SmudgeDocs`
+The SmudgeDocs describe how do `classes`, `functions`, `vars` and `methods`work.
+
+### Classes
+Classes of boxes contained by the `SSL` work just like classes defined
+in **your** boxes (or in third-parts boxes): you can **set** their methods,
+**make instances** from them and, obviously, **call** its methods.
+```
+
+```
+
 ## For the users
 - Smudge for dummies
     - [an Hello World](Overview.md)
