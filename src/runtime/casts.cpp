@@ -92,8 +92,9 @@ namespace sm{
                     Object out;
                     if(runtime::find<ObjectType::CLASS_INSTANCE>(in, out, lib::idToString)){
                         Function* f_ptr;
-                        if(runtime::callable(out, f_ptr)){
-                            Object str = intp.callFunction(f_ptr, ObjectVec_t(), in, true);
+                        Object self = in;
+                        if(runtime::callable(out, self, f_ptr)){
+                            Object str = intp.callFunction(f_ptr, ObjectVec_t(), self, true);
                             if(str.type != ObjectType::STRING){
                                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                                     std::string("method 'to_string()' in ")
@@ -204,6 +205,11 @@ namespace sm{
             Object obj = in;
             _OcValue(obj);
 
+            while (obj.type == ObjectType::METHOD){
+                obj = *obj.m_ptr->func_ptr;
+                self = obj.m_ptr->self;
+            }
+
             switch(obj.type){
                 case ObjectType::FUNCTION:
                     out = obj.f_ptr;
@@ -218,7 +224,7 @@ namespace sm{
                     return false;
                 }
 
-                case ObjectType::CLASS {
+                case ObjectType::CLASS: {
                     Object func;
                     if(runtime::find<ObjectType::BOX>(obj, func, runtime::newId)
                             && func.type == ObjectType::FUNCTION){

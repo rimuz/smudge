@@ -148,12 +148,13 @@ int main(int argc, char** argv){
         ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(runtime::initId);
         if(it != rt.boxes[0]->objects.end()){
             Function* initFn;
-            if(!sm::runtime::callable(it->second, initFn)){
+            Object self;
+            if(!sm::runtime::callable(it->second, self, initFn)){
                 rt.sources.msg(error::ERROR, std::string("'<init>' is not a function in box '")
                     + rt.boxNames[0] + "'.");
             }
 
-            intp.callFunction(initFn);
+            intp.callFunction(initFn, ObjectVec_t(), self);
         }
     }
 
@@ -166,13 +167,13 @@ int main(int argc, char** argv){
         }
 
         Function* mainFn;
-
-        if(!sm::runtime::callable(it->second, mainFn)){
+        Object self;
+        if(!sm::runtime::callable(it->second, self, mainFn)){
             rt.sources.msg(error::ERROR, std::string("'main' is not a function in box '")
                 + rt.boxNames[0] + "'.");
         }
 
-        Object ret = intp.callFunction(mainFn);
+        Object ret = intp.callFunction(mainFn, ObjectVec_t(), self);
 
         if(ret.type == ObjectType::INTEGER){
             sm::runtime::Runtime_t::exit(ret.i);

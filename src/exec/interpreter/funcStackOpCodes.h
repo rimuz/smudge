@@ -56,7 +56,6 @@ namespace sm{
                 delete *it;
             }
             intp.funcStack.pop_back();
-            // NO Advance
         }
 
         _OcFunc(ReturnNull){
@@ -66,7 +65,6 @@ namespace sm{
             }
             intp.funcStack.pop_back();
             intp.exprStack.emplace_back(Object());
-            // NO Advance
         }
 
         _OcFunc(CallNewFunction){
@@ -123,18 +121,20 @@ namespace sm{
                 }
             }
 
-            if(runtime::callable(func, func_ptr)){
-                intp.makeCall(func_ptr, args);
+            Object self;
+            Object obj = func;
+            _OcValue(obj);
+            if(runtime::callable(obj, self, func_ptr)){
+                intp.makeCall(func_ptr, args, self);
             } else {
-                Object obj = func;
-                _OcValue(obj);
-                if(obj.type == ObjectType::METHOD){
+                /*if(obj.type == ObjectType::METHOD){
                     Function* func_ptr = obj.m_ptr->func_ptr->f_ptr;
-                    intp.makeCall(func_ptr, args, obj.m_ptr->self);
-                } else {
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
-                        std::string("cannot find 'operator()' in ") + runtime::errorString(intp, obj));
-                }
+                    intp.makeCall(func_ptr, args,
+                        self.type == ObjectType::NONE ? obj.m_ptr->self : self);
+                } else { */
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                std::string("cannot find 'operator(hhh)' in ") + runtime::errorString(intp, obj));
+                //}
             }
         }
 
