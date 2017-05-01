@@ -90,7 +90,7 @@
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
-            } else if(!runtime::callable(op, op_ptr)){ \
+            } else if(!runtime::callable(op, tos1, op_ptr)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
@@ -104,20 +104,21 @@
         case ObjectType::BOX: { \
             unsigned id = runtime::operatorId(TokenType); \
             Object op; \
+            Object self; \
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
             if(!runtime::find<ObjectType::BOX>(tos1, op, id)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
-            } else if(!runtime::callable(op, op_ptr)){ \
+            } else if(!runtime::callable(op, self, op_ptr)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
             } \
             intp.exprStack.pop_back(); \
-            intp.makeCall(op_ptr, args); \
+            intp.makeCall(op_ptr, args, self); \
             return; \
         } \
         case ObjectType::STRING: { \
@@ -129,7 +130,7 @@
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
-            } else if(!runtime::callable(op, op_ptr)){ \
+            } else if(!runtime::callable(op, tos1, op_ptr)){ \
                 intp.rt->sources.printStackTrace(intp, error::ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \

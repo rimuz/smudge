@@ -44,7 +44,7 @@ namespace sm{
                     ObjectVec_t args;
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, tos, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator~' not applicable for ")
                             + runtime::errorString(intp, tos));
@@ -57,17 +57,18 @@ namespace sm{
                 case ObjectType::BOX: {
                     unsigned id = runtime::operatorId(parse::TT_COMPL);
                     Object op;
+                    Object self;
                     Function* op_ptr = nullptr;
                     ObjectVec_t args;
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, self, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator~' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.makeCall(op_ptr, args, tos);
+                    intp.makeCall(op_ptr, args, self);
                     return;
                 }
 
@@ -101,7 +102,7 @@ namespace sm{
                     ObjectVec_t args;
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, tos, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator!' not applicable for ")
                             + runtime::errorString(intp, tos));
@@ -114,17 +115,18 @@ namespace sm{
                 case ObjectType::BOX: {
                     unsigned id = runtime::operatorId(parse::TT_NOT);
                     Object op;
+                    Object self;
                     Function* op_ptr = nullptr;
                     ObjectVec_t args;
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, self, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator!' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.makeCall(op_ptr, args, tos);
+                    intp.makeCall(op_ptr, args, self);
                     return;
                 }
 
@@ -153,7 +155,7 @@ namespace sm{
                     ObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, tos, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary+' not applicable for ")
                             + runtime::errorString(intp, tos));
@@ -166,17 +168,18 @@ namespace sm{
                 case ObjectType::BOX: {
                     unsigned id = runtime::operatorId(parse::TT_PRE_PLUS);
                     Object op;
+                    Object self;
                     Function* op_ptr = nullptr;
                     ObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, self, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary+' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.makeCall(op_ptr, args, tos);
+                    intp.makeCall(op_ptr, args, self);
                     return;
                 }
 
@@ -210,7 +213,7 @@ namespace sm{
                     ObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, tos, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary-' not applicable for ")
                             + runtime::errorString(intp, tos));
@@ -223,17 +226,18 @@ namespace sm{
                 case ObjectType::BOX: {
                     unsigned id = runtime::operatorId(parse::TT_PRE_MINUS);
                     Object op;
+                    Object self;
                     Function* op_ptr = nullptr;
                     ObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
-                            || !runtime::callable(op, op_ptr)){
+                            || !runtime::callable(op, self, op_ptr)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'operator unary-' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.makeCall(op_ptr, args, tos);
+                    intp.makeCall(op_ptr, args, self);
                     return;
                 }
 
