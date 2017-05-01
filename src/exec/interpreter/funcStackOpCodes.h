@@ -127,14 +127,8 @@ namespace sm{
             if(runtime::callable(obj, self, func_ptr)){
                 intp.makeCall(func_ptr, args, self);
             } else {
-                /*if(obj.type == ObjectType::METHOD){
-                    Function* func_ptr = obj.m_ptr->func_ptr->f_ptr;
-                    intp.makeCall(func_ptr, args,
-                        self.type == ObjectType::NONE ? obj.m_ptr->self : self);
-                } else { */
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
-                std::string("cannot find 'operator(hhh)' in ") + runtime::errorString(intp, obj));
-                //}
+                std::string("cannot invoke 'operator()' in ") + runtime::errorString(intp, obj));
             }
         }
 
