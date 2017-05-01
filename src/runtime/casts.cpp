@@ -199,7 +199,8 @@ namespace sm{
             return true;
         }
 
-        bool callable(const Object& in, Function*& out){
+        /* self: is an output parameter! */
+        bool callable(const Object& in, Object& self, Function*& out){
             Object obj = in;
             _OcValue(obj);
 
@@ -217,16 +218,29 @@ namespace sm{
                     return false;
                 }
 
-                /*
-                case ObjectType::CLASS_INSTANCE:{
-                    if(runtime::find<ObjectType::CLASS_INSTANCE>(obj, obj, runtime::roundId)
-                            && obj.type == ObjectType::FUNCTION){
-                        out = obj.f_ptr;
+                case ObjectType::CLASS {
+                    Object func;
+                    if(runtime::find<ObjectType::BOX>(obj, func, runtime::newId)
+                            && func.type == ObjectType::FUNCTION){
+                        out = func.f_ptr;
+                        self = nullptr;
+                        self.type = ObjectType::INSTANCE_CREATOR;
+                        self.c_ptr = obj.c_ptr;
                         return true;
                     }
                     return false;
                 }
-                */
+
+                case ObjectType::CLASS_INSTANCE:{
+                    Object func;
+                    if(runtime::find<ObjectType::CLASS_INSTANCE>(obj, func, runtime::roundId)
+                            && func.type == ObjectType::FUNCTION){
+                        out = func.f_ptr;
+                        self = std::move(obj);
+                        return true;
+                    }
+                    return false;
+                }
 
                 default:
                     return false;

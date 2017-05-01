@@ -44,9 +44,11 @@ namespace sm{
 
         /*
          * Check if 'in' could be called as a function (if it has operator ())
-         * and, it 'callable' returns true, set out to a valid Function ptr.
+         * and, it 'callable' returns true, set out to a valid Function ptr
+         * and set self to the object to pass as 'this' to 'makeCall'
+         * (or 'callFunction'). 
         */
-        bool callable(const Object& in, Function*& out);
+        bool callable(const Object& in, Object& self, Function*& out);
     }
 }
 

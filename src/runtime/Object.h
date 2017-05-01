@@ -79,7 +79,7 @@ namespace sm{
         enum {
             // NONE is 'null'
             NONE, INTEGER, FLOAT, STRING, CLASS_INSTANCE, ENUM, CLASS, FUNCTION,
-            METHOD, BOX, WEAK_REFERENCE, STRONG_REFERENCE,
+            METHOD, BOX, WEAK_REFERENCE, STRONG_REFERENCE, INSTANCE_CREATOR,
         };
     }
 
