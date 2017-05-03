@@ -1,12 +1,12 @@
 # The Smudge Programming Language - Documentation
 The Smudge Documentation (aka **SmudgeDocs**) has two different sections based
-on who's directed to:
- - For the users (who develops programs in Smudge)
+on who's directed to (you'll choose later where to go):
+ - For the users (who develops in Smudge)
  - For the contributors
- The SmudgeDocs will be competed in
 
 ## How to read the `SmudgeDocs`
-The `SmudgeDocs` describe how do `classes`, `functions`, `vars` and `methods`work.
+The `SmudgeDocs` describe how do `classes`, `functions`, `vars` and
+`methods`work. The following paragraphs tell you how to read them.
 
 ### The Smudge Notation
 If you see something like `std.io!::FileStream::read()` and you can't understand
@@ -14,22 +14,24 @@ the meaning, _don't worry_! It will be soon clear, so keep reading.
 
 First of all, keep in mind that the **Smudge Notation** (aka the **S::N**)
 uses double colons (i.e the `::`) to divide different scopes where you couldn't
-use `.`, for example: `BOXNAME::CLASSNAME`, `CLASSNAME::METHOD` or both
-`BOXNAME::CLASSNAME::METHOD`.
+use `.`, for example: `BOXNAME::CLASSNAME`, `CLASSNAME::METHOD`
+or both `BOXNAME::CLASSNAME::METHOD`.
 
 We add `()` after each **function name** to distinguish it from vars and
 classes. Though it's not mandatory, you should also specify its arguments
 (especially for documentation purposes).
 
-Last, a _bang_ (i.e. `!`) should be added at the end of the names of the
-boxes which are part of the `SSL` (sometimes the interpreter could show
-box names like `std.lang!`, etc..).
+Last, an _esclamation mark_ (i.e. the `!`) should be added at the end of the
+names of the boxes which are part of the `SSL` (sometimes the interpreter
+could show box names like `std.lang!`, etc..).
 
 So, a class named `Foo` contained in box named `bar.baz` is called
 `bar.baz::Foo`, while the function named `open` in box `std.io` is called
 `std.io!::open()`.
 
 ### The SmudgeDocs Notation
+The **SmudgeDocs** uses the **S::N** notation anywhere but in the **titles**,
+where it's omitted the **box name** (and eventually the **class name**, too).
 
 
 
