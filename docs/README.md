@@ -1,8 +1,8 @@
 # The Smudge Programming Language - Documentation
 The Smudge Documentation (aka **SmudgeDocs**) has two different sections based
 on who's directed to (you'll choose later where to go):
- - For the users (who develops in Smudge)
- - For the contributors
+ - [For the users (who develops in Smudge)](#for-the-users)
+ - [For the contributors](#for-the-contributors)
 
 ## How to read the `SmudgeDocs`
 The `SmudgeDocs` describe how do `classes`, `functions`, `vars` and
