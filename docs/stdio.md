@@ -129,5 +129,3 @@ Values greater than 2 will be considered as **`END`**.
 ### Method `good ()`
 Checks if the stream can be read.
 **Returns** `true` if neither `EOF` nor errors occured, `false` otherwise.
-
-Copyright 2016-2017 Riccardo Musso
