@@ -32,7 +32,19 @@ So, a class named `Foo` contained in box named `bar.baz` is called
 ### The SmudgeDocs Notation
 The **SmudgeDocs** uses the **S::N** notation anywhere but in the **titles**,
 where it's omitted the **box name** (and eventually the **class name**, too).
+Also, all functions and methods will have **all** of their arguments listed.
 
+**Optional** arguments can be easily recognized because a `=` and their
+**default value** will follow the names.
+
+For example, `f1(a, b = 100, c = f2(a))` means `a function f1 which has three arguments`:
+ - `a`: which is "mandatory"
+ - `b`: which is optional, with as default value `100`
+ - `c`: which is optional, with as default value the result of the expression
+`f2(a)`
+
+### Congratulations
+Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
 
 
 ## For the users
