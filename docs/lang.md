@@ -8,7 +8,7 @@ stable and tested.
 
 ## Class `String`
 Class `String` provides all the methods invokable from a string object.
-This class is very special, becuase it's the only one of the **SSL** which
-has **not** a matching **native class** (with native I mean a C++ class).  
+This class is very special, because it's the **only one** of the SSL which
+has **not** a matching **native class** (with native I mean a C++ class).
 
 ### Function `idx([i = 0])`
