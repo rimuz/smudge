@@ -50,7 +50,7 @@ obtain its memory size (in bytes).
 
 #### Why UTF-8? And why now UTF-16, UTF-32, UCS-2 or other encondings?
 I've chosen UTF-8 because of its total compatibility with ASCII and because
-it's the cheaper in terms of memory: as I said, strings that use **only** or
+it's the cheapest in terms of memory: as I said, strings that use **only** or
 **mostly** ASCII will be up to twice longer in UTF-16 (and up to four times
 longer in UTF-32). Also:
 - Java and .NET use UTF-16
