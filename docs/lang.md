@@ -56,4 +56,19 @@ longer in UTF-32). Also:
 - Java and .NET use UTF-16
 - Golang and python use UTF-8
 
-### Function `idx([i = 0])`
+### Function `idx(i)`
+Calculates the index in **bytes** from the given index in **characters** `i`.
+If `i` is negative, the characters will be counted from the end.
+**Returns** the **value** of the index resulting or **null** if it cannot be
+calculated (e.g. in case of **out of index**).
+
+### Function `len()`
+**Returns** the **size** of the string expressed in **bytes**.
+
+### Function `count()`
+**Returns** the **length** of the string expressed in **characters**.
+
+### Function `empty()`
+**Returns** true if the string is empty, false otherwise.
+
+### Function `compare(str)`
