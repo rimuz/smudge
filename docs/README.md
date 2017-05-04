@@ -35,9 +35,10 @@ where it's omitted the **box name** (and eventually the **class name**, too).
 Also, all functions and methods will have **all** of their arguments listed.
 
 **Optional** arguments can be easily recognized because a `=` and their
-**default value** will follow the names.
+**default value** will follow the names. To make them more visible, we'll
+sorround them by brackets (i.e. `[]`).
 
-For example, `f1(a, b = 100, c = f2(a))` means `a function f1 which has three arguments`:
+For example, `f1(a[, b = 100[, c = f2(a)]])` means `a function f1 which has three arguments`:
  - `a`: which is "mandatory"
  - `b`: which is optional, with as default value `100`
  - `c`: which is optional, with as default value the result of the expression
@@ -45,7 +46,6 @@ For example, `f1(a, b = 100, c = f2(a))` means `a function f1 which has three ar
 
 ### Congratulations
 Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
-
 
 ## For the users
 - **Smudge for dummies**

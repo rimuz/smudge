@@ -52,7 +52,7 @@ Calls function **`next ()`** and sets **`obj`** to its return value. To make the
 ### Var `ln`
 A string containing a newline character (`\n`).
 
-### Function `open (path, mode = RW)`
+### Function `open (path[, mode = RW])`
 Opens a file stream and creates a **`FileStream`** instance to handle it.
 **`path`** is a string representation of the file path, while **`mode`**
 is an integer which value corresponds to the stream opening mode.
@@ -109,7 +109,7 @@ position.
 an integer.
 **Note**: if called after **`peek()`**, **`count()`** will always return 0.
 
-### Method `seek (off, pos = BEG)`
+### Method `seek (off[, pos = BEG])`
 Sets the position of the next character to be extracted to offset `off`
 relatively to `pos` that can have one of the following values:
 
