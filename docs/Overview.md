@@ -36,14 +36,16 @@ The import syntax is the following:
 ```
 import PATH.NAME = LABEL;
 ```
-`PATH` cannot contain spaces and instead of `/` it has `.`.
+`PATH` cannot contain spaces and instead of *slashes* (i.e. `/`) it has
+*dots* (i.e. `.`).
 `NAME` is the name of the file whose box has to be imported. **Note**: each box
 must have extension `.sm` (the **main box is an exception**), which is not part
 of `NAME`.
 `LABEL` is the name used by the current box as **link** to the imported box.
 
-The same **box** shouldn't be imported in different ways (i.e. different
-`PATH`s).
+The same box **shouldn't** be imported in different ways (i.e. **different
+`PATH`s**), but can be imported different times (with **different** link
+**names**, obviously).
 The **search directories** (i.e. the directories where the boxes are searched)
 can be shown with the option `-s` or `--show-paths`.
 Also, you can add new ones with the option `-D <directory>`. The first search
