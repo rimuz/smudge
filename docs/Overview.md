@@ -1,7 +1,3 @@
----
-title: SmDocs - Hello world
----
-
 # The Smudge Programming Language - Hello World
 
 Let's write a simple Hello World program!

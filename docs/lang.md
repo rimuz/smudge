@@ -1,7 +1,3 @@
----
-title: SmDocs - std.lang
----
-
 ## The Smudge Programming Language - Documentation of box `std.lang`
 The box `std.lang` is imported by default, because it contains all the methods
 of strings, lists and tuples.
