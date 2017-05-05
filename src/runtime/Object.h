@@ -134,27 +134,15 @@ namespace sm{
         */
         Object copyPointer() const;
         Object clone() const;
-        // Object makeWeak() const;
+
+        bool operator<(const Object& rhs) const;
+        bool operator<=(const Object& rhs) const;
+        bool operator>=(const Object& rhs) const;
+        bool operator==(const Object& rhs) const;
+        bool operator!=(const Object& rhs) const;
 
         /*
-         * set dict['name'] = this
-        */
-        void assign(ObjectDict_t& dict, unsigned name) /*const*/;
-
-        /*
-         * set dict['name'] = this only
-         * if dict['name'] doesn't exist yet.
-        */
-        bool assignFirst(ObjectDict_t& dict, unsigned name) /*const*/;
-
-        /*
-         * set dict['name'] = this only
-         * if dict['name'] alredy exists.
-        */
-        bool assignSecond(ObjectDict_t& dict, unsigned name) /*const*/;
-
-        /*
-         * Only if Object is a reference!!
+        * Only if Object is a reference!!
         */
         inline Object refGet() const;
         inline void refSet(Object obj) const;

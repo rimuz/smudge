@@ -137,45 +137,8 @@ namespace sm{
         return Object();
     }
 
-    /*Object Object::makeWeak() const{
-        Object obj;
-        obj.type = type;
-        obj.i = i;
-        obj.flags = WEAK_PTR_FLAG;
-        return obj;
-    }*/
-
-    void Object::assign(ObjectDict_t& dict, unsigned name){
-        dict[name] = *this;
-        if(type == CLASS_INSTANCE){
-            i_ptr->validate();
-        }
-    }
-
-    bool Object::assignFirst(ObjectDict_t& dict, unsigned name){
-        if(dict.find(name) != dict.end()){
-            return false;
-        }
-
-        dict[name] = *this;
-        if(type == CLASS_INSTANCE){
-            i_ptr->validate();
-        }
-
-        return true;
-    }
-
-    bool Object::assignSecond(ObjectDict_t& dict, unsigned name){
-        if(dict.find(name) == dict.end()){
-            return false;
-        }
-
-        dict[name] = *this;
-        if(type == CLASS_INSTANCE){
-            i_ptr->validate();
-        }
-
-        return true;
+    int Object::compare(const Object& rhs) const{
+        //TODO!!!!!!!!
     }
 
     Object::~Object(){
