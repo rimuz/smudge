@@ -201,7 +201,7 @@ namespace sm{
         }
 
         bool of_type(const Object& in, Class* type){
-            return in.type == ObjectType::CLASS_INSTANCE && in.c_ptr == type;
+            return in.type == ObjectType::CLASS_INSTANCE && in.i_ptr->base == type;
         }
 
         /* self: is an output parameter! */
