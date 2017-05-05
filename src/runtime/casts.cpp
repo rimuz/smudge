@@ -200,6 +200,10 @@ namespace sm{
             return true;
         }
 
+        bool of_type(const Object& in, Class* type){
+            return in.type == ObjectType::CLASS_INSTANCE && in.c_ptr == type;
+        }
+
         /* self: is an output parameter! */
         bool callable(const Object& in, Object& self, Function*& out){
             Object obj = in;
