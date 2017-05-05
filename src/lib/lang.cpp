@@ -201,7 +201,7 @@ namespace sm{
         namespace StringClass {
             _NativeFunc(idx){
                 if(args.empty() || args[0].type != ObjectType::INTEGER)
-                    return makeInteger(0);
+                    return Object();
                 integer_t i = args[0].i;
                 String::iterator begin = self.s_ptr->str.begin(),
                     end = self.s_ptr->str.end();
@@ -211,7 +211,7 @@ namespace sm{
                 } else if(i < 0){
                     integer_t n = self.s_ptr->str.uSize() + i;
                     if(n <= 0)
-                        return makeInteger(0);
+                        return Object();
                     String::iterator ch_it = String::nthChar(begin, end, n);
                     return makeInteger(std::distance(begin, ch_it));
                 }
@@ -611,15 +611,41 @@ namespace sm{
             _BindMethod(List, to_string, 0);
 
             _NativeMethod(List::bracing, 1){
-                return Object();
+                if(vec.empty() || args[0].type != ObjectType::INTEGER)
+                    return Object();
+                integer_t i = args[0].i;
+                integer_t sz = vec.size();
+                if(i > 0){
+                    if(i >= sz)
+                        return Object();
+                } else if(i < 0){
+                    i += sz;
+                    if(i < 0)
+                        return Object();
+                }
+                return vec[i];
             }
 
             _NativeMethod(List::plus, 1){
-                return Object();
+                if(!runtime::type_of(args[0], cList))
+                    return Object();
+                Object newVec = makeList(intp.rt->gc, false, vec);
+                ObjectVec_t& vec2 = reinterpret_cast<List>(args[0].i_ptr)->vec;
+                ObjectVec_t& out = reinterpret_cast<List>(newVec.i_ptr)->vec;
+                out.insert(out.end(), vec2.cbegin(), vec3.cbegin());
+                return newVec;
             }
 
             _NativeMethod(List::bitor_op, 1){
-                return Object();
+                if(!runtime::type_of(args[0], cList))
+                    return Object();
+                Object newVec = makeList(intp.rt->gc, false, vec);
+                ObjectVec_t& vec2 = reinterpret_cast<List>(args[0].i_ptr)->vec;
+                ObjectVec_t& out = reinterpret_cast<List>(newVec.i_ptr)->vec;
+                for(const Object& obj : vec2){
+                    // TODO tra poco!!!!!!
+                }
+                return newVec;
             }
 
             _NativeMethod(List::bitand_op, 1){
