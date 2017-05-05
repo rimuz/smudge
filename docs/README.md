@@ -1,3 +1,7 @@
+---
+title: SmDocs
+---
+
 # The Smudge Programming Language - Documentation
 The Smudge Documentation (aka **SmudgeDocs**) has two different sections based
 on who's directed to (you'll choose later where to go):

@@ -1,3 +1,7 @@
+---
+title: SmDocs: std.io
+---
+
 ## The Smudge Programming Language - Documentation of box `std.io`
 Usually imported as `io`, box `std.io` allows you to handle console and file I/O.
 
