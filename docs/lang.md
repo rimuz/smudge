@@ -63,7 +63,7 @@ If `i` is negative, the characters will be counted from the end.
 calculated (e.g. in case of **out of index**).
 
 ### Function `len()`
-**Returns** the **size** of the string expressed in **bytes**.
+**Returns** the **size** of the sring expressed in **bytes**.
 
 ### Function `count()`
 **Returns** the **length** of the string expressed in **characters**.
