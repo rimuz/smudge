@@ -41,14 +41,16 @@ namespace sm{
         string_t errorString(exec::Interpreter& intp, const Object& in);
 
         bool implicitToBool(const Object& in);
+        bool of_type(const Object& in, Class* type);
 
         /*
          * Check if 'in' could be called as a function (if it has operator ())
          * and, it 'callable' returns true, set out to a valid Function ptr
          * and set self to the object to pass as 'this' to 'makeCall'
-         * (or 'callFunction'). 
+         * (or 'callFunction').
         */
         bool callable(const Object& in, Object& self, Function*& out);
+
     }
 }
 
