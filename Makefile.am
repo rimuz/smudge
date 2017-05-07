@@ -16,6 +16,6 @@ smudge_SOURCES = src/compile/compiler/Compiler.cpp \
 			src/runtime/casts.cpp \
 			src/runtime/gc.cpp \
 			src/runtime/id.cpp \
-			src/runtime/utils.cpp \
+			src/runtime/utils.cpp 
 			src/utils/unicode/utf8.cpp \
 			src/main.cpp
