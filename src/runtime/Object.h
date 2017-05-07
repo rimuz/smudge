@@ -135,12 +135,6 @@ namespace sm{
         Object copyPointer() const;
         Object clone() const;
 
-        bool operator<(const Object& rhs) const;
-        bool operator<=(const Object& rhs) const;
-        bool operator>=(const Object& rhs) const;
-        bool operator==(const Object& rhs) const;
-        bool operator!=(const Object& rhs) const;
-
         /*
         * Only if Object is a reference!!
         */
