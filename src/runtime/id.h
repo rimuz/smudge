@@ -63,6 +63,8 @@ namespace sm {
             return false;
         }
 
+        bool find_any(const Object&, Object&, unsigned id);
+
         //  Specializations of bool find()
         template <>
         bool find<ObjectType::CLASS_INSTANCE>(const Object& in, Object& out, unsigned id);
