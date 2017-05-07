@@ -137,10 +137,6 @@ namespace sm{
         return Object();
     }
 
-    int Object::compare(const Object& rhs) const{
-        //TODO!!!!!!!!
-    }
-
     Object::~Object(){
         if(type == CLASS_INSTANCE){
             i_ptr->release();
