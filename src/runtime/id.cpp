@@ -35,6 +35,21 @@ namespace sm{
             }
         }
 
+        bool find_any(const Object& in, Object& out, unsigned id){
+            switch(in.type){
+                case ObjectType::BOX:
+                    return find<ObjectType::BOX>(in, out, id);
+                case ObjectType::CLASS_INSTANCE:
+                    return find<ObjectType::CLASS_INSTANCE>(in, out, id);
+                case ObjectType::ENUM:
+                    return find<ObjectType::ENUM>(in, out, id);
+                case ObjectType::STRING:
+                    return find<ObjectType::STRING>(in, out, id);
+                default:
+                    return false;
+            }
+        }
+
         template <>
         bool find<ObjectType::CLASS_INSTANCE>(const Object& in, Object& out, unsigned id){
             ObjectDict_t::const_iterator it = in.i_ptr->objects.find(id);
