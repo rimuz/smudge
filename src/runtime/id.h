@@ -53,7 +53,7 @@ namespace sm {
         };
 
         inline constexpr unsigned operatorId (enum_t tokenType){
-            return operatorIds[tokenType - parse::TT_OPERATORS_START];
+            return operatorIds[tokenType - parse::TT_NORMAL_OPERATORS_START];
         }
 
         unsigned genOrdinaryId(Runtime_t&, const string_t&);
