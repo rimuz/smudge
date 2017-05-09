@@ -98,7 +98,7 @@
             } \
             Object instance = std::move(tos1); \
             intp.exprStack.pop_back(); \
-            intp.makeCall(op_ptr, args, tos1); \
+            intp.makeCall(op_ptr, args, instance); \
             return; \
         } \
         case ObjectType::BOX: { \
