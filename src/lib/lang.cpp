@@ -21,8 +21,10 @@
 
 #include "utils/unicode/utf8.h"
 #include "lib/stdlib.h"
+
 #include "runtime/casts.h"
 #include "runtime/Object.h"
+#include "runtime/utils.h"
 
 namespace sm{
     namespace lib{
@@ -174,10 +176,10 @@ namespace sm{
             });
 
             cList = setClass(rt, box, "List", {
-                _MethodTuple(ListClass, bracing),
-                _MethodTuple(ListClass, plus),
-                _MethodTuple(ListClass, bitor_op),
-                _MethodTuple(ListClass, bitand_op),
+                _OpTuple(ListClass, parse::TT_SQUARE_OPEN, bracing),
+                _OpTuple(ListClass, parse::TT_PLUS, plus),
+                _OpTuple(ListClass, parse::TT_OR, bitor_op),
+                _OpTuple(ListClass, parse::TT_AND, bitand_op),
 
                 _MethodTuple(ListClass, reserve),
                 _MethodTuple(ListClass, resize),
@@ -623,27 +625,33 @@ namespace sm{
                     if(i < 0)
                         return Object();
                 }
-                return vec[i];
+
+                Object ref;
+                ref.type = ObjectType::STRONG_REFERENCE;
+                ref.o_ptr = &vec[i];
+                return ref;
             }
 
             _NativeMethod(List::plus, 1){
-                if(!runtime::type_of(args[0], cList))
+                if(!runtime::of_type(args[0], cList))
                     return Object();
                 Object newVec = makeList(intp.rt->gc, false, vec);
-                ObjectVec_t& vec2 = reinterpret_cast<List>(args[0].i_ptr)->vec;
-                ObjectVec_t& out = reinterpret_cast<List>(newVec.i_ptr)->vec;
-                out.insert(out.end(), vec2.cbegin(), vec3.cbegin());
+                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
+                ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
+                out.insert(out.end(), vec2.cbegin(), vec2.cend());
                 return newVec;
             }
 
             _NativeMethod(List::bitor_op, 1){
-                if(!runtime::type_of(args[0], cList))
+                if(!runtime::of_type(args[0], cList))
                     return Object();
                 Object newVec = makeList(intp.rt->gc, false, vec);
-                ObjectVec_t& vec2 = reinterpret_cast<List>(args[0].i_ptr)->vec;
-                ObjectVec_t& out = reinterpret_cast<List>(newVec.i_ptr)->vec;
+                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
+                ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
                 for(const Object& obj : vec2){
-                    // TODO tra poco!!!!!!
+                    if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) == out.end()){
+                        out.push_back(obj);
+                    }
                 }
                 return newVec;
             }
