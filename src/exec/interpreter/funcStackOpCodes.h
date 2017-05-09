@@ -128,13 +128,59 @@ namespace sm{
                 intp.makeCall(func_ptr, args, self);
             } else {
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
-                std::string("cannot invoke 'operator()' in ") + runtime::errorString(intp, obj));
+                std::string("cannot invoke 'operator()()' in ") + runtime::errorString(intp, obj));
             }
         }
 
         _OcFunc(PerformBracing){
-            // TODO
-            addr += 3;
+            unsigned param = (*++addr << 8) | *++addr;
+            ++addr;
+
+            ObjectVec_t::iterator end = intp.exprStack.end();
+            Object tosX = *(end - (param+1));
+            Function* func_ptr;
+
+            ObjectVec_t args(end - param, end);
+            intp.exprStack.erase(end - (param+1), end);
+
+            for(Object& obj : args){
+                if(obj.type == ObjectType::WEAK_REFERENCE){
+                    obj = obj.refGet();
+                } else if(obj.type == ObjectType::STRONG_REFERENCE){
+                    obj.type = ObjectType::WEAK_REFERENCE;
+                }
+            }
+
+            Object self;
+            Object func;
+            _OcValue(tosX);
+
+            switch(tosX.type){
+                case ObjectType::BOX:
+                    if(runtime::find<ObjectType::BOX>(tosX, func,
+                            runtime::operatorId(parse::TT_SQUARE_OPEN)))
+                        break;
+
+                case ObjectType::CLASS_INSTANCE:
+                    if(runtime::find<ObjectType::CLASS_INSTANCE>(tosX, func,
+                            runtime::operatorId(parse::TT_SQUARE_OPEN))){
+                        self = tosX;
+                        break;
+                    }
+
+                default:
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("cannot invoke 'operator[]()' in ")
+                        + runtime::errorString(intp, tosX));
+            }
+
+            if(runtime::callable(func, self, func_ptr)){
+                intp.makeCall(func_ptr, args, self);
+            } else {
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("cannot invoke 'operator[]()' in ")
+                    + runtime::errorString(intp, tosX));
+            }
         }
 
         _OcFunc(Import){
