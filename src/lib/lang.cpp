@@ -657,7 +657,17 @@ namespace sm{
             }
 
             _NativeMethod(List::bitand_op, 1){
-                return Object();
+                if(!runtime::of_type(args[0], cList))
+                    return Object();
+                Object newVec = makeList(intp.rt->gc, false, vec);
+                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
+                ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
+                for(const Object& obj : vec2){
+                    if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) != out.end()){
+                        out.push_back(obj);
+                    }
+                }
+                return newVec;
             }
 
             _NativeMethod(List::reserve, 1){
