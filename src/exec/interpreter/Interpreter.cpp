@@ -165,6 +165,11 @@ namespace sm{
 
             if(fn->native){
                 Object ret = reinterpret_cast<NativeFuncPtr_t>(fn->address)(*this, fn, self, args);
+                if(ret.type == ObjectType::WEAK_REFERENCE){
+                    ret = ret.refGet();
+                } else if(ret.type == ObjectType::STRONG_REFERENCE){
+                    ret.type = ObjectType::WEAK_REFERENCE;
+                }
                 exprStack.emplace_back(std::move(ret));
             } else {
                 funcStack.emplace_back();
