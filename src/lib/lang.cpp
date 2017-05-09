@@ -659,11 +659,11 @@ namespace sm{
             _NativeMethod(List::bitand_op, 1){
                 if(!runtime::of_type(args[0], cList))
                     return Object();
-                Object newVec = makeList(intp.rt->gc, false, vec);
+                Object newVec = makeList(intp.rt->gc, false, {});
                 ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
                 ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
                 for(const Object& obj : vec2){
-                    if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) != out.end()){
+                    if(std::find_if(vec.begin(), vec.end(), runtime::Equal(intp, obj)) != vec.end()){
                         out.push_back(obj);
                     }
                 }
