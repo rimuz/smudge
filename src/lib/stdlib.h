@@ -38,6 +38,9 @@
     sm::Function* thisFn, const sm::Object& self, const sm::ObjectArray_t<nArgs>& args)
 #define _BindMethod(ClassName, FuncName, nArgs) \
     _NativeFunc(FuncName){ \
+        if(!runtime::of_type(self, c##ClassName)) \
+            intp.rt->sources.printStackTrace(*intp.rt, error::FATAL_ERROR, \
+                "called native method to wrong object"); \
         sm::ObjectArray_t<nArgs> newArgs; \
         size_t argsSize = args.size(); \
         if(nArgs){ \
