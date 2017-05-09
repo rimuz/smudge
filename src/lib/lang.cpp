@@ -88,6 +88,7 @@ namespace sm{
                 _NativeMethod(plus, 1);
                 _NativeMethod(bitor_op, 1);
                 _NativeMethod(bitand_op, 1);
+                _NativeMethod(equal_op, 1);
 
                 _NativeMethod(reserve, 1);
                 _NativeMethod(resize, 1);
@@ -109,6 +110,7 @@ namespace sm{
             _NativeFunc(plus);
             _NativeFunc(bitor_op);
             _NativeFunc(bitand_op);
+            _NativeFunc(equal_op);
 
             _NativeFunc(reserve);
             _NativeFunc(resize);
@@ -180,6 +182,7 @@ namespace sm{
                 _OpTuple(ListClass, parse::TT_PLUS, plus),
                 _OpTuple(ListClass, parse::TT_OR, bitor_op),
                 _OpTuple(ListClass, parse::TT_AND, bitand_op),
+                _OpTuple(ListClass, parse::TT_EQUAL, equal_op),
 
                 _MethodTuple(ListClass, reserve),
                 _MethodTuple(ListClass, resize),
@@ -596,6 +599,7 @@ namespace sm{
             _BindMethod(List, plus, 1);
             _BindMethod(List, bitor_op, 1);
             _BindMethod(List, bitand_op, 1);
+            _BindMethod(List, equal_op, 1);
 
             _BindMethod(List, reserve, 1);
             _BindMethod(List, resize, 1);
@@ -668,6 +672,10 @@ namespace sm{
                     }
                 }
                 return newVec;
+            }
+
+            _NativeMethod(List::equal_op, 1){
+                return Object();
             }
 
             _NativeMethod(List::reserve, 1){
