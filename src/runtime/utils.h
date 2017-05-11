@@ -37,15 +37,11 @@ namespace sm {
         template <enum_t TT>
         class Comparator {
         private:
-            static constexpr unsigned ID = runtime::operatorId(TT);
-
             exec::Interpreter& intp;
             Object self;
             Function* fn;
             unsigned char mode;
 
-            template <typename Tp>
-            inline bool compare(Tp lhs, Tp rhs) const noexcept;
         public:
             Comparator(exec::Interpreter&, Object);
             Comparator(const Comparator<TT>&) = default;
@@ -56,7 +52,29 @@ namespace sm {
             Comparator<TT>& operator=(const Comparator<TT>&) = default;
             Comparator<TT>& operator=(Comparator<TT>&&) = default;
 
+            template <typename Tp>
+            static bool compare(Tp lhs, Tp rhs) noexcept;
+
             ~Comparator() = default;
+
+            static constexpr unsigned ID = runtime::operatorId(TT);
+        };
+
+        template <enum_t TT>
+        class BinaryComparator {
+        private:
+            exec::Interpreter& intp;
+        public:
+            BinaryComparator(exec::Interpreter&);
+            BinaryComparator(const BinaryComparator<TT>&) = default;
+            BinaryComparator(BinaryComparator<TT>&&) = default;
+
+            BinaryComparator<TT>& operator=(const BinaryComparator<TT>&) = default;
+            BinaryComparator<TT>& operator=(BinaryComparator<TT>&&) = default;
+
+            bool operator() (const Object& lhs, const Object& rhs) const noexcept;
+
+            ~BinaryComparator() = default;
         };
 
         using Equal = Comparator<parse::TT_EQUAL>;
@@ -65,6 +83,13 @@ namespace sm {
         using GreaterOrEqual = Comparator<parse::TT_GREATER_OR_EQUAL>;
         using LessOrEqual = Comparator<parse::TT_LESS_OR_EQUAL>;
         using NotEqual = Comparator<parse::TT_NOT_EQUAL>;
+
+        using BinaryEqual = BinaryComparator<parse::TT_EQUAL>;
+        using BinaryGreater = BinaryComparator<parse::TT_GREATER>;
+        using BinaryLess = BinaryComparator<parse::TT_LESS>;
+        using BinaryGreaterOrEqual = BinaryComparator<parse::TT_GREATER_OR_EQUAL>;
+        using BinaryLessOrEqual = BinaryComparator<parse::TT_LESS_OR_EQUAL>;
+        using BinaryNotEqual = BinaryComparator<parse::TT_NOT_EQUAL>;
 
         template<enum_t TT>
         Comparator<TT>::Comparator(exec::Interpreter& _intp, Object _self)
@@ -170,55 +195,139 @@ namespace sm {
                 }
 
                 default:
+                    return false;
+            }
+        }
+
+        template <enum_t TT>
+        BinaryComparator<TT>::BinaryComparator(exec::Interpreter& _intp)
+            : intp(_intp) {}
+
+        template <enum_t TT>
+        bool BinaryComparator<TT>::operator() (const Object& lhs, const Object& rhs) const noexcept {
+            switch(lhs.type){
+                case ObjectType::INTEGER: {
+                    switch(rhs.type){
+                        case ObjectType::INTEGER:
+                            return Comparator<TT>::template compare<integer_t>(lhs.i, rhs.i);
+                        case ObjectType::FLOAT:
+                            return Comparator<TT>::template compare<integer_t>(lhs.i, rhs.f);
+                        default:
+                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                                std::string("can't perform operator") +
+                                parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
+                                + "() between <int> and " + runtime::errorString(intp, rhs));
+                    }
+                }
+
+                case ObjectType::FLOAT: {
+                    switch(rhs.type){
+                        case ObjectType::INTEGER:
+                            return Comparator<TT>::template compare<float_t>(lhs.f, rhs.i);
+                        case ObjectType::FLOAT:
+                            return Comparator<TT>::template compare<float_t>(lhs.f, rhs.f);
+                        default:
+                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                                std::string("can't perform operator") +
+                                parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
+                                + "() between <float> and " + runtime::errorString(intp, rhs));
+                    }
+                }
+
+                case ObjectType::STRING: {
+                    if(rhs.type == ObjectType::STRING)
+                        return Comparator<TT>::template compare<const String&>(lhs.s_ptr->str, rhs.s_ptr->str);
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
-                        std::string("compare mode ") + std::to_string(TT) +
-                        " not supported by sm::runtime::Comparator (err #4)");
+                        std::string("can't perform operator") +
+                        parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
+                        + "() between <string> and " + runtime::errorString(intp, rhs));
+                }
+
+                case ObjectType::BOX: {
+                    Object func;
+                    Object self;
+                    Function* fn;
+
+                    if(!runtime::find<ObjectType::BOX>(lhs, func, Comparator<TT>::ID)){
+                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            std::string("can't find operator") +
+                            parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
+                            + "() in " + runtime::errorString(intp, lhs));
+                    } else if(!runtime::callable(func, self, fn)){
+                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            std::string("operator") +
+                            parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
+                            + "() is not a function in " + runtime::errorString(intp, lhs));
+                    }
+
+                    return runtime::implicitToBool(intp.callFunction(fn, {rhs}, self, true));
+                }
+
+                case ObjectType::CLASS_INSTANCE: {
+                    Object func;
+                    Object self = lhs;
+                    Function* fn;
+
+                    if(!runtime::find<ObjectType::CLASS_INSTANCE>(lhs, func, Comparator<TT>::ID)){
+                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            std::string("can't find operator") +
+                            parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
+                            + "() in " + runtime::errorString(intp, lhs));
+                    } else if(!runtime::callable(func, self, fn)){
+                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            std::string("operator") +
+                            parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
+                            + "() is not a function in " + runtime::errorString(intp, lhs));
+                    }
+
+                    return runtime::implicitToBool(intp.callFunction(fn, {rhs}, self, true));
+                }
+
+                default:
                     return false;
             }
         }
 
         template <enum_t TT>
         template <typename Tp>
-        inline bool Comparator<TT>::compare(Tp lhs, Tp rhs) const noexcept{
-            intp.rt->sources.printStackTrace(intp, error::ERROR,
-                std::string("operator (value = ") + std::to_string(TT) +
-                ") not supported by sm::runtime::Comparator (err #5)");
+        bool Comparator<TT>::compare(Tp lhs, Tp rhs) noexcept{
+            static_assert(sizeof(Tp) == 0, "Token Type not supported by Comparator");
             return false;
         }
 
         template <>
         template <typename Tp>
-        inline bool Comparator<parse::TT_EQUAL>::compare(Tp lhs, Tp rhs) const noexcept{
+        bool Comparator<parse::TT_EQUAL>::compare(Tp lhs, Tp rhs) noexcept{
             return lhs == rhs;
         }
 
         template <>
         template <typename Tp>
-        inline bool Comparator<parse::TT_GREATER>::compare(Tp lhs, Tp rhs) const noexcept{
+        bool Comparator<parse::TT_GREATER>::compare(Tp lhs, Tp rhs) noexcept{
             return lhs > rhs;
         }
 
         template <>
         template <typename Tp>
-        inline bool Comparator<parse::TT_GREATER_OR_EQUAL>::compare(Tp lhs, Tp rhs) const noexcept{
+        bool Comparator<parse::TT_GREATER_OR_EQUAL>::compare(Tp lhs, Tp rhs) noexcept{
             return lhs >= rhs;
         }
 
         template <>
         template <typename Tp>
-        inline bool Comparator<parse::TT_LESS>::compare(Tp lhs, Tp rhs) const noexcept{
+        bool Comparator<parse::TT_LESS>::compare(Tp lhs, Tp rhs) noexcept{
             return lhs < rhs;
         }
 
         template <>
         template <typename Tp>
-        inline bool Comparator<parse::TT_LESS_OR_EQUAL>::compare(Tp lhs, Tp rhs) const noexcept{
+        bool Comparator<parse::TT_LESS_OR_EQUAL>::compare(Tp lhs, Tp rhs) noexcept{
             return lhs <= rhs;
         }
 
         template <>
         template <typename Tp>
-        inline bool Comparator<parse::TT_NOT_EQUAL>::compare(Tp lhs, Tp rhs) const noexcept{
+        bool Comparator<parse::TT_NOT_EQUAL>::compare(Tp lhs, Tp rhs) noexcept{
             return lhs != rhs;
         }
     }
