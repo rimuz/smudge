@@ -91,8 +91,8 @@ namespace sm {
         using BinaryLessOrEqual = BinaryComparator<parse::TT_LESS_OR_EQUAL>;
         using BinaryNotEqual = BinaryComparator<parse::TT_NOT_EQUAL>;
 
-        template <SignedInt, OutputInt, SizeType>
-        bool findIndex(SignedInt idx, OutputInt& out, SizeType size) constexpr noexcept;
+        template <typename SignedInt, typename OutputInt, typename SizeType>
+        constexpr bool findIndex(SignedInt idx, OutputInt& out, SizeType size) noexcept;
 
         template<enum_t TT>
         Comparator<TT>::Comparator(exec::Interpreter& _intp, Object _self)
@@ -334,20 +334,13 @@ namespace sm {
             return lhs != rhs;
         }
 
-        template <SignedInt, OutputInt, SizeType>
-        bool findIndex(SignedInt idx, OutputInt& out, SizeType size) constexpr noexcept{
-            SignedInt i = static_cast<SignedInt>(size));
-            if(idx < 0){
-                out = i += idx;
-                if(i < 0)
-                    return false;
-                return true;
-            } else {
-                if(idx >= i)
-                    return false;
-                out = idx;
-            }
-            return true;
+        template <typename SignedInt, typename OutputInt, typename SizeType>
+        constexpr bool findIndex(SignedInt idx, OutputInt& out, SizeType size) noexcept{
+            return (idx < 0)
+                    ? ((out = static_cast<SignedInt>(size) + idx) < 0)
+                        ? false : true
+                    : ((out = idx) >= static_cast<SignedInt>(size))
+                        ? false : true;
         }
     }
 }
