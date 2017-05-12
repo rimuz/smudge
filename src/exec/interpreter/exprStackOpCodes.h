@@ -173,7 +173,12 @@ namespace sm{
                     Class* base = obj.i_ptr->base;
                     it = base->objects.find(id);
                     if(it != base->objects.end()){
-                        ref = makeMethod(obj, &it->second);
+                        if(it->second.type == ObjectType::FUNCTION){
+                            ref = makeMethod(obj, &it->second);
+                        } else {
+                            ref.o_ptr = &it->second;
+                            ref.type = ObjectType::WEAK_REFERENCE;
+                        }
                         return;
                     }
 
