@@ -1,4 +1,4 @@
-AC_INIT([smudge], [0.1], [therthem7@gmail.com])
+AC_INIT([smudge], [0.1], [smudge.language@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 : ${CXXFLAGS=""}
 AC_PROG_CXX
