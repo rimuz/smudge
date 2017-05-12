@@ -312,22 +312,35 @@ namespace sm{
             }
 
             _NativeFunc(mul){
-                integer_t i;
-                if(args.empty() || args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
+                if(args.empty() || args[0].type != ObjectType::INTEGER)
                     return Object();
+                integer_t i = args[0].i;
 
                 Object str0 = makeString(self.s_ptr->str);
                 size_t sz = str0.s_ptr->str.size();
-                str0.s_ptr->str.resize(sz * i);
-                if(i == 0)
+                if(i == 0) {
                     return str0;
+                } else if(i < 0){
+                    i *= -1;
+                    str0.s_ptr->str.resize(sz * i);
 
-                String::iterator beg = str0.s_ptr->str.begin();
-                String::iterator end = beg + sz;
-                String::iterator curr = end;
+                    String::reverse_iterator beg = self.s_ptr->str.rbegin();
+                    String::reverse_iterator end = self.s_ptr->str.rend();
+                    String::iterator curr = str0.s_ptr->str.begin();
 
-                for(integer_t j = 1; j != i; ++j){
-                    curr = std::copy(beg, end, curr);
+                    for(integer_t j = 0; j != i; ++j){
+                        curr = std::copy(beg, end, curr);
+                    }
+                } else {
+                    str0.s_ptr->str.resize(sz * i);
+
+                    String::iterator beg = str0.s_ptr->str.begin();
+                    String::iterator end = str0.s_ptr->str.begin() + sz;
+                    String::iterator curr = end;
+
+                    for(integer_t j = 1; j != i; ++j){
+                        curr = std::copy(beg, end, curr);
+                    }
                 }
                 return str0;
             }
@@ -511,11 +524,7 @@ namespace sm{
                 integer_t size = self.s_ptr->str.uSize();
                 integer_t start = args[0].i;
 
-                if(start < 0){
-                    start += size;
-                    if(start < 0)
-                        return Object();
-                } else if(start >= size)
+                if(!runtime::findIndex(start, start, size))
                     return Object();
 
                 if(argc >= 2){
@@ -621,14 +630,9 @@ namespace sm{
                     return Object();
                 integer_t i = args[0].i;
                 integer_t sz = vec.size();
-                if(i > 0){
-                    if(i >= sz)
-                        return Object();
-                } else if(i < 0){
-                    i += sz;
-                    if(i < 0)
-                        return Object();
-                }
+
+                if(!runtime::findIndex(i, i, sz))
+                    return Object();
 
                 Object ref;
                 ref.type = ObjectType::STRONG_REFERENCE;
@@ -675,27 +679,68 @@ namespace sm{
             }
 
             _NativeMethod(List::equal_op, 1){
-                return Object();
+                if(!runtime::of_type(args[0], cList))
+                    return makeFalse();
+                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
+                if(vec.size() != vec2.size())
+                    return makeFalse();
+                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                    ? makeTrue() : makeFalse();
             }
 
             _NativeMethod(List::reserve, 1){
+                if(args[0].type != ObjectType::INTEGER)
+                    return Object();
+                vec.reserve(args[0].i);
                 return Object();
             }
 
             _NativeMethod(List::resize, 1){
+                if(args[0].type != ObjectType::INTEGER)
+                    return Object();
+                vec.resize(args[0].i);
                 return Object();
             }
 
             _NativeMethod(List::pop, 0){
+                if(!vec.empty()){
+                    Object back = std::move(vec.back());
+                    vec.pop_back();
+                    return back;
+                }
                 return Object();
             }
 
             _NativeMethod(List::push, 1){
+                vec.push_back(args[0]);
                 return Object();
             }
 
             _NativeMethod(List::clone, 2){
-                return Object();
+                integer_t start = 0;
+                integer_t size = vec.size();
+                integer_t end = size;
+
+                if(args[0].type == ObjectType::INTEGER){
+                    start = args[0].i;
+                    if(!runtime::findIndex(start, start, size))
+                        return Object();
+                } else if(args[0].type != ObjectType::NONE)
+                    return Object();
+
+                if(args[1].type == ObjectType::INTEGER){
+                    end = args[1].i;
+                    if(end < 0){
+                        end += size;
+                        if(end < 0 || end < start)
+                            return Object();
+                    } else if(end > size)
+                        return Object();
+                } else if(args[0].type != ObjectType::NONE)
+                    return Object();
+
+                return makeList(intp.rt->gc, false,
+                    ObjectVec_t(vec.cbegin() + start, vec.cend() + end));
             }
 
             _NativeMethod(List::tuple, 2){
