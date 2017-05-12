@@ -206,12 +206,13 @@ namespace sm{
 
         /* self: is an output parameter! */
         bool callable(const Object& in, Object& self, Function*& out){
+
             Object obj = in;
             _OcValue(obj);
 
             while (obj.type == ObjectType::METHOD){
-                obj = *obj.m_ptr->func_ptr;
                 self = obj.m_ptr->self;
+                obj = *obj.m_ptr->func_ptr;
             }
 
             switch(obj.type){
