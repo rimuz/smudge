@@ -40,7 +40,8 @@
     _NativeFunc(FuncName){ \
         if(!runtime::of_type(self, c##ClassName)) \
             intp.rt->sources.printStackTrace(*intp.rt, error::FATAL_ERROR, \
-                "called native method from incompatible object"); \
+                "called native method '" #FuncName "' from an incompatible " \
+                "object to native class '" #ClassName "'"); \
         sm::ObjectArray_t<nArgs> newArgs; \
         size_t argsSize = args.size(); \
         if(nArgs){ \
