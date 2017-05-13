@@ -740,7 +740,7 @@ namespace sm{
                     return Object();
 
                 return makeList(intp.rt->gc, false,
-                    ObjectVec_t(vec.cbegin() + start, vec.cend() + end));
+                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
             }
 
             _NativeMethod(List::tuple, 2){
