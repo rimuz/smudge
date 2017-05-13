@@ -55,6 +55,7 @@ namespace sm{
             _NativeFunc(u_getc);
             _NativeFunc(contains);
             _NativeFunc(bytes);
+            _NativeFunc(chars);
             _NativeFunc(join);
             _NativeFunc(ends_with);
             _NativeFunc(starts_with);
@@ -157,6 +158,7 @@ namespace sm{
                 _MethodTuple(StringClass, u_getc),
                 _MethodTuple(StringClass, contains),
                 _MethodTuple(StringClass, bytes),
+                _MethodTuple(StringClass, chars),
                 _MethodTuple(StringClass, join),
                 _MethodTuple(StringClass, ends_with),
                 _MethodTuple(StringClass, starts_with),
@@ -228,8 +230,36 @@ namespace sm{
             }
 
             _NativeFunc(count){
-                // TODO!! Support for begin and end given!!
-                return makeInteger(self.s_ptr->str.uSize());
+                size_t argc = args.size();
+
+                integer_t start = 0;
+                integer_t size = self.s_ptr->str.size();
+                integer_t end = size;
+
+                if(argc != 0){
+                    if(args[0].type == ObjectType::INTEGER){
+                        start = args[0].i;
+                        if(!runtime::findIndex(start, start, size))
+                            return Object();
+                    } else if(args[0].type != ObjectType::NONE)
+                        return Object();
+                }
+
+                if(argc > 1){
+                    if(args[1].type == ObjectType::INTEGER){
+                        end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
+                            end = size;
+                    } else if(args[0].type != ObjectType::NONE)
+                        return Object();
+                }
+
+                String::const_iterator beg = self.s_ptr->str.begin();
+                return makeInteger(String::uSize(beg + start, beg + end));
             }
 
             _NativeFunc(empty){
@@ -442,6 +472,11 @@ namespace sm{
             }
 
             _NativeFunc(bytes){
+                // TODO!!!!
+                return Object();
+            }
+
+            _NativeFunc(chars){
                 // TODO!!!!
                 return Object();
             }

@@ -30,6 +30,7 @@
 
 namespace sm{
     namespace lib{
+        extern Class* cString;
         extern oid_t idToString;
     }
 
@@ -201,7 +202,8 @@ namespace sm{
         }
 
         bool of_type(const Object& in, Class* type){
-            return in.type == ObjectType::CLASS_INSTANCE && in.i_ptr->base == type;
+            return (in.type == ObjectType::CLASS_INSTANCE && in.i_ptr->base == type)
+                || (in.type == ObjectType::STRING && type == lib::cString);
         }
 
         /* self: is an output parameter! */
