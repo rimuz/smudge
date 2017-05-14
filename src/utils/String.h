@@ -132,8 +132,8 @@ namespace sm {
         string<Tp, A> replaceFirst(const string<Tp, A>&, const string<Tp, A>& = string<Tp, A>()) const;
         string<Tp, A> replaceChar(value_type, value_type) const;
 
-        std::vector<string<Tp, A>> split(const string<Tp, A>&) const;
-        std::vector<string<Tp, A>> split(const value_type*) const;
+        std::vector<string<Tp, A>> split(const string<Tp, A>&, bool skipEmpty = true) const;
+        std::vector<string<Tp, A>> split(const value_type*, bool skipEmpty = true) const;
 
         bool contains(const string<Tp, A>&) const;
 
@@ -609,14 +609,15 @@ namespace sm{
     }
 
     template <class Tp, class A>
-    std::vector<string<Tp, A>> string<Tp, A>::split(const string<Tp, A>& str) const{
+    std::vector<string<Tp, A>> string<Tp, A>::split(const string<Tp, A>& str, bool skipEmpty) const{
         std::vector<string<Tp, A>> vec;
         const_iterator last (this->begin());
         const_iterator it = last;
         for(; it != this->end(); ++it){
             for(const_iterator it2 = str.begin(); it2 != str.end(); ++it2){
                 if(*it == *it2){
-                    vec.emplace_back(last, it);
+                    if(!skipEmpty || last != it)
+                        vec.emplace_back(last, it);
                     last = it+1;
                     goto Continue;
                 }
@@ -628,14 +629,15 @@ namespace sm{
     }
 
     template <class Tp, class A>
-    std::vector<string<Tp, A>> string<Tp, A>::split(const value_type* str) const{
+    std::vector<string<Tp, A>> string<Tp, A>::split(const value_type* str, bool skipEmpty) const{
         std::vector<string<Tp, A>> vec;
         const_iterator last (this->begin());
         const_iterator it = last;
         for(; it != this->end(); ++it){
             for(const value_type* it2 = str; *it2; ++it2){
                 if(*it == *it2){
-                    vec.emplace_back(last, it);
+                    if(!skipEmpty || last != it)
+                        vec.emplace_back(last, it);
                     last = it+1;
                     goto Continue;
                 }
