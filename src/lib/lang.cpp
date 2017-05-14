@@ -472,18 +472,51 @@ namespace sm{
             }
 
             _NativeFunc(bytes){
-                // TODO!!!!
-                return Object();
+                Object list = makeList(intp.rt->gc, false, ObjectVec_t(self.s_ptr->str.size()));
+
+                String::const_iterator iit = self.s_ptr->str.begin();
+                ObjectVec_t& out = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
+                ObjectVec_t::iterator oit = out.begin(), end = out.end();
+
+                while(oit != end){
+                    *oit++ = makeInteger(static_cast<unsigned char>(*iit++));
+                }
+                return list;
             }
 
             _NativeFunc(chars){
-                // TODO!!!!
-                return Object();
+                Object list = makeList(intp.rt->gc, false);
+
+                String::const_iterator curr = self.s_ptr->str.begin();
+                String::const_iterator end = self.s_ptr->str.end();
+                ObjectVec_t& out = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
+                unicode_t ch;
+
+                while(String::uNext(curr, end, ch)){
+                    out.push_back(makeInteger(uGetCodepoint(ch)));
+                }
+                return list;
             }
 
             _NativeFunc(join){
-                // TODO!!!!
-                return Object();
+                if(args.empty())
+                    return makeString();
+                if(!runtime::of_type(args[0], cList))
+                    return Object();
+                Object out = makeString();
+                ObjectVec_t& in = reinterpret_cast<ListClass::List*>(args[0].i_ptr)->vec;
+                ObjectVec_t::const_iterator curr = in.cbegin(), end = in.cend();
+                if(curr != end){
+                    while(1){
+                        Object str = runtime::implicitToString(intp, *curr);
+                        out.s_ptr->str.append(str.s_ptr->str);
+                        if(++curr == end)
+                            break;
+                        else
+                            out.s_ptr->str.append(self.s_ptr->str);
+                    }
+                }
+                return out;
             }
 
             _NativeFunc(ends_with){
@@ -605,8 +638,33 @@ namespace sm{
             }
 
             _NativeFunc(split){
-                // TODO!!
-                return Object();
+                Object sep;
+                bool skipEmpty = true;
+                size_t argc = args.size();
+
+                if(argc == 0){
+                    sep = makeString(" \t\n");
+                } else {
+                    if(argc > 1){
+                        skipEmpty = runtime::implicitToBool(args[1]);
+                    }
+
+                    if(args[0].type != ObjectType::STRING)
+                        return Object();
+                    sep = args[0];
+                }
+
+                std::vector<String> strings = self.s_ptr->str.split(sep.s_ptr->str, skipEmpty);
+                Object list = makeList(intp.rt->gc, false, ObjectVec_t(strings.size()));
+
+                ObjectVec_t& out = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
+                ObjectVec_t::iterator beg = out.begin(), end = out.end();
+                std::vector<String>::const_iterator src = strings.cbegin();
+
+                for(; beg != end; ++beg, ++src){
+                    *beg = makeString(std::move(*src));
+                }
+                return list;
             }
 
             _NativeFunc(trim){
