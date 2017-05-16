@@ -105,6 +105,8 @@ namespace sm{
                 _NativeMethod(sort, 2);
                 _NativeMethod(unique, 2);
                 _NativeMethod(to_string, 0);
+                _NativeMethod(size, 0);
+                _NativeMethod(empty, 0);
             };
 
             _NativeFunc(bracing);
@@ -127,6 +129,8 @@ namespace sm{
             _NativeFunc(sort);
             _NativeFunc(unique);
             _NativeFunc(to_string);
+            _NativeFunc(size);
+            _NativeFunc(empty);
         }
 
         _LibDecl(lang){
@@ -198,8 +202,10 @@ namespace sm{
                 _MethodTuple(ListClass, copy_list),
                 _MethodTuple(ListClass, reverse),
                 _MethodTuple(ListClass, sort),
-                _MethodTuple(ListClass, to_string),
                 _MethodTuple(ListClass, unique),
+                _MethodTuple(ListClass, to_string),
+                _MethodTuple(ListClass, size),
+                _MethodTuple(ListClass, empty),
             });
 
             return box;
@@ -717,6 +723,8 @@ namespace sm{
             _BindMethod(List, sort, 2);
             _BindMethod(List, unique, 2);
             _BindMethod(List, to_string, 0);
+            _BindMethod(List, size, 0);
+            _BindMethod(List, empty, 0);
 
             _NativeMethod(List::bracing, 1){
                 if(vec.empty() || args[0].type != ObjectType::INTEGER)
@@ -837,34 +845,68 @@ namespace sm{
             }
 
             _NativeMethod(List::tuple, 2){
+                // TODO!!!!!!
                 return Object();
             }
 
             _NativeMethod(List::append, 1){
+                if(!runtime::of_type(args[0], cList))
+                    return Object();
+                ObjectVec_t& toAppend = reinterpret_cast<ListClass::List*>(args[0].i_ptr)->vec;
+                vec.insert(vec.end(), toAppend.begin(), toAppend.end());
                 return Object();
             }
 
             _NativeMethod(List::insert, 2){
-                return Object();
+                if(args[0].type != ObjectType::INTEGER)
+                    return makeFalse();
+                integer_t idx = args[0].i;
+                if(!runtime::findIndex(idx, idx, vec.size()))
+                    return makeFalse();
+                vec.insert(vec.begin() + idx, args[1]);
+                return makeTrue();
             }
 
             _NativeMethod(List::insert_list, 2){
-                return Object();
+                if(args[0].type != ObjectType::INTEGER
+                        || !runtime::of_type(args[1], cList))
+                    return makeFalse();
+                integer_t idx = args[0].i;
+                if(!runtime::findIndex(idx, idx, vec.size()))
+                    return makeFalse();
+                ObjectVec_t& toInsert = reinterpret_cast<ListClass::List*>(args[1].i_ptr)->vec;
+                vec.insert(vec.begin() + idx, toInsert.begin(), toInsert.end());
+                return makeTrue();
             }
 
             _NativeMethod(List::copy_list, 2){
-                return Object();
+                if(args[0].type != ObjectType::INTEGER
+                        || !runtime::of_type(args[1], cList))
+                    return  makeFalse();
+                integer_t idx = args[0].i;
+                if(!runtime::findIndex(idx, idx, vec.size()))
+                    return makeFalse();
+                ObjectVec_t& toCopy = reinterpret_cast<ListClass::List*>(args[1].i_ptr)->vec;
+                size_t sz = toCopy.size() + idx;
+                if(vec.size() < sz)
+                    vec.resize(sz);
+                std::copy(toCopy.begin(), toCopy.end(), vec.begin() + idx);
+                return makeTrue();
             }
 
             _NativeMethod(List::reverse, 2){
+                ObjectVec_t reversed(vec.rbegin(), vec.rend());
+                vec.swap(reversed);
                 return Object();
             }
 
             _NativeMethod(List::sort, 2){
+                std::sort(vec.begin(), vec.end(), runtime::BinaryLess(intp));
                 return Object();
             }
 
             _NativeMethod(List::unique, 2){
+                vec.erase(std::unique(vec.begin(), vec.end(), runtime::BinaryEqual(intp)), vec.end());
                 return Object();
             }
 
@@ -882,6 +924,14 @@ namespace sm{
                 }
                 str.s_ptr->str.push_back(']');
                 return str;
+            }
+
+            _NativeMethod(List::empty, 0){
+                return makeInteger(vec.empty());
+            }
+
+            _NativeMethod(List::size, 0){
+                return makeInteger(vec.size());
             }
         }
     }
