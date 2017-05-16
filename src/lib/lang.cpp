@@ -99,6 +99,7 @@ namespace sm{
                 _NativeMethod(tuple, 2);
                 _NativeMethod(append, 1);
                 _NativeMethod(insert, 2);
+                _NativeMethod(erase, 2);
                 _NativeMethod(insert_list, 2);
                 _NativeMethod(copy_list, 2);
                 _NativeMethod(reverse, 2);
@@ -123,6 +124,7 @@ namespace sm{
             _NativeFunc(tuple);
             _NativeFunc(append);
             _NativeFunc(insert);
+            _NativeFunc(erase);
             _NativeFunc(insert_list);
             _NativeFunc(copy_list);
             _NativeFunc(reverse);
@@ -198,6 +200,7 @@ namespace sm{
                 _MethodTuple(ListClass, tuple),
                 _MethodTuple(ListClass, append),
                 _MethodTuple(ListClass, insert),
+                _MethodTuple(ListClass, erase),
                 _MethodTuple(ListClass, insert_list),
                 _MethodTuple(ListClass, copy_list),
                 _MethodTuple(ListClass, reverse),
@@ -260,7 +263,7 @@ namespace sm{
                                 return Object();
                         } else if(end > size)
                             end = size;
-                    } else if(args[0].type != ObjectType::NONE)
+                    } else if(args[1].type != ObjectType::NONE)
                         return Object();
                 }
 
@@ -717,6 +720,7 @@ namespace sm{
             _BindMethod(List, tuple, 2);
             _BindMethod(List, append, 1);
             _BindMethod(List, insert, 2);
+            _BindMethod(List, erase, 2);
             _BindMethod(List, insert_list, 2);
             _BindMethod(List, copy_list, 2);
             _BindMethod(List, reverse, 2);
@@ -837,7 +841,7 @@ namespace sm{
                             return Object();
                     } else if(end > size)
                         return Object();
-                } else if(args[0].type != ObjectType::NONE)
+                } else if(args[1].type != ObjectType::NONE)
                     return Object();
 
                 return makeList(intp.rt->gc, false,
@@ -865,6 +869,39 @@ namespace sm{
                     return makeFalse();
                 vec.insert(vec.begin() + idx, args[1]);
                 return makeTrue();
+            }
+
+            _NativeMethod(List::erase, 2){
+                integer_t size = vec.size();
+                integer_t start = 0;
+                integer_t end;
+
+                if(args[0].type == ObjectType::INTEGER){
+                    start = args[0].i;
+                    if(!runtime::findIndex(start, start, size))
+                        return Object();
+                } else if(args[0].type != ObjectType::NONE)
+                    return Object();
+
+                if(args[1].type == ObjectType::INTEGER){
+                    end = args[1].i;
+                    if(end < 0){
+                        end += size;
+                        if(end < 0 || end < start)
+                            return Object();
+                    } else if(end > size){
+                        vec.erase(vec.begin() + start, vec.end());
+                        return Object();
+                    }
+                } else if(args[1].type == ObjectType::NONE){
+                    vec.erase(vec.begin() + start);
+                    return Object();
+                } else {
+                    return Object();
+                }
+
+                vec.erase(vec.begin() + start, vec.begin() + end);
+                return Object();
             }
 
             _NativeMethod(List::insert_list, 2){
