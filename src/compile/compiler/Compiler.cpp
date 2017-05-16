@@ -160,6 +160,11 @@ namespace sm{
                     break;
 
                 case TT_TEXT:
+                    if(!states.isLastDot && states.isLastOperand){
+                        _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            std::string("expected operator before ")
+                                + representation(*states.it) + ".");
+                    }
                     states.rvalue = !states.preOperators.empty();
                     states.isLastOperand = true;
                     break;
