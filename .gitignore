@@ -27,3 +27,6 @@
 *.exe
 *.out
 *.app
+
+# autotools' cache 
+autom4te.cache/
