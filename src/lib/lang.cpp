@@ -102,9 +102,12 @@ namespace sm{
                 _NativeMethod(erase, 2);
                 _NativeMethod(insert_list, 2);
                 _NativeMethod(copy_list, 2);
+                _NativeMethod(find, 1);
+                _NativeMethod(count, 1);
+                _NativeMethod(slice, 2);
                 _NativeMethod(reverse, 2);
-                _NativeMethod(sort, 2);
-                _NativeMethod(unique, 2);
+                _NativeMethod(sort, 1);
+                _NativeMethod(unique, 0);
                 _NativeMethod(to_string, 0);
                 _NativeMethod(size, 0);
                 _NativeMethod(empty, 0);
@@ -127,6 +130,9 @@ namespace sm{
             _NativeFunc(erase);
             _NativeFunc(insert_list);
             _NativeFunc(copy_list);
+            _NativeFunc(find);
+            _NativeFunc(count);
+            _NativeFunc(slice);
             _NativeFunc(reverse);
             _NativeFunc(sort);
             _NativeFunc(unique);
@@ -203,6 +209,9 @@ namespace sm{
                 _MethodTuple(ListClass, erase),
                 _MethodTuple(ListClass, insert_list),
                 _MethodTuple(ListClass, copy_list),
+                _MethodTuple(ListClass, find),
+                _MethodTuple(ListClass, count),
+                _MethodTuple(ListClass, slice),
                 _MethodTuple(ListClass, reverse),
                 _MethodTuple(ListClass, sort),
                 _MethodTuple(ListClass, unique),
@@ -263,6 +272,8 @@ namespace sm{
                                 return Object();
                         } else if(end > size)
                             end = size;
+                        else if(end < start)
+                            return Object();
                     } else if(args[1].type != ObjectType::NONE)
                         return Object();
                 }
@@ -584,7 +595,8 @@ namespace sm{
                             return Object();
                     } else if(end > size)
                         return Object();
-                    String::iterator begin = self.s_ptr->str.begin();
+                    else if(end < start)
+                        return Object();
                     return makeString(begin + start, begin + end);
                 }
 
@@ -611,6 +623,8 @@ namespace sm{
                         if(end < 0 || end < start)
                             return Object();
                     } else if(end > size)
+                        return Object();
+                    else if(end < start)
                         return Object();
                     return makeString(self.s_ptr->str.uSubstr(start, end));
                 }
@@ -723,9 +737,12 @@ namespace sm{
             _BindMethod(List, erase, 2);
             _BindMethod(List, insert_list, 2);
             _BindMethod(List, copy_list, 2);
+            _BindMethod(List, find, 1);
+            _BindMethod(List, count, 1);
+            _BindMethod(List, slice, 2);
             _BindMethod(List, reverse, 2);
-            _BindMethod(List, sort, 2);
-            _BindMethod(List, unique, 2);
+            _BindMethod(List, sort, 1);
+            _BindMethod(List, unique, 0);
             _BindMethod(List, to_string, 0);
             _BindMethod(List, size, 0);
             _BindMethod(List, empty, 0);
@@ -754,6 +771,8 @@ namespace sm{
                 out.insert(out.end(), vec2.cbegin(), vec2.cend());
                 return newVec;
             }
+
+            /* TODO!!! Add operator* to lists!!!! */
 
             _NativeMethod(List::bitor_op, 1){
                 if(!runtime::of_type(args[0], cList))
@@ -841,6 +860,8 @@ namespace sm{
                             return Object();
                     } else if(end > size)
                         return Object();
+                    else if(end < start)
+                        return Object();
                 } else if(args[1].type != ObjectType::NONE)
                     return Object();
 
@@ -892,7 +913,8 @@ namespace sm{
                     } else if(end > size){
                         vec.erase(vec.begin() + start, vec.end());
                         return Object();
-                    }
+                    } else if(end < start)
+                        return Object();
                 } else if(args[1].type == ObjectType::NONE){
                     vec.erase(vec.begin() + start);
                     return Object();
@@ -931,18 +953,70 @@ namespace sm{
                 return makeTrue();
             }
 
+            _NativeMethod(List::find, 1){
+                ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
+                ObjectVec_t::iterator found = std::find_if(vec.begin(), vec.end(),
+                        runtime::Equal(intp, args[0]));
+                if(found == end)
+                    return Object();
+                return makeInteger(found - begin);
+            }
+
+            _NativeMethod(List::count, 1){
+                ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
+                return makeInteger(std::count_if(vec.begin(), vec.end(), runtime::Equal(intp, args[0])));
+            }
+
+            _NativeMethod(List::slice, 2){
+                if(args[0].type != ObjectType::INTEGER){
+                    return Object();
+                }
+
+                integer_t size = vec.size();
+                integer_t start = args[0].i;
+                ObjectVec_t::iterator begin = vec.begin();
+
+                if(start < 0){
+                    start += size;
+                    if(start < 0)
+                        return makeList(intp.rt->gc, false, vec);
+                } else if(start >= size)
+                    return makeList(intp.rt->gc, false);
+
+                if(args[1].type == ObjectType::INTEGER){
+                    integer_t end = args[1].i;
+                    if(end < 0){
+                        end += size;
+                        if(end < 0 || end < start)
+                            return Object();
+                    } else if(end > size)
+                        return Object();
+                    else if(end < start)
+                        return Object();
+                    return makeList(intp.rt->gc, false,
+                            ObjectVec_t(begin + start, begin + end));
+                } else if(args[1].type != ObjectType::NONE)
+                    return Object();
+
+                return makeList(intp.rt->gc, false,
+                        ObjectVec_t(begin + start, vec.end()));
+            }
+
             _NativeMethod(List::reverse, 2){
                 ObjectVec_t reversed(vec.rbegin(), vec.rend());
                 vec.swap(reversed);
                 return Object();
             }
 
-            _NativeMethod(List::sort, 2){
-                std::sort(vec.begin(), vec.end(), runtime::BinaryLess(intp));
+            _NativeMethod(List::sort, 1){
+                if(runtime::implicitToBool(args[0]))
+                    std::sort(vec.begin(), vec.end(), runtime::BinaryGreater(intp));
+                else
+                    std::sort(vec.begin(), vec.end(), runtime::BinaryLess(intp));
                 return Object();
             }
 
-            _NativeMethod(List::unique, 2){
+            _NativeMethod(List::unique, 0){
                 vec.erase(std::unique(vec.begin(), vec.end(), runtime::BinaryEqual(intp)), vec.end());
                 return Object();
             }
