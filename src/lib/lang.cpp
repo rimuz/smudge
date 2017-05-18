@@ -30,6 +30,7 @@ namespace sm{
     namespace lib{
         Class* cString = nullptr;
         Class* cList = nullptr;
+        Class* cTuple = nullptr;
 
         oid_t idToString;
 
@@ -87,6 +88,7 @@ namespace sm{
 
                 _NativeMethod(bracing, 1);
                 _NativeMethod(plus, 1);
+                _NativeMethod(mul, 1);
                 _NativeMethod(bitor_op, 1);
                 _NativeMethod(bitand_op, 1);
                 _NativeMethod(equal_op, 1);
@@ -115,6 +117,7 @@ namespace sm{
 
             _NativeFunc(bracing);
             _NativeFunc(plus);
+            _NativeFunc(mul);
             _NativeFunc(bitor_op);
             _NativeFunc(bitand_op);
             _NativeFunc(equal_op);
@@ -194,6 +197,7 @@ namespace sm{
             cList = setClass(rt, box, "List", {
                 _OpTuple(ListClass, parse::TT_SQUARE_OPEN, bracing),
                 _OpTuple(ListClass, parse::TT_PLUS, plus),
+                _OpTuple(ListClass, parse::TT_MULT, mul),
                 _OpTuple(ListClass, parse::TT_OR, bitor_op),
                 _OpTuple(ListClass, parse::TT_AND, bitand_op),
                 _OpTuple(ListClass, parse::TT_EQUAL, equal_op),
@@ -364,10 +368,11 @@ namespace sm{
             _NativeFunc(mul){
                 if(args.empty() || args[0].type != ObjectType::INTEGER)
                     return Object();
-                integer_t i = args[0].i;
 
-                Object str0 = makeString(self.s_ptr->str);
-                size_t sz = str0.s_ptr->str.size();
+                integer_t i = args[0].i;
+                Object str0 = makeString();
+                size_t sz = self.s_ptr->str.size();
+
                 if(i == 0) {
                     return str0;
                 } else if(i < 0){
@@ -384,11 +389,11 @@ namespace sm{
                 } else {
                     str0.s_ptr->str.resize(sz * i);
 
-                    String::iterator beg = str0.s_ptr->str.begin();
-                    String::iterator end = str0.s_ptr->str.begin() + sz;
-                    String::iterator curr = end;
+                    String::iterator beg = self.s_ptr->str.begin();
+                    String::iterator end = self.s_ptr->str.end();
+                    String::iterator curr = str0.s_ptr->str.begin();
 
-                    for(integer_t j = 1; j != i; ++j){
+                    for(integer_t j = 0; j != i; ++j){
                         curr = std::copy(beg, end, curr);
                     }
                 }
@@ -722,6 +727,7 @@ namespace sm{
         namespace ListClass {
             _BindMethod(List, bracing, 1);
             _BindMethod(List, plus, 1);
+            _BindMethod(List, mul, 1);
             _BindMethod(List, bitor_op, 1);
             _BindMethod(List, bitand_op, 1);
             _BindMethod(List, equal_op, 1);
@@ -772,7 +778,41 @@ namespace sm{
                 return newVec;
             }
 
-            /* TODO!!! Add operator* to lists!!!! */
+            _NativeMethod(List::mul, 1){
+                if(args[0].type != ObjectType::INTEGER)
+                    return Object();
+                integer_t i = args[0].i;
+
+                Object list = makeList(intp.rt->gc, false);
+                ObjectVec_t& newVec = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
+                size_t sz = vec.size();
+
+                if(i == 0) {
+                    return list;
+                } else if(i < 0){
+                    i *= -1;
+                    newVec.resize(sz * i);
+
+                    ObjectVec_t::reverse_iterator beg = vec.rbegin();
+                    ObjectVec_t::reverse_iterator end = vec.rend();
+                    ObjectVec_t::iterator curr = newVec.begin();
+
+                    for(integer_t j = 0; j != i; ++j){
+                        curr = std::copy(beg, end, curr);
+                    }
+                } else {
+                    newVec.resize(sz * i);
+
+                    ObjectVec_t::iterator beg = vec.begin();
+                    ObjectVec_t::iterator end = vec.end();
+                    ObjectVec_t::iterator curr = newVec.begin();
+
+                    for(integer_t j = 0; j != i; ++j){
+                        curr = std::copy(beg, end, curr);
+                    }
+                }
+                return list;
+            }
 
             _NativeMethod(List::bitor_op, 1){
                 if(!runtime::of_type(args[0], cList))
