@@ -49,6 +49,7 @@ namespace sm{
             _NativeFunc(greaterOrEqual);
             _NativeFunc(plus);
             _NativeFunc(minus);
+            _NativeFunc(minus);
             _NativeFunc(mul);
             _NativeFunc(get);
             _NativeFunc(u_get);
@@ -88,6 +89,7 @@ namespace sm{
 
                 _NativeMethod(bracing, 1);
                 _NativeMethod(plus, 1);
+                _NativeMethod(minus, 1);
                 _NativeMethod(mul, 1);
                 _NativeMethod(bitor_op, 1);
                 _NativeMethod(bitand_op, 1);
@@ -117,6 +119,7 @@ namespace sm{
 
             _NativeFunc(bracing);
             _NativeFunc(plus);
+            _NativeFunc(minus);
             _NativeFunc(mul);
             _NativeFunc(bitor_op);
             _NativeFunc(bitand_op);
@@ -197,6 +200,7 @@ namespace sm{
             cList = setClass(rt, box, "List", {
                 _OpTuple(ListClass, parse::TT_SQUARE_OPEN, bracing),
                 _OpTuple(ListClass, parse::TT_PLUS, plus),
+                _OpTuple(ListClass, parse::TT_MINUS, minus),
                 _OpTuple(ListClass, parse::TT_MULT, mul),
                 _OpTuple(ListClass, parse::TT_OR, bitor_op),
                 _OpTuple(ListClass, parse::TT_AND, bitand_op),
@@ -727,6 +731,7 @@ namespace sm{
         namespace ListClass {
             _BindMethod(List, bracing, 1);
             _BindMethod(List, plus, 1);
+            _BindMethod(List, minus, 1);
             _BindMethod(List, mul, 1);
             _BindMethod(List, bitor_op, 1);
             _BindMethod(List, bitand_op, 1);
@@ -776,6 +781,16 @@ namespace sm{
                 ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
                 out.insert(out.end(), vec2.cbegin(), vec2.cend());
                 return newVec;
+            }
+
+            _NativeMethod(List::minus, 1){
+                integer_t i;
+                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
+                    return Object();
+                size_t idx = i;
+                if(idx >= vec.size())
+                    return makeList(intp.rt->gc, false);
+                return makeList(intp.rt->gc, false, ObjectVec_t(vec.begin(), vec.end() - idx));
             }
 
             _NativeMethod(List::mul, 1){
