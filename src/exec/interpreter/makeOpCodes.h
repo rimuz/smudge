@@ -26,7 +26,7 @@
 namespace sm{
     namespace exec{
         _OcFunc(MakeVoidList){
-            //TODO
+            intp.exprStack.push_back(makeList(intp.rt->gc, false));
             ++addr;
         }
 
