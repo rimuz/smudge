@@ -94,6 +94,7 @@ namespace sm{
                 _NativeMethod(bitor_op, 1);
                 _NativeMethod(bitand_op, 1);
                 _NativeMethod(equal_op, 1);
+                _NativeMethod(not_equal_op, 1);
 
                 _NativeMethod(reserve, 1);
                 _NativeMethod(resize, 1);
@@ -124,6 +125,7 @@ namespace sm{
             _NativeFunc(bitor_op);
             _NativeFunc(bitand_op);
             _NativeFunc(equal_op);
+            _NativeFunc(not_equal_op);
 
             _NativeFunc(reserve);
             _NativeFunc(resize);
@@ -205,6 +207,7 @@ namespace sm{
                 _OpTuple(ListClass, parse::TT_OR, bitor_op),
                 _OpTuple(ListClass, parse::TT_AND, bitand_op),
                 _OpTuple(ListClass, parse::TT_EQUAL, equal_op),
+                _OpTuple(ListClass, parse::TT_NOT_EQUAL, not_equal_op),
 
                 _MethodTuple(ListClass, reserve),
                 _MethodTuple(ListClass, resize),
@@ -736,6 +739,7 @@ namespace sm{
             _BindMethod(List, bitor_op, 1);
             _BindMethod(List, bitand_op, 1);
             _BindMethod(List, equal_op, 1);
+            _BindMethod(List, not_equal_op, 1);
 
             _BindMethod(List, reserve, 1);
             _BindMethod(List, resize, 1);
@@ -865,6 +869,16 @@ namespace sm{
                     return makeFalse();
                 return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
                     ? makeTrue() : makeFalse();
+            }
+
+            _NativeMethod(List::not_equal_op, 1){
+                if(!runtime::of_type(args[0], cList))
+                    return makeTrue();
+                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
+                if(vec.size() != vec2.size())
+                    return makeTrue();
+                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                    ? makeFalse() : makeTrue();
             }
 
             _NativeMethod(List::reserve, 1){
