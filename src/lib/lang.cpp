@@ -149,6 +149,36 @@ namespace sm{
             _NativeFunc(empty);
         }
 
+        namespace TupleClass {
+            class Tuple : public Instance {
+            public:
+                ObjectVec_t vec;
+
+                template <class... Tp>
+                Tuple(runtime::GarbageCollector& gc, bool temp, Tp&&...args)
+                    : Instance(gc, temp), vec(std::forward<Tp>(args)...){}
+
+                _NativeMethod(plus, 1);
+                _NativeMethod(minus, 1);
+                _NativeMethod(mul, 1);
+                _NativeMethod(bitor_op, 1);
+                _NativeMethod(bitand_op, 1);
+                _NativeMethod(equal_op, 1);
+                _NativeMethod(slice, 1);
+                _NativeMethod(get, 1);
+            };
+
+            _NativeFunc(bracing);
+            _NativeFunc(plus);
+            _NativeFunc(minus);
+            _NativeFunc(mul);
+            _NativeFunc(bitor_op);
+            _NativeFunc(bitand_op);
+            _NativeFunc(equal_op);
+            _NativeFunc(slice);
+            _NativeFunc(get);
+        }
+
         _LibDecl(lang){
             Class* box = new Class;
             box->boxName = nBox;
@@ -229,6 +259,19 @@ namespace sm{
                 _MethodTuple(ListClass, to_string),
                 _MethodTuple(ListClass, size),
                 _MethodTuple(ListClass, empty),
+            });
+
+            cTuple = setClass(rt, box, "Tuple", {
+                _OpTuple(ListClass, parse::TT_PLUS, plus),
+                _OpTuple(ListClass, parse::TT_MINUS, minus),
+                _OpTuple(ListClass, parse::TT_MULT, mul),
+                _OpTuple(ListClass, parse::TT_OR, bitor_op),
+                _OpTuple(ListClass, parse::TT_AND, bitand_op),
+                _OpTuple(ListClass, parse::TT_EQUAL, equal_op),
+                _OpTuple(ListClass, parse::TT_NOT_EQUAL, not_equal_op),
+
+                _MethodTuple(Tuple, slice, 1);
+                _MethodTuple(Tuple, get, 1);
             });
 
             return box;
@@ -761,7 +804,20 @@ namespace sm{
             _BindMethod(List, to_string, 0);
             _BindMethod(List, size, 0);
             _BindMethod(List, empty, 0);
+        }
 
+        namespace TupleClass {
+            _BindMethod(Tuple, plus, 1);
+            _BindMethod(Tuple, minus, 1);
+            _BindMethod(Tuple, mul, 1);
+            _BindMethod(Tuple, bitor_op, 1);
+            _BindMethod(Tuple, bitand_op, 1);
+            _BindMethod(Tuple, equal_op, 1);
+            _BindMethod(Tuple, slice, 1);
+            _BindMethod(Tuple, get, 1);
+        }
+
+        namespace ListClass {
             _NativeMethod(List::bracing, 1){
                 if(vec.empty() || args[0].type != ObjectType::INTEGER)
                     return Object();
@@ -1112,6 +1168,40 @@ namespace sm{
 
             _NativeMethod(List::size, 0){
                 return makeInteger(vec.size());
+            }
+        }
+
+        namespace TupleClass {
+            _NativeMethod(Tuple::plus, 1){
+                return Object();
+            }
+
+            _NativeMethod(Tuple::minus, 1){
+                return Object();
+            }
+
+            _NativeMethod(Tuple::mul, 1){
+                return Object();
+            }
+
+            _NativeMethod(Tuple::bitor_op, 1){
+                return Object();
+            }
+
+            _NativeMethod(Tuple::bitand_op, 1){
+                return Object();
+            }
+
+            _NativeMethod(Tuple::equal_op, 1){
+                return Object();
+            }
+
+            _NativeMethod(Tuple::slice, 1){
+                return Object();
+            }
+
+            _NativeMethod(Tuple::get, 1){
+                return Object();
             }
         }
     }
