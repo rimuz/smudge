@@ -295,15 +295,6 @@ namespace sm{
             MAKE_TUPLE,
 
             /*
-             * make a dictionary (hash table) with
-             * 'param' size, and TOS, TOS2, TOS4, ...,
-             * TOS'param-2' as keys and TOS1, TOS3, ...,
-             * TOS'param-1' as values.
-            */
-            MAKE_DICT,
-
-
-            /*
              * Compare TOS and TOS1 (then pop TOS, only),
              * and if they're not equals jump to curr + param,
             */
