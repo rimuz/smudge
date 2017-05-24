@@ -31,7 +31,7 @@ namespace sm{
         }
 
         _OcFunc(MakeVoidTuple){
-            // TODO
+            intp.exprStack.push_back(makeTuple(intp.rt->gc, false));
             ++addr;
         }
 
@@ -58,7 +58,12 @@ namespace sm{
         }
 
         _OcFunc(MakeTuple){
-            // TODO
+            unsigned size = (*++addr << 8) | *++addr;
+            ++addr;
+            ObjectVec_t::iterator end = intp.exprStack.end();
+            ObjectVec_t::iterator first = end-size;
+            *first = makeTuple(intp.rt->gc, false, ObjectVec_t(first, end));
+            intp.exprStack.erase(++first, end);
             ++addr;
         }
 
