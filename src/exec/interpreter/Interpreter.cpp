@@ -130,7 +130,6 @@ namespace sm{
                     _OcCase(FIND, Find);
                     _OcCase(MAKE_LIST, MakeList);
                     _OcCase(MAKE_TUPLE, MakeTuple);
-                    _OcCase(MAKE_DICT, MakeDict);
                     _OcCase(SWITCH_CASE, SwitchCase);
                     _OcCase(IMPORT, Import);
 

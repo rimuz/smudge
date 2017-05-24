@@ -66,11 +66,6 @@ namespace sm{
             intp.exprStack.erase(++first, end);
             ++addr;
         }
-
-        _OcFunc(MakeDict){
-            // TODO
-            ++addr;
-        }
     }
 }
 

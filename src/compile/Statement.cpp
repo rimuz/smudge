@@ -46,7 +46,7 @@ namespace sm{
                 "CATCH", "FINALLY", "CALL_FUNCTION", "PERFORM_BRACING",
                 "DEFINE_VAR", "DEFINE_GLOBAL_VAR", "DEFINE_NULL_VAR",
                 "DEFINE_GLOBAL_NULL_VAR", "FIND", "MAKE_LIST", "MAKE_TUPLE",
-                "MAKE_DICT", "SWITCH_CASE", "IMPORT",
+                "SWITCH_CASE", "IMPORT",
             };
 
             static_assert(arraySize(opCodes) == INVALID_OPCODE, "size of opCodes (const char*[]) must be equal to INVALID_OPCODE");
