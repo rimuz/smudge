@@ -164,17 +164,18 @@ namespace sm{
                 _NativeMethod(bitor_op, 1);
                 _NativeMethod(bitand_op, 1);
                 _NativeMethod(equal_op, 1);
+                _NativeMethod(not_equal_op, 1);
                 _NativeMethod(slice, 1);
                 _NativeMethod(get, 1);
             };
 
-            _NativeFunc(bracing);
             _NativeFunc(plus);
             _NativeFunc(minus);
             _NativeFunc(mul);
             _NativeFunc(bitor_op);
             _NativeFunc(bitand_op);
             _NativeFunc(equal_op);
+            _NativeFunc(not_equal_op);
             _NativeFunc(slice);
             _NativeFunc(get);
         }
@@ -262,16 +263,16 @@ namespace sm{
             });
 
             cTuple = setClass(rt, box, "Tuple", {
-                _OpTuple(ListClass, parse::TT_PLUS, plus),
-                _OpTuple(ListClass, parse::TT_MINUS, minus),
-                _OpTuple(ListClass, parse::TT_MULT, mul),
-                _OpTuple(ListClass, parse::TT_OR, bitor_op),
-                _OpTuple(ListClass, parse::TT_AND, bitand_op),
-                _OpTuple(ListClass, parse::TT_EQUAL, equal_op),
-                _OpTuple(ListClass, parse::TT_NOT_EQUAL, not_equal_op),
+                _OpTuple(TupleClass, parse::TT_PLUS, plus),
+                _OpTuple(TupleClass, parse::TT_MINUS, minus),
+                _OpTuple(TupleClass, parse::TT_MULT, mul),
+                _OpTuple(TupleClass, parse::TT_OR, bitor_op),
+                _OpTuple(TupleClass, parse::TT_AND, bitand_op),
+                _OpTuple(TupleClass, parse::TT_EQUAL, equal_op),
+                _OpTuple(TupleClass, parse::TT_NOT_EQUAL, not_equal_op),
 
-                _MethodTuple(Tuple, slice, 1);
-                _MethodTuple(Tuple, get, 1);
+                _MethodTuple(TupleClass, slice),
+                _MethodTuple(TupleClass, get),
             });
 
             return box;
@@ -813,6 +814,7 @@ namespace sm{
             _BindMethod(Tuple, bitor_op, 1);
             _BindMethod(Tuple, bitand_op, 1);
             _BindMethod(Tuple, equal_op, 1);
+            _BindMethod(Tuple, not_equal_op, 1);
             _BindMethod(Tuple, slice, 1);
             _BindMethod(Tuple, get, 1);
         }
@@ -995,8 +997,32 @@ namespace sm{
             }
 
             _NativeMethod(List::tuple, 2){
-                // TODO!!!!!!
-                return Object();
+                integer_t start = 0;
+                integer_t size = vec.size();
+                integer_t end = size;
+
+                if(args[0].type == ObjectType::INTEGER){
+                    start = args[0].i;
+                    if(!runtime::findIndex(start, start, size))
+                        return Object();
+                } else if(args[0].type != ObjectType::NONE)
+                    return Object();
+
+                if(args[1].type == ObjectType::INTEGER){
+                    end = args[1].i;
+                    if(end < 0){
+                        end += size;
+                        if(end < 0 || end < start)
+                            return Object();
+                    } else if(end > size)
+                        return Object();
+                    else if(end < start)
+                        return Object();
+                } else if(args[1].type != ObjectType::NONE)
+                    return Object();
+
+                return makeTuple(intp.rt->gc, false,
+                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
             }
 
             _NativeMethod(List::append, 1){
@@ -1196,6 +1222,10 @@ namespace sm{
                 return Object();
             }
 
+            _NativeMethod(Tuple::not_equal_op, 1){
+                return Object();
+            }
+
             _NativeMethod(Tuple::slice, 1){
                 return Object();
             }
@@ -1211,6 +1241,6 @@ namespace sm{
     }
 
     Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
-        return makeFastInstance<lib::ListClass::Tuple>(gc, lib::cTuple, temp, std::move(vec));
+        return makeFastInstance<lib::TupleClass::Tuple>(gc, lib::cTuple, temp, std::move(vec));
     }
 }
