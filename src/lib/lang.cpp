@@ -1209,4 +1209,8 @@ namespace sm{
     Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
         return makeFastInstance<lib::ListClass::List>(gc, lib::cList, temp, std::move(vec));
     }
+
+    Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
+        return makeFastInstance<lib::ListClass::Tuple>(gc, lib::cTuple, temp, std::move(vec));
+    }
 }
