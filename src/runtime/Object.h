@@ -224,6 +224,7 @@ namespace sm{
     Object newObject(runtime::GarbageCollector& gc, bool temp = true) noexcept;
     Object makeFunction(Function*) noexcept;
     Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
 
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
