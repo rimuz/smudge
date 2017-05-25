@@ -225,9 +225,12 @@ namespace sm{
     Object makeFunction(Function*) noexcept;
     Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
     Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
-  
+
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
+
+    /* if obj is tuple or list */
+    bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept;
 
     Object Object::refGet() const{
         return *o_ptr;
