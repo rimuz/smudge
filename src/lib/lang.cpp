@@ -167,6 +167,9 @@ namespace sm{
                 _NativeMethod(not_equal_op, 1);
                 _NativeMethod(slice, 1);
                 _NativeMethod(get, 1);
+                _NativeMethod(size, 0);
+                _NativeMethod(empty, 0);
+                _NativeMethod(to_string, 0);
             };
 
             _NativeFunc(plus);
@@ -178,6 +181,9 @@ namespace sm{
             _NativeFunc(not_equal_op);
             _NativeFunc(slice);
             _NativeFunc(get);
+            _NativeFunc(size);
+            _NativeFunc(empty);
+            _NativeFunc(to_string);
         }
 
         _LibDecl(lang){
@@ -273,6 +279,9 @@ namespace sm{
 
                 _MethodTuple(TupleClass, slice),
                 _MethodTuple(TupleClass, get),
+                _MethodTuple(TupleClass, size),
+                _MethodTuple(TupleClass, empty),
+                _MethodTuple(TupleClass, to_string),
             });
 
             return box;
@@ -817,6 +826,9 @@ namespace sm{
             _BindMethod(Tuple, not_equal_op, 1);
             _BindMethod(Tuple, slice, 1);
             _BindMethod(Tuple, get, 1);
+            _BindMethod(Tuple, size, 0);
+            _BindMethod(Tuple, empty, 0);
+            _BindMethod(Tuple, to_string, 0);
         }
 
         namespace ListClass {
@@ -836,12 +848,12 @@ namespace sm{
             }
 
             _NativeMethod(List::plus, 1){
-                if(!runtime::of_type(args[0], cList))
+                ObjectVec_t* vec2;
+                if(!hasVector(args[0], vec2))
                     return Object();
                 Object newVec = makeList(intp.rt->gc, false, vec);
-                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
                 ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
-                out.insert(out.end(), vec2.cbegin(), vec2.cend());
+                out.insert(out.end(), vec2->cbegin(), vec2->cend());
                 return newVec;
             }
 
@@ -892,12 +904,13 @@ namespace sm{
             }
 
             _NativeMethod(List::bitor_op, 1){
-                if(!runtime::of_type(args[0], cList))
+                ObjectVec_t* vec2;
+                if(!hasVector(args[0], vec2))
                     return Object();
                 Object newVec = makeList(intp.rt->gc, false, vec);
-                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
                 ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
-                for(const Object& obj : vec2){
+
+                for(const Object& obj : *vec2){
                     if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) == out.end()){
                         out.push_back(obj);
                     }
@@ -906,12 +919,12 @@ namespace sm{
             }
 
             _NativeMethod(List::bitand_op, 1){
-                if(!runtime::of_type(args[0], cList))
+                ObjectVec_t* vec2;
+                if(!hasVector(args[0], vec2))
                     return Object();
                 Object newVec = makeList(intp.rt->gc, false, {});
-                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
                 ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
-                for(const Object& obj : vec2){
+                for(const Object& obj : *vec2){
                     if(std::find_if(vec.begin(), vec.end(), runtime::Equal(intp, obj)) != vec.end()){
                         out.push_back(obj);
                     }
@@ -1026,10 +1039,10 @@ namespace sm{
             }
 
             _NativeMethod(List::append, 1){
-                if(!runtime::of_type(args[0], cList))
+                ObjectVec_t* toAppend;
+                if(!hasVector(args[0], toAppend))
                     return Object();
-                ObjectVec_t& toAppend = reinterpret_cast<ListClass::List*>(args[0].i_ptr)->vec;
-                vec.insert(vec.end(), toAppend.begin(), toAppend.end());
+                vec.insert(vec.end(), toAppend->begin(), toAppend->end());
                 return Object();
             }
 
@@ -1078,29 +1091,32 @@ namespace sm{
             }
 
             _NativeMethod(List::insert_list, 2){
+                ObjectVec_t* toInsert;
                 if(args[0].type != ObjectType::INTEGER
-                        || !runtime::of_type(args[1], cList))
+                        || !hasVector(args[1], toInsert))
                     return makeFalse();
+
                 integer_t idx = args[0].i;
                 if(!runtime::findIndex(idx, idx, vec.size()))
                     return makeFalse();
-                ObjectVec_t& toInsert = reinterpret_cast<ListClass::List*>(args[1].i_ptr)->vec;
-                vec.insert(vec.begin() + idx, toInsert.begin(), toInsert.end());
+                vec.insert(vec.begin() + idx, toInsert->begin(), toInsert->end());
                 return makeTrue();
             }
 
             _NativeMethod(List::copy_list, 2){
+                ObjectVec_t* toCopy;
                 if(args[0].type != ObjectType::INTEGER
-                        || !runtime::of_type(args[1], cList))
+                        || !hasVector(args[1], toCopy))
                     return  makeFalse();
+
                 integer_t idx = args[0].i;
                 if(!runtime::findIndex(idx, idx, vec.size()))
                     return makeFalse();
-                ObjectVec_t& toCopy = reinterpret_cast<ListClass::List*>(args[1].i_ptr)->vec;
-                size_t sz = toCopy.size() + idx;
+
+                size_t sz = toCopy->size() + idx;
                 if(vec.size() < sz)
                     vec.resize(sz);
-                std::copy(toCopy.begin(), toCopy.end(), vec.begin() + idx);
+                std::copy(toCopy->begin(), toCopy->end(), vec.begin() + idx);
                 return makeTrue();
             }
 
@@ -1199,39 +1215,177 @@ namespace sm{
 
         namespace TupleClass {
             _NativeMethod(Tuple::plus, 1){
-                return Object();
+                ObjectVec_t* vec2;
+                if(!hasVector(args[0], vec2))
+                    return Object();
+                Object newVec = makeTuple(intp.rt->gc, false, vec);
+                ObjectVec_t& out = reinterpret_cast<Tuple*>(newVec.i_ptr)->vec;
+                out.insert(out.end(), vec2->cbegin(), vec2->cend());
+                return newVec;
             }
 
             _NativeMethod(Tuple::minus, 1){
-                return Object();
+                integer_t i;
+                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
+                    return Object();
+                size_t idx = i;
+                if(idx >= vec.size())
+                    return makeTuple(intp.rt->gc, false);
+                return makeTuple(intp.rt->gc, false, ObjectVec_t(vec.begin(), vec.end() - idx));
             }
 
             _NativeMethod(Tuple::mul, 1){
-                return Object();
+                if(args[0].type != ObjectType::INTEGER)
+                    return Object();
+                integer_t i = args[0].i;
+
+                Object tuple = makeTuple(intp.rt->gc, false);
+                ObjectVec_t& newVec = reinterpret_cast<Tuple*>(tuple.i_ptr)->vec;
+                size_t sz = vec.size();
+
+                if(i == 0) {
+                    return tuple;
+                } else if(i < 0){
+                    i *= -1;
+                    newVec.resize(sz * i);
+
+                    ObjectVec_t::reverse_iterator beg = vec.rbegin();
+                    ObjectVec_t::reverse_iterator end = vec.rend();
+                    ObjectVec_t::iterator curr = newVec.begin();
+
+                    for(integer_t j = 0; j != i; ++j){
+                        curr = std::copy(beg, end, curr);
+                    }
+                } else {
+                    newVec.resize(sz * i);
+
+                    ObjectVec_t::iterator beg = vec.begin();
+                    ObjectVec_t::iterator end = vec.end();
+                    ObjectVec_t::iterator curr = newVec.begin();
+
+                    for(integer_t j = 0; j != i; ++j){
+                        curr = std::copy(beg, end, curr);
+                    }
+                }
+                return tuple;
             }
 
             _NativeMethod(Tuple::bitor_op, 1){
-                return Object();
+                ObjectVec_t* vec2;
+                if(!hasVector(args[0], vec2))
+                    return Object();
+                Object newVec = makeTuple(intp.rt->gc, false, vec);
+                ObjectVec_t& out = reinterpret_cast<Tuple*>(newVec.i_ptr)->vec;
+
+                for(const Object& obj : *vec2){
+                    if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) == out.end()){
+                        out.push_back(obj);
+                    }
+                }
+                return newVec;
             }
 
             _NativeMethod(Tuple::bitand_op, 1){
-                return Object();
+                ObjectVec_t* vec2;
+                if(!hasVector(args[0], vec2))
+                    return Object();
+                Object newVec = makeTuple(intp.rt->gc, false, {});
+                ObjectVec_t& out = reinterpret_cast<Tuple*>(newVec.i_ptr)->vec;
+                for(const Object& obj : *vec2){
+                    if(std::find_if(vec.begin(), vec.end(), runtime::Equal(intp, obj)) != vec.end()){
+                        out.push_back(obj);
+                    }
+                }
+                return newVec;
             }
 
             _NativeMethod(Tuple::equal_op, 1){
-                return Object();
+                if(!runtime::of_type(args[0], cTuple))
+                    return makeFalse();
+                ObjectVec_t& vec2 = reinterpret_cast<Tuple*>(args[0].i_ptr)->vec;
+                if(vec.size() != vec2.size())
+                    return makeFalse();
+                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                    ? makeTrue() : makeFalse();
             }
 
             _NativeMethod(Tuple::not_equal_op, 1){
-                return Object();
+                if(!runtime::of_type(args[0], cTuple))
+                    return makeTrue();
+                ObjectVec_t& vec2 = reinterpret_cast<Tuple*>(args[0].i_ptr)->vec;
+                if(vec.size() != vec2.size())
+                    return makeTrue();
+                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                    ? makeFalse() : makeTrue();
             }
 
             _NativeMethod(Tuple::slice, 1){
-                return Object();
+                if(args[0].type != ObjectType::INTEGER){
+                    return Object();
+                }
+
+                integer_t size = vec.size();
+                integer_t start = args[0].i;
+                ObjectVec_t::iterator begin = vec.begin();
+
+                if(start < 0){
+                    start += size;
+                    if(start < 0)
+                        return makeTuple(intp.rt->gc, false, vec);
+                } else if(start >= size)
+                    return makeTuple(intp.rt->gc, false);
+
+                if(args[1].type == ObjectType::INTEGER){
+                    integer_t end = args[1].i;
+                    if(end < 0){
+                        end += size;
+                        if(end < 0 || end < start)
+                            return Object();
+                    } else if(end > size)
+                        return Object();
+                    else if(end < start)
+                        return Object();
+                    return makeTuple(intp.rt->gc, false,
+                            ObjectVec_t(begin + start, begin + end));
+                } else if(args[1].type != ObjectType::NONE)
+                    return Object();
+
+                return makeTuple(intp.rt->gc, false,
+                        ObjectVec_t(begin + start, vec.end()));
             }
 
             _NativeMethod(Tuple::get, 1){
-                return Object();
+                if(vec.empty() || args[0].type != ObjectType::INTEGER)
+                    return Object();
+                integer_t i = args[0].i;
+                integer_t sz = vec.size();
+                if(!runtime::findIndex(i, i, sz))
+                    return Object();
+                return vec[i];
+            }
+
+            _NativeMethod(Tuple::size, 0){
+                return makeInteger(vec.size());
+            }
+
+            _NativeMethod(Tuple::empty, 0){
+                return makeInteger(vec.empty());
+            }
+
+            _NativeMethod(Tuple::to_string, 0){
+                Object str = makeString("[");
+                ObjectVec_t::const_iterator it = vec.cbegin();
+                if(it != vec.cend()){
+                    while(1) {
+                        Object str2 = runtime::implicitToString(intp, *it++);
+                        str.s_ptr->str.append(str2.s_ptr->str);
+                        if(it == vec.cend())
+                            break;
+                        str.s_ptr->str.append(", ");
+                    }
+                }
+                str.s_ptr->str.push_back(']');
+                return str;
             }
         }
     }
@@ -1242,5 +1396,16 @@ namespace sm{
 
     Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
         return makeFastInstance<lib::TupleClass::Tuple>(gc, lib::cTuple, temp, std::move(vec));
+    }
+
+    bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept{
+        if(runtime::of_type(obj, lib::cList)){
+            vecPtr = &reinterpret_cast<lib::ListClass::List*>(obj.i_ptr)->vec;
+            return true;
+        } else if(runtime::of_type(obj, lib::cTuple)){
+            vecPtr = &reinterpret_cast<lib::TupleClass::Tuple*>(obj.i_ptr)->vec;
+            return true;
+        }
+        return false;
     }
 }
