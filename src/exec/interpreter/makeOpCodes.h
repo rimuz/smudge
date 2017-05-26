@@ -64,7 +64,6 @@ namespace sm{
             ObjectVec_t::iterator first = end-size;
             *first = makeTuple(intp.rt->gc, false, ObjectVec_t(first, end));
             intp.exprStack.erase(++first, end);
-            ++addr;
         }
     }
 }
