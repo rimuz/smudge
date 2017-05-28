@@ -31,15 +31,17 @@ Inputs a floating point number from `stdin`.
 
 ### Function `get ()`
 Reads a character from `stdin`.
-**Returns** a string containing its value or `null` if entered `EOF` (e.g. Ctrl+D on Unix).
+**Returns** a string containing its value or `null` if `EOF`
+is entered (e.g. Ctrl+D on Unix).
 
 ### Function `getc ()`
 Reads a character from `stdin`.
-**Returns** an integer containing its ASCII value or -1 if entered `EOF` (e.g. Ctrl+D on Unix).
+**Returns** an integer containing its ASCII value or -1 if  
+`EOF` is entered `EOF` (e.g. Ctrl+D on Unix).
 
 ### Function `next ()`
 Inputs a string from `stdin` ending by **newline** character (`\n`), **tab** character (`\t`), or **spaces**.
-**Returns** the string, but never returns `null`.
+**Returns** the string, and never returns `null`.
 
 ### Function `operator<< (obj)`
 Alias for **`print (obj)`**.
@@ -81,7 +83,7 @@ Closes the stream.
 
 ### Method `getc ()`
 Reads a character from `stdin`.
-**Returns** an integer containing its ASCII value or -1 if `EOF` was reached.
+**Returns** an integer containing its ASCII value or -1 if `EOF` is reached.
 
 ### Method `line ()`
 Reads a text line from the stream and stores it as a string.
@@ -89,7 +91,7 @@ Reads a text line from the stream and stores it as a string.
 
 ### Method `peek ()`
 Peeks the next character.
-**Returns** an integer containing its ASCII value or -1 if `EOF` was reached.
+**Returns** an integer containing its ASCII value or -1 if `EOF` is reached.
 
 ### Method `read (n)`
 Reads next **`n`** characters from the stream and stores them as a string.
