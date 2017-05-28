@@ -1,12 +1,7 @@
 ## The Smudge Programming Language - Documentation of box `std.lang`
 The box `std.lang` is imported by default, because it contains all the methods
 of strings, lists and tuples.
-
-## Warning
-At the moment I'm still developing this box, so it's incomplete and unstable.
-However, all of the classes/functions documented in this page are **alredy**
-stable and tested.
-
+s
 ## Class `String`
 Class `String` provides all the methods invokable from a string object.
 This class is very special, because it's the **only one** of the SSL which
@@ -48,13 +43,13 @@ This is why Smudge has two different methods to get the length of a string:
 You should use `len()` only when working with ASCII strings or you need to
 obtain its memory size (in bytes).
 
-#### Why UTF-8? And why now UTF-16, UTF-32, UCS-2 or other encondings?
+#### Why UTF-8? And why not UTF-16, UTF-32, UCS-2 or other encondings?
 I've chosen UTF-8 because of its total compatibility with ASCII and because
 it's the cheapest in terms of memory: as I said, strings that use **only** or
 **mostly** ASCII will be up to twice longer in UTF-16 (and up to four times
 longer in UTF-32). Also:
 - Java and .NET use UTF-16
-- Golang and python use UTF-8
+- Golang and Python use UTF-8s
 
 ### Function `idx(i)`
 Calculates the index in **bytes** from the given index in **characters** `i`.
@@ -71,4 +66,32 @@ calculated (e.g. in case of **out of index**).
 ### Function `empty()`
 **Returns** true if the string is empty, false otherwise.
 
-### Function `compare(str)`
+### Function `compare(str[, ignore_case = false])`
+Compares this string to the string given **`str`**.
+**Returns** an integer which will be:
+- **< 0** if **this < str**
+- **0** if **this == str**
+- **1** if **`str`** is not a string.
+- **> 0** if **this > str**
+
+Also, the comparision between strings can be done ignoring
+cases: just pass **`ignore_case`** as **`true`**!
+
+### Function `u_compare(str[, ignore_case = false])`
+Compares this string to the string given **`str`**, like
+function **`compare()`** does, but supporting all the
+**UTF-8** characters.
+
+### Function `== (str)`
+Compares this string to the string given **`str`**.
+**Returns** `true` if they are equal, `false` otherwise.
+
+### Function `!= (str)`
+Compares this string to the string given **`str`**.
+**Returns** `true` if they are different, `false` otherwise.
+
+### Functions `< (str)`, `<= (str)`, `> (str)`, `>= (str)`
+Compares this string to the string given **`str`**.
+**Returns** `true` if the string is respectively
+less than, less or equal to, greater than or greater or equal
+to `str`.
