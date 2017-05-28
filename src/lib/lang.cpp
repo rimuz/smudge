@@ -165,8 +165,9 @@ namespace sm{
                 _NativeMethod(bitand_op, 1);
                 _NativeMethod(equal_op, 1);
                 _NativeMethod(not_equal_op, 1);
-                _NativeMethod(slice, 1);
+                _NativeMethod(slice, 2);
                 _NativeMethod(get, 1);
+                _NativeMethod(list, 2);
                 _NativeMethod(size, 0);
                 _NativeMethod(empty, 0);
                 _NativeMethod(to_string, 0);
@@ -181,6 +182,7 @@ namespace sm{
             _NativeFunc(not_equal_op);
             _NativeFunc(slice);
             _NativeFunc(get);
+            _NativeFunc(list);
             _NativeFunc(size);
             _NativeFunc(empty);
             _NativeFunc(to_string);
@@ -279,6 +281,7 @@ namespace sm{
 
                 _MethodTuple(TupleClass, slice),
                 _MethodTuple(TupleClass, get),
+                _MethodTuple(TupleClass, list),
                 _MethodTuple(TupleClass, size),
                 _MethodTuple(TupleClass, empty),
                 _MethodTuple(TupleClass, to_string),
@@ -363,7 +366,7 @@ namespace sm{
             _NativeFunc(u_compare){
                 size_t argc = args.size();
                 if(argc == 0 || args[0].type != ObjectType::STRING){
-                    return makeInteger(0);
+                    return makeInteger(1);
                 } else if(argc >= 2 && runtime::implicitToBool(args[1])){
                     return makeInteger(self.s_ptr->str.uCompareIgnoreCase(args[0].s_ptr->str));
                 }
@@ -824,8 +827,9 @@ namespace sm{
             _BindMethod(Tuple, bitand_op, 1);
             _BindMethod(Tuple, equal_op, 1);
             _BindMethod(Tuple, not_equal_op, 1);
-            _BindMethod(Tuple, slice, 1);
+            _BindMethod(Tuple, slice, 2);
             _BindMethod(Tuple, get, 1);
+            _BindMethod(Tuple, list, 2);
             _BindMethod(Tuple, size, 0);
             _BindMethod(Tuple, empty, 0);
             _BindMethod(Tuple, to_string, 0);
@@ -1319,7 +1323,7 @@ namespace sm{
                     ? makeFalse() : makeTrue();
             }
 
-            _NativeMethod(Tuple::slice, 1){
+            _NativeMethod(Tuple::slice, 2){
                 if(args[0].type != ObjectType::INTEGER){
                     return Object();
                 }
@@ -1362,6 +1366,41 @@ namespace sm{
                 if(!runtime::findIndex(i, i, sz))
                     return Object();
                 return vec[i];
+            }
+
+            _NativeMethod(Tuple::list, 2){
+                if(args[0].type != ObjectType::INTEGER){
+                    return Object();
+                }
+
+                integer_t size = vec.size();
+                integer_t start = args[0].i;
+                ObjectVec_t::iterator begin = vec.begin();
+
+                if(start < 0){
+                    start += size;
+                    if(start < 0)
+                        return makeList(intp.rt->gc, false, vec);
+                } else if(start >= size)
+                    return makeList(intp.rt->gc, false);
+
+                if(args[1].type == ObjectType::INTEGER){
+                    integer_t end = args[1].i;
+                    if(end < 0){
+                        end += size;
+                        if(end < 0 || end < start)
+                            return Object();
+                    } else if(end > size)
+                        return Object();
+                    else if(end < start)
+                        return Object();
+                    return makeList(intp.rt->gc, false,
+                            ObjectVec_t(begin + start, begin + end));
+                } else if(args[1].type != ObjectType::NONE)
+                    return Object();
+
+                return makeList(intp.rt->gc, false,
+                        ObjectVec_t(begin + start, vec.end()));
             }
 
             _NativeMethod(Tuple::size, 0){
