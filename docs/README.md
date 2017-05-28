@@ -44,6 +44,14 @@ For example, `f1(a[, b = 100[, c = f2(a)]])` means `a function f1 which has thre
  - `c`: which is optional, with as default value the result of the expression
 `f2(a)`
 
+### `EoW`
+**`EoW`** (state of Error Or Wrong paramater passed) is a very
+common term used by the `SmudgeDocs` to denote the situation
+when one or more **prerequisites** of a function are
+**violated**. Most of the functions of the SSL return `null`
+when an EoW occurs (e.g. function `get()` in `String`, when
+the index given is greater than the string's size).
+
 ### Congratulations
 Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
 
