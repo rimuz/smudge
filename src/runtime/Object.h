@@ -221,6 +221,8 @@ namespace sm{
         virtual ~Instance() = default;
     };
 
+    size_t objectHash(exec::Interpreter& intp, const Object& obj);
+
     Object newObject(runtime::GarbageCollector& gc, bool temp = true) noexcept;
     Object makeFunction(Function*) noexcept;
     Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
