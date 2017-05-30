@@ -68,7 +68,9 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - Classes
 - The **Smudge Standard Library** (the **SSL**)
     - [std.io](stdio.md)
+        - [Class FileStream](std.io#class-filestream)
     - [std.lang](stdlang.md)
+        - [Class String](stdlang.md#class-string)
 
 ## For the contributors
 - How Smudge works
