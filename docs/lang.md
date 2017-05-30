@@ -96,8 +96,8 @@ Compares this string to the string given **`str`**.
 **Returns** `true` if they are different, `false` otherwise.
 
 ### Functions `< (str)`, `<= (str)`, `> (str)`, `>= (str)`
-Compares this string to the string given **`str`**.
-**Returns** `true` if the string is respectively
+Compare this string to the string given **`str`**.
+**Return** `true` if the string is respectively
 less than, less or equal to, greater than or greater or equal
 to `str`.
 
@@ -127,4 +127,6 @@ of each byte of the string.
 of the origin string.
 
 ### Function `join (list)`
-TODO!!
+Concatenates all the string equivalent of `list`'s elements with the string as
+separator.
+**Returns** the string, or **`null`**
