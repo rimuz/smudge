@@ -33,6 +33,7 @@ namespace sm{
         Class* cTuple = nullptr;
 
         oid_t idToString;
+        oid_t idHash;
 
         namespace StringClass {
             _NativeFunc(idx);
@@ -168,6 +169,7 @@ namespace sm{
                 _NativeMethod(slice, 2);
                 _NativeMethod(get, 1);
                 _NativeMethod(list, 2);
+                _NativeMethod(hash, 0);
                 _NativeMethod(size, 0);
                 _NativeMethod(empty, 0);
                 _NativeMethod(to_string, 0);
@@ -183,6 +185,7 @@ namespace sm{
             _NativeFunc(slice);
             _NativeFunc(get);
             _NativeFunc(list);
+            _NativeFunc(hash);
             _NativeFunc(size);
             _NativeFunc(empty);
             _NativeFunc(to_string);
@@ -193,6 +196,7 @@ namespace sm{
             box->boxName = nBox;
 
             idToString = _Id("to_string");
+            idHash = _Id("hash");
 
             cString = setClass(rt, box, "String", {
                 _OpTuple(StringClass, parse::TT_PLUS, plus),
@@ -282,6 +286,7 @@ namespace sm{
                 _MethodTuple(TupleClass, slice),
                 _MethodTuple(TupleClass, get),
                 _MethodTuple(TupleClass, list),
+                _MethodTuple(TupleClass, hash),
                 _MethodTuple(TupleClass, size),
                 _MethodTuple(TupleClass, empty),
                 _MethodTuple(TupleClass, to_string),
@@ -830,6 +835,7 @@ namespace sm{
             _BindMethod(Tuple, slice, 2);
             _BindMethod(Tuple, get, 1);
             _BindMethod(Tuple, list, 2);
+            _BindMethod(Tuple, hash, 0);
             _BindMethod(Tuple, size, 0);
             _BindMethod(Tuple, empty, 0);
             _BindMethod(Tuple, to_string, 0);
@@ -1401,6 +1407,15 @@ namespace sm{
 
                 return makeList(intp.rt->gc, false,
                         ObjectVec_t(begin + start, vec.end()));
+            }
+
+            _NativeMethod(Tuple::hash, 0){
+                // TODO implement a real hash algorithm instead of a sum!
+                size_t hash = 0;
+                for(const Object& obj : vec){
+                    hash += objectHash(intp, obj);
+                }
+                return makeInteger(hash);
             }
 
             _NativeMethod(Tuple::size, 0){
