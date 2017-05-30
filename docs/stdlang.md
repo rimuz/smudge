@@ -37,6 +37,7 @@ following the rule:
 |  2 | 110xxxxx 10xxxxxx |
 |  3 | 1110xxxx 10xxxxxx 10xxxxxx |
 |  4 | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx |
+
 Where `x` is replaced with the Unicode's codepoint of the characters.
 This is why Smudge has two different methods to get the length of a string:
  - `len()` which will return the **size** of the string expressed in **bytes**
