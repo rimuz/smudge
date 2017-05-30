@@ -68,6 +68,7 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - Classes
 - The **Smudge Standard Library** (the **SSL**)
     - [std.io](stdio.md)
+    - [std.lang](stdlang.md)
 
 ## For the contributors
 - How Smudge works
