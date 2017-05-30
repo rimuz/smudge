@@ -1,7 +1,7 @@
 ## The Smudge Programming Language - Documentation of box `std.lang`
 The box `std.lang` is imported by default, because it contains all the methods
 of strings, lists and tuples.
-s
+
 ## Class `String`
 Class `String` provides all the methods invokable from a string object.
 This class is very special, because it's the **only one** of the SSL which
