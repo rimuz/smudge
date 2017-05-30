@@ -27,9 +27,14 @@
 #include "runtime/Object.h"
 #include "exec/Interpreter.h"
 #include "compile/Statement.h"
+#include "runtime/casts.h"
 
 namespace sm{
     using namespace ObjectType;
+
+    namespace lib {
+        extern oid_t idHash;
+    }
 
     Object::Object()
             : i(0), type(NONE) {}
@@ -215,6 +220,76 @@ namespace sm{
 
     bool Instance::isTemp() const noexcept{
         return _temporary;
+    }
+
+    size_t objectHash(exec::Interpreter& intp, const Object& obj){
+        Object hashable = obj;
+        if(hashable.type == WEAK_REFERENCE
+                || hashable.type == STRONG_REFERENCE)
+            hashable = *hashable.o_ptr;
+
+        switch(hashable.type){
+            case NONE:
+                return 0;
+            case INTEGER:
+                return std::hash<integer_t>()(hashable.i);
+            case FLOAT:
+                return std::hash<float_t>()(hashable.f);
+            case STRING:
+                return hashable.s_ptr->str.hash();
+            case CLASS_INSTANCE: {
+                Object func;
+                Function* f_ptr;
+                if(!runtime::find<CLASS_INSTANCE>(hashable, func, lib::idHash)){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("function 'hash()' not found in ")
+                        + runtime::errorString(intp, hashable));
+                } else if(!runtime::callable(func, hashable, f_ptr)){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("'hash' is not a function in ")
+                        + runtime::errorString(intp, hashable));
+                }
+
+                Object ret = intp.callFunction(f_ptr, {}, hashable, true);
+                if(ret.type != INTEGER){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("'hash()' must return an int value in ")
+                        + runtime::errorString(intp, hashable));
+                }
+
+                return ret.i;
+            }
+
+            case BOX: {
+                Object func;
+                Object self;
+                Function* f_ptr;
+                if(!runtime::find<BOX>(hashable, func, lib::idHash)){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("function 'hash()' not found in ")
+                        + runtime::errorString(intp, hashable));
+                } else if(!runtime::callable(func, self, f_ptr)){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("'hash' is not a function in ")
+                        + runtime::errorString(intp, hashable));
+                }
+
+                Object ret = intp.callFunction(f_ptr, {}, self, true);
+                if(ret.type != INTEGER){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("'hash()' must return an int value in ")
+                        + runtime::errorString(intp, hashable));
+                }
+
+                return ret.i;
+            }
+
+            default:
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    runtime::errorString(intp, hashable)
+                    + " is not an hashable object.");
+                return 0;
+        }
     }
 
     Object newObject(runtime::GarbageCollector& gc, bool temp) noexcept {
