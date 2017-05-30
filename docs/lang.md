@@ -56,23 +56,26 @@ longer in UTF-32). Also:
 - Java and .NET use UTF-16
 - Golang and Python use UTF-8s
 
-### Function `idx (i)`
+### Method `idx (i)`
 Calculates the index in **bytes** from the given index in **characters** `i`.
 If `i` is negative, the characters will be counted from the end.
 **Returns** the **value** of the index resulting or **null** if it cannot be
 calculated (e.g. in case of **out of index**).
 
-### Function `len ()`
+### Method `len ()`
 **Returns** the **size** of the sring expressed in **bytes**.
 
-### Function `count ()`
-**Returns** the **length** of the string expressed in **characters**.
+### Method `count ([start = 0[, end = len()]])`
+**Returns** the **length** (expressed in **characters**) of the range of the
+string from index `start` (included) to index `end` (excluded).
+`start` and `end` are expressed in **bytes** and can be negative: in that case
+they will be counted from the end.
 
-### Function `empty ()`
+### Method `empty ()`
 **Returns** true if the string is empty, false otherwise.
 
-### Function `compare (str[, ignore_case = false])`
-Compares this string to the string given **`str`**.
+### Method `compare (str[, ignore_case = false])`
+Compares this string to the given string `str`.
 **Returns** an integer which will be:
 - **< 0** if **this < str**
 - **0** if **this == str**
@@ -82,51 +85,154 @@ Compares this string to the string given **`str`**.
 Also, the comparision between strings can be done ignoring
 cases: just pass **`ignore_case`** as **`true`**!
 
-### Function `u_compare (str[, ignore_case = false])`
-Compares this string to the string given **`str`**, like
+### Method `u_compare (str[, ignore_case = false])`
+Compares this string to the given string `str`, like
 function **`compare()`** does, but supporting all the
-**UTF-8** characters.
+**UTF-8** characters (when involving **cases**).
 
-### Function `== (str)`
-Compares this string to the string given **`str`**.
+### Method `== (str)`
+Compares this string to the given string `str`.
 **Returns** `true` if they are equal, `false` otherwise.
 
-### Function `!= (str)`
-Compares this string to the string given **`str`**.
+### Method `!= (str)`
+Compares this string to the given string `str`.
 **Returns** `true` if they are different, `false` otherwise.
 
-### Functions `< (str)`, `<= (str)`, `> (str)`, `>= (str)`
-Compare this string to the string given **`str`**.
+### Methods `< (str)`, `<= (str)`, `> (str)`, `>= (str)`
+Compare this string to the given string `str`.
 **Return** `true` if the string is respectively
 less than, less or equal to, greater than or greater or equal
 to `str`.
 
-### Function `get (idx)`
-**Returns** a **string** containing the **character**
-located at the index given `idx` (expressed in **bytes**) or
-**`null`** in case of **out of index**.
+### Method `+ (str)`
+**Returns** a new string created by concatenating the string with the given
+string `str`. If `str` is not a string, will be converted by calling its method
+`to_string()`.
+
+### Method `- (n_chs)`
+**Returns** a new string **without** the **last** *n* **bytes** specified by
+the given integer `n_chs` or `null` if `c_chs` is not an integer or is greater
+than `len()`.
+
+### Method `* (times)`
+**Returns** a new string whose content will be `times` reps of the string or
+`null` if `times` is not an integer. If `times` is negative, the string will
+be reversed. Thus, to simply reverse a string you need only to multiply for  
+`-1`.
+
+### Method `get (idx)`
+**Returns** a **string** containing the ASCII **character**
+located at the given index `idx` (expressed in **bytes**) or
+**`null`** in case of **out of index** (or id `idx` is not an integer).
 If `idx` is negative, it will be counted from the end of the
 string.
 
-### Function `u_get (n_ch)`
+### Method `u_get (n_ch)`
 **Returns** a **string** containing the UTF-8 **character**
-at the index given `n_ch` (expressed in **characters**) or
-**`null`** in case of **out of index**.
+at the given index `n_ch` (expressed in **characters**) or
+**`null`** in case of **out of index** (or id `n_ch` is not an integer).
 If `n_ch` is negative, it will be counted from the end of the string.
 
-### Function `contains (str)`
-**Returns** `true` if **`str`**'s content is contained into
+### Method `getc (idx)`
+**Returns** an **integer** containing the **code** of the ASCII character
+located at the given index `idx` (expressed in **bytes**) or
+**`null`** in case of **out of index** (or id `idx` is not an integer).
+If `idx` is negative, it will be counted from the end of the string.
+
+### Method `u_getc (n_ch)`
+**Returns** an **integer** containing the  **UNICODE codepoint** of the UTF-8
+**character** located at the given index `n_ch` (expressed in **bytes**) or
+**`null`** in case of **out of index** (or id `n_ch` is not an integer).
+If `n_ch` is negative, it will be counted from the end of the string.
+
+### Method `contains (str)`
+**Returns** `true` if `str`'s content is contained into
 the string, `false` otherwise.
 
-### Function `bytes ()`
+### Method `bytes ()`
 **Returns** a `List` containing **all** the **numeric** values
 of each byte of the string.
 
-### Function `chars ()`
+### Method `chars ()`
 **Returns** a `List` of strings cotaining each an **ASCII/UTF-8 character**
 of the origin string.
 
-### Function `join (list)`
-Concatenates all the string equivalent of `list`'s elements with the string as
-separator.
-**Returns** the string, or **`null`**
+### Method `join (list)`
+Concatenates all the string equivalent of `list`'s elements (got via a call to
+elements' `to_string()` method) with the string as separator. `list` can be
+either a `List` or a `Tuple`.
+**Returns** the string, or **`null`** if `list` is neither a `List` nor a
+`Tuple`.
+
+### Method `ends_with (str)`
+**Returns** `true` if the string **ends with** the given string `str`, `false`
+otherwise (or `null` if `str` is not a string).
+
+### Method `starts_with (str)`
+**Returns** `true` if the string **starts with** the given string `str`,
+`false` otherwise (or `null` if `str` is not a string).
+
+### Method `hash ()`
+**Returns** the hash value of the string.
+
+### Method `find (str)`
+**Returns** the index location of the given string `str` in the string,
+returning `len()` if `str` is not found or `null` if `str` is not a string.
+
+### Method `find_last (str)`
+**Same as `find (str)`**, but only the last occurrence of `str` is taken into
+account.
+
+### Method `substr (start[, end = len()])`
+**Returns** a copy of the string from index `start` (included) to index `end`
+(excluded) or `null` if `start` > `end` or if they are not integers.
+Just as previous methods, indexes `start` and `end` can be negative: in that
+case they will be counted from the end of the string.
+
+### Method `u_substr (u_start[, u_end = count()])`
+Same as `substr()`, but uses indexes expressed in **characters** instead of
+**bytes**.
+
+### Method `replace ([to_replace = ''[, replacement = '']])`
+**Returns** a new string where all the occurrences of string `to_replace` are
+replaced with string `replacement` or `null` if `replacement` is not a string.
+If `replacement` is an empty string, every occurrences will be simply removed
+from the string, while if `to_replace` is not a string or is an empty string,
+the returned string won't be different to the original.
+
+### Method `replace_first ([to_replace = ''[, replacement = '']])`
+Same as `replace()`, but only the first occurrence is replaced.
+
+### Method `split (separators[, skipEmpty = true])`
+Splits the string into tokens separated by **any** of the string
+`separators`'s **bytes**. If `skipEmpty` is set to `false`, are valid tokens
+empty ones, too. **Returns** a `List` containing the created tokens, or
+`null` if `separators` is not a string.
+
+### Method `trim ()`
+**Returns** a copy of the string without **spacing characters** (all
+ASCII characters <= ' ', such as **control characters**, **spaces**, **tabs**,
+**newlines**, etc.) at the begin end at the end of the string.
+
+### Method `upper ()`
+**Returns** a copy of the string with all the **ASCII characters** in their
+**uppercase** version.
+
+### Method `lower ()`
+**Returns** a copy of the string with all the **ASCII characters** in their
+**lowercase** version.
+
+### Method `u_upper ()`
+**Returns** a copy of the string with all the **UTF-8 characters** in their
+**uppercase** version.
+
+### Method `u_lower ()`
+**Returns** a copy of the string with all the **UTF-8 characters** in their
+**lowercase** version.
+
+### Method `clone ()`
+**Returns** an exact copy of the string, stored in a distinct address of the
+memory.
+
+### Method `to_string ()`
+**Returns** the string.
