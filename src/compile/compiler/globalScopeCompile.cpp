@@ -133,7 +133,7 @@ namespace sm{
 
                                 if(!found){
                                     _rt->boxNames.back().push_back('!');
-                                    lib::LibDict_t::const_iterator cit = lib::libs.find(imported);
+                                    lib::LibDict_t::const_iterator cit = lib::libs.find(_rt->boxNames.back());
                                     if(cit == lib::libs.end() || _rt->noStd){
                                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                             std::string("can't import '") + imported + "'. Make sure the file exists.");
