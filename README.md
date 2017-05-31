@@ -17,7 +17,7 @@ make install
 Command `./configure` can take different options, to see them type `./configure --help`
 
 ### Language overview
-Go to this [link](https://smudgelang.github.io/smudge/) to learn how to write an Hello world program (and much more!) in Smudge.
+Go to this [link](https://smudgelang.github.io/smudge/) to learn how to program in Smudge.
 
 ### Licensing
 Smudge is licensed under the Apache License 2.0. To read the conditions take a look to the file `LICENSE` in the main folder.
