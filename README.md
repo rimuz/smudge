@@ -8,7 +8,7 @@ With its C-like syntax, Smudge provides a **simple** but **effective** and **pow
 
 
 ### How to build
-From **Posix**, **Mac** and **Cygwin**, Smudge can be built with the following commands:
+From **Linux**, **Mac** and **Cygwin**, Smudge can be built with the following commands:
 ```
 ./configure
 make
