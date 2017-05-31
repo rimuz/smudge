@@ -177,8 +177,8 @@ namespace sm{
             unsigned ln = 0, ch = 0, source = 0;
             string_t content;
             union {
-                float_t f;
-                integer_t i = 0;
+                float_t f = 0.f;
+                integer_t i;
             };
         };
 
