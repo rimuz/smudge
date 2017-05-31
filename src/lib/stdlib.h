@@ -68,8 +68,8 @@ namespace sm {
         _LibDecl(lang);
 
         const LibDict_t libs = {
-            _LibTuple("std/io.sm", io),
-            _LibTuple("std/lang.sm", lang),
+            _LibTuple("std.io!", io),
+            _LibTuple("std.lang!", lang),
         };
 
         inline unsigned id(runtime::Runtime_t& rt, const string_t& str){
