@@ -332,5 +332,28 @@ in that case they will be counted from the end of the list.
 ### Method `tuple ([start = 0[, end = size()]])`
 Same as `clone()`, but **returns** a `Tuple` instance instead of a list.
 
-### TODO
-Working in progress.
+### Method `append (lst)`
+Added the content of the list `lst` to the end of this list or does nothing
+if `lst` is not a list.
+**Returns** `null`.
+
+### Method `insert (idx, obj)`
+Inserts the object `obj` at the given index `idx`.
+`idx` can be negative, in that case it will be counted from the end.
+Does nothing if `idx` is not an integer or if it's out of range.
+**Returns** `null`.
+
+### Method `insert_list (idx, lst)`
+Same as `insert()`, but inserts the whole content of the list or tuple given
+`lst`. Does nothing if `lst` is neither a tuple nor a list.
+
+### Method `erase ([start = 0[, end = start+1]])`
+Removes elements from index `start` (included) to index `end` (excluded)
+from the list. Since the `end`'s default value is `start`'s plus one,
+when **only `start`** index is specified, **only** the object at that index
+will be removed. `start` and `end` can be negative, in that case they will be
+counted from the end. Does nothing when either `start` or `end` is not an
+integer, or the range given is broken (e.g. start < end). '**Returns** `null`.
+
+### Working in progress
+**TODO**
