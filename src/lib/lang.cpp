@@ -1060,12 +1060,12 @@ namespace sm{
 
             _NativeMethod(List::insert, 2){
                 if(args[0].type != ObjectType::INTEGER)
-                    return makeFalse();
+                    return Object();
                 integer_t idx = args[0].i;
                 if(!runtime::findIndex(idx, idx, vec.size()))
-                    return makeFalse();
+                    return Object();
                 vec.insert(vec.begin() + idx, args[1]);
-                return makeTrue();
+                return Object();
             }
 
             _NativeMethod(List::erase, 2){
@@ -1106,13 +1106,13 @@ namespace sm{
                 ObjectVec_t* toInsert;
                 if(args[0].type != ObjectType::INTEGER
                         || !hasVector(args[1], toInsert))
-                    return makeFalse();
+                    return Object();
 
                 integer_t idx = args[0].i;
                 if(!runtime::findIndex(idx, idx, vec.size()))
-                    return makeFalse();
+                    return Object();
                 vec.insert(vec.begin() + idx, toInsert->begin(), toInsert->end());
-                return makeTrue();
+                return Object();
             }
 
             _NativeMethod(List::copy_list, 2){
