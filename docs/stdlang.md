@@ -6,6 +6,8 @@ of strings, lists and tuples.
 Class `String` provides all the methods invokable from a string object.
 This class is very special, because it's the **only one** of the SSL which
 has **not** a matching **native class** (with native I mean a C++ class).
+A string can be instanced by enclosing its content with a couple of quotes
+`'` or double quotes `"`.
 
 ## `String` and **UTF-8**
 Smudge's strings fully support **UTF-8** with some
@@ -56,6 +58,27 @@ it's the cheapest in terms of memory: as I said, strings that use **only** or
 longer in UTF-32). Also:
 - Java and .NET use UTF-16
 - Golang and Python use UTF-8s
+
+### Escape characters
+Those are characters you can insert to a string via the blakslash
+characters in combination with another character.
+
+| Escape character | Value | Description |
+|:----------------:|:-----:|:-----------:|
+| `\'` | 0x27 | Single quote |
+| `\"` | 0x22 | Double quote |
+| `\\` | 0x5C | Backslash |
+| `\a` | 0x07 | Bell |
+| `\b` | 0x88 | Backspace |
+| `\f` | 0x0C | Form feed - New page |
+| `\n` | 0x0A | Form feed - New line |
+| `\r` | 0x0D | Carriage return |
+| `\t` | 0x09 | Horizontal tab |
+| `\v` | 0x0B | Vertical tab |
+| `\NNN` | value NNN | Arbitrary octal value (only **ASCII**) |
+| `\xNN` | value NN | Arbitrary hexadecimal value (only **ASCII**) |
+| `\uNNNN` | codepoint U+NNNN | Arbitrary hexadecimal 32-bit Unicode codepoint (only **UTF-8**) |
+| `\UNNNNNNNN` | codepoint U+NNNNNNNN | Arbitrary hexadecimal 64-bit Unicode codepoint  (only **UTF-8**) |
 
 ### Method `idx (i)`
 Calculates the index in **bytes** from the given index in **characters** `i`.
@@ -237,3 +260,77 @@ memory.
 
 ### Method `to_string ()`
 **Returns** the string.
+
+## Class `List`
+This is the class which provides all the Smudge lists' functionalities.
+A `List` can be instanced simply with **a couple of brackets** containing
+the elements separed by `,`. Lists' elements could be of **any type**.
+```
+/* A list could contain integers, strings and lists as well */
+var my_list = [0, 1, "Hello!", [0, "World!"], xyz];
+```
+
+### Method `[] (idx)`
+**Returns** a **reference** to the element located ad the given index `idx`,
+or `null` if `idx` is not an integer or is **out of index**.
+if `idx` is negative, it will be counted from the end.
+
+### Method `+ (lst)`
+Concatenates the list with the given list or tuple `lst`.
+**Returns** the new list or `null` if `lst` is neither a list nor a tuple.
+
+### Method `- (n)`
+**Returns** the list without the last `n` elements, or `null` if `n` is
+not an integer or negative.
+
+### Method `* (n)`
+**Returns** a new list which is `n` times this list or `null` if `n` is not
+an integer. if `n` is negative, the output list will be reversed.
+
+### Method `| (lst)`
+**Returns** a new list containing all the elements from this and `lst` lists,
+repeating the objects in common only **once** (works well with lists containing
+**unique** elements) or `null` if `lst` is neither a list nor a tuple.
+
+### Method `& (lst)`
+**Returns** a list containing **only** the objects **in common** between this
+list and `lst` (works well if each list has only unique elements), or `null`
+if `lst` is neither a list nor a tuple.
+
+### Method `== (lst)`
+**Returns** `true` if `lst` is a list and its content is equivalent to this
+list's, `false` otherwise.
+
+### Method `!= (lst)`
+**Returns** `false` if `lst` is a list and its content is equivalent to this
+list's, `true` otherwise.
+
+### Method `reserve (size)`
+Reserves enough space in memory for the list to contain `size` elements.
+If `size` is not an integer or is negative, it does nothing.
+**Returns** `null`.
+
+### Method `resize (size)`
+Resizes the list to size `size`, objects eventually added will be `null`s.
+If `size` is not an integer or is negative, it does nothing.
+**Returns** `null`.
+
+### Method `pop ()`
+Removes the last element to the list or does nothing if the list is empty.
+**Returns** `null`.
+
+### Method `push (obj)`
+Adds object `obj` to the end of the list.
+**Returns** `null`.
+
+### Method `clone ([start = 0[, end = size()]])`
+**Returns** a list containing a copy of the object from index `start`
+(included) to index `end` (excluded), or null if either `start` or `end`
+is not an integer or an out of range one. As always, indexes can be negative,
+in that case they will be counted from the end of the list.
+
+### Method `tuple ([start = 0[, end = size()]])`
+Same as `clone()`, but **returns** a `Tuple` instance instead of a list.
+
+### TODO
+Working in progress.
