@@ -60,7 +60,7 @@ longer in UTF-32). Also:
 - Golang and Python use UTF-8s
 
 ### Escape characters
-Those are characters you can insert to a string via the blakslash
+Those are characters you can insert to a string via the blackslash
 characters in combination with another character.
 
 | Escape character | Value | Description |
