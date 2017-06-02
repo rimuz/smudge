@@ -963,16 +963,18 @@ namespace sm{
             }
 
             _NativeMethod(List::reserve, 1){
-                if(args[0].type != ObjectType::INTEGER)
+                integer_t i;
+                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
                     return Object();
-                vec.reserve(args[0].i);
+                vec.reserve(i);
                 return Object();
             }
 
             _NativeMethod(List::resize, 1){
-                if(args[0].type != ObjectType::INTEGER)
+                integer_t i;
+                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
                     return Object();
-                vec.resize(args[0].i);
+                vec.resize(i);
                 return Object();
             }
 
