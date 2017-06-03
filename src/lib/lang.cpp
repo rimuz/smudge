@@ -1189,7 +1189,7 @@ namespace sm{
 
             _NativeMethod(List::sort, 1){
                 if(runtime::implicitToBool(args[0]))
-                    std::sort(vec.begin(), vec.end(), runtime::BinaryGreater(intp));
+                    std::sort(vec.rbegin(), vec.rend(), runtime::BinaryLess(intp));
                 else
                     std::sort(vec.begin(), vec.end(), runtime::BinaryLess(intp));
                 return Object();
