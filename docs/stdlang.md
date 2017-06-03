@@ -355,5 +355,27 @@ will be removed. `start` and `end` can be negative, in that case they will be
 counted from the end. Does nothing when either `start` or `end` is not an
 integer, or the range given is broken (e.g. start < end). '**Returns** `null`.
 
-### Working in progress
-**TODO**
+### Method `copy_list (idx, lst)`
+Copies the content of list or tuple `lst` in the list starting from index idx
+following the table:
+
+| Condition | What happens |
+|:---------:|:-------------|
+| `idx` is not an integer or `lst` is not a list or a tuple | Nothing, returns `false`. |
+| `idx` >= size() | Nothing, returns `false`. |
+| `idx` < size() and `idx + lst.size()` <= `size()` | Copies `lst`'s content in this list, starting at given index. Returns `true` |
+| `idx` < size() but `idx + lst.size()` > `size()` | Same as above, but resizes this list in order to contain the whole `lst' content. Returns `true`. |
+
+### Method `find (obj)`
+Searches an equivalent object to `obj` (checked via `operator== ()`).
+**Returns** the index of the first occurence, or `null` if not found.
+
+### Method `count (obj)`
+Counts how many equivalent objects to `obj` (checked via `operator== ()`).
+**Returns** integer which value is the number counted.
+
+### Method `slice (start[, end = size()])`
+Same as `clone()` but the parameter `start` is not optional.
+
+### Method `sort ([reversed = false])`
+TODO: work in progress
