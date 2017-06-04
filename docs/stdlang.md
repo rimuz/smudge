@@ -12,25 +12,23 @@ A string can be instanced by enclosing its content with a couple of quotes
 ## `String` and **UTF-8**
 Smudge's strings fully support **UTF-8** with some
 specialized functions (when we treat them, I'll tell you,
-but typically they start with `u_`). However, to use it
+but typically they start with `u_`). However, to use them
 effectively, you should understand how does UTF-8
 work: below is a simple explanation.
 
 #### ASCII and UTF-8
-As you know, ASCII uses only **7 bits** to represent all its
-characters.
-All its implementations, although, use a whole **byte** for
-each character.
-**UTF-8** was born to extend the character set of **ASCII**
-being, at the
+As you know, ASCII uses only **7 bits** to represent all its characters.
+All its implementations, although, use a whole **byte** for each character.
+**UTF-8** was born to extend the character set of **ASCII**, being, at the
 same way, fully compatible with it.
 
 In fact, all ASCII strings **are**
 automatically UTF-8 strings because all of the ASCII
 characters **exist** in
 UTF-8. But how are [128,172](http://www.unicode.org/versions/Unicode9.0.0/)
-characters represented in a single byte? The answer is: they are **not** in
-a single byte! Each UTF-8 character is contained in 1, 2, 3 or even 4 **bytes**
+characters represented in a single byte? The answer is: they are **not** stored
+in a single byte! Each UTF-8 character is contained in 1, 2, 3 or even 4
+**bytes**
 following the rule:
 
 | N. of bytes per character | Value in binary |
@@ -40,16 +38,16 @@ following the rule:
 |  3 | 1110xxxx 10xxxxxx 10xxxxxx |
 |  4 | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx |
 
-Where `x` is replaced with the Unicode's codepoint of the characters.
+Where `x`s are replaced with the Unicode's codepoint of the characters.
 This is why Smudge has two different methods to get the length of a string:
  - `len()` which will return the **size** of the string expressed in **bytes**
     (faster, **O(1)**).
  - `count()` which will return the **length** of the string expressed
     in **characters** (slower, **O(N)**). This is an example of one of those
-    *magic* functions I've previously talk about.
+    *charming* functions I've previously talk about.
 
 You should use `len()` only when working with ASCII strings or you need to
-obtain its memory size (in bytes).
+obtain its real memory size (in bytes).
 
 #### Why UTF-8? And why not UTF-16, UTF-32, UCS-2 or other encondings?
 I've chosen UTF-8 because of its total compatibility with ASCII and because
@@ -57,13 +55,15 @@ it's the cheapest in terms of memory: as I said, strings that use **only** or
 **mostly** ASCII will be up to twice longer in UTF-16 (and up to four times
 longer in UTF-32). Also:
 - Java and .NET use UTF-16
-- Golang and Python use UTF-8s
+- Golang and Python use UTF-8
 
-### Escape characters
-Those are characters you can insert to a string via the blackslash
-characters in combination with another character.
+### Escape sequences
+Some characters **can't be just typed** between the quotes (such as
+`new line`, `carriage return`, `tab`, `any control character`, etc.),
+so you can enter any character via special sequences called **escape
+sequences**.
 
-| Escape character | Value | Description |
+| Escape sequences | Value | Description |
 |:----------------:|:-----:|:-----------:|
 | `\'` | 0x27 | Single quote |
 | `\"` | 0x22 | Double quote |
@@ -77,8 +77,8 @@ characters in combination with another character.
 | `\v` | 0x0B | Vertical tab |
 | `\NNN` | value NNN | Arbitrary octal value (only **ASCII**) |
 | `\xNN` | value NN | Arbitrary hexadecimal value (only **ASCII**) |
-| `\uNNNN` | codepoint U+NNNN | Arbitrary hexadecimal 32-bit Unicode codepoint (only **UTF-8**) |
-| `\UNNNNNNNN` | codepoint U+NNNNNNNN | Arbitrary hexadecimal 64-bit Unicode codepoint  (only **UTF-8**) |
+| `\uNNNN` | codepoint U+NNNN | Arbitrary hexadecimal 32-bit Unicode codepoint (**UTF-8**) |
+| `\UNNNNNNNN` | codepoint U+NNNNNNNN | Arbitrary hexadecimal 64-bit Unicode codepoint  (**UTF-8**) |
 
 ### Method `idx (i)`
 Calculates the index in **bytes** from the given index in **characters** `i`.
