@@ -141,8 +141,7 @@ than `len()`.
 ### Method `* (times)`
 **Returns** a new string whose content will be `times` reps of the string or
 `null` if `times` is not an integer. If `times` is negative, the string will
-be reversed. Thus, to simply reverse a string you need only to multiply for  
-`-1`.
+be reversed. Thus, to simply reverse a string you need only to multiply for  `-1`.
 
 ### Method `get (idx)`
 **Returns** a **string** containing the ASCII **character**
@@ -378,4 +377,20 @@ Counts how many equivalent objects to `obj` (checked via `operator== ()`).
 Same as `clone()` but the parameter `start` is not optional.
 
 ### Method `sort ([reversed = false])`
-TODO: work in progress
+Sorts the list in place in ascending order if `reversed` is `false`, or
+descending order if `reversed` is `true`. The elements of the list are
+compared via the operator `<`, which can be overloaded. **Returns** `null`.
+
+### Method `unique ()`
+Eliminates all but the first element from every consecutive group of
+equivalent elements from the list. **Returns** `null`.
+
+### Method `to_string ()`
+**Returns** a string representation of the list (typically elements'
+`to_string()` values separated by a comma inside a couple of brackets).
+
+### Method `empty ()`
+**Returns** `true` if the list is empty (has no elements), `false` otherwise.
+
+### Method `size ()`
+**Returns** the number of elements contained by the list.  
