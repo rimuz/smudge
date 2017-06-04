@@ -73,6 +73,7 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
         - [Class FileStream](stdio.md#class-filestream)
     - [std.lang](stdlang.md)
         - [Class String](stdlang.md#class-string)
+        - [Class List](stdlang.md#class-list)
 
 ## For the contributors
 - How Smudge works
