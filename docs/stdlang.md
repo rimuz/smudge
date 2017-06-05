@@ -1,4 +1,4 @@
-## The Smudge Programming Language - Documentation of box `std.lang`
+yt## The Smudge Programming Language - Documentation of box `std.lang`
 The box `std.lang` is imported by default, because it contains all the methods
 of strings, lists and tuples.
 
@@ -282,9 +282,10 @@ Concatenates the list with the given list or tuple `lst`.
 **Returns** the list without the last `n` elements, or `null` if `n` is
 not an integer or negative.
 
-### Method `* (n)`
-**Returns** a new list which is `n` times this list or `null` if `n` is not
-an integer. if `n` is negative, the output list will be reversed.
+### Method `* (times)`
+**Returns** a new list whose content will be `times` reps of the list or
+`null` if `times` is not an integer. If `times` is negative, the list will
+be reversed. Thus, to simply reverse a list you need only to multiply for `-1`.
 
 ### Method `| (lst)`
 **Returns** a new list containing all the elements from this and `lst` lists,
@@ -323,7 +324,7 @@ Adds object `obj` to the end of the list.
 **Returns** `null`.
 
 ### Method `clone ([start = 0[, end = size()]])`
-**Returns** a list containing a copy of the object from index `start`
+**Returns** a list containing a copy of the objects from index `start`
 (included) to index `end` (excluded), or null if either `start` or `end`
 is not an integer or an out of range one. As always, indexes can be negative,
 in that case they will be counted from the end of the list.
@@ -373,8 +374,8 @@ Searches an equivalent object to `obj` (checked via `operator== ()`).
 Counts how many equivalent objects to `obj` (checked via `operator== ()`).
 **Returns** integer which value is the number counted.
 
-### Method `slice (start[, end = size()])`
-Same as `clone()` but the parameter `start` is not optional.
+### Method `slice ([start = 0[, end = size()]])`
+Alias for `clone()`.
 
 ### Method `sort ([reversed = false])`
 Sorts the list in place in ascending order if `reversed` is `false`, or
@@ -394,3 +395,66 @@ equivalent elements from the list. **Returns** `null`.
 
 ### Method `size ()`
 **Returns** the number of elements contained by the list.  
+
+## Class `Tuple`
+Tuples are immutable lists. You can instance a `Tuple` by enclosing its
+elements with a couple of round brackets (i.e. `()`).
+```
+/* Tuples are just like lists, but are immutable. */
+var my_tuple = (1, 2, "Hello", ("World", [0, 1, "!"], ()), []);
+```
+
+### Method `+ (lst)`
+**Returns** a new tuple created by concatenating the tuple to list or tuple
+`lst` or `null` if `lst` is neither a list nor a tuple.
+
+### Method `- (n)`
+**Returns** a new tuple without the last `n` elements of the tuple or `null`
+if `n` is not an integer or negative.
+
+### Method `* (times)`
+**Returns** a new tuple whose content will be `times` reps of the tuple or
+`null` if `times` is not an integer. If `times` is negative, the tuple will
+be reversed. Thus, to simply reverse a tuple you need only to multiply for `-1`.
+
+### Method `| (tup)`
+**Returns** a new tuple containing all the elements from this and `tup` tuples,
+repeating the objects in common only **once** (works well with tuples containing
+**unique** elements) or `null` if `tup` is neither a list nor a tuple.
+
+### Method `& (tup)`
+**Returns** a tuple containing **only** the objects **in common** between this
+tuple and `tup` (works well if each tuple has only unique elements), or `null`
+if `tup` is neither a list nor a tuple.
+
+### Method `== (lst)`
+**Returns** `true` if `lst` is a tuple and its content is equivalent to this
+tuple's, `false` otherwise.
+
+### Method `!= (lst)`
+**Returns** `false` if `lst` is a tuple and its content is equivalent to this
+tuple's, `true` otherwise.
+
+### Method `slice ([start = 0[, end = size()]])`
+**Returns** a tuple containing a copy of the objects from index `start`
+(included) to index `end` (excluded), or null if either `start` or `end`
+is not an integer or an out of range one. As always, indexes can be negative,
+in that case they will be counted from the end of the list.
+
+### Method `get (idx)`
+**Returns** the element located at the given index `idx`, or `null` if `idx` is
+not an integer, or out of range. `idx` can be negative, in that case it will be
+counted from the end.
+
+### Method `list ([start = 0[, end = size()]])`
+Same as `slice()`, but returns a list.
+
+### Method `hash ()`
+**Returns** the hash value of the tuple.
+
+### Method `empty ()`
+**Returns** `true` if the tuple is empty (has no elements), `false` otherwise.
+
+### Method `to_string ()`
+**Returns** a string representation of the tuple, very similar to tuple's with
+round brackets instead of brackets.
