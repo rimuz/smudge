@@ -1147,23 +1147,19 @@ namespace sm{
             }
 
             _NativeMethod(List::slice, 2){
-                if(args[0].type != ObjectType::INTEGER){
-                    return Object();
-                }
-
+                integer_t start = 0;
                 integer_t size = vec.size();
-                integer_t start = args[0].i;
-                ObjectVec_t::iterator begin = vec.begin();
+                integer_t end = size;
 
-                if(start < 0){
-                    start += size;
-                    if(start < 0)
-                        return makeList(intp.rt->gc, false, vec);
-                } else if(start >= size)
-                    return makeList(intp.rt->gc, false);
+                if(args[0].type == ObjectType::INTEGER){
+                    start = args[0].i;
+                    if(!runtime::findIndex(start, start, size))
+                        return Object();
+                } else if(args[0].type != ObjectType::NONE)
+                    return Object();
 
                 if(args[1].type == ObjectType::INTEGER){
-                    integer_t end = args[1].i;
+                    end = args[1].i;
                     if(end < 0){
                         end += size;
                         if(end < 0 || end < start)
@@ -1172,13 +1168,11 @@ namespace sm{
                         return Object();
                     else if(end < start)
                         return Object();
-                    return makeList(intp.rt->gc, false,
-                            ObjectVec_t(begin + start, begin + end));
                 } else if(args[1].type != ObjectType::NONE)
                     return Object();
 
                 return makeList(intp.rt->gc, false,
-                        ObjectVec_t(begin + start, vec.end()));
+                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
             }
 
             _NativeMethod(List::reverse, 2){
@@ -1332,23 +1326,19 @@ namespace sm{
             }
 
             _NativeMethod(Tuple::slice, 2){
-                if(args[0].type != ObjectType::INTEGER){
-                    return Object();
-                }
-
+                integer_t start = 0;
                 integer_t size = vec.size();
-                integer_t start = args[0].i;
-                ObjectVec_t::iterator begin = vec.begin();
+                integer_t end = size;
 
-                if(start < 0){
-                    start += size;
-                    if(start < 0)
-                        return makeTuple(intp.rt->gc, false, vec);
-                } else if(start >= size)
-                    return makeTuple(intp.rt->gc, false);
+                if(args[0].type == ObjectType::INTEGER){
+                    start = args[0].i;
+                    if(!runtime::findIndex(start, start, size))
+                        return Object();
+                } else if(args[0].type != ObjectType::NONE)
+                    return Object();
 
                 if(args[1].type == ObjectType::INTEGER){
-                    integer_t end = args[1].i;
+                    end = args[1].i;
                     if(end < 0){
                         end += size;
                         if(end < 0 || end < start)
@@ -1357,13 +1347,11 @@ namespace sm{
                         return Object();
                     else if(end < start)
                         return Object();
-                    return makeTuple(intp.rt->gc, false,
-                            ObjectVec_t(begin + start, begin + end));
                 } else if(args[1].type != ObjectType::NONE)
                     return Object();
 
                 return makeTuple(intp.rt->gc, false,
-                        ObjectVec_t(begin + start, vec.end()));
+                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
             }
 
             _NativeMethod(Tuple::get, 1){
@@ -1377,23 +1365,19 @@ namespace sm{
             }
 
             _NativeMethod(Tuple::list, 2){
-                if(args[0].type != ObjectType::INTEGER){
-                    return Object();
-                }
-
+                integer_t start = 0;
                 integer_t size = vec.size();
-                integer_t start = args[0].i;
-                ObjectVec_t::iterator begin = vec.begin();
+                integer_t end = size;
 
-                if(start < 0){
-                    start += size;
-                    if(start < 0)
-                        return makeList(intp.rt->gc, false, vec);
-                } else if(start >= size)
-                    return makeList(intp.rt->gc, false);
+                if(args[0].type == ObjectType::INTEGER){
+                    start = args[0].i;
+                    if(!runtime::findIndex(start, start, size))
+                        return Object();
+                } else if(args[0].type != ObjectType::NONE)
+                    return Object();
 
                 if(args[1].type == ObjectType::INTEGER){
-                    integer_t end = args[1].i;
+                    end = args[1].i;
                     if(end < 0){
                         end += size;
                         if(end < 0 || end < start)
@@ -1402,13 +1386,11 @@ namespace sm{
                         return Object();
                     else if(end < start)
                         return Object();
-                    return makeList(intp.rt->gc, false,
-                            ObjectVec_t(begin + start, begin + end));
                 } else if(args[1].type != ObjectType::NONE)
                     return Object();
 
                 return makeList(intp.rt->gc, false,
-                        ObjectVec_t(begin + start, vec.end()));
+                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
             }
 
             _NativeMethod(Tuple::hash, 0){
@@ -1429,7 +1411,7 @@ namespace sm{
             }
 
             _NativeMethod(Tuple::to_string, 0){
-                Object str = makeString("[");
+                Object str = makeString("(");
                 ObjectVec_t::const_iterator it = vec.cbegin();
                 if(it != vec.cend()){
                     while(1) {
@@ -1440,7 +1422,7 @@ namespace sm{
                         str.s_ptr->str.append(", ");
                     }
                 }
-                str.s_ptr->str.push_back(']');
+                str.s_ptr->str.push_back(')');
                 return str;
             }
         }
