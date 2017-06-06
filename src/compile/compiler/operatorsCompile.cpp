@@ -41,7 +41,8 @@ namespace sm{
             if(it->type >= TT_OPERATORS_START && it->type <= TT_OPERATORS_END){
                 enum_t closing = 0, closingSpecial = 0;
                 bool closed = false, doPop = false, doEndBlock = false,
-                    resetOutput = false, doDeclareVar = false, doDeclareGlobalVar = false;
+                    resetOutput = false, doDeclareVar = false, doDeclareGlobalVar = false,
+                    logicOr = false, logicAnd = false;
 
                 if(it->type == TT_ROUND_CLOSE){
                     if(info.parType == EXPR_ROUND){
@@ -233,6 +234,10 @@ namespace sm{
                     }
 
                     states.isLastOperand = false;
+                } else if(it->type == TT_LOGIC_OR){
+                    logicOr = true;
+                } else if(it->type == TT_LOGIC_AND){
+                    logicAnd = true;
                 }
 
                 if(states.isLastOperand || it->type == TT_SEMICOLON
@@ -402,6 +407,19 @@ namespace sm{
                     } else if(doDeclareGlobalVar){
                         states.parStack.pop_back();
                         _declareVar(states, true);
+                    }
+                    if(logicOr) {
+                        states.parStack.emplace_back(LOGIC_OR_OPERATOR);
+                        states.output->push_back(LOGIC_OR);
+                        states.output->push_back(0);
+                        states.output->push_back(0);
+                        states.parStack.back().arg0 = states.output->size() - 2;
+                    } else if(logicAnd){
+                        states.parStack.emplace_back(LOGIC_AND_OPERATOR);
+                        states.output->push_back(LOGIC_AND);
+                        states.output->push_back(0);
+                        states.output->push_back(0);
+                        states.parStack.back().arg0 = states.output->size() - 2;
                     }
                     if(it->type == TT_SEMICOLON && !states.operators.empty()){
                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
