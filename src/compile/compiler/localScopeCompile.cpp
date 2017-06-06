@@ -642,43 +642,7 @@ namespace sm{
                     states.parStack.back().arg0 = states.output->size() - 2;
                     break;
                 }
-
-                case TT_LOGIC_OR:{
-                    if(!states.isLastOperand){
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            "expected operand before '||'.");
-                    }
-
-                    states.parStack.emplace_back(LOGIC_OR_OPERATOR);
-                    states.operators.emplace_back(it->type, it->i);
-                    states.isLastOperand = false;
-
-                    states.output->push_back(LOGIC_OR);
-                    states.output->push_back(0);
-                    states.output->push_back(0);
-
-                    states.parStack.back().arg0 = states.output->size() - 2;
-                    break;
-                }
-
-                case TT_LOGIC_AND:{
-                    if(!states.isLastOperand){
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            "expected operand before '&&'.");
-                    }
-
-                    states.parStack.emplace_back(LOGIC_AND_OPERATOR);
-                    states.operators.emplace_back(it->type, it->i);
-                    states.isLastOperand = false;
-
-                    states.output->push_back(LOGIC_AND);
-                    states.output->push_back(0);
-                    states.output->push_back(0);
-
-                    states.parStack.back().arg0 = states.output->size() - 2;
-                    break;
-                }
-
+                
                 case TT_DOT:{
                     if(states.isLastOperand){
                         states.isLastDot = true;
