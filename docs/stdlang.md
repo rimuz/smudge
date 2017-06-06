@@ -323,6 +323,14 @@ Removes the last element to the list or does nothing if the list is empty.
 Adds object `obj` to the end of the list.
 **Returns** `null`.
 
+### Method `pop_front ()`
+Removes the first element to the list or does nothing if the list is empty.
+**Returns** `null`.
+
+### Method `push_front (obj)`
+Adds object `obj` at the beginning of the list.
+**Returns** `null`.
+
 ### Method `clone ([start = 0[, end = size()]])`
 **Returns** a list containing a copy of the objects from index `start`
 (included) to index `end` (excluded), or null if either `start` or `end`
