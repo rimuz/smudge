@@ -101,6 +101,8 @@ namespace sm{
                 _NativeMethod(resize, 1);
                 _NativeMethod(pop, 0);
                 _NativeMethod(push, 1);
+                _NativeMethod(pop_front, 0);
+                _NativeMethod(push_front, 1);
                 _NativeMethod(clone, 2);
                 _NativeMethod(tuple, 2);
                 _NativeMethod(append, 1);
@@ -132,6 +134,8 @@ namespace sm{
             _NativeFunc(resize);
             _NativeFunc(pop);
             _NativeFunc(push);
+            _NativeFunc(pop_front);
+            _NativeFunc(push_front);
             _NativeFunc(clone);
             _NativeFunc(tuple);
             _NativeFunc(append);
@@ -256,6 +260,8 @@ namespace sm{
                 _MethodTuple(ListClass, resize),
                 _MethodTuple(ListClass, pop),
                 _MethodTuple(ListClass, push),
+                _MethodTuple(ListClass, pop_front),
+                _MethodTuple(ListClass, push_front),
                 _MethodTuple(ListClass, clone),
                 _MethodTuple(ListClass, tuple),
                 _MethodTuple(ListClass, append),
@@ -806,6 +812,8 @@ namespace sm{
             _BindMethod(List, resize, 1);
             _BindMethod(List, pop, 0);
             _BindMethod(List, push, 1);
+            _BindMethod(List, pop_front, 0);
+            _BindMethod(List, push_front, 1);
             _BindMethod(List, clone, 2);
             _BindMethod(List, tuple, 2);
             _BindMethod(List, append, 1);
@@ -992,6 +1000,20 @@ namespace sm{
                 return Object();
             }
 
+            _NativeMethod(List::pop_front, 0){
+                if(!vec.empty()){
+                    Object back = std::move(vec.back());
+                    vec.erase(vec.begin());
+                    return back;
+                }
+                return Object();
+            }
+
+            _NativeMethod(List::push_front, 1){
+                vec.insert(vec.begin(), args[0]);
+                return Object();
+            }
+
             _NativeMethod(List::clone, 2){
                 integer_t start = 0;
                 integer_t size = vec.size();
@@ -1062,7 +1084,7 @@ namespace sm{
                 if(args[0].type != ObjectType::INTEGER)
                     return Object();
                 integer_t idx = args[0].i;
-                if(!runtime::findIndex(idx, idx, vec.size()))
+                if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                     return Object();
                 vec.insert(vec.begin() + idx, args[1]);
                 return Object();
@@ -1109,7 +1131,7 @@ namespace sm{
                     return Object();
 
                 integer_t idx = args[0].i;
-                if(!runtime::findIndex(idx, idx, vec.size()))
+                if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                     return Object();
                 vec.insert(vec.begin() + idx, toInsert->begin(), toInsert->end());
                 return Object();
@@ -1122,7 +1144,7 @@ namespace sm{
                     return  makeFalse();
 
                 integer_t idx = args[0].i;
-                if(!runtime::findIndex(idx, idx, vec.size()))
+                if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                     return makeFalse();
 
                 size_t sz = toCopy->size() + idx;
