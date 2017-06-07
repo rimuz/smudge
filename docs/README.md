@@ -74,6 +74,7 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - [std.lang](stdlang.md)
         - [Class String](stdlang.md#class-string)
         - [Class List](stdlang.md#class-list)
+        - [Class Tuple](stdlang.md#class-tuple)
 
 ## For the contributors
 - How Smudge works
