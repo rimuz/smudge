@@ -556,6 +556,24 @@ namespace sm{
                     break;
                 }
 
+                case TT_THIS_KW:{
+                    states.output->push_back(PUSH_THIS);
+                    states.isLastOperand = true;
+                    break;
+                }
+
+                case TT_BOX_KW:{
+                    states.output->push_back(PUSH_BOX);
+                    states.isLastOperand = true;
+                    break;
+                }
+
+                case TT_CLASS_KW:{
+                    states.output->push_back(PUSH_CLASS);
+                    states.isLastOperand = true;
+                    break;
+                }
+
                 case TT_NOT:{
                     states.preOperators.push_back(NOT);
                     break;
@@ -642,7 +660,7 @@ namespace sm{
                     states.parStack.back().arg0 = states.output->size() - 2;
                     break;
                 }
-                
+
                 case TT_DOT:{
                     if(states.isLastOperand){
                         states.isLastDot = true;
