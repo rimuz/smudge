@@ -39,14 +39,15 @@ namespace sm{
                 "UNARY_MINUS", "INC", "DEC", "POST_INC", "POST_DEC", "START_BLOCK",
                 "END_BLOCK", "THROW_EXCEPTION", "RETURN", "RETURN_NULL",
                 "CALL_NEW_FUNCTION", "PUSH_INT_0", "PUSH_INT_1", "PUSH_NULL",
-                "DUP", "DUP1", "END_BLOCKS", "PUSH_INTEGER", "PUSH_FLOAT", "PUSH_STRING",
-                "PUSH_REF", "PUSH_THIS", "PUSH_SUPER", "JUMP_F", "JUMP_B",
-                "JUMP_IF_F", "JUMP_IF_B", "JUMP_IF_NOT_F",
+                "PUSH_THIS", "PUSH_BOX", "PUSH_CLASS", "FIND_NEW", "FIND_DELETE",
+                "FIND_NEW_SUPER", "FIND_DELETE_SUPER", "DUP", "DUP1", "END_BLOCKS",
+                "PUSH_INTEGER", "PUSH_FLOAT", "PUSH_STRING", "PUSH_REF",
+                "JUMP_F", "JUMP_B", "JUMP_IF_F", "JUMP_IF_B", "JUMP_IF_NOT_F",
                 "JUMP_IF_NOT_B", "LOGIC_AND", "LOGIC_OR", "ELVIS", "TRY",
                 "CATCH", "FINALLY", "CALL_FUNCTION", "PERFORM_BRACING",
                 "DEFINE_VAR", "DEFINE_GLOBAL_VAR", "DEFINE_NULL_VAR",
-                "DEFINE_GLOBAL_NULL_VAR", "FIND", "MAKE_LIST", "MAKE_TUPLE",
-                "SWITCH_CASE", "IMPORT",
+                "DEFINE_GLOBAL_NULL_VAR", "FIND", "FIND_SUPER",
+                "MAKE_LIST", "MAKE_TUPLE", "SWITCH_CASE", "IMPORT",
             };
 
             static_assert(arraySize(opCodes) == INVALID_OPCODE, "size of opCodes (const char*[]) must be equal to INVALID_OPCODE");

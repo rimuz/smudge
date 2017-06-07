@@ -122,6 +122,32 @@ namespace sm{
             PUSH_NULL,
 
             /*
+             * Push THIS value on the top of the stack.
+            */
+            PUSH_THIS,
+
+            /*
+             * Push BOX value on the top of the stack.
+            */
+            PUSH_BOX,
+
+            /*
+             * Push CLASS value on the top of the stack.
+            */
+            PUSH_CLASS,
+
+            /*
+            * push TOS' methods 'new' and 'delete' on the top of the stack.
+            */
+            FIND_NEW, FIND_DELETE,
+
+            /*
+             * Push respectively SUPER's methods 'new' and 'delete' on the top of the stack.
+            */
+            FIND_NEW_SUPER,
+            FIND_DELETE_SUPER,
+
+            /*
              * pushes a copy of TOS on the stack.
             */
             DUP,
@@ -157,18 +183,6 @@ namespace sm{
              * and pushes its reference on the tos.
             */
             PUSH_REF,
-
-            /*
-             * find a global variable named 'names[param]'
-             * from 'this' and push it on the tos.
-            */
-            PUSH_THIS,
-
-            /*
-             * find a variable named 'names[param]' from 'super'
-             * and push it on the tos
-            */
-            PUSH_SUPER,
 
             /*
              * SOURCE_N and SOURCE_LN are usually used for
@@ -274,11 +288,19 @@ namespace sm{
 
             /*
              * search a name into
-             * the TOS. If found it's
+             * the TOS. If found, it's
              * added on the tos, otherwise
              * an exception is throwed.
             */
             FIND,
+
+            /*
+            * search a name into
+            * SUPER. If found, it's
+            * added on the tos, otherwise
+            * an exception is throwed.
+            */
+            FIND_SUPER,
 
             /*
              * make a list with 'param' size,
