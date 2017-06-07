@@ -128,12 +128,25 @@ namespace sm{
         }
 
         _OcFunc(PushThis){
-            // TODO
+            intp.exprStack.push_back(intp.funcStack.back().thisObject);
             ++addr;
         }
 
-        _OcFunc(PushSuper){
-            // TODO
+        _OcFunc(PushBox){
+            Object box;
+            box.type = ObjectType::BOX;
+            box.c_ptr = intp.funcStack.back().box;
+            intp.exprStack.push_back(std::move(box));
+            ++addr;
+        }
+
+        _OcFunc(PushClass){
+            if(intp.funcStack.back().thisObject.type == ObjectType::CLASS_INSTANCE){
+                Object clazz;
+                clazz.type = ObjectType::CLASS;
+                clazz.c_ptr = intp.funcStack.back().thisObject.i_ptr->base;
+                intp.exprStack.push_back(std::move(clazz));
+            }
             ++addr;
         }
 
@@ -217,6 +230,26 @@ namespace sm{
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
             }
+        }
+
+        _OcFunc(FindNew){
+            // TODO!!
+            ++addr;
+        }
+
+        _OcFunc(FindDelete){
+            // TODO!!
+            ++addr;
+        }
+
+        _OcFunc(FindNewSuper){
+            // TODO!!
+            ++addr;
+        }
+
+        _OcFunc(FindDeleteSuper){
+            // TODO!!
+            ++addr;
         }
     }
 }
