@@ -140,6 +140,7 @@ namespace sm{
                                     } else {
                                         Class* box = cit->second(*_rt, id);
                                         _rt->boxes.push_back(box);
+                                        _rt->sources.newSource(nullptr);
                                     }
                                 }
                                 std::get<0>(states.toImport->back()) = id;
@@ -167,13 +168,13 @@ namespace sm{
 
                     switch(it->type){
                         case TT_COMPL:              case TT_NOT:                case TT_PRE_DEC:
-                        case TT_PRE_INC:            case TT_PRE_MINUS:          case TT_PRE_PLUS:           case TT_DIV:
+                        case TT_PRE_INC:            case TT_PRE_MINUS:          case TT_PRE_PLUS:
                         case TT_LEFT_SHIFT:         case TT_MINUS:              case TT_MULT:
-                        case TT_MOD:                case TT_PLUS:               case TT_RIGHT_SHIFT:
-                        case TT_OR:                 case TT_AND:                case TT_XOR:
-                        case TT_LOGIC_AND:          case TT_LOGIC_OR:           case TT_EQUAL:
-                        case TT_GREATER:            case TT_GREATER_OR_EQUAL:   case TT_LESS:
-                        case TT_LESS_OR_EQUAL:      case TT_NOT_EQUAL:
+                        case TT_DIV:                case TT_MOD:                case TT_PLUS:
+                        case TT_RIGHT_SHIFT:        case TT_OR:                 case TT_AND:
+                        case TT_XOR:                case TT_LOGIC_AND:          case TT_LOGIC_OR:
+                        case TT_EQUAL:              case TT_GREATER:            case TT_GREATER_OR_EQUAL:
+                        case TT_LESS:               case TT_LESS_OR_EQUAL:      case TT_NOT_EQUAL:
                             id = runtime::operatorId(it->type);
                             break;
 
@@ -272,9 +273,6 @@ namespace sm{
                     fn->fnName = id;
                     fn->argNames = std::move(args);
                     states.currBox->objects.insert(std::make_pair(id, makeFunction(fn)));
-
-                    // import std.lang box
-                    _rt->boxes.push_back(lib::import_lang(*_rt, _rt->boxNames.size()-1));
                     break;
                 }
 
