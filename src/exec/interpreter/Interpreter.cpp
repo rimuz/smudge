@@ -96,7 +96,6 @@ namespace sm{
                     _OcCase(THROW_EXCEPTION, ThrowException);
                     _OcCase(RETURN, Return);
                     _OcCase(RETURN_NULL, ReturnNull);
-                    _OcCase(CALL_NEW_FUNCTION, CallNewFunction);
                     _OcCase(PUSH_INT_0, PushInt0);
                     _OcCase(PUSH_INT_1, PushInt1);
                     _OcCase(PUSH_NULL, PushNull);
