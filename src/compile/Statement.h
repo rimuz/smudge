@@ -107,13 +107,6 @@ namespace sm{
             RETURN_NULL,
 
             /*
-             * call new() if it exists (otherwise do nothing) without saving the
-             * return value in the stack. This opcode is used only inside the
-             * init function of each box.
-            */
-            CALL_NEW_FUNCTION,
-
-            /*
              * push true/false/null values
              * into the stack.
             */
@@ -327,7 +320,8 @@ namespace sm{
             // **** STATEMENTS WITH LENGTH = 5 Bytes (Opcode of 1 byte + param0 (2 bytes) + param1 (2 bytes))
 
             /*
-            * imports 'param0' box with name 'param1'
+            * imports 'param0' box with name 'param1':
+            * if the box is unitiallized, '<init>()' and 'new()' are called.
             */
             IMPORT,
 
