@@ -200,6 +200,8 @@ namespace sm{
             dict.insert({nameId, imported});
 
             if(!imported.c_ptr->isInitialized){
+                imported.c_ptr->isInitialized = true;
+
                 Object objFunc;
                 Object self;
                 Function* fn;
