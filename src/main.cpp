@@ -139,6 +139,9 @@ int main(int argc, char** argv){
 
     while(cp.next()); // compile
 
+    // import std.lang box
+    rt.boxes.push_back(lib::import_lang(rt, rt.boxNames.size()-1));
+
     if(rt.showAll){
         sm::runtime::test::print(rt);
         std::cout << ".. Output:" << std::endl;
@@ -155,6 +158,20 @@ int main(int argc, char** argv){
             }
 
             intp.callFunction(initFn, ObjectVec_t(), self);
+        }
+    }
+
+    { // call new function of the main box.
+        ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(runtime::newId);
+        if(it != rt.boxes[0]->objects.end()){
+            Function* newFn;
+            Object self;
+            if(!sm::runtime::callable(it->second, self, newFn)){
+                rt.sources.msg(error::ERROR, std::string("'new' is not a function in box '")
+                    + rt.boxNames[0] + "'.");
+            }
+
+            intp.callFunction(newFn, ObjectVec_t(), self);
         }
     }
 
