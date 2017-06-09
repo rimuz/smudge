@@ -67,11 +67,6 @@ namespace sm{
             intp.exprStack.emplace_back(Object());
         }
 
-        _OcFunc(CallNewFunction){
-            // TODO
-            ++addr;
-        }
-
         _OcFunc(EndBlocks){
             unsigned param = (*++addr << 8) | *++addr;
             ObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
@@ -198,11 +193,39 @@ namespace sm{
             if(it != dict.end()){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     std::string("cannot import box '") + intp.rt->boxNames[box]
-                    + "' because it's redefining variable named '" + intp.rt->nameFromId(nameId)
+                    + "' because it's redefining variable, function or class named '" + intp.rt->nameFromId(nameId)
                     + "'");
             }
 
-            dict[nameId] = std::move(imported);
+            dict.insert({nameId, imported});
+
+            if(!imported.c_ptr->isInitialized){
+                Object objFunc;
+                Object self;
+                Function* fn;
+
+                // call '<init>' function (inlined)
+                if(runtime::find<ObjectType::BOX>(imported, objFunc, runtime::initId)){
+                    if(!runtime::callable(objFunc, self, fn)){
+                        intp.rt->sources.printStackTrace(intp, error::BUG,
+                            std::string("'<init>' is not a function in box '")
+                            + intp.rt->boxNames[imported.c_ptr->boxName] + "' (err #4)");
+                    }
+                    intp.callFunction(fn, {}, self, true);
+                }
+
+                self = nullptr;
+
+                // call 'new' function
+                if(runtime::find<ObjectType::BOX>(imported, objFunc, runtime::newId)){
+                    if(!runtime::callable(objFunc, self, fn)){
+                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            std::string("'new' is not a function in box '")
+                            + intp.rt->boxNames[imported.c_ptr->boxName] + "'");
+                    }
+                    intp.makeCall(fn, {}, self, false);
+                }
+            }
         }
     }
 }
