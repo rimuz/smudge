@@ -950,6 +950,7 @@ namespace sm{
                                     states.parStack.pop_back();
                                     states.isStatementEmpty = true;
                                     states.isLastOperand = false;
+                                    states.output = &_rt->code;
                                     break;
                                 }
 
