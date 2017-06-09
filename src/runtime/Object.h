@@ -146,7 +146,10 @@ namespace sm{
 
     struct Class {
         ObjectDict_t objects;
-        Class* super = nullptr; // for inheritance!
+        union {
+            Class* super = nullptr; // for inheritance! (Only classes)
+            bool isInitialized; // (Only boxes)
+        };
         unsigned boxName = 0, name = 0; // if this is a box, name = 0
     };
 
