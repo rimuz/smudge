@@ -78,7 +78,7 @@ namespace sm{
             if(!path.empty()){
                 if(path.back() != fileSeparator){
                     _rt->sources.msg(error::FATAL_ERROR, std::string("path must be followed by '")
-                        + fileSeparator + "/'.");
+                        + fileSeparator + "'.");
                 }
                 paths.push_back(path);
             }
@@ -387,12 +387,11 @@ namespace sm{
                     _rt->code.push_back(std::get<1>(*cit) & 0xFF);
                 }
 
-                _rt->code.insert(_rt->code.end(), _temp.begin(), _temp.end());
-                _rt->code.push_back(CALL_NEW_FUNCTION);
+                _rt->code.insert(_rt->code.end(), _temp.begin(), _temp.end()); // inserting <init> code
                 _rt->code.push_back(RETURN_NULL);
+                _temp.clear();
             }
         }
-
 
         void Compiler::_declareVar(CompilerStates& states, bool global){
             parse::TokenVec_t::const_iterator& it = states.it;
