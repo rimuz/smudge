@@ -30,6 +30,8 @@
 #include "require_cpp11.h"
 #include "typedefs.h"
 
+int main(int argc, char** argv);
+
 namespace sm {
     namespace parse{
         struct Token;
@@ -175,7 +177,7 @@ namespace sm {
         };
 
         class Compiler{
-            friend int main(int argc, char** argv);
+            friend int ::main(int argc, char** argv);
         private:
             runtime::Runtime_t* _rt;
             ByteCode_t _temp;
