@@ -186,10 +186,35 @@ namespace sm{
                             id = runtime::deleteId;
                             break;
 
-                        case TT_TEXT:{
+                        case TT_TEXT:
                             id = runtime::genOrdinaryId(*_rt, it->content);
                             break;
-                        }
+
+                        case TT_ROUND_OPEN:
+                            if(++it == states.end ){
+                                --it;
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    "expected ')' before 'eof'.");
+                            } else if(it->type != TT_ROUND_CLOSE){
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    std::string("expected ')' before ")
+                                    + representation(*it) + ".");
+                            }
+                            id = runtime::roundId;
+                            break;
+
+                        case TT_SQUARE_OPEN:
+                            if(++it == states.end ){
+                                --it;
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    "expected ']' before 'eof'.");
+                            } else if(it->type != TT_SQUARE_CLOSE){
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    std::string("expected ']' before ")
+                                    + representation(*it) + ".");
+                            }
+                            id = runtime::squareId;
+                            break;
 
                         default:
                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
@@ -201,8 +226,7 @@ namespace sm{
                     if(++it == states.end){
                         --it;
                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            std::string("expected '(' or '{' before 'eof'.")
-                            + representation(*it) + ".");
+                            "expected '(' or '{' before 'eof'.");
                     }
 
                     bool hasArgs = it->type == TT_ROUND_OPEN;
