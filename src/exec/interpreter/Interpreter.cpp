@@ -100,12 +100,12 @@ namespace sm{
                     _OcCase(PUSH_INT_1, PushInt1);
                     _OcCase(PUSH_NULL, PushNull);
                     _OcCase(PUSH_THIS, PushThis);
-                    _OcCase(PUSH_BOX, PushBox); //
-                    _OcCase(PUSH_CLASS, PushClass); //
-                    _OcCase(FIND_NEW, FindNew); //
-                    _OcCase(FIND_DELETE, FindDelete); //
-                    _OcCase(FIND_NEW_SUPER, FindNewSuper); //
-                    _OcCase(FIND_DELETE_SUPER, FindDeleteSuper); //
+                    _OcCase(PUSH_BOX, PushBox);
+                    _OcCase(PUSH_CLASS, PushClass);
+                    _OcCase(FIND_NEW, FindNew);
+                    _OcCase(FIND_DELETE, FindDelete);
+                    _OcCase(FIND_NEW_SUPER, FindNewSuper);
+                    _OcCase(FIND_DELETE_SUPER, FindDeleteSuper);
                     _OcCase(DUP, Dup);
                     _OcCase(DUP1, Dup1);
                     _OcCase(END_BLOCKS, EndBlocks);
@@ -131,6 +131,7 @@ namespace sm{
                     _OcCase(DEFINE_GLOBAL_VAR, DefineGlobalVar);
                     _OcCase(DEFINE_NULL_VAR, DefineNullVar);
                     _OcCase(DEFINE_GLOBAL_NULL_VAR, DefineGlobalNullVar);
+                    _OcCase(ASSIGN_NULL_POP, AssignNullPop);
                     _OcCase(FIND, Find);
                     _OcCase(MAKE_LIST, MakeList);
                     _OcCase(MAKE_TUPLE, MakeTuple);
