@@ -23,6 +23,7 @@
 #include "exec/interpreter/defines.h"
 #include "exec/interpreter/arithmeticOpCodes.h"
 #include "exec/interpreter/logicAndShiftsOpCodes.h"
+#include "exec/interpreter/exprStackOpCodes.h"
 #include "runtime/casts.h"
 
 namespace sm{
@@ -115,6 +116,14 @@ namespace sm{
             Dup1(intp, addr);
             RightShift(intp, dummy);
             Assign(intp, dummy);
+        }
+
+        _OcFunc(AssignNullPop){
+            ByteCode_t::const_iterator dummy;
+            PushRef(intp, addr);
+            PushNull(intp, dummy);
+            Assign(intp, dummy);
+            intp.exprStack.pop_back();
         }
     }
 }
