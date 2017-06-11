@@ -46,7 +46,7 @@ namespace sm{
                 "JUMP_IF_NOT_B", "LOGIC_AND", "LOGIC_OR", "ELVIS", "TRY",
                 "CATCH", "FINALLY", "CALL_FUNCTION", "PERFORM_BRACING",
                 "DEFINE_VAR", "DEFINE_GLOBAL_VAR", "DEFINE_NULL_VAR",
-                "DEFINE_GLOBAL_NULL_VAR", "FIND", "FIND_SUPER",
+                "DEFINE_GLOBAL_NULL_VAR", "ASSIGN_NULL_POP", "FIND", "FIND_SUPER",
                 "MAKE_LIST", "MAKE_TUPLE", "SWITCH_CASE", "IMPORT",
             };
 

@@ -280,6 +280,13 @@ namespace sm{
             DEFINE_GLOBAL_NULL_VAR,
 
             /*
+             * assign 'null' to variable named
+             * 'param', without adding anything
+             * to the stack.
+            */
+            ASSIGN_NULL_POP,
+
+            /*
              * search a name into
              * the TOS. If found, it's
              * added on the tos, otherwise
