@@ -168,7 +168,7 @@ namespace sm{
             }
 
             if(fn->native){
-                Object ret = reinterpret_cast<NativeFuncPtr_t>(fn->address)(*this, fn, self, args);
+                Object ret = (*fn->native_ptr)(*this, fn, self, args);
                 if(ret.type == ObjectType::WEAK_REFERENCE){
                     ret = ret.refGet();
                 } else if(ret.type == ObjectType::STRONG_REFERENCE){
@@ -179,25 +179,36 @@ namespace sm{
                 funcStack.emplace_back();
                 CallInfo_t& backInfo = funcStack.back();
                 backInfo.codeBlocks.reserve(5);
+                size_t address;
 
-                if(!fn->argNames.empty()){
+                if(fn->arguments.empty()){
+                    address = fn->address;
+                } else {
                     size_t n_args = args.size();
                     ObjectDict_t* dict = new ObjectDict_t;
                     backInfo.codeBlocks.push_back(dict);
-                    //dict->reserve(n_args);
 
-                    for(size_t i = 0; i != fn->argNames.size(); ++i){
+                    for(size_t i = 0; i != fn->arguments.size(); ++i){
                         Object obj;
                         if(i < n_args){
                             obj = args[i];
                         }
-                        (*dict)[fn->argNames[i]] = std::move(obj);
+                        (*dict)[std::get<0>(fn->arguments[i])] = std::move(obj);
+                        std::cout << "set: " << std::get<0>(fn->arguments[i]) << std::endl;
+                    }
+
+                    if(n_args == 0){
+                        address = fn->address;
+                    } else if(n_args < fn->arguments.size()){
+                        address = std::get<1>(fn->arguments[n_args -1]);
+                    } else {
+                        address = std::get<1>(fn->arguments.back());
                     }
                 }
 
                 backInfo.codeBlocks.push_back(nullptr);
                 backInfo.function = fn;
-                backInfo.addr = rt->code.begin() + fn->address;
+                backInfo.addr = rt->code.begin() + address;
                 backInfo.box = rt->boxes[fn->boxName];
                 backInfo.thisObject = self;
             }
