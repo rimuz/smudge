@@ -66,7 +66,7 @@ int main(int argc, char** argv){
     runtime::Runtime_t rt;
     compile::Compiler cp(rt);
     exec::Interpreter intp(rt);
-    // int firstArg = 1; TODO!
+    int firstArg = argc;
     bool printPaths = false;
 
     for(int i = 1; i != argc; ++i){
@@ -85,6 +85,7 @@ int main(int argc, char** argv){
                     code->push_back('\n');
                 }
                 cp.code("<stdin>", code);
+                firstArg = i+1;
                 break;
             } else if(!std::strcmp(argv[i], "l") || !std::strcmp(argv[i], "-license")){
                 printLicense();
@@ -104,7 +105,7 @@ int main(int argc, char** argv){
             }
         } else {
             cp.source(argv[i]);
-            // firstArg = i+1;
+            firstArg = i+1;
             break;
         }
     }
@@ -178,6 +179,19 @@ int main(int argc, char** argv){
     { // call main function.
         unsigned id = runtime::genOrdinaryId(rt, "main");
         ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(id);
+        Object args;
+        {
+            ObjectVec_t arguments;
+            char** array = argv + firstArg;
+            int n_args = argc - firstArg;
+
+            arguments.reserve(n_args);
+            for(int i = 0; i != n_args; ++i){
+                arguments.push_back(makeString(array[i]));
+            }
+            args = makeList(rt.gc, false, std::move(arguments));
+        }
+
         if(it == rt.boxes[0]->objects.end()){
             rt.sources.msg(error::ERROR, std::string("cannot find 'main()' function in box '")
                 + rt.boxNames[0] + "'.");
@@ -190,7 +204,7 @@ int main(int argc, char** argv){
                 + rt.boxNames[0] + "'.");
         }
 
-        Object ret = intp.callFunction(mainFn, ObjectVec_t(), self);
+        Object ret = intp.callFunction(mainFn, {args}, self);
 
         if(ret.type == ObjectType::INTEGER){
             runtime::Runtime_t::exit(ret.i);
