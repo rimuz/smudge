@@ -270,7 +270,7 @@ namespace sm{
                                 states.output->push_back((name_id >> 8) & 0xFF);
                                 states.output->push_back(name_id & 0xFF);
                                 fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
-                            } else if(it->type == TT_ASSIGN){
+                            } else if(it->type == TT_ASSIGN || it->type == TT_ROUND_CLOSE){
                                 it -= 2;
                                 arg0 = arg_id;
                                 break;
