@@ -194,7 +194,6 @@ namespace sm{
                             obj = args[i];
                         }
                         (*dict)[std::get<0>(fn->arguments[i])] = std::move(obj);
-                        std::cout << "set: " << std::get<0>(fn->arguments[i]) << std::endl;
                     }
 
                     if(n_args == 0){

@@ -51,7 +51,6 @@ namespace sm {
     unicode_t uGetCodepoint(unicode_t ch) noexcept{
         if(ch & 0xFF00){
             unicode_t cp = ch & 0x3F;
-            std::cout << "ok:" << cp << std::endl;
             if(ch & 0xFF0000) {
                 cp |= ((ch & 0x3F00) >> 2);
                 if(ch & 0xFF000000)
@@ -64,7 +63,7 @@ namespace sm {
         }
         return ch;
     }
-    
+
     unicode_t uByCodepoint(unicode_t cp) noexcept{
         if(cp < 0x80)
             return cp;
