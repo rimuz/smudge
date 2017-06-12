@@ -26,6 +26,7 @@
 #include "compile/Statement.h"
 #include "parse/Tokenizer.h"
 #include "runtime/gc.h"
+#include "runtime/id.h"
 
 using namespace sm::parse;
 using namespace sm::compile;
@@ -72,6 +73,9 @@ namespace sm{
                             break;
                         } else if(it->parType == EXPR_ROUND){
                             closing = TT_ROUND_OPEN;
+                            break;
+                        } else if(it->parType == DEFAULT_ARGUMENT){
+                            closingSpecial = DEFAULT_ARGUMENT;
                             break;
                         } else if(it->isRound()){
                             closingSpecial = it->parType;
@@ -164,9 +168,12 @@ namespace sm{
                             doPop = true;
                             resetOutput = true;
                             break;
-                        } if(it->parType == VAR_DECL){
+                        } else if(it->parType == VAR_DECL){
                             doDeclareVar = true;
                             doPop = true;
+                            break;
+                        } else if(it->parType == DEFAULT_ARGUMENT){
+                            closingSpecial = DEFAULT_ARGUMENT;
                             break;
                         } else if(it->isDeclaration()){
                             continue;
@@ -375,6 +382,7 @@ namespace sm{
                                     states.output->push_back(RIGHT_SHIFT);
                                     break;
                                 default:
+                                    std::cout << "parType: " << (unsigned) states.parStack.back().parType << std::endl;
                                     _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                         std::string("unexpected operator: ")
                                             + representation(*it) + ".");
@@ -397,7 +405,8 @@ namespace sm{
                         states.output->push_back(POP);
                     if(doEndBlock)
                         states.output->push_back(END_BLOCK);
-                    if(!closing && !closingSpecial && it->type != TT_SEMICOLON && it->type != TT_COMMA)
+                    if(!closing && !closingSpecial && it->type != TT_SEMICOLON
+                            && it->type != TT_COMMA)
                         states.operators.emplace_back(it->type, it->i);
                     if(resetOutput)
                         states.output = &_rt->code;
@@ -421,6 +430,7 @@ namespace sm{
                         states.output->push_back(0);
                         states.parStack.back().arg0 = states.output->size() - 2;
                     }
+
                     if(it->type == TT_SEMICOLON && !states.operators.empty()){
                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                             "missing something before ';'.");
@@ -940,6 +950,75 @@ namespace sm{
 
                                     states.output->push_back(POP);
                                     states.parStack.pop_back();
+                                    states.isStatementEmpty = true;
+                                    states.isLastOperand = false;
+                                    break;
+                                }
+
+                                case DEFAULT_ARGUMENT:{
+                                    Function* fn = states.parStack.back().funcPtr;
+                                    bool roundClose = it->type == TT_ROUND_CLOSE;
+
+                                    if((it-1)->type != TT_ROUND_OPEN){
+                                        states.output->push_back(POP);
+                                        fn->arguments.push_back(std::make_pair(
+                                            states.parStack.back().arg0,
+                                            states.output->size()
+                                        ));
+                                    }
+
+                                    if(!roundClose){
+                                        while(1) {
+                                            if(++it == states.end){
+                                                --it;
+                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                    "expected ')' or identifier before 'eof'.");
+                                            } else if(it->type == TT_ROUND_CLOSE){
+                                                roundClose = true;
+                                                break;
+                                            } else if(it->type == TT_TEXT){
+                                                size_t arg_id = runtime::genOrdinaryId(*_rt, it->content);
+                                                if(++it == states.end){
+                                                    --it;
+                                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                        "expected ',' or '=' before 'eof'.");
+                                                } else if(it->type == TT_COMMA){
+                                                    size_t name_id = arg_id - runtime::idsStart;
+                                                    states.output->push_back(ASSIGN_NULL_POP);
+                                                    states.output->push_back((name_id >> 8) & 0xFF);
+                                                    states.output->push_back(name_id & 0xFF);
+                                                    fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
+                                                } else if(it->type == TT_ASSIGN){
+                                                    states.parStack.back().arg0 = arg_id;
+                                                    break;
+                                                } else {
+                                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                        std::string("expected ',' or '=' before ")
+                                                        + representation(*it) + ".");
+                                                }
+                                            } else {
+                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                    std::string("expected ')' or identifier before ")
+                                                    + representation(*it) + ".");
+                                            }
+                                        }
+                                    }
+
+                                    if(roundClose){
+                                        if(++it == states.end){
+                                            --it;
+                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                "expected '{' before 'eof'.");
+                                        } else if(it->type != TT_CURLY_OPEN){
+                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                std::string("expected '{' before ")
+                                                + representation(*it) + ".");
+                                        }
+                                        states.parStack.back().parType = FUNCTION_BODY;
+                                    } else {
+                                        it -= 2;
+                                    }
+
                                     states.isStatementEmpty = true;
                                     states.isLastOperand = false;
                                     break;
