@@ -159,9 +159,17 @@ namespace sm{
     };
 
     struct Function {
-        ByteCodeVec_t argExpr; // default argument expressions
-        NameVec_t argNames; // MSB of each is 1 if arg has 'ref' prefix, 0 otherwise
-        size_t address = 0;
+        /*
+         * in arguments, unsigned is the name ID of the argument,
+         * the size_t, the last valid instruction address of the 'argcode' +1.
+         * The 'argcode' is the code that has to be executed to get
+         * the default value of an argument.
+        */
+        std::vector<std::tuple<unsigned, size_t>> arguments;
+        union {
+            NativeFuncPtr_t native_ptr;     // if native,
+            size_t address = 0;             // if not.
+        };
         unsigned boxName = 0, fnName = 0;
         bool native = false;
     };
@@ -265,7 +273,7 @@ namespace sm{
         obj.type = ObjectType::FUNCTION;
         obj.f_ptr = new Function;
         obj.f_ptr->native = true;
-        obj.f_ptr->address = reinterpret_cast<size_t>(fn);
+        obj.f_ptr->native_ptr = fn;
         obj.f_ptr->boxName = boxName;
         obj.f_ptr->fnName = fnName;
         return obj;
