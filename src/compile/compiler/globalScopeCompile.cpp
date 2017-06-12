@@ -223,80 +223,75 @@ namespace sm{
                             break;
                     }
 
+                    Function* fn = new Function;
+                    fn->address = states.output->size();
+                    fn->boxName = states.currBox->boxName;
+                    fn->fnName = id;
+                    states.currBox->objects.insert(std::make_pair(id, makeFunction(fn)));
+
                     if(++it == states.end){
                         --it;
                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                             "expected '(' or '{' before 'eof'.");
                     }
 
-                    bool hasArgs = it->type == TT_ROUND_OPEN;
-
-                    if(!hasArgs && it->type != TT_CURLY_OPEN){
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            std::string("expected '(' or '{' before ")
-                            + representation(*it) + ".");
-                    }
-
-                    bool comma = true;
-                    std::vector<unsigned> args;
-
-                    if(hasArgs){
-                        bool noArgs = true;
-
-                        while(true){
-                            if(++it == states.end){
-                                --it;
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                    "expected valid expression before 'eof'.");
-                            }
-
-                            if(comma){
-                                if(it->type == TT_TEXT){
-                                    args.push_back(runtime::genOrdinaryId(*_rt, it->content));
-                                    comma = false;
-                                    noArgs = false;
-                                } else if(noArgs && it->type == TT_ROUND_CLOSE){
-                                    break; // function without arguments...
-                                } else {
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                        std::string("expected identifier before ") + representation(*it) + ".");
-                                }
-                            } else {
-                                if(it->type == TT_COMMA){
-                                    comma = true;
-                                } else if(it->type == TT_ROUND_CLOSE){
-                                    break;
-                                } else {
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                        std::string("expected ',' or ')' before ") + representation(*it) + ".");
-                                }
-                            }
+                    if(it->type != TT_ROUND_OPEN){
+                        if(it->type != TT_CURLY_OPEN){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                std::string("expected '(' or '{' before ")
+                                + representation(*it) + ".");
                         }
-                    } else {
-                        --it;
-                    }
 
-                    if(++it == states.end){
-                        --it;
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            "expected '{' before 'eof'");
-                    }
-
-                    if(it->type == TT_CURLY_OPEN){
                         states.parStack.emplace_back(FUNCTION_BODY);
                         states.isStatementEmpty = true;
                         states.isLastOperand = false;
-                    } else {
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            std::string("expected '{' before ") + representation(*it) + ".");
+                        break;
                     }
 
-                    Function* fn = new Function;
-                    fn->address = _rt->code.size();
-                    fn->boxName = states.currBox->boxName;
-                    fn->fnName = id;
-                    fn->argNames = std::move(args);
-                    states.currBox->objects.insert(std::make_pair(id, makeFunction(fn)));
+                    size_t arg0 = 0;
+
+                    while(1) {
+                        if(++it == states.end){
+                            --it;
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "expected ')' or identifier before 'eof'.");
+                        } else if(it->type == TT_ROUND_CLOSE){
+                            --it;
+                            break;
+                        } else if(it->type == TT_TEXT){
+                            size_t arg_id = runtime::genOrdinaryId(*_rt, it->content);
+                            if(++it == states.end){
+                                --it;
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    "expected ',' or '=' before 'eof'.");
+                            } else if(it->type == TT_COMMA){
+                                size_t name_id = arg_id - runtime::idsStart;
+                                states.output->push_back(ASSIGN_NULL_POP);
+                                states.output->push_back((name_id >> 8) & 0xFF);
+                                states.output->push_back(name_id & 0xFF);
+                                fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
+                            } else if(it->type == TT_ASSIGN){
+                                it -= 2;
+                                arg0 = arg_id;
+                                break;
+                            } else {
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    std::string("expected ',' or '=' before ")
+                                    + representation(*it) + ".");
+                            }
+                        } else {
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                std::string("expected ')' or identifier before ")
+                                + representation(*it) + ".");
+                        }
+                    }
+
+                    states.parStack.emplace_back(DEFAULT_ARGUMENT);
+                    states.parStack.back().funcPtr = fn;
+                    states.parStack.back().arg0 = arg0;
+
+                    states.isStatementEmpty = true;
+                    states.isLastOperand = false;
                     break;
                 }
 
