@@ -43,6 +43,7 @@ namespace sm {
                 // ROUND:
                 _ROUND_START,
                 EXPR_ROUND, FUNC_CALL, TUPLE, REF_CALL, IS_NULL_CALL,
+                DEFAULT_ARGUMENT,
 
                 // ROUND.HEAD:
                 _HEAD_START,
@@ -82,7 +83,7 @@ namespace sm {
                 _STATEMENTS_END,
 
                 // SPECIALS
-                CONDITIONAL_OPERATOR1, CASE_HEAD, EXECUTABLE_STATEMENT,  RETURN_STATEMENT,
+                CONDITIONAL_OPERATOR1, CASE_HEAD, EXECUTABLE_STATEMENT, RETURN_STATEMENT,
             };
 
             struct LoopStatements_t {
@@ -105,7 +106,10 @@ namespace sm {
 
                 enum_t parType;
                 size_t arg0, arg1, arg2;
-                LoopStatements_t* loopStatements;
+                union {
+                    LoopStatements_t* loopStatements;
+                    Function* funcPtr;
+                };
             };
 
             struct Operator_t {
