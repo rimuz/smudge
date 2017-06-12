@@ -63,9 +63,9 @@ constexpr const char* sm_version = _SM_EXECUTABLE_NAME "-" _SM_STR_VERSION " (" 
 using namespace sm;
 
 int main(int argc, char** argv){
-    sm::runtime::Runtime_t rt;
-    sm::compile::Compiler cp(rt);
-    sm::exec::Interpreter intp(rt);
+    runtime::Runtime_t rt;
+    compile::Compiler cp(rt);
+    exec::Interpreter intp(rt);
     // int firstArg = 1; TODO!
     bool printPaths = false;
 
@@ -98,7 +98,7 @@ int main(int argc, char** argv){
                 rt.execStart = new std::chrono::steady_clock::time_point(std::chrono::steady_clock::now());
             } else if(!std::strcmp(argv[i], "v") || !std::strcmp(argv[i], "-version")){
                 std::cout << sm_version << std::endl;
-                sm::runtime::Runtime_t::exit(0);
+                runtime::Runtime_t::exit(0);
             } else { // includes also -h & --help cases!
                 printUsage();
             }
@@ -110,10 +110,10 @@ int main(int argc, char** argv){
     }
 
     {
-        sm::String envPaths(std::getenv("SMUDGE_PATH"));
-        std::vector<sm::String> paths = envPaths.split(";:");
+        String envPaths(std::getenv("SMUDGE_PATH"));
+        std::vector<String> paths = envPaths.split(";:");
 
-        for(std::vector<sm::String>::iterator it = paths.begin();
+        for(std::vector<String>::iterator it = paths.begin();
                 it != paths.end(); ++it){
             if(!it->empty()){
                 if(!it->endsWith(_SM_FILE_SEPARATOR)){
@@ -124,7 +124,7 @@ int main(int argc, char** argv){
             }
         }
 
-        for(size_t i = 0; i != sm::searchPathsLen; ++i){
+        for(size_t i = 0; i != searchPathsLen; ++i){
             cp.path(searchPaths[i]);
         }
 
@@ -143,7 +143,7 @@ int main(int argc, char** argv){
     rt.boxes.push_back(lib::import_lang(rt, rt.boxNames.size()-1));
 
     if(rt.showAll){
-        sm::runtime::test::print(rt);
+        runtime::test::print(rt);
         std::cout << ".. Output:" << std::endl;
     }
 
@@ -152,7 +152,7 @@ int main(int argc, char** argv){
         if(it != rt.boxes[0]->objects.end()){
             Function* initFn;
             Object self;
-            if(!sm::runtime::callable(it->second, self, initFn)){
+            if(!runtime::callable(it->second, self, initFn)){
                 rt.sources.msg(error::ERROR, std::string("'<init>' is not a function in box '")
                     + rt.boxNames[0] + "'.");
             }
@@ -166,7 +166,7 @@ int main(int argc, char** argv){
         if(it != rt.boxes[0]->objects.end()){
             Function* newFn;
             Object self;
-            if(!sm::runtime::callable(it->second, self, newFn)){
+            if(!runtime::callable(it->second, self, newFn)){
                 rt.sources.msg(error::ERROR, std::string("'new' is not a function in box '")
                     + rt.boxNames[0] + "'.");
             }
@@ -176,7 +176,7 @@ int main(int argc, char** argv){
     }
 
     { // call main function.
-        unsigned id = sm::runtime::genOrdinaryId(rt, "main");
+        unsigned id = runtime::genOrdinaryId(rt, "main");
         ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(id);
         if(it == rt.boxes[0]->objects.end()){
             rt.sources.msg(error::ERROR, std::string("cannot find 'main()' function in box '")
@@ -185,7 +185,7 @@ int main(int argc, char** argv){
 
         Function* mainFn;
         Object self;
-        if(!sm::runtime::callable(it->second, self, mainFn)){
+        if(!runtime::callable(it->second, self, mainFn)){
             rt.sources.msg(error::ERROR, std::string("'main' is not a function in box '")
                 + rt.boxNames[0] + "'.");
         }
@@ -193,11 +193,11 @@ int main(int argc, char** argv){
         Object ret = intp.callFunction(mainFn, ObjectVec_t(), self);
 
         if(ret.type == ObjectType::INTEGER){
-            sm::runtime::Runtime_t::exit(ret.i);
+            runtime::Runtime_t::exit(ret.i);
         }
     }
 
-    sm::runtime::Runtime_t::exit(0);
+    runtime::Runtime_t::exit(0);
     return 0;
 }
 
@@ -227,10 +227,10 @@ constexpr const char* usage_str =
 
 void printUsage() noexcept{
     std::cout << usage_str << std::endl;
-    sm::runtime::Runtime_t::exit(0);
+    runtime::Runtime_t::exit(0);
 }
 
 void printLicense() noexcept{
     std::cout << license_str << std::endl;
-    sm::runtime::Runtime_t::exit(0);
+    runtime::Runtime_t::exit(0);
 }
