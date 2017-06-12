@@ -382,7 +382,6 @@ namespace sm{
                                     states.output->push_back(RIGHT_SHIFT);
                                     break;
                                 default:
-                                    std::cout << "parType: " << (unsigned) states.parStack.back().parType << std::endl;
                                     _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                         std::string("unexpected operator: ")
                                             + representation(*it) + ".");
@@ -982,12 +981,14 @@ namespace sm{
                                                     --it;
                                                     _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                                         "expected ',' or '=' before 'eof'.");
-                                                } else if(it->type == TT_COMMA){
+                                                } else if(it->type == TT_COMMA || (roundClose = (it->type == TT_ROUND_CLOSE))){
                                                     size_t name_id = arg_id - runtime::idsStart;
                                                     states.output->push_back(ASSIGN_NULL_POP);
                                                     states.output->push_back((name_id >> 8) & 0xFF);
                                                     states.output->push_back(name_id & 0xFF);
                                                     fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
+                                                    if(roundClose)
+                                                        break;
                                                 } else if(it->type == TT_ASSIGN){
                                                     states.parStack.back().arg0 = arg_id;
                                                     break;
