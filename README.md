@@ -2,10 +2,6 @@
 ### What is Smudge?
 **Smudge** is a **S**imple, **M**ulti platform, **U**ser-friendly, **D**ynamically typed, **G**arbage-collected and **E**legant programming language written in pure C++11.
 
-<center>
-![Smudge Logo](docs/smudge-logo.png)
-</center>
-
 Smudge is a **very lightweight** and **general-purpose** interpreted language that could be used for either **desktop applications** or **scripts** or incorpored as well into any kind of software that requires a scripting side (for 'modding') such as videogames, text editors, 3d/2d modeling software, etc.
 
 With its C-like syntax, Smudge provides a **simple** but **effective** and **powerful** way to write **elegant** and **modular** code. For newbies Smudge could at first glance appear much more complicated than other programming languages like Python, Ruby, Swift or Go, but, after some practise, they will find coding Smudge **natural** and **fun**. C/C++, Java, JavaScript and C# developers, however, will love Smudge from the beginning.
