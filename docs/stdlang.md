@@ -264,7 +264,7 @@ memory.
 This is the class which provides all the Smudge lists' functionalities.
 A `List` can be instanced simply with **a couple of brackets** containing
 the elements separed by `,`. Lists' elements could be of **any type**.
-```
+```as
 /* A list could contain integers, strings and lists as well */
 var my_list = [0, 1, "Hello!", [0, "World!"], xyz];
 ```
@@ -407,7 +407,7 @@ equivalent elements from the list. **Returns** `null`.
 ## Class `Tuple`
 Tuples are immutable lists. You can instance a `Tuple` by enclosing its
 elements with a couple of round brackets (i.e. `()`).
-```
+```as
 /* Tuples are just like lists, but are immutable. */
 var my_tuple = (1, 2, "Hello", ("World", [0, 1, "!"], ()), []);
 ```
