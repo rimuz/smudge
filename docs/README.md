@@ -59,10 +59,9 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
 
 ## For the users
 - **Learn**
-    - Samples
-        - [Writing an Hello World](Overview.md)
+    - [Writing an Hello World](learn/hello-world.md)
     - Basic Syntax
-        - [Statements](syntax/basic-syntax.md)
+        - [Statements](learn/statements.md)
     - Operators
     - Strings
     - Lists and Tuples
@@ -70,12 +69,12 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - Boxes
     - Classes
 - The **Smudge Standard Library** (the **SSL**)
-    - [std.io](stdio.md)
-        - [Class FileStream](stdio.md#class-filestream)
-    - [std.lang](stdlang.md)
-        - [Class String](stdlang.md#class-string)
-        - [Class List](stdlang.md#class-list)
-        - [Class Tuple](stdlang.md#class-tuple)
+    - [std.io](ssl/stdio.md)
+        - [Class FileStream](ssl/stdio.md#class-filestream)
+    - [std.lang](ssl/stdlang.md)
+        - [Class String](ssl/stdlang.md#class-string)
+        - [Class List](ssl/stdlang.md#class-list)
+        - [Class Tuple](ssl/stdlang.md#class-tuple)
 
 ## For the contributors
 - How Smudge works
