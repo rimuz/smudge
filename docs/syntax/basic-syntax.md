@@ -6,7 +6,7 @@ colons is mandatory**. Thus, statements can be **longer than a single
 line**. Here are three statements (It's not important now to understand
 the meaning of each one):
 
-```as
+```js
 var a = 100;
 a += f(a) * a;
 io.println(
@@ -21,7 +21,7 @@ Smudge supports three types of comments:
 - The hash single-line comment (everything between `#` and new-line will be ignored)
 - The multi-line comment (everythin between `/*` and `*/` will be ignored)
 
-```as
+```js
 /*
  * This is the same code, but commented.
 */
@@ -41,7 +41,7 @@ As said before, if you want to actually try the code you write you need to
 insert it into a **function**. The `main` function is the one which is
 invoke by the **interpreter** as soon as it's ready to interpret statements.
 
-```as
+```js
 /*
  * This is how are defined functions in Smudge.
  * Note: the two round brackets are optional
