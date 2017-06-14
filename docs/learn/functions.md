@@ -48,13 +48,13 @@ And we call **inpure** the ones which depend also on the _environment_ settings 
 
 When a function doesn't have arguments, you **can omit** the round brackets
 after its name:
+
 ```js
 func function_without_arguments () {}
-/*
- * it's the same as:
- * func function_without_arguments {}
-*/
+// it's the same as:
+func function_without_arguments {}
 ```
+
 However, is **good practise** to **always** type them, to make a **clearer** code.
 
 Smudge is not finicky about the **arguments**: function callers, in fact, can give **more** or **less** of them than the expected number, or even **not give** arguments at all. The following example is **valid** code:
