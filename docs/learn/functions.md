@@ -41,7 +41,7 @@ Note: on the fifth line we performed a **concatenation** between strings via the
 
 Actually there are ways much more elegant than this one, but, for now, this is OK for the explanation.
 
-As you see, sometimes it's actually **more convenient** to write some code inside a function and call this function.
+As you see, sometimes it's actually **more convenient** to write some code inside a function and call that function.
 Functions can take **arguments** (sometimes called also parameters) (in our case there was an argument called `name`) which are objects passed by the function's **caller** that will probably influence the working of the function.
 We call **pure** a function which depends **only** on the given arguments.
 And we call **inpure** the ones which depend also on the _environment_ settings (practically, the global variables).
