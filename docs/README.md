@@ -60,14 +60,8 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
 ## For the users
 - **Learn**
     - [Writing an Hello World](learn/hello-world.md)
-    - Basic Syntax
-        - [Statements](learn/statements.md)
-    - Operators
-    - Strings
-    - Lists and Tuples
-    - Functions
-    - Boxes
-    - Classes
+    - [Statements](learn/statements.md)
+    - [Functions](learn/functions.md)
 - The **Smudge Standard Library** (the **SSL**)
     - [std.io](ssl/stdio.md)
         - [Class FileStream](ssl/stdio.md#class-filestream)
