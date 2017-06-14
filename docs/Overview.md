@@ -2,7 +2,7 @@
 
 Let's write a simple Hello World program!
 We write the following code in a file named `hello.sm`:
-```as
+```js
 import std.io = io;
 func main(){
     io.println("Hello, world!");
@@ -11,7 +11,7 @@ func main(){
 And we call `smudge hello.sm`: *voilà!* `Hello, world!` appears on the screen.
 It's also possible to make the program directly executable by adding the
 following line at the start of the file:
-```as
+```js
 #! /usr/local/smudge
 ```
 This, called *hashbang* or *shabang*, it's a special Unix instruction that
@@ -33,7 +33,7 @@ The first line of the program **imports** the **box** `std.io` with the label
 **self-explaining**.
 Each source file has its own box which can be imported from other boxes.
 The import syntax is the following:
-```as
+```js
 import PATH.NAME = LABEL;
 ```
 `PATH` cannot contain spaces and instead of *slashes* (i.e. `/`) it has
