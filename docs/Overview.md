@@ -67,4 +67,6 @@ Now, it's time to do something more interesting!
 Take a look at the full [documentation](https://smudgelang.github.io/smudge/)
 to learn more.
 
-<center>- [Home](https://smudgelang.github.io/smudge/) -</center>
+||
+|:---:|
+| [Home](https://smudgelang.github.io/smudge/) |
