@@ -58,10 +58,11 @@ the index given is greater than the string's size).
 Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
 
 ## For the users
-- **Smudge for dummies**
-    - [an Hello World](Overview.md)
-- **The Syntax**
+- **Learn**
+    - Samples
+        - [Writing an Hello World](Overview.md)
     - Basic Syntax
+        - [Statements](syntax/basic-syntax.md)
     - Operators
     - Strings
     - Lists and Tuples
