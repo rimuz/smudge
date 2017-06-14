@@ -21,4 +21,4 @@ Go to this [link](https://smudgelang.github.io/smudge/) to learn how to program 
 
 ### Licensing
 Smudge is licensed under the Apache License 2.0. To read the conditions take a look to the file `LICENSE` in the main folder.
-Copyright 2017 Riccardo Musso
+Copyright 2016-2017 Riccardo Musso
