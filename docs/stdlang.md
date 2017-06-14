@@ -467,6 +467,6 @@ Same as `slice()`, but returns a list.
 **Returns** a string representation of the tuple, very similar to tuple's with
 round brackets instead of brackets.
 
-<center>
-[Home](https://smudgelang.github.io/smudge/)
-</center>
+||
+|:---:|
+| [Home](https://smudgelang.github.io/smudge/) |
