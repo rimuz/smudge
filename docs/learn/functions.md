@@ -50,9 +50,9 @@ When a function doesn't have arguments, you **can omit** the round brackets
 after its name:
 
 ```js
-func function_without_arguments () {}
+func function_without_arguments () { /* code */ }
 // it's the same as:
-func function_without_arguments {}
+func function_without_arguments { /* code */ }
 ```
 
 However, is **good practise** to **always** type them, to make a **clearer** code.
