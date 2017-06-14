@@ -132,4 +132,6 @@ Values greater than 2 will be considered as **`END`**.
 Checks if the stream can be read.
 **Returns** `true` if neither `EOF` nor errors occured, `false` otherwise.
 
-<center>- [Home](https://smudgelang.github.io/smudge/) -</center>
+||
+|:---:|
+| [Home](https://smudgelang.github.io/smudge/) |
