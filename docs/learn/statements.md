@@ -1,4 +1,5 @@
-## The Smudge Programming Language - The Statements
+# The Smudge Programming Language - The Statements
+
 Any Smudge program consists of a bunch of **statements** inside **functions** or **methods** (we'll see the difference later).
 Each statement ends with a **semicolon** (i.e. `;`) to avoid any case
 of ambiguity.
