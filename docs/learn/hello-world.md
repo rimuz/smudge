@@ -55,4 +55,4 @@ Next, we'll learn more about statements.
 
 ||||
 |---:|:---:|:---|
-|| [Home](https://smudgelang.github.io/smudge/) | [Next](statements.md) |
+| Previous | [Home](https://smudgelang.github.io/smudge/) | [Next](statements.md) |
