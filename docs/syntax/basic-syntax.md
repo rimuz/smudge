@@ -20,6 +20,7 @@ Smudge supports three types of comments:
 - The double-slash single-line comment (everything between `//` and new-line will be ignored)
 - The hash single-line comment (everything between `#` and new-line will be ignored)
 - The multi-line comment (everythin between `/*` and `*/` will be ignored)
+
 ```as
 /*
  * This is the same code, but commented.
@@ -53,3 +54,7 @@ func main () {
 ```
 
 Next, will see how to print stuff on the `stdout`.
+
+|||
+|--:|:--|
+|Previous|Next|
