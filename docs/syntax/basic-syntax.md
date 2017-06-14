@@ -17,20 +17,20 @@ io.println(
 To explain hard-to-understand code, you can use **comments**: those
 are arbitrary texts **ignored by the interpreter**.
 Smudge supports three types of comments:
-- The double-slash single-line comment (everything between `//` and new-line will be ignored)
-- The hash single-line comment (everything between `#` and new-line will be ignored)
-- The multi-line comment (everythin between `/*` and `*/` will be ignored)
+- The double-slash single-line comment (everything between `//` and new-line will be ignored) [C++-like comment]
+- The hash single-line comment (everything between `#` and new-line will be ignored) [Shell-like comment]
+- The multi-line comment (everythin between `/*` and `*/` will be ignored) [C-like comment]
 
 ```js
 /*
  * This is the same code, but commented.
 */
 var a = 100; // instantiates variable 'a'
-a += f(a) * a; # stuff..
+a += f(a) * a; // stuff..
 
 /*
  * Actually, you shouldn't comment self-explaining
- * statements like these.
+ * statements like all of these.
  */
 io.println(
     [1, 2, 3]
