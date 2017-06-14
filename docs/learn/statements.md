@@ -1,7 +1,8 @@
-## The Smudge Programming Language - The Syntax (Statements)
+## The Smudge Programming Language - The Statements
 Any Smudge program consists of a bunch of **statements** inside **functions** or **methods** (we'll see the difference later).
 Each statement ends with a **semicolon** (i.e. `;`) to avoid any case
-of ambiguity. It's important to remember that, in Smudge, **using
+of ambiguity.
+It's important to remember that, in Smudge, **using
 colons is mandatory**. Thus, statements can be **longer than a single
 line**. Here are three statements (It's not important now to understand
 the meaning of each one):
@@ -19,7 +20,7 @@ are arbitrary texts **ignored by the interpreter**.
 Smudge supports three types of comments:
 - The double-slash single-line comment (everything between `//` and new-line will be ignored) [C++-like comment]
 - The hash single-line comment (everything between `#` and new-line will be ignored) [Shell-like comment]
-- The multi-line comment (everythin between `/*` and `*/` will be ignored) [C-like comment]
+- The multi-line comment (everything between `/*` and `*/` will be ignored) [C-like comment]
 
 ```js
 /*
@@ -37,24 +38,8 @@ io.println(
 );
 ```
 
-As said before, if you want to actually try the code you write you need to
-insert it into a **function**. The `main` function is the one which is
-invoke by the **interpreter** as soon as it's ready to interpret statements.
-
-```js
-/*
- * This is how are defined functions in Smudge.
- * Note: the two round brackets are optional
- * in this case
-*/
-
-func main () {
-    // Code...
-}
-```
-
-Next, will see how to print stuff on the `stdout`.
+Next, we'll see how to define and use **functions**.
 
 |||
 |--:|:--|
-|Previous|Next|
+| [Previous](hello-world.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](functions.md) |
