@@ -466,3 +466,5 @@ Same as `slice()`, but returns a list.
 ### Method `to_string ()`
 **Returns** a string representation of the tuple, very similar to tuple's with
 round brackets instead of brackets.
+
+<center>- [Home](https://smudgelang.github.io/smudge/) -</center>
