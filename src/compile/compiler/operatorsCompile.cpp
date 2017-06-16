@@ -1024,7 +1024,7 @@ namespace sm{
                                                         }
                                                     }
 
-                                                    fn->arguments.push_back(std::make_pair(arg_id, 0));
+                                                    fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
                                                     fn->flags = FF_VARARGS;
                                                     roundClose = true;
                                                     break;
