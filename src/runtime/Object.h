@@ -158,6 +158,11 @@ namespace sm{
         unsigned boxName = 0, name;
     };
 
+    enum FunctionFlags {
+        FF_NATIVE = 0x1,
+        FF_VARARGS = 0x2,
+    };
+
     struct Function {
         /*
          * in arguments, unsigned is the name ID of the argument,
@@ -171,7 +176,7 @@ namespace sm{
             size_t address = 0;             // if not.
         };
         unsigned boxName = 0, fnName = 0;
-        bool native = false;
+        char flags = 0;
     };
 
     struct Method {
@@ -272,7 +277,7 @@ namespace sm{
         Object obj;
         obj.type = ObjectType::FUNCTION;
         obj.f_ptr = new Function;
-        obj.f_ptr->native = true;
+        obj.f_ptr->flags = FF_NATIVE;
         obj.f_ptr->native_ptr = fn;
         obj.f_ptr->boxName = boxName;
         obj.f_ptr->fnName = fnName;
