@@ -138,6 +138,72 @@ OUTPUT:
 1.5
 ```
 
+At the end, functions can accept a **variable number of arguments**: those are called **VARARGS** functions and can be implemented by adding as **last argument** a special argument ending with three points:
+```js
+func varargs_func (arg0, arg1, /* argN, */ specialArg...) {}
+```
+
+Now, `specialArg` won't never be `null`. When there are no arguments to pass
+to `specialArg` it will be an **empty list**. Otherwise it will be a list containing all the arguments in excess.
+Let's see a simple example:
+
+```js
+import std.io = io;
+
+func foo(args...){
+    io.println("args: ", args);
+}
+
+func bar(a = 1, b = a+1, c...){
+    io.println("a: ", a, "\nb: ", b, "\nc: ", c);
+}
+
+func main(){
+    foo(0, 1, 2);
+    bar(0, 1, 2, 3, 4, 5);
+    foo(0, "Hello", [1, 2]);
+    foo();
+
+
+    bar(0, 1, 2);
+    bar(0, 1, 2, 3, 4, 5);
+    bar(0, "Hello", [1, 2]);
+    bar();
+}
+```
+
+OUTPUT, as expected:
+
+```
+args: [0, 1, 2]
+args: [0, 1, 2, 3, 4, 5]
+args: [0, Hello, [1, 2]]
+args: []
+a: 0, b: 1, c: [2]
+a: 0, b: 1, c: [2, 3, 4, 5]
+a: 0, b: Hello, c: [[1, 2]]
+a: 1, b: 2, c: []
+```
+
+NOTE: We've **alredy** used a lot VARARGS: in fact, the `std.io::println` function is implemented via VARARGS!
+
+```js
+/*
+ * in box std.io, natively
+*/
+
+// [...]
+
+func println(objects...){
+    /* CODE to print each element in 'objects' */
+    /* CODE to print new-line character ('\n') */
+}
+
+// [...]
+```
+
+This **allows** writing `io.println("Hello")`, `io.println("Hello ", "World")`, `io.println("a", "b", "c")` and so on.
+
 |||
 |--:|:---:|:--|
 | [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
