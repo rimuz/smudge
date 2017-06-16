@@ -249,6 +249,7 @@ namespace sm{
                     }
 
                     size_t arg0 = 0;
+                    bool roundClose = false;
 
                     while(1) {
                         if(++it == states.end){
@@ -256,7 +257,7 @@ namespace sm{
                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                 "expected ')' or identifier before 'eof'.");
                         } else if(it->type == TT_ROUND_CLOSE){
-                            --it;
+                            roundClose = true;
                             break;
                         } else if(it->type == TT_TEXT){
                             size_t arg_id = runtime::genOrdinaryId(*_rt, it->content);
@@ -264,15 +265,53 @@ namespace sm{
                                 --it;
                                 _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                     "expected ',' or '=' before 'eof'.");
-                            } else if(it->type == TT_COMMA){
+                            } else if(it->type == TT_COMMA || (roundClose = it->type == TT_ROUND_CLOSE)){
                                 size_t name_id = arg_id - runtime::idsStart;
                                 states.output->push_back(ASSIGN_NULL_POP);
                                 states.output->push_back((name_id >> 8) & 0xFF);
                                 states.output->push_back(name_id & 0xFF);
                                 fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
-                            } else if(it->type == TT_ASSIGN || it->type == TT_ROUND_CLOSE){
+                                if(roundClose)
+                                    break;
+                            } else if(it->type == TT_ASSIGN){
                                 it -= 2;
                                 arg0 = arg_id;
+                                break;
+                            } else if(it->type == TT_DOT){
+                                for (int i = 0; i != 2; ++i){ /* three varargs dots!*/
+                                    if(++it == states.end){
+                                        --it;
+                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            "expected '.' before 'eof'.");
+                                    } else if(it->type != TT_DOT){
+                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            std::string("expected '.' before ")
+                                            + representation(*it) + ".");
+                                    }
+                                }
+
+                                if(++it == states.end){
+                                    --it;
+                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                        "expected ')' before 'eof'.");
+                                } else if (it->type != TT_ROUND_CLOSE){
+                                    if(it->type == TT_COMMA){
+                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            "VARARG argument must be the last argument"
+                                            " in the function definition.");
+                                    } else if(it->type == TT_ASSIGN){
+                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            "VARARG argument cannot have a default value.");
+                                    } else {
+                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            std::string("expected ')' before ")
+                                            + representation(*it) + ".");
+                                    }
+                                }
+
+                                fn->arguments.push_back(std::make_pair(arg_id, 0));
+                                fn->flags = FF_VARARGS;
+                                roundClose = true;
                                 break;
                             } else {
                                 _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
@@ -286,7 +325,19 @@ namespace sm{
                         }
                     }
 
-                    states.parStack.emplace_back(DEFAULT_ARGUMENT);
+                    if(roundClose){
+                        if(++it == states.end){
+                            --it;
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "expected '{' before 'eof'.");
+                        } else if(it->type != TT_CURLY_OPEN){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                std::string("expected '{' before ")
+                                + representation(*it) + ".");
+                        }
+                    }
+
+                    states.parStack.emplace_back(roundClose ? FUNCTION_BODY : DEFAULT_ARGUMENT);
                     states.parStack.back().funcPtr = fn;
                     states.parStack.back().arg0 = arg0;
 
