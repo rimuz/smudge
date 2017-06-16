@@ -167,7 +167,7 @@ namespace sm{
                 funcStack.back().inlined = true;
             }
 
-            if(fn->native){
+            if(fn->flags & FF_NATIVE){
                 Object ret = (*fn->native_ptr)(*this, fn, self, args);
                 if(ret.type == ObjectType::WEAK_REFERENCE){
                     ret = ret.refGet();
@@ -184,16 +184,36 @@ namespace sm{
                 if(fn->arguments.empty()){
                     address = fn->address;
                 } else {
-                    size_t n_args = args.size();
+                    /*
+                     * 'fn->arguments' are the arguments expected by the
+                     * function, 'args' are the arguments actually given by
+                     * the caller.
+                    */
+
                     ObjectDict_t* dict = new ObjectDict_t;
                     backInfo.codeBlocks.push_back(dict);
 
-                    for(size_t i = 0; i != fn->arguments.size(); ++i){
+                    bool is_vararg = fn->flags & FF_VARARGS;
+                    size_t n_args = args.size();
+                    size_t n_expected = is_vararg ? fn->arguments.size()-1 : fn->arguments.size();
+
+                    for(size_t i = 0; i != n_expected; ++i){
                         Object obj;
                         if(i < n_args){
                             obj = args[i];
                         }
                         (*dict)[std::get<0>(fn->arguments[i])] = std::move(obj);
+                    }
+
+                    if(is_vararg){
+                        Object ls;
+                        if(n_args > n_expected){
+                            ls = makeList(rt->gc, false,
+                                ObjectVec_t(args.begin() + n_expected, args.end()));
+                        } else {
+                            ls = makeList(rt->gc, false);
+                        }
+                        (*dict)[std::get<0>(fn->arguments[n_expected])] = std::move(ls);
                     }
 
                     if(n_args == 0){
