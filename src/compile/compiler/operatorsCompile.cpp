@@ -992,6 +992,42 @@ namespace sm{
                                                 } else if(it->type == TT_ASSIGN){
                                                     states.parStack.back().arg0 = arg_id;
                                                     break;
+                                                } else if(it->type == TT_DOT){
+                                                    for (int i = 0; i != 2; ++i){ /* three varargs dots!*/
+                                                        if(++it == states.end){
+                                                            --it;
+                                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                                "expected '.' before 'eof'.");
+                                                        } else if(it->type != TT_DOT){
+                                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                                std::string("expected '.' before ")
+                                                                + representation(*it) + ".");
+                                                        }
+                                                    }
+
+                                                    if(++it == states.end){
+                                                        --it;
+                                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                            "expected ')' before 'eof'.");
+                                                    } else if (it->type != TT_ROUND_CLOSE){
+                                                        if(it->type == TT_COMMA){
+                                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                                "VARARG argument must be the last argument"
+                                                                " in the function definition.");
+                                                        } else if(it->type == TT_ASSIGN){
+                                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                                "VARARG argument cannot have a default value.");
+                                                        } else {
+                                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                                std::string("expected ')' before ")
+                                                                + representation(*it) + ".");
+                                                        }
+                                                    }
+
+                                                    fn->arguments.push_back(std::make_pair(arg_id, 0));
+                                                    fn->flags = FF_VARARGS;
+                                                    roundClose = true;
+                                                    break;
                                                 } else {
                                                     _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                                         std::string("expected ',' or '=' before ")
