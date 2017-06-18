@@ -47,7 +47,7 @@ Also, you can add new ones with the option `-D <directory>`. The first search di
 
 So, the import statement above, imports box contained in file `std/io.sm` with
 the label `io`. Actually, there's no `std/io.sm` file because the **SSL is native** (that doesn't mean non-customizable) but
-you can write your own implementation of the **SSL** and install it in one of the search directories. You can disable the SSL with the option `-n` or `--no-lib`.
+you can write your own implementation of the **SSL** and install it in one of the search directories. You can disable the SSL with the option `-n` or `--no-stdlib`.
 
 The third line simply uses the box `std.io` (through its "link" `io`) by calling its function `println` with the string `Hello, world!` as parameter. This function does nothing more than printing its **argument** and a **newline character** (`\n`) to the `stdout`.
 
