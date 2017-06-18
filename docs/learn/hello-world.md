@@ -14,7 +14,7 @@ And we call `smudge hello.sm`: *voilà!* `Hello, world!` appears on the screen.
 It's also possible to make the program directly executable by adding the following line at the start of the file:
 
 ```js
-#! /usr/local/smudge
+#! /usr/local/bin/smudge
 ```
 
 This, called *hashbang* or *shabang*, it's a special Unix instruction that tells the shell where is located the interpreter for the script.
