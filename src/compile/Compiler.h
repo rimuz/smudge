@@ -79,7 +79,7 @@ namespace sm {
                 // order counts!
                 _STATEMENTS_START,
                 IF_STATEMENT, WHILE_STATEMENT, FOR_STATEMENT,
-                DO_STATEMENT, ELSE_STATEMENT,
+                DO_STATEMENT, ELSE_STATEMENT, FUNCTION_STATEMENT,
                 _STATEMENTS_END,
 
                 // SPECIALS
