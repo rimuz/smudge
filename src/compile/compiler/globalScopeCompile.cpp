@@ -236,13 +236,13 @@ namespace sm{
                     }
 
                     if(it->type != TT_ROUND_OPEN){
-                        if(it->type != TT_CURLY_OPEN){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                std::string("expected '(' or '{' before ")
-                                + representation(*it) + ".");
+                        if(it->type == TT_CURLY_OPEN){
+                            states.parStack.emplace_back(FUNCTION_BODY);
+                        } else {
+                            states.parStack.emplace_back(FUNCTION_STATEMENT);
+                            --it;
                         }
 
-                        states.parStack.emplace_back(FUNCTION_BODY);
                         states.isStatementEmpty = true;
                         states.isLastOperand = false;
                         break;
@@ -330,14 +330,16 @@ namespace sm{
                             --it;
                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                 "expected '{' before 'eof'.");
-                        } else if(it->type != TT_CURLY_OPEN){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                std::string("expected '{' before ")
-                                + representation(*it) + ".");
+                        } else if(it->type == TT_CURLY_OPEN) {
+                            states.parStack.emplace_back(FUNCTION_BODY);
+                        } else {
+                            states.parStack.emplace_back(FUNCTION_STATEMENT);
+                            --it;
                         }
+                    } else {
+                        states.parStack.emplace_back(DEFAULT_ARGUMENT);
                     }
 
-                    states.parStack.emplace_back(roundClose ? FUNCTION_BODY : DEFAULT_ARGUMENT);
                     states.parStack.back().funcPtr = fn;
                     states.parStack.back().arg0 = arg0;
 
