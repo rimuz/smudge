@@ -1046,12 +1046,12 @@ namespace sm{
                                             --it;
                                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                                 "expected '{' before 'eof'.");
-                                        } else if(it->type != TT_CURLY_OPEN){
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                                std::string("expected '{' before ")
-                                                + representation(*it) + ".");
+                                        } else if(it->type == TT_CURLY_OPEN) {
+                                            states.parStack.back().parType = FUNCTION_BODY;
+                                        } else {
+                                            states.parStack.back().parType = FUNCTION_STATEMENT;
+                                            --it;
                                         }
-                                        states.parStack.back().parType = FUNCTION_BODY;
                                     } else {
                                         it -= 2;
                                     }
