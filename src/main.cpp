@@ -66,13 +66,18 @@ int main(int argc, char** argv){
     runtime::Runtime_t rt;
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
+
     int firstArg = argc;
     bool printPaths = false;
 
     for(int i = 1; i != argc; ++i){
         if(*argv[i] == '-'){
             argv[i]++;
-            if(!std::strcmp(argv[i], "D")){
+            if(!std::strcmp(argv[i], "c1") || !std::strcmp(argv[i], "old-compiler")){
+                rt.oldCompiler = true;
+            } else if (!std::strcmp(argv[i], "c2") || !std::strcmp(argv[i], "omega-compiler")){
+                rt.oldCompiler = false;
+            } else if(!std::strcmp(argv[i], "D")){
                 if(++i == argc || *argv[i] == '-'){
                     printUsage();
                 }
@@ -226,6 +231,8 @@ constexpr const char* usage_str =
     "Also, you can replace <File> with option -i to use stdin instead.\n\n"
 
     "Options:\n"
+    "  -c1, --old-compiler      Use bytecode compiler v1.\n"
+    "  -c2, --omega-compiler    Use bytecode compiler v1 (default).\n"
     "  -D <directory>           Add <directory> to the search paths.\n"
     "  -h, --help               Display this information.\n"
     "  -i, --stdin              Get code to interpret from stdin.\n"
