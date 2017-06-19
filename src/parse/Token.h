@@ -22,7 +22,6 @@
 
 #include <list>
 
-#include "require_cpp11.h"
 #include "typedefs.h"
 
 namespace sm{

@@ -26,7 +26,6 @@
 #include "runtime/gc.h"
 #include "runtime/id.h"
 #include "exec/Interpreter.h"
-#include "require_cpp11.h"
 #include "typedefs.h"
 
 #define _Id(X) runtime::genOrdinaryId(rt, X)
