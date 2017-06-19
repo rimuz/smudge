@@ -26,6 +26,7 @@
 
 #include "error/error.h"
 #include "compile/Statement.h"
+#include "compile/defs.h"
 #include "runtime/Object.h"
 #include "typedefs.h"
 
@@ -157,14 +158,8 @@ namespace sm {
                     return isCurly() || isSpecialStatement();
                 }
             }
-
-            using NamesMap_t = Map_t<string_t, uint16_t>;
-            using StringsMap_t = Map_t<std::string, uint16_t>;
-            using IntsMap_t = Map_t<integer_t, uint16_t>;
-            using FloatsMap_t = Map_t<float_t, uint16_t>;
+            
             using ParStack_t = std::vector<ParType::ParInfo_t>;
-            using ImportedBox_t = std::tuple<unsigned, unsigned>;
-            using ImportsVec_t = std::vector<ImportedBox_t>;
 
             struct CompilerStates{
                 std::vector<ParType::Operator_t> operators;
