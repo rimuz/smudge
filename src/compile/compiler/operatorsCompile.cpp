@@ -142,7 +142,7 @@ namespace sm{
                             break;
                         } else if(it->isSpecialStatement()) {
                             closingSpecial = it->parType - (_STATEMENTS_START - _CURLY_START);
-                            doEndBlock = true;
+                            doEndBlock = it->parType != FUNCTION_STATEMENT;
                             break;
                         } else if(it->isForStatement()){
                             closingSpecial = it->parType;
@@ -554,7 +554,8 @@ namespace sm{
 
                             if(!closingSpecial){
                                 closingSpecial = info.parType - (_STATEMENTS_START - _CURLY_START);
-                                states.output->push_back(END_BLOCK);
+                                if(closingSpecial != FUNCTION_BODY)
+                                    states.output->push_back(END_BLOCK);
                             }
 
                             switch(closingSpecial){
