@@ -17,10 +17,47 @@
  *
 */
 
+#include "typedefs.h"
+
+#define _rule_method(name) virtual unsigned name(root_t& root, \
+    statement_t& curr, TokenVec_t::const_iterator& next_it, \
+    TokenVec_t::const_iterator& end_it)
+
 namespace sm {
     namespace compile {
         namespace v2 {
-            // TODO!!
+            struct statement_t;
+            struct root_t;
+            
+            class rule_t {
+                _rule_method(on_comma) {}
+
+                virtual ~rule() {}
+            };
+
+            struct statement_t {
+                std::vector<statement_t> children;
+                statement_t* parent = nullptr;
+                rule_t* rule = nullptr;
+                unsigned data;
+            };
+
+            struct root_t {
+                Map_t <std::string, std::vector<statement_t>> boxes;
+            };
+
+            /*
+             * Creates a new statement_t and inserts it
+             * into parent.
+            */
+            void addStatement(statement_t& parent, );
+
+            /*
+             * Quits the program with an error message if
+             * the next token is not of the expected type.
+             */
+            void expect(TokenVec_t::const_iterator next, TokenVec_t::const_iterator end,
+                enum_t expected);
         }
     }
 }
