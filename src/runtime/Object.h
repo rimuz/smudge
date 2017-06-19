@@ -29,7 +29,6 @@
 #include <iostream>
 #include <map>
 
-#include "require_cpp11.h"
 #include "typedefs.h"
 #include "compile/Statement.h"
 #include "utils/String.h"
