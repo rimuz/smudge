@@ -22,7 +22,6 @@
 
 #include <string>
 #include <vector>
-
 #include "require_cpp11.h"
 
 #define _SM_INT_VERSION 0002
