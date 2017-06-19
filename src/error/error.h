@@ -23,7 +23,6 @@
 #include <vector>
 #include <string>
 
-#include "require_cpp11.h"
 #include "typedefs.h"
 
 namespace sm {
@@ -40,7 +39,9 @@ namespace sm {
     }
 
     namespace compile{
-        class Compiler;
+        namespace v1{
+            class Compiler;
+        }
     }
 
     namespace exec{
@@ -48,7 +49,7 @@ namespace sm {
     }
 
     class Sources {
-        friend compile::Compiler;
+        friend sm::compile::v1::Compiler;
     private:
         std::vector<error::CodeSource*> _sources;
     public:
