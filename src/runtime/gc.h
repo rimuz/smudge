@@ -28,11 +28,9 @@
 #include <chrono>
 
 #include "typedefs.h"
-#include "require_cpp11.h"
-
 #include "runtime/Object.h"
 #include "error/error.h"
-#include "compile/Compiler.h"
+#include "compile/v1/Compiler.h"
 
 namespace sm{
     class Instance;
@@ -96,7 +94,7 @@ namespace sm{
             std::vector<string_t>       nameConstants;
             std::vector<string_t>       boxNames;
             std::vector<String>         stringConstants;
-            compile::NamesMap_t         nameIds;
+            compile::v1::NamesMap_t         nameIds;
 
             Runtime_t() : gc(this) {};
 
