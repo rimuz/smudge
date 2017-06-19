@@ -23,7 +23,6 @@
 
 #include "typedefs.h"
 #include "compile/Statement.h"
-#include "compile/Compiler.h"
 
 namespace sm{
     namespace compile {

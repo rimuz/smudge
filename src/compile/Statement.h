@@ -24,11 +24,14 @@
 #include <unordered_map>
 
 #include "typedefs.h"
-#include "require_cpp11.h"
 #include "parse/Token.h"
 
 namespace sm{
     namespace compile{
+        namespace test{
+            void print(const ByteCode_t& code);
+        }
+        
         enum OpCode{
             /*
              * tos = Top Of the Stack
