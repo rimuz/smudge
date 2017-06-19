@@ -22,7 +22,6 @@
 
 #include <vector>
 
-#include "require_cpp11.h"
 #include "typedefs.h"
 #include "parse/Token.h"
 #include "runtime/Object.h"
