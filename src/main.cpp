@@ -44,7 +44,7 @@
 #include <cstdlib>
 #include <chrono>
 
-#include "compile/Compiler.h"
+#include "compile/v1/Compiler.h"
 #include "compile/Statement.h"
 #include "runtime/gc.h"
 #include "runtime/Object.h"
@@ -64,8 +64,8 @@ using namespace sm;
 
 int main(int argc, char** argv){
     runtime::Runtime_t rt;
-    compile::Compiler cp(rt);
     exec::Interpreter intp(rt);
+    compile::v1::Compiler cp(rt);
     int firstArg = argc;
     bool printPaths = false;
 
@@ -137,6 +137,7 @@ int main(int argc, char** argv){
             }
         }
     }
+
 
     while(cp.next()); // compile
 
