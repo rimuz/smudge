@@ -365,12 +365,15 @@ namespace sm{
                                     "'break' is not allowed outside loops.");
                             }
                             ++blocksToClose;
-                        } else if(rit->isSpecialStatement()){
+                        } if(rit->isSpecialStatement()){
                             if(rit->parType == WHILE_STATEMENT || rit->parType == FOR_STATEMENT
                                     || rit->parType == DO_STATEMENT){
                                 ++blocksToClose;
                                 loop = &*rit;
                                 break;
+                            } else if(rit->parType == FUNCTION_STATEMENT){
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    "'break' is not allowed outside loops.");
                             }
                             ++blocksToClose;
                         } else {
@@ -460,6 +463,9 @@ namespace sm{
                                     || rit->parType == DO_STATEMENT){
                                 loop = &*rit;
                                 break;
+                            } else if(rit->parType == FUNCTION_STATEMENT){
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    "'break' is not allowed outside loops.");
                             }
                             ++blocksToClose;
                         } else {
