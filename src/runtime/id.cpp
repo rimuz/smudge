@@ -26,7 +26,7 @@ namespace sm{
 
     namespace runtime{
         unsigned genOrdinaryId(Runtime_t& rt, const string_t& name){
-            compile::NamesMap_t::const_iterator found = rt.nameIds.find(name);
+            compile::v1::NamesMap_t::const_iterator found = rt.nameIds.find(name);
             if(found == rt.nameIds.end()){
                 rt.nameConstants.push_back(name);
                 return runtime::idsStart + (rt.nameIds[name] = rt.nameConstants.size() -1);
