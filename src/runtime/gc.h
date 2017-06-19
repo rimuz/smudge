@@ -87,14 +87,14 @@ namespace sm{
             ByteCode_t code;
             exec::ThreadVec_t threads;
 
-            bool showAll = false, noStd = false;
+            bool showAll = false, noStd = false, oldCompiler = false;
 
             std::vector<integer_t>      intConstants;
             std::vector<float_t>        floatConstants;
             std::vector<string_t>       nameConstants;
             std::vector<string_t>       boxNames;
             std::vector<String>         stringConstants;
-            compile::v1::NamesMap_t         nameIds;
+            compile::NamesMap_t         nameIds;
 
             Runtime_t() : gc(this) {};
 
