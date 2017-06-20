@@ -31,7 +31,7 @@ namespace sm{
         namespace test{
             void print(const ByteCode_t& code);
         }
-        
+
         enum OpCode{
             /*
              * tos = Top Of the Stack
@@ -142,6 +142,16 @@ namespace sm{
             */
             FIND_NEW_SUPER,
             FIND_DELETE_SUPER,
+
+            /*
+             * Set TOS = TOS.iterate().
+            */
+            ITERATE,
+
+            /*
+             * Push TOS.next() on the stack.
+            */
+            IT_NEXT,
 
             /*
              * pushes a copy of TOS on the stack.
@@ -318,6 +328,21 @@ namespace sm{
              * TOS2, .., TOS'param-1' values.
             */
             MAKE_TUPLE,
+
+            /*
+             * Checks if foreach is out of range
+             * (with the value 1 of the tuple returned
+             * by TOS.next()).
+             *
+             * If not out of range, sets TOS2 = TOS[0],
+             * (sets the foreach temp value to the value 0
+             * of the tuple).
+             *
+             * If out of range, pops TOS2-TOS out from the stack
+             * and jumps to curr + 'param'
+             *
+            */
+            FOREACH_CHECK,
 
             /*
              * Compare TOS and TOS1 (then pop TOS, only),
