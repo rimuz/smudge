@@ -147,7 +147,8 @@ int main(int argc, char** argv){
     while(cp.next()); // compile
 
     // import std.lang box
-    rt.boxes.push_back(lib::import_lang(rt, rt.boxNames.size()-1));
+    if(!rt.noStd)
+        rt.boxes.push_back(lib::import_lang(rt, rt.boxNames.size()-1));
 
     if(rt.showAll){
         runtime::test::print(rt);
