@@ -224,6 +224,27 @@ namespace sm{
                                 std::string("expected '(' before ") + representation(*it) + ".");
                         }
 
+                        // FOR EACH
+                        if((it+2) < states.end){
+                            if((++it)->type == TT_TEXT){
+                                unsigned nid = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
+                                if((++it)->type == TT_COLON){
+                                    states.parStack.emplace_back(FOREACH_HEAD);
+                                    states.output->push_back(START_BLOCK);
+                                    states.output->push_back(DEFINE_NULL_VAR);
+                                    states.output->push_back(nid >> 8);
+                                    states.output->push_back(nid & 0xFF);
+
+                                    states.isStatementEmpty = true;
+                                    states.isLastOperand = false;
+                                    break;
+                                }
+                                --it;
+                            }
+                            --it;
+                        }
+
+                        // NORMAL FOR
                         states.parStack.emplace_back(FOR_HEAD1);
                         states.output->push_back(START_BLOCK);
                         states.isStatementEmpty = true;
@@ -366,7 +387,7 @@ namespace sm{
                                         "'break' is not allowed outside loops.");
                                 }
                                 ++blocksToClose;
-                            } if(rit->isSpecialStatement()){
+                            } else if(rit->isSpecialStatement()){
                                 if(rit->parType == WHILE_STATEMENT || rit->parType == FOR_STATEMENT
                                         || rit->parType == DO_STATEMENT){
                                     ++blocksToClose;
@@ -403,7 +424,7 @@ namespace sm{
 
                         if(!loop->loopStatements)
                             loop->loopStatements = new LoopStatements_t;
-
+                        
                         loop->loopStatements->breaks.push_back(states.output->size() +1);
 
                         states.output->push_back(JUMP_F);

@@ -821,6 +821,36 @@ namespace sm{
                                         break;
                                     }
 
+                                    case FOREACH_HEAD: {
+                                        if(++it == states.end){
+                                            --it;
+                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                "expected valid expression before 'eof'.");
+                                        } else if(it->type == TT_CURLY_OPEN){
+                                            info.parType = FOR_BODY;
+                                        } else {
+                                            info.parType = FOR_STATEMENT;
+                                            --it;
+                                        }
+
+                                        states.output->push_back(ITERATE);
+                                        states.output->push_back(IT_NEXT);
+                                        states.output->push_back(FOREACH_CHECK);
+                                        states.output->push_back(0);
+                                        states.output->push_back(0);
+                                        states.output->push_back(START_BLOCK);
+
+                                        // FOREACH_CHECK's 'param' address
+                                        info.arg1 = states.output->size() -3;
+
+                                        // IT_NEXT address -2 (FOR_BODY adds 2)
+                                        info.arg2 = states.output->size() -7;
+
+                                        states.isStatementEmpty = true;
+                                        states.isLastOperand = false;
+                                        break;
+                                    }
+
                                     case FOR_HEAD1: {
                                         info.parType = FOR_HEAD2;
                                         info.arg0 = states.output->size();
@@ -899,6 +929,7 @@ namespace sm{
                                             IndexVector_t::const_iterator cit;
 
                                             for(cit = bvec.begin(); cit != bvec.end(); ++cit){
+                                                label = *cit;
                                                 diff = target -label;
                                                 (*states.output)[label] = (diff >> 8) & 0xFF;
                                                 (*states.output)[label+1] = diff & 0xFF;
