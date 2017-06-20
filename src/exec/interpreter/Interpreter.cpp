@@ -106,6 +106,8 @@ namespace sm{
                     _OcCase(FIND_DELETE, FindDelete);
                     _OcCase(FIND_NEW_SUPER, FindNewSuper);
                     _OcCase(FIND_DELETE_SUPER, FindDeleteSuper);
+                    _OcCase(ITERATE, Iterate);
+                    _OcCase(IT_NEXT, ItNext);
                     _OcCase(DUP, Dup);
                     _OcCase(DUP1, Dup1);
                     _OcCase(END_BLOCKS, EndBlocks);
@@ -135,6 +137,7 @@ namespace sm{
                     _OcCase(FIND, Find);
                     _OcCase(MAKE_LIST, MakeList);
                     _OcCase(MAKE_TUPLE, MakeTuple);
+                    _OcCase(FOREACH_CHECK, ForeachCheck);
                     _OcCase(SWITCH_CASE, SwitchCase);
                     _OcCase(IMPORT, Import);
 
