@@ -154,7 +154,7 @@ namespace sm{
                 Object str = runtime::implicitToString(intp, *it);
                 std::cout << str.s_ptr->str;
             }
-            std::cout << std::endl;
+            std::cout << '\n';
             return makeBox(intp.rt->boxes[thisFn->boxName]);
         }
 
@@ -171,7 +171,7 @@ namespace sm{
                 Object str = runtime::implicitToString(intp, *it);
                 std::cerr << str.s_ptr->str;
             }
-            std::cerr << std::endl;
+            std::cerr << '\n';
             return makeBox(intp.rt->boxes[thisFn->boxName]);
         }
 
