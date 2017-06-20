@@ -34,6 +34,7 @@ namespace sm{
 
         oid_t idToString;
         oid_t idHash;
+        oid_t idIterate;
 
         namespace StringClass {
             _NativeFunc(idx);
@@ -201,6 +202,7 @@ namespace sm{
 
             idToString = _Id("to_string");
             idHash = _Id("hash");
+            idIterate = _Id("iterate");
 
             cString = setClass(rt, box, "String", {
                 _OpTuple(StringClass, parse::TT_PLUS, plus),
