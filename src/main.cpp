@@ -143,8 +143,7 @@ int main(int argc, char** argv){
     while(cp.next()); // compile
 
     // import std.lang box
-    if(!rt.noStd)
-        rt.boxes.push_back(lib::import_lang(rt, rt.boxNames.size()-1));
+    rt.boxes.push_back(lib::import_lang(rt, rt.boxNames.size()-1));
 
     if(rt.showAll){
         runtime::test::print(rt);
@@ -232,7 +231,7 @@ constexpr const char* usage_str =
     "  -h, --help               Display this information.\n"
     "  -i, --stdin              Get code to interpret from stdin.\n"
     "  -l, --license            Display license.\n"
-    "  -n, --no-stdlib          Don't import Native Standard Library.\n"
+    "  -n, --no-stdlib          Don't use native SSL (except for std.lang)\n"
     "  -s, --show-paths         Display search paths.\n"
     "  -S, --show-all           Show all outputs.\n"
     "  -t, --time               Show total execution time before exiting.\n"
