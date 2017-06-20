@@ -49,6 +49,7 @@ namespace sm {
                     // ROUND.HEAD:
                     _HEAD_START,
                     IF_HEAD, WHILE_HEAD, DO_WHILE_HEAD, FOR_HEAD3, SWITCH_HEAD,
+                    FOREACH_HEAD,
                     _HEAD_END,
                     _ROUND_END,
 
@@ -158,7 +159,7 @@ namespace sm {
                     return isCurly() || isSpecialStatement();
                 }
             }
-            
+
             using ParStack_t = std::vector<ParType::ParInfo_t>;
 
             struct CompilerStates{
