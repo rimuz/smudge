@@ -232,6 +232,16 @@ namespace sm{
             }
         }
 
+        _OcFunc(Iterate){
+            // TODO!!
+            ++addr;
+        }
+
+        _OcFunc(ItNext){
+            // TODO!!
+            ++addr;
+        }
+
         _OcFunc(FindNew){
             // TODO!!
             ++addr;

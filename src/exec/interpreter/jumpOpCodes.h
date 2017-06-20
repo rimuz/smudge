@@ -108,6 +108,10 @@ namespace sm{
             addr += 3;
         }
 
+        _OcFunc(ForeachCheck){
+            addr += 3;
+        }
+
         _OcFunc(ThrowException){
             // TODO
             ++addr;
