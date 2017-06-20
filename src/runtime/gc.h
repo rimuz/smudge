@@ -87,7 +87,7 @@ namespace sm{
             ByteCode_t code;
             exec::ThreadVec_t threads;
 
-            bool showAll = false, noStd = false, oldCompiler = false;
+            bool showAll = false, noStd = false;
 
             std::vector<integer_t>      intConstants;
             std::vector<float_t>        floatConstants;
