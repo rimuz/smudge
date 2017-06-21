@@ -334,9 +334,9 @@ namespace sm{
              * (with the value 1 of the tuple returned
              * by TOS.next()).
              *
-             * If not out of range, sets TOS2 = TOS[0],
+             * If not out of range, sets TOS2 = TOS[0].
              * (sets the foreach temp value to the value 0
-             * of the tuple).
+             * of the tuple) It also pops TOS.
              *
              * If out of range, pops TOS2-TOS out from the stack
              * and jumps to curr + 'param'
