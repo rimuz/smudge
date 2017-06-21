@@ -320,6 +320,13 @@ namespace sm{
         return obj;
     }
 
+    Object makeBool(bool b) noexcept{
+        Object obj;
+        obj.type = ObjectType::INTEGER;
+        obj.i = static_cast<integer_t>(b);
+        return obj;
+    }
+
     namespace runtime{
         std::chrono::steady_clock::time_point* Runtime_t::execStart = nullptr;
 
