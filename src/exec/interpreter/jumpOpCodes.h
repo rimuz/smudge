@@ -24,6 +24,10 @@
 #include "runtime/casts.h"
 
 namespace sm{
+    namespace lib {
+        extern Class* cTuple;
+    }
+
     namespace exec{
         _OcFunc(JumpF){
             addr += (*++addr << 8) | *++addr;
@@ -109,6 +113,23 @@ namespace sm{
         }
 
         _OcFunc(ForeachCheck){
+            Object& tos = intp.exprStack.back();
+            ObjectVec_t* vec;
+
+            if(!hasVector(tos, vec) || vec->size() != 2){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    "'next()' must return a list or a tuple of size 2.");
+            }
+
+            ObjectVec_t::iterator end = intp.exprStack.end();
+            if(!runtime::implicitToBool((*vec)[1])){
+                intp.exprStack.erase(end -4, end);
+                addr += (*++addr << 8) | *++addr;
+                return;
+            }
+
+            *(end -4)->o_ptr = (*vec)[0];
+            intp.exprStack.pop_back();
             addr += 3;
         }
 
