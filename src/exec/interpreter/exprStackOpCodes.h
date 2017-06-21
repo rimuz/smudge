@@ -31,6 +31,7 @@ namespace sm{
     namespace lib {
         extern Class* cString;
         extern oid_t idIterate;
+        extern oid_t idNext;
     }
 
     namespace exec{
@@ -184,7 +185,7 @@ namespace sm{
                         return;
                     }
 
-                    Class* base = in.i_ptr->base;
+                    Class* base = obj.i_ptr->base;
                     do {
                         it = base->objects.find(id);
                         if(it != base->objects.end()){
@@ -236,31 +237,51 @@ namespace sm{
         }
 
         _OcFunc(Iterate){
-            Object& tos = intp.exprStack.back();
+            Object tos = intp.exprStack.back();
+            _OcValue(tos);
             if(tos.type != ObjectType::CLASS_INSTANCE){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     "for-each supported only for objects (no PODs)");
             }
 
-            Object func, self = tos;
+            Object func;
             Function* f_ptr;
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, func, lib::idIterate)){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
-                    std::string("cannot find 'iterate' in "
-                    + runtime::errorString(intp, obj) + " (required by for-each)");
-            } else if(!runtime::callable(func, self, f_ptr)){
+                    std::string("cannot find 'iterate' in ")
+                    + runtime::errorString(intp, tos) + " (required by for-each)");
+            } else if(!runtime::callable(func, tos, f_ptr)){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
-                    std::string("'iterate' is not a function in "
-                    + runtime::errorString(intp, obj) + " (required by for-each)");
+                    std::string("'iterate' is not a function in ")
+                    + runtime::errorString(intp, tos) + " (required by for-each)");
             }
-
-            intp.exprStack.pop_back();
-            intp.makeCall(func_ptr, args, self);
+            
+            intp.makeCall(f_ptr, {}, tos);
             ++addr;
         }
 
         _OcFunc(ItNext){
-            // TODO!!!
+            Object tos = intp.exprStack.back();
+            _OcValue(tos);
+
+            if(tos.type != ObjectType::CLASS_INSTANCE){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    "'iterate()' did not return a function.");
+            }
+
+            Object func;
+            Function* f_ptr;
+            if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, func, lib::idNext)){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("cannot find 'next' in ")
+                    + runtime::errorString(intp, tos) + " (required by for-each)");
+            } else if(!runtime::callable(func, tos, f_ptr)){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("'next' is not a function in ")
+                    + runtime::errorString(intp, tos) + " (required by for-each)");
+            }
+
+            intp.makeCall(f_ptr, {}, tos);
             ++addr;
         }
 
