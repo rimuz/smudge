@@ -245,7 +245,8 @@ namespace sm{
 
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
-
+    Object makeBool(bool) noexcept;
+    
     /* if obj is tuple or list */
     bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept;
 
