@@ -32,6 +32,7 @@ namespace sm{
         Class* cList = nullptr;
         Class* cTuple = nullptr;
         Class* cListIterator = nullptr;
+        Class* cStringIterator = nullptr;
 
         oid_t idToString;
         oid_t idHash;
@@ -80,6 +81,7 @@ namespace sm{
             _NativeFunc(u_lower);
             _NativeFunc(clone);
             _NativeFunc(to_string);
+            _NativeFunc(iterate);
         }
 
         namespace ListClass {
@@ -217,6 +219,21 @@ namespace sm{
             _NativeFunc(next);
         }
 
+        namespace StringIteratorClass {
+            class StringIterator : public Instance {
+            public:
+                String& ref;
+                size_t idx;
+
+                StringIterator(runtime::GarbageCollector& gc, bool temp, String& vec)
+                    : Instance(gc, temp), ref(vec), idx(0){}
+
+                _NativeMethod(next, 0);
+            };
+
+            _NativeFunc(next);
+        }
+
         _LibDecl(lang){
             Class* box = new Class;
             box->boxName = nBox;
@@ -268,6 +285,7 @@ namespace sm{
                 _MethodTuple(StringClass, u_lower),
                 _MethodTuple(StringClass, clone),
                 _MethodTuple(StringClass, to_string),
+                _MethodTuple(StringClass, iterate),
             });
 
             cList = setClass(rt, box, "List", {
@@ -326,6 +344,10 @@ namespace sm{
 
             cListIterator = setClass(rt, box, "ListItearator", {
                 _MethodTuple(ListIteratorClass, next),
+            });
+
+            cStringIterator = setClass(rt, box, "StringIterator", {
+                _MethodTuple(StringIteratorClass, next),
             });
 
             return box;
@@ -826,6 +848,11 @@ namespace sm{
             _NativeFunc(to_string){
                 return self;
             }
+
+            _NativeFunc(iterate){
+                return makeFastInstance<StringIteratorClass::StringIterator>
+                    (intp.rt->gc, cStringIterator, false, self.s_ptr->str);
+            }
         }
 
         namespace ListClass {
@@ -883,6 +910,10 @@ namespace sm{
 
         namespace ListIteratorClass {
             _BindMethod(ListIterator, next, 0);
+        }
+
+        namespace StringIteratorClass {
+            _BindMethod(StringIterator, next, 0);
         }
 
         namespace ListClass {
@@ -1503,6 +1534,23 @@ namespace sm{
                     obj = ref[idx++];
                 }
                 return makeTuple(intp.rt->gc, false, {obj, makeBool(check)});
+            }
+        }
+
+        namespace StringIteratorClass {
+            _NativeMethod(StringIterator::next, 0){
+                String::const_iterator it = ref.begin() + idx;
+                unicode_t ch;
+                bool check = idx < ref.size();
+
+                if(check && String::uNext(it, ref.end(), ch)){
+                    idx = it - ref.begin();
+                    return makeTuple(intp.rt->gc, false, {
+                        makeString(ch), makeTrue()
+                    });
+                }
+
+                return makeTuple(intp.rt->gc, false, {Object(), makeFalse()});
             }
         }
     }
