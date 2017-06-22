@@ -460,7 +460,7 @@ namespace sm{
                             submit(tokens, states, TT_STRING);
                         }
 
-                        states.double_quote = !states.double_quote;
+                        states.single_quote = !states.single_quote;
                     } else {
                         back->content.push_back('\'');
                         states.back_slash = false;
@@ -495,7 +495,7 @@ namespace sm{
                         } else {
                             submit(tokens, states, TT_STRING);
                         }
-                    
+
                         states.double_quote = !states.double_quote;
                     } else {
                         back->content.push_back('\"');
