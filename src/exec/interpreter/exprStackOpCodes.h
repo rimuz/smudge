@@ -239,23 +239,31 @@ namespace sm{
         _OcFunc(Iterate){
             Object tos = intp.exprStack.back();
             _OcValue(tos);
-            if(tos.type != ObjectType::CLASS_INSTANCE){
+            
+            bool isString = tos.type == ObjectType::STRING;
+            if(tos.type != ObjectType::CLASS_INSTANCE && !isString){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     "for-each supported only for objects (no PODs)");
             }
 
             Object func;
             Function* f_ptr;
-            if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, func, lib::idIterate)){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
-                    std::string("cannot find 'iterate' in ")
-                    + runtime::errorString(intp, tos) + " (required by for-each)");
-            } else if(!runtime::callable(func, tos, f_ptr)){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
-                    std::string("'iterate' is not a function in ")
-                    + runtime::errorString(intp, tos) + " (required by for-each)");
+
+            if(!isString){
+                if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, func, lib::idIterate)){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("cannot find 'iterate' in ")
+                        + runtime::errorString(intp, tos) + " (required by for-each)");
+                } else if(!runtime::callable(func, tos, f_ptr)){
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("'iterate' is not a function in ")
+                        + runtime::errorString(intp, tos) + " (required by for-each)");
+                }
+            } else {
+                runtime::find<ObjectType::STRING>(tos, func, lib::idIterate);
+                runtime::callable(func, tos, f_ptr);
             }
-            
+
             intp.makeCall(f_ptr, {}, tos);
             ++addr;
         }
