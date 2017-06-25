@@ -21,6 +21,7 @@
 #define _SM__EXEC__INTERPPRETER__FUNCSTACKOPCODES_H
 
 #include "exec/interpreter/defines.h"
+#include "compile/defs.h"
 #include "runtime/casts.h"
 #include "runtime/id.h"
 
@@ -219,7 +220,7 @@ namespace sm{
                 self = nullptr;
 
                 // call 'new' function
-                if(runtime::find<ObjectType::BOX>(imported, objFunc, runtime::newId)){
+                if(runtime::find<ObjectType::BOX>(imported, objFunc, lib::idNew)){
                     if(!runtime::callable(objFunc, self, fn)){
                         intp.rt->sources.printStackTrace(intp, error::ERROR,
                             std::string("'new' is not a function in box '")
