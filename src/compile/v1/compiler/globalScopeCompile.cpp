@@ -179,14 +179,6 @@ namespace sm{
                                 id = runtime::operatorId(it->type);
                                 break;
 
-                            case TT_NEW_KW:
-                                id = runtime::newId;
-                                break;
-
-                            case TT_DELETE_KW:
-                                id = runtime::deleteId;
-                                break;
-
                             case TT_TEXT:
                                 id = runtime::genOrdinaryId(*_rt, it->content);
                                 break;
