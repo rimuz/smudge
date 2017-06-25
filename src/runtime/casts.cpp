@@ -20,6 +20,7 @@
 #include <sstream>
 #include <iomanip>
 
+#include "compile/defs.h"
 #include "runtime/casts.h"
 #include "runtime/gc.h"
 #include "runtime/id.h"
@@ -233,7 +234,7 @@ namespace sm{
 
                 case ObjectType::CLASS: {
                     Object func;
-                    if(runtime::find<ObjectType::BOX>(obj, func, runtime::newId)
+                    if(runtime::find<ObjectType::BOX>(obj, func, lib::idNew)
                             && func.type == ObjectType::FUNCTION){
                         out = func.f_ptr;
                         self = nullptr;
