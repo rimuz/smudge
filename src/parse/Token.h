@@ -76,8 +76,8 @@ namespace sm{
 
             // keywords
             TT_BREAK_KW, TT_BOX_KW, TT_CASE_KW, TT_CATCH_KW, TT_CLASS_KW,
-            TT_CONTINUE_KW, TT_DEFAULT_KW, TT_DELETE_KW, TT_DO_KW, TT_ELSE_KW,
-            TT_ENUM_KW, TT_FALSE_KW, TT_FOR_KW, TT_FUNC_KW, TT_IF_KW, TT_NEW_KW,
+            TT_CONTINUE_KW, TT_DEFAULT_KW, TT_DO_KW, TT_ELSE_KW,
+            TT_ENUM_KW, TT_FALSE_KW, TT_FOR_KW, TT_FUNC_KW, TT_IF_KW,
             TT_NULL_KW, TT_PRIVATE_KW, TT_RETURN_KW, TT_REF_KW, TT_STATIC_KW,
             TT_SWITCH_KW, TT_SYNC_KW, TT_THIS_KW, TT_THROW_KW, TT_TRUE_KW,
             T_TRY_KW, TT_USING_KW, TT_VAR_KW, TT_WHILE_KW,
@@ -164,10 +164,10 @@ namespace sm{
 
         constexpr const char* keywords [] {
             // TODO: LOW remove some keywords here and above (from the enum TokenType) and in Tokenizer.cpp!!!
-            "break", "box", "case", "catch", "class", "continue", "default", "delete",
-            "do", "else", "enum", "false", "for", "func", "if", "new", "null", "hidden",
-            "return", "ref", "static", "switch", "sync", "this", "throw", "true", "try", "import",
-            "var", "while"
+            "break", "box", "case", "catch", "class", "continue", "default",
+            "do", "else", "enum", "false", "for", "func", "if", "null", "hidden",
+            "return", "ref", "static", "switch", "sync", "this", "throw", "true",
+            "try", "import", "var", "while"
         };
         size_t constexpr keywordsLen = arraySize(keywords);
 
@@ -193,33 +193,46 @@ namespace sm{
         };
 
         constexpr const char* representations[] = {
-            "<nothing>", "useless-token", "identifier", "integer literal", "floating-point literal", "string literal",
-            "'{'", "'}'", "'['", "']'", "':'", "','", "'.'", "'?'", "'('", "')'", "';'", "'--'", "'++'", "'-'", "'+'",
-            "'~'", "'!'", "'--'", "'++'", "'/'", "'<<'", "'-'", "'*'", "'%'", "'+'", "'>>'", "'|'", "'&'", "'^'", "'&&'",
-            "'||'", "'=='", "'>'", "'>='", "'<'", "'<='", "'!='", "'?:'", "'='", "'&='", "'/='", "'<<='", "'-='", "'*='", "'%='",
-            "'|='", "'^='", "'+='", "'>>='", "'@'", "<operator>", "<number>", "<directive>", "'break'", "'box'", "'case'", "'catch'", "'class'",
-            "'continue'", "'default'", "'delete'", "'do'", "'else'", "'enum'", "'false'", "'for'", "'func'", "'if'", "'new'", "'null'",
-            "'hidden'", "'return'", "'ref'", "'static'", "'switch'", "'sync'", "'this'", "'throw'", "'true'", "'try'", "'import'", "'var'", "'while'",
+            "<nothing>", "useless-token", "identifier", "integer literal",
+            "floating-point literal", "string literal", "'{'", "'}'", "'['",
+            "']'", "':'", "','", "'.'", "'?'", "'('", "')'", "';'", "'--'",
+            "'++'", "'-'", "'+'", "'~'", "'!'", "'--'", "'++'", "'/'", "'<<'",
+            "'-'", "'*'", "'%'", "'+'", "'>>'", "'|'", "'&'", "'^'", "'&&'",
+            "'||'", "'=='", "'>'", "'>='", "'<'", "'<='", "'!='", "'?:'", "'='",
+            "'&='", "'/='", "'<<='", "'-='", "'*='", "'%='", "'|='", "'^='",
+            "'+='", "'>>='", "'@'", "<operator>", "<number>", "<directive>",
+            "'break'", "'box'", "'case'", "'catch'", "'class'", "'continue'",
+            "'default'","'do'", "'else'", "'enum'", "'false'", "'for'",
+            "'func'", "'if'", "'null'", "'hidden'", "'return'",
+            "'ref'", "'static'", "'switch'", "'sync'", "'this'", "'throw'",
+            "'true'", "'try'", "'import'", "'var'", "'while'",
         };
-        static_assert (arraySize(representations) == TT_MAX+1, "size of representations (string array) must be equal to size of TokenType (enum)");
+        static_assert (arraySize(representations) == TT_MAX+1,
+            "size of representations (string array) must be equal to "
+            "size of TokenType (enum)");
 
         std::string representation(const Token& token) noexcept;
 
         namespace test{
             constexpr const char* tokenTypes[] = {
                 "UNPARSED", "USELESS", "TEXT", "INTEGER", "FLOAT", "STRING",
-                "CURLY_OPEN", "CURLY_CLOSE", "SQUARE_OPEN", "SQUARE_CLOSE", "COLON", "COMMA",
-                "DOT", "QUESTION_MARK", "ROUND_OPEN", "ROUND_CLOSE", "SEMICOLON",
-                "PRE_DEC", "PRE_INC", "PRE_MINUS", "PRE_PLUS", "COMPL", "NOT", "POST_DEC", "POST_INC",
-                "DIV", "LEFT_SHIFT", "MINUS", "MULT", "MOD", "PLUS", "RIGHT_SHIFT", "OR", "AND",
-                "XOR", "LOGIC_AND", "LOGIC_OR", "EQUAL", "GREATER", "GREATER_OR_EQUAL", "LESS",
-                "LESS_OR_EQUAL", "NOT_EQUAL", "ELVIS", "ASSIGN", "AND_ASSIGN", "DIV_ASSIGN", "LEFT_SHIFT_ASSIGN",
-                "MINUS_ASSIGN", "MULT_ASSIGN", "MOD_ASSIGN", "OR_ASSIGN", "XOR_ASSIGN", "PLUS_ASSIGN", "RIGHT_SHIFT_ASSIGN",
-                "DIRECTIVE", "UNPARSED_OPERATOR", "UNPARSED_NUMBER", "UNPARSED_DIRECTIVE", "BREAK_KW",
-                "BOX_KW", "CASE_KW", "CATCH_KW", "CLASS_KW", "CONTINUE_KW", "DEFAULT_KW",  "DELETE_KW",
-                "DO_KW", "ELSE_KW", "ENUM_KW", "FALSE_KW", "FOR_KW", "FUNC_KW", "IF_KW", "NEW_KW", "NULL_KW",
-                "PRIVATE_KW", "RETURN_KW", "REF_KW", "STATIC_KW", "SWITCH_KW", "SYNC_KW", "THIS_KW", "THROW_KW",
-                "TRUE_KW", "TRY_KW", "USING_KW", "VAR_KW", "WHILE_KW",
+                "CURLY_OPEN", "CURLY_CLOSE", "SQUARE_OPEN", "SQUARE_CLOSE",
+                "COLON", "COMMA", "DOT", "QUESTION_MARK", "ROUND_OPEN",
+                "ROUND_CLOSE", "SEMICOLON", "PRE_DEC", "PRE_INC", "PRE_MINUS",
+                "PRE_PLUS", "COMPL", "NOT", "POST_DEC", "POST_INC", "DIV",
+                "LEFT_SHIFT", "MINUS", "MULT", "MOD", "PLUS", "RIGHT_SHIFT",
+                "OR", "AND", "XOR", "LOGIC_AND", "LOGIC_OR", "EQUAL", "GREATER",
+                "GREATER_OR_EQUAL", "LESS", "LESS_OR_EQUAL", "NOT_EQUAL",
+                "ELVIS", "ASSIGN", "AND_ASSIGN", "DIV_ASSIGN", "LEFT_SHIFT_ASSIGN",
+                "MINUS_ASSIGN", "MULT_ASSIGN", "MOD_ASSIGN", "OR_ASSIGN",
+                "XOR_ASSIGN", "PLUS_ASSIGN", "RIGHT_SHIFT_ASSIGN", "DIRECTIVE",
+                "UNPARSED_OPERATOR", "UNPARSED_NUMBER", "UNPARSED_DIRECTIVE",
+                "BREAK_KW", "BOX_KW", "CASE_KW", "CATCH_KW", "CLASS_KW",
+                "CONTINUE_KW", "DEFAULT_KW", "DO_KW", "ELSE_KW",
+                "ENUM_KW", "FALSE_KW", "FOR_KW", "FUNC_KW", "IF_KW",
+                "NULL_KW", "PRIVATE_KW", "RETURN_KW", "REF_KW", "STATIC_KW",
+                "SWITCH_KW", "SYNC_KW", "THIS_KW", "THROW_KW", "TRUE_KW",
+                "TRY_KW", "USING_KW", "VAR_KW", "WHILE_KW",
             };
             std::string to_string(const Token& token) noexcept;
         }
