@@ -26,13 +26,20 @@
 #include "compile/v1/Compiler.h"
 #include "compile/Statement.h"
 #include "parse/Tokenizer.h"
+
 #include "runtime/gc.h"
 #include "runtime/id.h"
+#include "lib/stdlib.h"
 
 using namespace sm::parse;
 using namespace sm::compile;
 
 namespace sm{
+    namespace lib {
+        oid_t idNew;
+        oid_t idDelete;
+    }
+
     namespace compile{
         namespace v1 {
             using namespace ParType;
@@ -449,6 +456,15 @@ namespace sm{
                         break;
                     }
                 }
+            }
+
+            void Compiler::finish(){
+                // setting OIDs
+                lib::idNew = runtime::genOrdinaryId(*_rt, "new");
+                lib::idDelete = runtime::genOrdinaryId(*_rt, "delete");
+
+                // import box std.lang
+                _rt->boxes.push_back(lib::import_lang(*_rt, _rt->boxNames.size()-1));
             }
         }
     }
