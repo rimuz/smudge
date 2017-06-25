@@ -29,11 +29,9 @@
 namespace sm {
     namespace runtime {
         constexpr unsigned initId = 22;
-        constexpr unsigned newId = 23;
-        constexpr unsigned deleteId = 24;
-        constexpr unsigned roundId = 25; // operator ()
-        constexpr unsigned squareId = 26; // operator []
-        constexpr unsigned idsStart = 27;
+        constexpr unsigned roundId = 23; // operator ()
+        constexpr unsigned squareId = 24; // operator []
+        constexpr unsigned idsStart = 25;
 
         constexpr unsigned operatorIds[] = {
             // pre operators
