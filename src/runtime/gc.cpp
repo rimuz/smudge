@@ -435,10 +435,6 @@ namespace sm{
                 switch(id){
                     case runtime::initId:
                         return "<init>";
-                    case runtime::newId:
-                        return "new";
-                    case runtime::deleteId:
-                        return "delete";
                     case runtime::roundId:
                         return "operator()";
                     case runtime::squareId:
