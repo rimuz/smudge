@@ -177,7 +177,6 @@ namespace sm {
             };
 
             class Compiler{
-                friend int ::main(int argc, char** argv);
             private:
                 runtime::Runtime_t* _rt;
                 ByteCode_t _temp;
@@ -217,8 +216,8 @@ namespace sm {
                 void code(string_t name, string_t* code);
 
                 void path(const string_t& path);
-
                 bool next();
+                void finish();
 
                 /*
                  * It doesn't delete all data instanced because
