@@ -46,19 +46,22 @@
 
 #include "compile/v1/Compiler.h"
 #include "compile/Statement.h"
+#include "compile/defs.h"
+
 #include "runtime/gc.h"
 #include "runtime/Object.h"
 #include "runtime/id.h"
 #include "runtime/casts.h"
+
 #include "exec/Interpreter.h"
 #include "utils/String.h"
 #include "typedefs.h"
-#include "lib/stdlib.h"
 
 void printUsage() noexcept;
 void printLicense() noexcept;
 
-constexpr const char* sm_version = _SM_EXECUTABLE_NAME "-" _SM_STR_VERSION " (" _SM_DATE_VERSION ")";
+constexpr const char* sm_version = _SM_EXECUTABLE_NAME "-" _SM_STR_VERSION
+    " (" _SM_DATE_VERSION ")";
 
 using namespace sm;
 
@@ -140,9 +143,7 @@ int main(int argc, char** argv){
     }
 
     while(cp.next()); // compile
-
-    // import std.lang box
-    rt.boxes.push_back(lib::import_lang(rt, rt.boxNames.size()-1));
+    cp.finish();
 
     if(rt.showAll){
         runtime::test::print(rt);
@@ -164,7 +165,7 @@ int main(int argc, char** argv){
     }
 
     { // call new function of the main box.
-        ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(runtime::newId);
+        ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(lib::idNew);
         if(it != rt.boxes[0]->objects.end()){
             Function* newFn;
             Object self;
