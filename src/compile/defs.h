@@ -24,6 +24,11 @@
 #include "typedefs.h"
 
 namespace sm {
+    namespace lib {
+        extern oid_t idNew;
+        extern oid_t idDelete;
+    }
+
     namespace compile {
         using NamesMap_t = Map_t<string_t, uint16_t>;
         using StringsMap_t = Map_t<std::string, uint16_t>;
