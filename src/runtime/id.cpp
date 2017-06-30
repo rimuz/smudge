@@ -58,15 +58,18 @@ namespace sm{
                 return true;
             }
 
-            Class* base = in.i_ptr->base;
-            do {
+            std::vector<Class*> to_check = in.i_ptr->base->bases;
+            while(!to_check.empty()){
+                Class* base = to_check.back();
+                to_check.pop_back();
+
                 it = base->objects.find(id);
                 if(it != base->objects.end()){
                     out = it->second;
                     return true;
                 }
-            } while((base = base->super));
-
+                to_check.insert(to_check.end(), base->bases.begin(), base->bases.end());
+            }
             return false;
         }
 
@@ -86,13 +89,18 @@ namespace sm{
             ObjectDict_t::const_iterator it;
             Class* base = in.c_ptr;
 
-            do {
+            std::vector<Class*> to_check = base->bases;
+            while(!to_check.empty()){
+                base = to_check.back();
+                to_check.pop_back();
+
                 it = base->objects.find(id);
                 if(it != base->objects.end()){
                     out = it->second;
                     return true;
                 }
-            } while((base = base->super));
+                to_check.insert(to_check.end(), base->bases.begin(), base->bases.end());
+            }
             return false;
         }
 
