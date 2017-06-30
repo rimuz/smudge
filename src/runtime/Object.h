@@ -65,7 +65,7 @@ namespace sm{
     using Dict_t = Map_t <unsigned, Tp>;
 
     template <size_t Size>
-        using ObjectArray_t = std::array<Object, Size>;
+    using ObjectArray_t = std::array<Object, Size>;
     using ObjectVec_t = std::vector<Object>;
     using ObjectDict_t = Dict_t<Object>;
     using ObjectDictVec_t = std::vector<ObjectDict_t*>;
@@ -73,6 +73,7 @@ namespace sm{
     using NativeFuncPtr_t = Object (*) (exec::Interpreter&, Function*, const Object&, const ObjectVec_t&);
     using Box_t = Class;
     using BoxVec_t = std::vector<Box_t*>;
+    using ClassVec_t = BoxVec_t;
 
     namespace ObjectType {
         enum {
@@ -145,11 +146,12 @@ namespace sm{
 
     struct Class {
         ObjectDict_t objects;
+        ClassVec_t bases;
+        unsigned boxName = 0;  // if this is a box
         union {
-            Class* super = nullptr; // for inheritance! (Only classes)
+            unsigned name = 0; // (Only classes)
             bool isInitialized; // (Only boxes)
         };
-        unsigned boxName = 0, name = 0; // if this is a box, name = 0
     };
 
     struct Enum {
@@ -168,6 +170,8 @@ namespace sm{
          * the size_t, the last valid instruction address of the 'argcode' +1.
          * The 'argcode' is the code that has to be executed to get
          * the default value of an argument.
+         * If the last argument is a VARARG, flags will have
+         * value FF_VARARGS (see the above enum).
         */
         std::vector<std::tuple<unsigned, size_t>> arguments;
         union {
@@ -246,7 +250,7 @@ namespace sm{
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
     Object makeBool(bool) noexcept;
-    
+
     /* if obj is tuple or list */
     bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept;
 
@@ -287,6 +291,13 @@ namespace sm{
     inline Object makeBox(Box_t* ptr) noexcept{
         Object obj;
         obj.type = ObjectType::BOX;
+        obj.c_ptr = ptr;
+        return obj;
+    }
+
+    inline Object makeClass(Class* ptr) noexcept{
+        Object obj;
+        obj.type = ObjectType::CLASS;
         obj.c_ptr = ptr;
         return obj;
     }
