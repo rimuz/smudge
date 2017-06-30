@@ -96,6 +96,15 @@ namespace sm{
         return n_bits ? (fillLSB(i, n_bits -1) | (1 << n_bits)) : (i | 1);
     }
 
+    /*
+     * casts the integer given to an unsigned char, useful for
+     * avoiding `Narrowing conversion` in compiler.
+    */
+    template <typename UInt>
+    inline unsigned char bc(UInt i){
+        return static_cast<unsigned char>(i);
+    }
+
     constexpr const char* searchPaths [] = {
         #ifdef _SM_OS_WINDOWS
             "C:\\smudge\\" _SM_STR_VERSION "\\lib\\",
