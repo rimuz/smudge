@@ -154,6 +154,12 @@ namespace sm{
             IT_NEXT,
 
             /*
+             * Given TOS1 and TOS classes, sets TOS
+             * as super class of TOS1 and pops TOS.
+            */
+            MAKE_SUPER,
+
+            /*
              * pushes a copy of TOS on the stack.
             */
             DUP,
@@ -183,6 +189,13 @@ namespace sm{
              * (with index=param)
             */
             PUSH_INTEGER, PUSH_FLOAT, PUSH_STRING,
+
+            /*
+             * Push an integer with value = 'param'
+             * (only for positive ints smaller than
+             * 65536 excluded)
+            */
+            PUSH_INT_VALUE,
 
             /*
              * find a variable named 'names[param]'
