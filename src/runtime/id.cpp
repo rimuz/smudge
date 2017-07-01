@@ -87,11 +87,10 @@ namespace sm{
         template <>
         bool find<ObjectType::CLASS>(const Object& in, Object& out, unsigned id){
             ObjectDict_t::const_iterator it;
-            Class* base = in.c_ptr;
 
-            std::vector<Class*> to_check = base->bases;
+            std::vector<Class*> to_check {in.c_ptr};
             while(!to_check.empty()){
-                base = to_check.back();
+                Class* base = to_check.back();
                 to_check.pop_back();
 
                 it = base->objects.find(id);
@@ -99,7 +98,7 @@ namespace sm{
                     out = it->second;
                     return true;
                 }
-                to_check.insert(to_check.end(), base->bases.begin(), base->bases.end());
+                to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
             }
             return false;
         }
