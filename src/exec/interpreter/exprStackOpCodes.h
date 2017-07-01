@@ -95,6 +95,12 @@ namespace sm{
             ++addr;
         }
 
+        _OcFunc(PushIntValue){
+            Object obj = makeInteger((*++addr << 8) | *++addr);
+            intp.exprStack.emplace_back(std::move(obj));
+            ++addr;
+        }
+
         _OcFunc(PushRef){
             ObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
             unsigned id = runtime::idsStart + ((*++addr << 8) | *++addr);
@@ -185,8 +191,11 @@ namespace sm{
                         return;
                     }
 
-                    Class* base = obj.i_ptr->base;
-                    do {
+                    std::vector<Class*> to_check {obj.i_ptr->base};
+                    while(!to_check.empty()){
+                        Class* base = to_check.back();
+                        to_check.pop_back();
+
                         it = base->objects.find(id);
                         if(it != base->objects.end()){
                             if(it->second.type == ObjectType::FUNCTION){
@@ -197,7 +206,9 @@ namespace sm{
                             }
                             return;
                         }
-                    } while((base = base->super));
+
+                        to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
+                    }
 
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
@@ -239,7 +250,7 @@ namespace sm{
         _OcFunc(Iterate){
             Object tos = intp.exprStack.back();
             _OcValue(tos);
-            
+
             bool isString = tos.type == ObjectType::STRING;
             if(tos.type != ObjectType::CLASS_INSTANCE && !isString){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
