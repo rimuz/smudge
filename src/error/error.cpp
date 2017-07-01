@@ -108,9 +108,8 @@ namespace sm{
                 std::cerr <<  "<native>(...)" << std::endl;
             } else {
                 std::cerr << intp.rt->boxNames[it->box->boxName] << "::";
-                if(it->thisObject.type == ObjectType::CLASS_INSTANCE
-                            && it->thisObject.i_ptr->base && it->thisObject.i_ptr->base->super)
-                    std::cerr << "super: " << it->thisObject.i_ptr->base->super << " " << intp.rt->nameFromId(it->thisObject.i_ptr->base->super->name) << "::";
+                if(it->thisObject.type == ObjectType::CLASS_INSTANCE && it->thisObject.i_ptr->base)
+                    std::cerr << intp.rt->nameFromId(it->thisObject.i_ptr->base->name) << "::";
                 std::cerr << intp.rt->nameFromId(it->function->fnName) << "()" << std::endl;
             }
         }
