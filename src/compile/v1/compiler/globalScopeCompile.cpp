@@ -52,6 +52,11 @@ namespace sm{
 
                 switch(it->type){
                     case TT_USING_KW: {
+                        if(states.currClass){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "cannot import inside a class.");
+                        }
+
                         bool isAlredyImported = false;
                         if(++it != states.end){
                             if(it->type == TT_TEXT){
@@ -220,7 +225,9 @@ namespace sm{
                         fn->address = states.output->size();
                         fn->boxName = states.currBox->boxName;
                         fn->fnName = id;
-                        states.currBox->objects.insert(std::make_pair(id, makeFunction(fn)));
+
+                        Class* out = states.currClass ? states.currClass : states.currBox;
+                        out->objects.insert({id, makeFunction(fn)});
 
                         if(++it == states.end){
                             --it;
@@ -263,7 +270,7 @@ namespace sm{
                                     states.output->push_back(ASSIGN_NULL_POP);
                                     states.output->push_back((name_id >> 8) & 0xFF);
                                     states.output->push_back(name_id & 0xFF);
-                                    fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
+                                    fn->arguments.emplace_back(arg_id, states.output->size());
                                     if(roundClose)
                                         break;
                                 } else if(it->type == TT_ASSIGN){
@@ -302,7 +309,7 @@ namespace sm{
                                         }
                                     }
 
-                                    fn->arguments.push_back(std::make_pair(arg_id, states.output->size()));
+                                    fn->arguments.emplace_back(arg_id, states.output->size());
                                     fn->flags = FF_VARARGS;
                                     roundClose = true;
                                     break;
@@ -341,22 +348,99 @@ namespace sm{
                         break;
                     }
 
+                    case TT_CLASS_KW: {
+                        expect_next(*this, states, TT_TEXT);
+                        unsigned id = runtime::genOrdinaryId(*_rt, states.it->content);
+
+                        Class* cl = new Class;
+                        cl->name = id;
+                        cl->boxName = states.currBox->boxName;
+                        states.currBox->objects.insert({id, makeClass(cl)});
+
+                        if(is_next(*this, states, TT_ROUND_OPEN)){
+                            unsigned supers = 0;
+                            if(!is_next(*this, states, TT_ROUND_CLOSE)){
+                                unsigned nameId = id - runtime::idsStart;
+                                _temp.insert(_temp.end(), {
+                                    PUSH_REF, bc(nameId << 8), bc(nameId & 0xFF)
+                                });
+
+                                if(states.it->type == TT_TEXT){
+                                    unsigned alias = runtime::genOrdinaryId(*_rt,states.it->content) - runtime::idsStart;
+                                    if(is_next(*this, states, TT_COLON)){
+                                        _classTemp.insert(_classTemp.end(), {
+                                            PUSH_INT_VALUE, bc(supers << 8), bc(supers & 0xFF),
+                                            DEFINE_VAR, bc(alias << 8), bc(alias & 0xFF),
+                                            POP
+                                        });
+                                    } else states.it -= 2;
+                                } else --states.it;
+
+                                states.parStack.emplace_back(SUPER_EXPR);
+                                states.parStack.back().arg0 = supers;
+                                states.parStack.back().classPtr = cl;
+                                states.output = &_temp;
+
+                                states.isStatementEmpty = true;
+                                states.isLastOperand = false;
+                                break;
+                            } else ++states.it;
+                            // ""fallthrough""
+                        } /* not else if */
+
+                        if(states.it->type != TT_CURLY_OPEN){
+                            states.isClassStatement = true;
+                            --it;
+                        }
+
+                        states.currClass = cl;
+                        states.isStatementEmpty = true;
+                        states.isLastOperand = false;
+                        break;
+                    }
+
                     case TT_VAR_KW: {
-                        _declareVar(states, true);
+                        if(states.currClass){
+                            _classTemp.swap(_temp);
+                            _declareVar(states, true);
+                            _classTemp.swap(_temp);
+                        } else
+                            _declareVar(states, true);
                         break;
                     }
 
                     case TT_SEMICOLON:{
-                        if(!states.isStatementEmpty){
+                        if(states.currClass && states.isClassStatement){
+                            goto CloseClass; // see below
+                        } else if(!states.isStatementEmpty){
                             _temp.push_back(POP);
                             states.isStatementEmpty = true;
                         }
                         break;
                     }
 
-                    default:{
+                    default: {
+                        if(states.currClass && !states.isClassStatement){
+                        CloseClass:
+                            if(!_classTemp.empty()){
+                                Function* fn = new Function;
+                                fn->address = _rt->code.size();
+                                fn->fnName = runtime::initId;
+                                fn->boxName = states.currBox->boxName;
+
+                                // inserting init code into bytecode and linking it to the class
+                                states.currClass->objects.insert({runtime::initId, makeFunction(fn)});
+                                _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
+                                _rt->code.push_back(RETURN_NULL);
+                                _classTemp.clear();
+                            }
+
+                            states.currClass = nullptr;
+                            break;
+                        }
+
                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            std::string("expected class, function, import, var or const before ")
+                            std::string("expected class, function, import, var before ")
                             + representation(*it) + ".");
                     }
                 }
