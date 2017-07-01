@@ -70,13 +70,14 @@ namespace sm{
                             if(it->parType == FUNC_CALL || it->parType == TUPLE
                                 || it->parType == REF_CALL || it->parType == IS_NULL_CALL){
                                 closing = TT_ROUND_OPEN;
-                                closingSpecial = info.parType;
+                                closingSpecial = it->parType;
                                 break;
                             } else if(it->parType == EXPR_ROUND){
                                 closing = TT_ROUND_OPEN;
                                 break;
-                            } else if(it->parType == DEFAULT_ARGUMENT){
-                                closingSpecial = DEFAULT_ARGUMENT;
+                            } else if(it->parType == DEFAULT_ARGUMENT
+                                    || it->parType == SUPER_EXPR){
+                                closingSpecial = it->parType;
                                 break;
                             } else if(it->isRound()){
                                 closingSpecial = it->parType;
@@ -173,8 +174,9 @@ namespace sm{
                                 doDeclareVar = true;
                                 doPop = true;
                                 break;
-                            } else if(it->parType == DEFAULT_ARGUMENT){
-                                closingSpecial = DEFAULT_ARGUMENT;
+                            } else if(it->parType == DEFAULT_ARGUMENT
+                                    || it->parType == SUPER_EXPR){
+                                closingSpecial = it->parType;
                                 break;
                             } else if(it->isDeclaration()){
                                 continue;
@@ -250,7 +252,6 @@ namespace sm{
 
                     if(states.isLastOperand || it->type == TT_SEMICOLON
                             || it->type == TT_COLON){
-                        states.isLastText = false;
                         states.isLastOperand = false;
                         Operator_t backOp;
 
@@ -949,6 +950,46 @@ namespace sm{
 
                                         states.output->push_back(END_BLOCK);
                                         states.parStack.pop_back();
+                                        states.isStatementEmpty = true;
+                                        states.isLastOperand = false;
+                                        break;
+                                    }
+
+                                    case SUPER_EXPR: {
+                                        states.output->push_back(MAKE_SUPER);
+                                        unsigned supers = ++states.parStack.back().arg0;
+
+                                        if(states.it->type != TT_ROUND_CLOSE){
+                                            ++states.it; // skipping comma
+                                            if(states.it->type == TT_TEXT){
+                                                unsigned alias = runtime::genOrdinaryId(*_rt,states.it->content)
+                                                        - runtime::idsStart;
+                                                if(is_next(*this, states, TT_COLON)){
+                                                    _classTemp.insert(_classTemp.end(), {
+                                                        PUSH_INT_VALUE, bc(supers << 8), bc(supers & 0xFF),
+                                                        DEFINE_VAR, bc(alias << 8), bc(alias & 0xFF),
+                                                        POP
+                                                    });
+                                                } else states.it -= 2;
+                                            } else --states.it;
+
+                                            states.isStatementEmpty = true;
+                                            states.isLastOperand = false;
+                                            // keeps SUPER_EXPR on the parStack
+                                            break;
+                                        } else ++states.it;
+
+                                        if(states.it->type != TT_CURLY_OPEN){
+                                            states.isClassStatement = true;
+                                            --it;
+                                        }
+
+                                        states.currClass = states.parStack.back().classPtr;
+                                        states.output->push_back(POP);
+                                        states.output = &_rt->code;
+
+                                        states.parStack.pop_back();
+
                                         states.isStatementEmpty = true;
                                         states.isLastOperand = false;
                                         break;
