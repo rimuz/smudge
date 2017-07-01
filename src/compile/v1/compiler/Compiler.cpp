@@ -466,6 +466,27 @@ namespace sm{
                 // import box std.lang
                 _rt->boxes.push_back(lib::import_lang(*_rt, _rt->boxNames.size()-1));
             }
+
+            void expect_next(Compiler& cp, CompilerStates& states,
+                    enum_t expected) noexcept{
+                if(++states.it == states.end)
+                    cp._rt->sources.msg(error::ERROR, cp._nfile, states.it->ln, states.it->ch,
+                        std::string("expected ") + parse::representations[expected]
+                        + " before 'eof'.");
+                else if(states.it->type != expected)
+                    cp._rt->sources.msg(error::ERROR, cp._nfile, states.it->ln, states.it->ch,
+                        std::string("expected ") + parse::representations[expected]
+                        + " before " + representation(*states.it));
+            }
+
+            bool is_next(Compiler& cp, CompilerStates& states,
+                    enum_t expected) noexcept{
+                if(++states.it == states.end)
+                    cp._rt->sources.msg(error::ERROR, cp._nfile, states.it->ln, states.it->ch,
+                        std::string("expected ") + parse::representations[expected]
+                        + " before 'eof'.");
+                return states.it->type == expected;
+            }
         }
     }
 }
