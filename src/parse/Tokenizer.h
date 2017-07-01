@@ -40,7 +40,7 @@ namespace sm{
          *      };
          *
          *      auto id = sm::newSource(source);
-         *      auto res = sm::parse::tokenize(id);
+         *      auto res = sm::parse::tokenize(&rt, id);
          *
          * Now, res (of type sm::parse::TokenVec_t) contains
          * all the tokens needed for the compilation (and then,
