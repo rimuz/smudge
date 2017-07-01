@@ -58,7 +58,9 @@ namespace sm{
             _OcPopStore(tos);
             _OcSimplifyRef(tos);
 
-            ObjectDict_t& dict = intp.funcStack.back().box->objects;
+            auto& back = intp.funcStack.back();
+            ObjectDict_t& dict = back.thisObject.type == ObjectType::NONE ?
+                back.box->objects : back.thisObject.i_ptr->objects;
             ObjectDict_t::const_iterator it = dict.find(id);
 
             if(it != dict.end()){
@@ -99,7 +101,9 @@ namespace sm{
             unsigned id = ((*++addr << 8) | *++addr) + runtime::idsStart;
             ++addr;
 
-            ObjectDict_t& dict = intp.funcStack.back().box->objects;
+            auto& back = intp.funcStack.back();
+            ObjectDict_t& dict = back.thisObject.type == ObjectType::NONE ?
+                back.box->objects : back.thisObject.i_ptr->objects;
             ObjectDict_t::const_iterator it = dict.find(id);
 
             if(it != dict.end()){
