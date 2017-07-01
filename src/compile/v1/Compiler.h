@@ -44,7 +44,7 @@ namespace sm {
                     // ROUND:
                     _ROUND_START,
                     EXPR_ROUND, FUNC_CALL, TUPLE, REF_CALL, IS_NULL_CALL,
-                    DEFAULT_ARGUMENT,
+                    DEFAULT_ARGUMENT, SUPER_EXPR,
 
                     // ROUND.HEAD:
                     _HEAD_START,
@@ -53,7 +53,7 @@ namespace sm {
                     _HEAD_END,
                     _ROUND_END,
 
-                    // SQUARE:
+                    // SQUo install ARE:
                     _SQUARE_START,
                     BRACING, LIST,
                     _SQUARE_END,
@@ -62,8 +62,8 @@ namespace sm {
                     // order counts!
                     _CURLY_START,
                     IF_BODY, WHILE_BODY, FOR_BODY,
-                    DO_BODY, ELSE_BODY, FUNCTION_BODY, SWITCH_BODY,
-                    CODE_BLOCK,
+                    DO_BODY, ELSE_BODY, FUNCTION_BODY,
+                    SWITCH_BODY, CODE_BLOCK,
                     _CURLY_END,
 
                     // DECLARATIONS:
@@ -111,6 +111,7 @@ namespace sm {
                     union {
                         LoopStatements_t* loopStatements;
                         Function* funcPtr;
+                        Class* classPtr;
                     };
                 };
 
@@ -163,23 +164,32 @@ namespace sm {
             using ParStack_t = std::vector<ParType::ParInfo_t>;
 
             struct CompilerStates{
-                std::vector<ParType::Operator_t> operators;
                 ByteCode_t preOperators;
                 ParStack_t parStack;
-                parse::TokenVec_t::const_iterator it, begin, end;
+                std::vector<ParType::Operator_t> operators;
+                std::vector<unsigned> toImportAll;
+
                 ByteCode_t* output;
                 ImportsVec_t* toImport;
-                std::vector<unsigned> toImportAll;
-                Class* currBox;
-                bool isLastOperand = false, isLastText = false, isLastDot = false,
-                    expectedLvalue = false, rvalue = false, saveValueOnStack = false,
-                    isStatementEmpty = false, wasStatementEmpty = false;
+                Class* currBox, *currClass = nullptr;
+                parse::TokenVec_t::const_iterator it, begin, end;
+
+                bool isLastOperand = false,      isLastDot = false,
+                     expectedLvalue = false,     rvalue = false,
+                     isStatementEmpty = false,   wasStatementEmpty = false,
+                     isClassStatement = false;
             };
 
             class Compiler{
+                friend void expect_next(Compiler& cp, CompilerStates& states,
+                    enum_t expected) noexcept;
+                friend bool is_next(Compiler& cp, CompilerStates& states,
+                    enum_t expected) noexcept;
             private:
                 runtime::Runtime_t* _rt;
-                ByteCode_t _temp;
+                ByteCode_t _temp; // Used for <init>
+                ByteCode_t _classTemp; // Used for classes' <init>
+
 
                 StringsMap_t _strings;
                 IntsMap_t _ints;
