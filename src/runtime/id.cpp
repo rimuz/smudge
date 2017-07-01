@@ -58,7 +58,7 @@ namespace sm{
                 return true;
             }
 
-            std::vector<Class*> to_check = in.i_ptr->base->bases;
+            std::vector<Class*> to_check {in.i_ptr->base};
             while(!to_check.empty()){
                 Class* base = to_check.back();
                 to_check.pop_back();
@@ -68,7 +68,7 @@ namespace sm{
                     out = it->second;
                     return true;
                 }
-                to_check.insert(to_check.end(), base->bases.begin(), base->bases.end());
+                to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
             }
             return false;
         }
