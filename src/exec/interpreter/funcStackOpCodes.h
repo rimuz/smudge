@@ -120,11 +120,52 @@ namespace sm{
             Object self;
             Object obj = func;
             _OcValue(obj);
+
+            if(obj.type == ObjectType::CLASS){
+                std::vector <std::tuple<Object, Function*>> inits;
+                ObjectDict_t::iterator it;
+                Class* base = obj.c_ptr;
+
+                self = makeFastInstance(intp.rt->gc, obj.c_ptr, false);
+                do {
+                    it = base->objects.find(runtime::initId);
+                    if(it != base->objects.end()){
+                        inits.emplace_back(self, nullptr);
+                        if(!runtime::callable(it->second, std::get<0>(inits.back()),
+                                std::get<1>(inits.back()))){
+                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                                std::string("'<init>' is not a function in ")
+                                + runtime::errorString(intp, self));
+                        }
+                    }
+                } while(!base->bases.empty() && (base = base->bases.front()));
+
+                for(auto rit = inits.rbegin(); rit != inits.rend(); ++rit){
+                    // we don't care about the <init>() return value.
+                    intp.callFunction(std::get<1>(*rit), {}, std::get<0>(*rit), true);
+                }
+
+                it = base->objects.find(lib::idNew);
+                if(it != base->objects.end()){
+                    obj = it->second;
+                    if(!runtime::callable(obj, self, func_ptr))
+                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            std::string("'new' is not a function in ")
+                            + runtime::errorString(intp, self));
+                    // such as <init>(), we don't care about the 'new()' return value.
+                    intp.callFunction(func_ptr, {}, self, true);
+                }
+
+                intp.exprStack.emplace_back(std::move(self));
+                return;
+            }
+
             if(runtime::callable(obj, self, func_ptr)){
                 intp.makeCall(func_ptr, args, self);
             } else {
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
-                std::string("cannot invoke 'operator()()' in ") + runtime::errorString(intp, obj));
+                    std::string("cannot invoke 'operator()()' in ")
+                    + runtime::errorString(intp, obj));
             }
         }
 
