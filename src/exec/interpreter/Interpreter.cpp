@@ -108,12 +108,14 @@ namespace sm{
                     _OcCase(FIND_DELETE_SUPER, FindDeleteSuper);
                     _OcCase(ITERATE, Iterate);
                     _OcCase(IT_NEXT, ItNext);
+                    _OcCase(MAKE_SUPER, MakeSuper);
                     _OcCase(DUP, Dup);
                     _OcCase(DUP1, Dup1);
                     _OcCase(END_BLOCKS, EndBlocks);
                     _OcCase(PUSH_INTEGER, PushInteger);
                     _OcCase(PUSH_FLOAT, PushFloat);
                     _OcCase(PUSH_STRING, PushString);
+                    _OcCase(PUSH_INT_VALUE, PushIntValue);
                     _OcCase(PUSH_REF, PushRef);
                     _OcCase(JUMP_F, JumpF);
                     _OcCase(JUMP_B, JumpB);
@@ -143,7 +145,8 @@ namespace sm{
 
                     default: {
                         rt->sources.printStackTrace(*this, error::FATAL_ERROR,
-                            "Unsupported instruction's opcode.");
+                            std::string("unsupported instruction's opcode (")
+                            + std::to_string(static_cast<unsigned>(*addr)) + ").");
                     }
                 }
             }
