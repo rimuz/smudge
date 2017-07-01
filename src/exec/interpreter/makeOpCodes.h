@@ -65,6 +65,15 @@ namespace sm{
             *first = makeTuple(intp.rt->gc, false, ObjectVec_t(first, end));
             intp.exprStack.erase(++first, end);
         }
+
+        _OcFunc(MakeSuper){
+            ++addr;
+            Object& super = intp.exprStack.back();
+            Object& derived = *(intp.exprStack.end() -2);
+            _OcValue(super);
+            derived.o_ptr->c_ptr->bases.emplace_back(super.c_ptr);
+            intp.exprStack.pop_back();
+        }
     }
 }
 
