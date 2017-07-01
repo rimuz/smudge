@@ -62,7 +62,6 @@ namespace sm{
                         states.output->push_back(PUSH_REF);
                         states.output->push_back(idx >> 8);
                         states.output->push_back(idx & 0xFF);
-                        states.isLastText = true;
                         break;
                     }
 
@@ -424,7 +423,7 @@ namespace sm{
 
                         if(!loop->loopStatements)
                             loop->loopStatements = new LoopStatements_t;
-                        
+
                         loop->loopStatements->breaks.push_back(states.output->size() +1);
 
                         states.output->push_back(JUMP_F);
