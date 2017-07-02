@@ -370,7 +370,7 @@ namespace sm{
                                     if(is_next(*this, states, TT_COLON)){
                                         _classTemp.insert(_classTemp.end(), {
                                             PUSH_INT_VALUE, bc(supers << 8), bc(supers & 0xFF),
-                                            DEFINE_VAR, bc(alias << 8), bc(alias & 0xFF),
+                                            DEFINE_GLOBAL_VAR, bc(alias << 8), bc(alias & 0xFF),
                                             POP
                                         });
                                     } else states.it -= 2;
@@ -419,9 +419,9 @@ namespace sm{
                         break;
                     }
 
-                    default: {
+                    case TT_CURLY_CLOSE:{
                         if(states.currClass && !states.isClassStatement){
-                        CloseClass:
+                            CloseClass:
                             if(!_classTemp.empty()){
                                 Function* fn = new Function;
                                 fn->address = _rt->code.size();
@@ -433,12 +433,15 @@ namespace sm{
                                 _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
                                 _rt->code.push_back(RETURN_NULL);
                                 _classTemp.clear();
+                                std::cout << "setting class: " << _rt->nameFromId(states.currClass->name) << std::endl;
                             }
-
                             states.currClass = nullptr;
                             break;
                         }
+                        // fallthrough
+                    }
 
+                    default: {
                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                             std::string("expected class, function, import, var before ")
                             + representation(*it) + ".");
