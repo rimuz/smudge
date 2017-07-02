@@ -120,13 +120,40 @@ namespace sm{
                 }
             }
 
-            ObjectDict_t& objects = intp.funcStack.back().box->objects;
+            if(intp.funcStack.back().thisObject.type != ObjectType::NONE){
+                Object& in = intp.funcStack.back().thisObject;
+                oit = in.i_ptr->objects.find(id);
+                if(oit != in.i_ptr->objects.end()){
+                    Object ref;
+                    ref.o_ptr = &oit->second;
+                    ref.type = ObjectType::WEAK_REFERENCE;
+                    intp.exprStack.emplace_back(std::move(ref));
+                    return;
+                }
 
+                std::vector<Class*> to_check {in.i_ptr->base};
+                while(!to_check.empty()){
+                    Class* base = to_check.back();
+                    to_check.pop_back();
+
+                    oit = base->objects.find(id);
+                    if(oit != base->objects.end()){
+                        Object ref;
+                        ref.o_ptr = &oit->second;
+                        ref.type = ObjectType::WEAK_REFERENCE;
+                        intp.exprStack.emplace_back(std::move(ref));
+                        return;
+                    }
+                    to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
+                }
+            }
+
+            ObjectDict_t& objects = intp.funcStack.back().box->objects;
             oit = objects.find(id);
+
             if(oit == objects.end()){
                 intp.rt->sources.printStackTrace(intp, error::ERROR, std::string("cannot find symbol '")
                     + intp.rt->nameFromId(id) + "'");
-                runtime::Runtime_t::exit(1);
             }
 
             Object ref;
