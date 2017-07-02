@@ -66,7 +66,13 @@ namespace sm{
             if(it != dict.end()){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
-                    + "' in the box " + intp.rt->boxNames[intp.funcStack.back().box->boxName]);
+                    + (back.thisObject.type == ObjectType::NONE ?
+                        (std::string("' in the class ")
+                        + intp.rt->boxNames[intp.funcStack.back().box->boxName]
+                        + "::" + intp.rt->nameFromId(back.thisObject.i_ptr->base->name))
+                      : (std::string("' in the box ")
+                        + intp.rt->boxNames[intp.funcStack.back().box->boxName])
+                    ));
             }
 
             Object ref;
@@ -109,9 +115,14 @@ namespace sm{
             if(it != dict.end()){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
-                    + "' in the box " + intp.rt->boxNames[intp.funcStack.back().box->boxName]);
+                    + (back.thisObject.type == ObjectType::NONE ?
+                        (std::string("' in the class ")
+                        + intp.rt->boxNames[intp.funcStack.back().box->boxName]
+                        + "::" + intp.rt->nameFromId(back.thisObject.i_ptr->base->name))
+                      : (std::string("' in the box ")
+                        + intp.rt->boxNames[intp.funcStack.back().box->boxName])
+                    ));
             }
-
 
             Object ref;
             ref.o_ptr = &(dict[id] = Object());
