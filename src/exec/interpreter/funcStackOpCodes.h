@@ -145,6 +145,7 @@ namespace sm{
                     intp.callFunction(std::get<1>(*rit), {}, std::get<0>(*rit), true);
                 }
 
+                base = obj.c_ptr;
                 it = base->objects.find(lib::idNew);
                 if(it != base->objects.end()){
                     obj = it->second;
