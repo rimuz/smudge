@@ -967,7 +967,7 @@ namespace sm{
                                                 if(is_next(*this, states, TT_COLON)){
                                                     _classTemp.insert(_classTemp.end(), {
                                                         PUSH_INT_VALUE, bc(supers << 8), bc(supers & 0xFF),
-                                                        DEFINE_VAR, bc(alias << 8), bc(alias & 0xFF),
+                                                        DEFINE_GLOBAL_VAR, bc(alias << 8), bc(alias & 0xFF),
                                                         POP
                                                     });
                                                 } else states.it -= 2;
