@@ -68,7 +68,8 @@ namespace sm{
                         for (ParStack_t::const_reverse_iterator it = states.parStack.rbegin();
                                 it != states.parStack.rend(); ++it){
                             if(it->parType == FUNC_CALL || it->parType == TUPLE
-                                || it->parType == REF_CALL || it->parType == IS_NULL_CALL){
+                                    || it->parType == REF_CALL || it->parType == IS_NULL_CALL
+                                    || it->parType == SUPER_FIND_CALL){
                                 closing = TT_ROUND_OPEN;
                                 closingSpecial = it->parType;
                                 break;
@@ -535,11 +536,28 @@ namespace sm{
                                 states.isLastOperand = true;
                             } else if(info.parType == IS_NULL_CALL){
                                 if(states.wasStatementEmpty){
-                                    states.output->push_back(IS_NULL);
+                                    // `nothing` is `null` :D
+                                    states.output->push_back(PUSH_INT_1);
                                 } else {
                                     states.output->push_back(IS_NULL);
                                 }
 
+                                states.isStatementEmpty = false;
+                                states.isLastOperand = true;
+                            } else if(info.parType == SUPER_FIND_CALL){
+                                if(states.wasStatementEmpty){
+                                    states.output->emplace_back(PUSH_INT_0);
+                                }
+
+                                expect_next(*this, states, TT_DOT);
+                                expect_next(*this, states, TT_TEXT);
+
+                                unsigned nid = runtime::genOrdinaryId(*_rt, it->content)
+                                        - runtime::idsStart;
+
+                                states.output->insert(states.output->end(), {
+                                    FIND_SUPER, bc(nid >> 8), bc(nid & 0xFF)
+                                });
                                 states.isStatementEmpty = false;
                                 states.isLastOperand = true;
                             } else if(info.parType == VAR_DECL){
@@ -957,7 +975,7 @@ namespace sm{
 
                                     case SUPER_EXPR: {
                                         states.output->push_back(MAKE_SUPER);
-                                        unsigned supers = ++states.parStack.back().arg0;
+                                        unsigned supers = ++states.parStack.back().arg1;
 
                                         if(states.it->type != TT_ROUND_CLOSE){
                                             ++states.it; // skipping comma
@@ -966,8 +984,8 @@ namespace sm{
                                                         - runtime::idsStart;
                                                 if(is_next(*this, states, TT_COLON)){
                                                     _classTemp.insert(_classTemp.end(), {
-                                                        PUSH_INT_VALUE, bc(supers << 8), bc(supers & 0xFF),
-                                                        DEFINE_GLOBAL_VAR, bc(alias << 8), bc(alias & 0xFF),
+                                                        PUSH_INT_VALUE, bc(supers >> 8), bc(supers & 0xFF),
+                                                        DEFINE_GLOBAL_VAR, bc(alias >> 8), bc(alias & 0xFF),
                                                         POP
                                                     });
                                                 } else states.it -= 2;
