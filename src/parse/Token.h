@@ -79,7 +79,7 @@ namespace sm{
             TT_CONTINUE_KW, TT_DEFAULT_KW, TT_DO_KW, TT_ELSE_KW,
             TT_ENUM_KW, TT_FALSE_KW, TT_FOR_KW, TT_FUNC_KW, TT_IF_KW,
             TT_NULL_KW, TT_PRIVATE_KW, TT_RETURN_KW, TT_REF_KW, TT_STATIC_KW,
-            TT_SWITCH_KW, TT_SYNC_KW, TT_THIS_KW, TT_THROW_KW, TT_TRUE_KW,
+            TT_SWITCH_KW, TT_SUPER_KW, TT_SYNC_KW, TT_THIS_KW, TT_THROW_KW, TT_TRUE_KW,
             T_TRY_KW, TT_USING_KW, TT_VAR_KW, TT_WHILE_KW,
 
             // shortcuts used by the tokenizer
@@ -166,7 +166,7 @@ namespace sm{
             // TODO: LOW remove some keywords here and above (from the enum TokenType) and in Tokenizer.cpp!!!
             "break", "box", "case", "catch", "class", "continue", "default",
             "do", "else", "enum", "false", "for", "func", "if", "null", "hidden",
-            "return", "ref", "static", "switch", "sync", "this", "throw", "true",
+            "return", "ref", "static", "switch", "super", "sync", "this", "throw", "true",
             "try", "import", "var", "while"
         };
         size_t constexpr keywordsLen = arraySize(keywords);
@@ -204,7 +204,7 @@ namespace sm{
             "'break'", "'box'", "'case'", "'catch'", "'class'", "'continue'",
             "'default'","'do'", "'else'", "'enum'", "'false'", "'for'",
             "'func'", "'if'", "'null'", "'hidden'", "'return'",
-            "'ref'", "'static'", "'switch'", "'sync'", "'this'", "'throw'",
+            "'ref'", "'static'", "'switch'", "'super'", "'sync'", "'this'", "'throw'",
             "'true'", "'try'", "'import'", "'var'", "'while'",
         };
         static_assert (arraySize(representations) == TT_MAX+1,
@@ -231,7 +231,7 @@ namespace sm{
                 "CONTINUE_KW", "DEFAULT_KW", "DO_KW", "ELSE_KW",
                 "ENUM_KW", "FALSE_KW", "FOR_KW", "FUNC_KW", "IF_KW",
                 "NULL_KW", "PRIVATE_KW", "RETURN_KW", "REF_KW", "STATIC_KW",
-                "SWITCH_KW", "SYNC_KW", "THIS_KW", "THROW_KW", "TRUE_KW",
+                "SWITCH_KW", "SUPER_KW", "SYNC_KW", "THIS_KW", "THROW_KW", "TRUE_KW",
                 "TRY_KW", "USING_KW", "VAR_KW", "WHILE_KW",
             };
             std::string to_string(const Token& token) noexcept;
