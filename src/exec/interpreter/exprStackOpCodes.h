@@ -331,6 +331,66 @@ namespace sm{
             ++addr;
         }
 
+        _OcFunc(FindSuper){
+            unsigned id = runtime::idsStart + ((*++addr << 8) | *++addr);
+            ++addr;
+
+            Object& ref = intp.exprStack.back();
+            _OcValue(ref);
+
+            if(ref.type != ObjectType::INTEGER){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("expected integer inside super call "
+                        "(found '") + runtime::errorString(intp, ref)
+                        + "' instead)");
+            } else if(ref.i < 0){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    "super call's integer must be greater than zero");
+            }
+            unsigned super = ref.i;
+
+            auto& back = intp.funcStack.back();
+            if(back.thisObject.type == ObjectType::NONE){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("'super' is <null>, unable to find '")
+                    + intp.rt->nameFromId(id) + "'");
+            }
+
+            std::vector<Class*>& supers = back.thisObject.i_ptr->base->bases;
+
+            if(supers.size() <= super){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("class '")
+                    + intp.rt->nameFromId(back.thisObject.i_ptr->base->name)
+                    + "' has not super n." + std::to_string(super) + "");
+            }
+
+            ObjectDict_t::iterator it;
+            std::vector<Class*> to_check {supers[super]};
+            while(!to_check.empty()){
+                Class* base = to_check.back();
+                to_check.pop_back();
+
+                it = base->objects.find(id);
+                if(it != base->objects.end()){
+                    if(it->second.type == ObjectType::FUNCTION){
+                        ref = makeMethod(back.thisObject, &it->second);
+                    } else {
+                        // should never happen
+                        ref.o_ptr = &it->second;
+                        ref.type = ObjectType::WEAK_REFERENCE;
+                    }
+                    return;
+                }
+                to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
+            }
+
+            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                std::string("cannot find function '")
+                + intp.rt->nameFromId(id) + "' in <super> of class '"
+                + intp.rt->nameFromId(supers[super]->name) + "'");
+        }
+
         _OcFunc(FindNew){
             // TODO!!
             ++addr;
