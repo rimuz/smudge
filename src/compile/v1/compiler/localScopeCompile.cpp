@@ -589,6 +589,27 @@ namespace sm{
                         break;
                     }
 
+                    case TT_SUPER_KW:{
+                        if(is_next(*this, states, TT_DOT)){
+                            expect_next(*this, states, TT_TEXT);
+                            unsigned nid = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
+                            states.output->insert(states.output->end(), {
+                                PUSH_INT_0,
+                                FIND_SUPER, bc(nid >> 8), bc(nid & 0xFF)
+                            });
+                            states.isLastOperand = true;
+                        } else if(it->type == TT_ROUND_OPEN){
+                            states.operators.emplace_back(TT_ROUND_OPEN, parse::operatorPriorities[TT_ROUND_OPEN - TT_OPERATORS_START]);
+                            states.parStack.emplace_back(SUPER_FIND_CALL);
+                            states.isStatementEmpty = true;
+                            states.isLastOperand = false;
+                        } else {
+                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                                "illegal use of 'super'.");
+                        }
+                        break;
+                    }
+
                     case TT_BOX_KW:{
                         states.output->push_back(PUSH_BOX);
                         states.isLastOperand = true;
