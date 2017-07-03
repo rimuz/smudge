@@ -358,26 +358,25 @@ namespace sm{
                         states.currBox->objects.insert({id, makeClass(cl)});
 
                         if(is_next(*this, states, TT_ROUND_OPEN)){
-                            unsigned supers = 0;
                             if(!is_next(*this, states, TT_ROUND_CLOSE)){
                                 unsigned nameId = id - runtime::idsStart;
                                 _temp.insert(_temp.end(), {
-                                    PUSH_REF, bc(nameId << 8), bc(nameId & 0xFF)
+                                    PUSH_REF, bc(nameId >> 8), bc(nameId & 0xFF)
                                 });
 
                                 if(states.it->type == TT_TEXT){
                                     unsigned alias = runtime::genOrdinaryId(*_rt,states.it->content) - runtime::idsStart;
                                     if(is_next(*this, states, TT_COLON)){
                                         _classTemp.insert(_classTemp.end(), {
-                                            PUSH_INT_VALUE, bc(supers << 8), bc(supers & 0xFF),
-                                            DEFINE_GLOBAL_VAR, bc(alias << 8), bc(alias & 0xFF),
+                                            PUSH_INT_0,
+                                            DEFINE_GLOBAL_VAR, bc(alias >> 8), bc(alias & 0xFF),
                                             POP
                                         });
                                     } else states.it -= 2;
                                 } else --states.it;
 
                                 states.parStack.emplace_back(SUPER_EXPR);
-                                states.parStack.back().arg0 = supers;
+                                states.parStack.back().arg1 = 0;
                                 states.parStack.back().classPtr = cl;
                                 states.output = &_temp;
 
@@ -433,7 +432,6 @@ namespace sm{
                                 _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
                                 _rt->code.push_back(RETURN_NULL);
                                 _classTemp.clear();
-                                std::cout << "setting class: " << _rt->nameFromId(states.currClass->name) << std::endl;
                             }
                             states.currClass = nullptr;
                             break;
