@@ -321,10 +321,9 @@ namespace sm{
             FIND,
 
             /*
-            * search a name into
-            * SUPER. If found, it's
-            * added on the tos, otherwise
-            * an exception is throwed.
+             * finds function 'param' in super n. 'TOS'
+             * and pushes a reference (see Method in runtime/Object.h)
+             * of it.
             */
             FIND_SUPER,
 
@@ -369,7 +368,7 @@ namespace sm{
 
             /*
             * imports 'param0' box with name 'param1':
-            * if the box is unitiallized, '<init>()' and 'new()' are called.
+            * if the box is unitialized, '<init>()' and 'new()' are called.
             */
             IMPORT,
 
