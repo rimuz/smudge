@@ -44,7 +44,7 @@ namespace sm {
                     // ROUND:
                     _ROUND_START,
                     EXPR_ROUND, FUNC_CALL, TUPLE, REF_CALL, IS_NULL_CALL,
-                    DEFAULT_ARGUMENT, SUPER_EXPR,
+                    SUPER_FIND_CALL, DEFAULT_ARGUMENT, SUPER_EXPR,
 
                     // ROUND.HEAD:
                     _HEAD_START,
