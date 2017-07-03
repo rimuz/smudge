@@ -137,6 +137,7 @@ namespace sm{
                     _OcCase(DEFINE_GLOBAL_NULL_VAR, DefineGlobalNullVar);
                     _OcCase(ASSIGN_NULL_POP, AssignNullPop);
                     _OcCase(FIND, Find);
+                    _OcCase(FIND_SUPER, FindSuper);
                     _OcCase(MAKE_LIST, MakeList);
                     _OcCase(MAKE_TUPLE, MakeTuple);
                     _OcCase(FOREACH_CHECK, ForeachCheck);
