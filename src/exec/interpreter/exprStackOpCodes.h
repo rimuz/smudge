@@ -120,13 +120,18 @@ namespace sm{
                 }
             }
 
-            if(intp.funcStack.back().thisObject.type != ObjectType::NONE){
-                Object& in = intp.funcStack.back().thisObject;
+            Object& in = intp.funcStack.back().thisObject;
+            if(in.type != ObjectType::NONE){
                 oit = in.i_ptr->objects.find(id);
+
                 if(oit != in.i_ptr->objects.end()){
                     Object ref;
-                    ref.o_ptr = &oit->second;
-                    ref.type = ObjectType::WEAK_REFERENCE;
+                    if(oit->second.type == ObjectType::FUNCTION){
+                        ref = makeMethod(in, &oit->second);
+                    } else {
+                        ref.o_ptr = &oit->second;
+                        ref.type = ObjectType::WEAK_REFERENCE;
+                    }
                     intp.exprStack.emplace_back(std::move(ref));
                     return;
                 }
@@ -139,8 +144,12 @@ namespace sm{
                     oit = base->objects.find(id);
                     if(oit != base->objects.end()){
                         Object ref;
-                        ref.o_ptr = &oit->second;
-                        ref.type = ObjectType::WEAK_REFERENCE;
+                        if(oit->second.type == ObjectType::FUNCTION){
+                            ref = makeMethod(in, &oit->second);
+                        } else {
+                            ref.o_ptr = &oit->second;
+                            ref.type = ObjectType::WEAK_REFERENCE;
+                        }
                         intp.exprStack.emplace_back(std::move(ref));
                         return;
                     }
@@ -152,7 +161,8 @@ namespace sm{
             oit = objects.find(id);
 
             if(oit == objects.end()){
-                intp.rt->sources.printStackTrace(intp, error::ERROR, std::string("cannot find symbol '")
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("cannot find symbol '")
                     + intp.rt->nameFromId(id) + "'");
             }
 
