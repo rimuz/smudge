@@ -400,26 +400,6 @@ namespace sm{
                 + intp.rt->nameFromId(id) + "' in <super> of class '"
                 + intp.rt->nameFromId(supers[super]->name) + "'");
         }
-
-        _OcFunc(FindNew){
-            // TODO!!
-            ++addr;
-        }
-
-        _OcFunc(FindDelete){
-            // TODO!!
-            ++addr;
-        }
-
-        _OcFunc(FindNewSuper){
-            // TODO!!
-            ++addr;
-        }
-
-        _OcFunc(FindDeleteSuper){
-            // TODO!!
-            ++addr;
-        }
     }
 }
 
