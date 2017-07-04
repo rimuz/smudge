@@ -102,10 +102,6 @@ namespace sm{
                     _OcCase(PUSH_THIS, PushThis);
                     _OcCase(PUSH_BOX, PushBox);
                     _OcCase(PUSH_CLASS, PushClass);
-                    _OcCase(FIND_NEW, FindNew);
-                    _OcCase(FIND_DELETE, FindDelete);
-                    _OcCase(FIND_NEW_SUPER, FindNewSuper);
-                    _OcCase(FIND_DELETE_SUPER, FindDeleteSuper);
                     _OcCase(ITERATE, Iterate);
                     _OcCase(IT_NEXT, ItNext);
                     _OcCase(MAKE_SUPER, MakeSuper);
