@@ -131,18 +131,7 @@ namespace sm{
              * Push CLASS value on the top of the stack.
             */
             PUSH_CLASS,
-
-            /*
-            * push TOS' methods 'new' and 'delete' on the top of the stack.
-            */
-            FIND_NEW, FIND_DELETE,
-
-            /*
-             * Push respectively SUPER's methods 'new' and 'delete' on the top of the stack.
-            */
-            FIND_NEW_SUPER,
-            FIND_DELETE_SUPER,
-
+            
             /*
              * Set TOS = TOS.iterate().
             */
