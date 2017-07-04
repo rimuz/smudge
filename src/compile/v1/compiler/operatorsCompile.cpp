@@ -573,6 +573,25 @@ namespace sm{
                                 ParInfo_t& info = states.parStack.back(); // overrides above info
 
                                 if(!closingSpecial){
+                                    if(states.parStack.empty() && states.currClass
+                                            && states.isClassStatement){
+                                        if(!_classTemp.empty()){
+                                            Function* fn = new Function;
+                                            fn->address = _rt->code.size();
+                                            fn->fnName = runtime::initId;
+                                            fn->boxName = states.currBox->boxName;
+
+                                            // inserting init code into bytecode and linking it to the class
+                                            states.currClass->objects.insert({runtime::initId, makeFunction(fn)});
+                                            _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
+                                            _rt->code.push_back(RETURN_NULL);
+                                            _classTemp.clear();
+                                        }
+                                        states.currClass = nullptr;
+                                        states.isClassStatement = false;
+                                        break;
+                                    }
+
                                     closingSpecial = info.parType - (_STATEMENTS_START - _CURLY_START);
                                     if(closingSpecial != FUNCTION_BODY)
                                         states.output->push_back(END_BLOCK);
@@ -1178,24 +1197,8 @@ namespace sm{
                                     }
                                 }
                                 closingSpecial = 0;
-                            } while (repeat && !states.parStack.empty() && states.parStack.back().isSpecialStatement());
-
-                            if(repeat && states.parStack.empty() && states.currClass
-                                    && states.isClassStatement){
-                                if(!_classTemp.empty()){
-                                    Function* fn = new Function;
-                                    fn->address = _rt->code.size();
-                                    fn->fnName = runtime::initId;
-                                    fn->boxName = states.currBox->boxName;
-
-                                    // inserting init code into bytecode and linking it to the class
-                                    states.currClass->objects.insert({runtime::initId, makeFunction(fn)});
-                                    _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
-                                    _rt->code.push_back(RETURN_NULL);
-                                    _classTemp.clear();
-                                }
-                                states.currClass = nullptr;
-                            }
+                            } while (repeat && ((!states.parStack.empty() && states.parStack.back().isSpecialStatement())
+                                    || (states.currClass && states.isClassStatement)));
                         }
                     } else {
                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
