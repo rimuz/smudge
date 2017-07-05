@@ -52,16 +52,16 @@ namespace sm{
                         unsigned idx = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
 
                         if(states.isLastDot){
-                            states.output->push_back(FIND);
-                            states.output->push_back(idx >> 8);
-                            states.output->push_back(idx & 0xFF);
+                            states.output->insert(states.output->end(), {
+                                FIND, bc(idx >> 8), bc(idx & 0xFF)
+                            });
                             states.isLastDot = false;
                             break;
                         }
 
-                        states.output->push_back(PUSH_REF);
-                        states.output->push_back(idx >> 8);
-                        states.output->push_back(idx & 0xFF);
+                        states.output->insert(states.output->end(), {
+                            PUSH_REF, bc(idx >> 8), bc(idx & 0xFF)
+                        });
                         break;
                     }
 
@@ -81,9 +81,9 @@ namespace sm{
                                 idx = n_it->second;
                             }
 
-                            states.output->push_back(PUSH_INTEGER);
-                            states.output->push_back(idx >> 8);
-                            states.output->push_back(idx & 0xFF);
+                            states.output->insert(states.output->end(), {
+                                PUSH_INTEGER, bc(idx >> 8), bc(idx & 0xFF)
+                            });
                         }
                         break;
                     }
@@ -99,9 +99,9 @@ namespace sm{
                             idx = n_it->second;
                         }
 
-                        states.output->push_back(PUSH_FLOAT);
-                        states.output->push_back(idx >> 8);
-                        states.output->push_back(idx & 0xFF);
+                        states.output->insert(states.output->end(), {
+                            PUSH_FLOAT, bc(idx >> 8), bc(idx & 0xFF)
+                        });
                         break;
                     }
 
@@ -116,9 +116,9 @@ namespace sm{
                             idx = n_it->second;
                         }
 
-                        states.output->push_back(PUSH_STRING);
-                        states.output->push_back(idx >> 8);
-                        states.output->push_back(idx & 0xFF);
+                        states.output->insert(states.output->end(), {
+                            PUSH_STRING, bc(idx >> 8), bc(idx & 0xFF)
+                        });
                         break;
                     }
 
@@ -229,10 +229,10 @@ namespace sm{
                                 unsigned nid = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
                                 if((++it)->type == TT_COLON){
                                     states.parStack.emplace_back(FOREACH_HEAD);
-                                    states.output->push_back(START_BLOCK);
-                                    states.output->push_back(DEFINE_NULL_VAR);
-                                    states.output->push_back(nid >> 8);
-                                    states.output->push_back(nid & 0xFF);
+                                    states.output->insert(states.output->end(), {
+                                        START_BLOCK,
+                                        DEFINE_NULL_VAR, bc(nid >> 8), bc(nid & 0xFF)
+                                    });
 
                                     states.isStatementEmpty = true;
                                     states.isLastOperand = false;
@@ -284,9 +284,9 @@ namespace sm{
 
                         if(info.arg0){ // if this is not the first case/defualt
                             info.arg2 = states.output->size() +1;
-                            states.output->push_back(JUMP_F);
-                            states.output->push_back(0);
-                            states.output->push_back(0);
+                            states.output->insert(states.output->end(), {
+                                JUMP_F, 0, 0
+                            });
                         }
 
                         size_t label = info.arg1;
@@ -300,6 +300,7 @@ namespace sm{
                         info.arg1 = 0;
                         states.parStack.emplace_back(CASE_HEAD);
                         states.operators.emplace_back(TT_CASE_KW, operatorPriorities[TT_ROUND_OPEN - TT_OPERATORS_START]);
+
                         states.isStatementEmpty = true;
                         states.isLastOperand = false;
                         break;
@@ -407,17 +408,19 @@ namespace sm{
                             if(blocksToClose == 1){
                                 states.output->push_back(END_BLOCK);
                             } else if(blocksToClose == 2){
-                                states.output->push_back(END_BLOCK);
-                                states.output->push_back(END_BLOCK);
+                                states.output->insert(states.output->end(), {
+                                    END_BLOCK,
+                                    END_BLOCK
+                                });
                             } else {
                                 if(blocksToClose >> 16){
                                     _rt->sources.msg(error::BUG, _nfile, it->ln, it->ch,
                                         "cannot close more than 65535 scopes.");
                                 }
 
-                                states.output->push_back(END_BLOCK);
-                                states.output->push_back((blocksToClose >> 8) & 0xFF);
-                                states.output->push_back(blocksToClose & 0xFF);
+                                states.output->insert(states.output->end(), {
+                                    END_BLOCK, bc(blocksToClose >> 8), bc(blocksToClose & 0xFF)
+                                });
                             }
                         }
 
@@ -425,10 +428,9 @@ namespace sm{
                             loop->loopStatements = new LoopStatements_t;
 
                         loop->loopStatements->breaks.push_back(states.output->size() +1);
-
-                        states.output->push_back(JUMP_F);
-                        states.output->push_back(0);
-                        states.output->push_back(0);
+                        states.output->insert(states.output->end(), {
+                            JUMP_F, 0, 0
+                        });
 
                         states.isStatementEmpty = true;
                         states.isLastOperand = false;
@@ -499,17 +501,19 @@ namespace sm{
                             if(blocksToClose == 1){
                                 states.output->push_back(END_BLOCK);
                             } else if(blocksToClose == 2){
-                                states.output->push_back(END_BLOCK);
-                                states.output->push_back(END_BLOCK);
+                                states.output->insert(states.output->end(), {
+                                    END_BLOCK,
+                                    END_BLOCK
+                                });
                             } else {
                                 if(blocksToClose >> 16){
                                     _rt->sources.msg(error::BUG, _nfile, it->ln, it->ch,
                                         "cannot close more than 65535 scopes.");
                                 }
 
-                                states.output->push_back(END_BLOCK);
-                                states.output->push_back((blocksToClose >> 8) & 0xFF);
-                                states.output->push_back(blocksToClose & 0xFF);
+                                states.output->insert(states.output->end(), {
+                                    END_BLOCK, bc(blocksToClose >> 8), bc(blocksToClose & 0xFF)
+                                });
                             }
                         }
 
@@ -517,10 +521,9 @@ namespace sm{
                             loop->loopStatements = new LoopStatements_t;
 
                         loop->loopStatements->continues.push_back(states.output->size() +1);
-
-                        states.output->push_back(JUMP_F);
-                        states.output->push_back(0);
-                        states.output->push_back(0);
+                        states.output->insert(states.output->end(), {
+                            JUMP_F, 0, 0
+                        });
 
                         states.isStatementEmpty = true;
                         states.isLastOperand = false;
@@ -700,10 +703,9 @@ namespace sm{
                         states.parStack.emplace_back(ELVIS_OPERATOR);
                         states.operators.emplace_back(it->type, it->i);
                         states.isLastOperand = false;
-
-                        states.output->push_back(ELVIS);
-                        states.output->push_back(0);
-                        states.output->push_back(0);
+                        states.output->insert(states.output->end(), {
+                            ELVIS, 0, 0
+                        });
 
                         states.parStack.back().arg0 = states.output->size() - 2;
                         break;

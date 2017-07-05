@@ -267,9 +267,9 @@ namespace sm{
                                         "expected ',' or '=' before 'eof'.");
                                 } else if(it->type == TT_COMMA || (roundClose = it->type == TT_ROUND_CLOSE)){
                                     size_t name_id = arg_id - runtime::idsStart;
-                                    states.output->push_back(ASSIGN_NULL_POP);
-                                    states.output->push_back((name_id >> 8) & 0xFF);
-                                    states.output->push_back(name_id & 0xFF);
+                                    states.output->insert(states.output->end(), {
+                                        ASSIGN_NULL_POP, bc(name_id >> 8), bc(name_id & 0xFF)
+                                    });
                                     fn->arguments.emplace_back(arg_id, states.output->size());
                                     if(roundClose)
                                         break;
