@@ -303,9 +303,10 @@ namespace sm{
                                         size_t idx = back.arg0;
                                         bool isGlobal = back.parType == GLOBAL_VAR_DECL;
 
-                                        states.output->push_back(isGlobal ? DEFINE_GLOBAL_VAR : DEFINE_VAR);
-                                        states.output->push_back((idx >> 8) & 0xFF);
-                                        states.output->push_back(idx & 0xFF);
+                                        states.output->insert(states.output->end(), {
+                                            isGlobal ? DEFINE_GLOBAL_VAR : DEFINE_VAR,
+                                            bc(idx >> 8), bc(idx & 0xFF)
+                                        });
                                         states.parStack.pop_back();
 
                                         if(isGlobal){
@@ -421,15 +422,15 @@ namespace sm{
                         }
                         if(logicOr) {
                             states.parStack.emplace_back(LOGIC_OR_OPERATOR);
-                            states.output->push_back(LOGIC_OR);
-                            states.output->push_back(0);
-                            states.output->push_back(0);
+                            states.output->insert(states.output->end(), {
+                                LOGIC_OR, 0, 0
+                            });
                             states.parStack.back().arg0 = states.output->size() - 2;
                         } else if(logicAnd){
                             states.parStack.emplace_back(LOGIC_AND_OPERATOR);
-                            states.output->push_back(LOGIC_AND);
-                            states.output->push_back(0);
-                            states.output->push_back(0);
+                            states.output->insert(states.output->end(), {
+                                LOGIC_AND, 0, 0
+                            });
                             states.parStack.back().arg0 = states.output->size() - 2;
                         }
 
@@ -460,17 +461,17 @@ namespace sm{
                             }
 
                             if(closing == TT_IF_KW){
-                               states.output->push_back(JUMP_IF_NOT_F);
-                               states.output->push_back(0);
-                               states.output->push_back(0);
+                                states.output->insert(states.output->end(), {
+                                    JUMP_IF_NOT_F, 0, 0
+                                });
 
-                               states.parStack.emplace_back(CONDITIONAL_OPERATOR1);
-                               states.operators.emplace_back(it->type, it->i);
-                               states.parStack.back().arg0 = states.output->size() - 2;
+                                states.parStack.emplace_back(CONDITIONAL_OPERATOR1);
+                                states.operators.emplace_back(it->type, it->i);
+                                states.parStack.back().arg0 = states.output->size() - 2;
 
-                               states.isLastOperand = false;
-                               return;
-                           }
+                                states.isLastOperand = false;
+                                return;
+                            }
 
                             ParInfo_t& info = states.parStack.back();
                             if(info.arg0 >> 16){
@@ -479,25 +480,25 @@ namespace sm{
                             }
 
                             if(info.parType == FUNC_CALL){ // sorry, I was bored of switches
-                                states.output->push_back(CALL_FUNCTION);
-                                states.output->push_back(info.arg0 >> 8 & 0xFF);
-                                states.output->push_back(info.arg0 & 0xFF);
+                                states.output->insert(states.output->end(), {
+                                    CALL_FUNCTION, bc(info.arg0 >> 8), bc(info.arg0 & 0xFF)
+                                });
                             } else if(info.parType == BRACING){
-                                states.output->push_back(PERFORM_BRACING);
-                                states.output->push_back(info.arg0 >> 8 & 0xFF);
-                                states.output->push_back(info.arg0 & 0xFF);
+                                states.output->insert(states.output->end(), {
+                                    PERFORM_BRACING, bc(info.arg0 >> 8), bc(info.arg0 & 0xFF)
+                                });
                             } else if(info.parType == TUPLE){
-                                states.output->push_back(MAKE_TUPLE);
-                                states.output->push_back(info.arg0 >> 8 & 0xFF);
-                                states.output->push_back(info.arg0 & 0xFF);
+                                states.output->insert(states.output->end(), {
+                                    MAKE_TUPLE, bc(info.arg0 >> 8), bc(info.arg0 & 0xFF)
+                                });
                             } else if(info.parType == LIST){
-                                states.output->push_back(MAKE_LIST);
-                                states.output->push_back(info.arg0 >> 8 & 0xFF);
-                                states.output->push_back(info.arg0 & 0xFF);
+                                states.output->insert(states.output->end(), {
+                                    MAKE_LIST, bc(info.arg0 >> 8), bc(info.arg0 & 0xFF)
+                                });
                             } else if(info.parType == CONDITIONAL_OPERATOR1){
-                                states.output->push_back(JUMP_F);
-                                states.output->push_back(0);
-                                states.output->push_back(0);
+                                states.output->insert(states.output->end(), {
+                                    JUMP_F, 0, 0
+                                });
 
                                 size_t label = info.arg0;
                                 unsigned diff = states.output->size() - label -1;
@@ -511,9 +512,9 @@ namespace sm{
                                 ParInfo_t& switchInfo = states.parStack[states.parStack.size() -2];
 
                                 switchInfo.arg1 = states.output->size() +1;
-                                states.output->push_back(SWITCH_CASE);
-                                states.output->push_back(0);
-                                states.output->push_back(0);
+                                states.output->insert(states.output->end(), {
+                                    SWITCH_CASE, 0, 0
+                                });
 
                                 size_t label = switchInfo.arg2;
                                 if(label){
@@ -613,9 +614,9 @@ namespace sm{
                                             --it;
                                         }
 
-                                        states.output->push_back(JUMP_IF_NOT_F);
-                                        states.output->push_back(0);
-                                        states.output->push_back(0);
+                                        states.output->insert(states.output->end(), {
+                                            JUMP_IF_NOT_F, 0, 0
+                                        });
 
                                         info.arg0 = states.output->size() -2;
                                         states.output->push_back(START_BLOCK);
@@ -639,9 +640,9 @@ namespace sm{
                                             --it;
                                         }
 
-                                        states.output->push_back(JUMP_IF_NOT_F);
-                                        states.output->push_back(0);
-                                        states.output->push_back(0);
+                                        states.output->insert(states.output->end(), {
+                                            JUMP_IF_NOT_F, 0, 0
+                                        });
 
                                         info.arg1 = states.output->size() -2;
                                         states.output->push_back(START_BLOCK);
@@ -667,9 +668,9 @@ namespace sm{
                                         size_t label = info.arg0;
                                         unsigned diff = states.output->size() - label +2;
 
-                                        states.output->push_back(JUMP_IF_B);
-                                        states.output->push_back((diff >> 8) & 0xFF);
-                                        states.output->push_back(diff & 0xFF);
+                                        states.output->insert(states.output->end(), {
+                                            JUMP_IF_B, bc(diff >> 8), bc(diff & 0xFF)
+                                        });
 
                                         if(info.loopStatements){
                                             size_t target = states.output->size() -1;
@@ -742,9 +743,9 @@ namespace sm{
                                                 --it;
                                             }
 
-                                            states.output->push_back(JUMP_F);
-                                            states.output->push_back(0);
-                                            states.output->push_back(0);
+                                            states.output->insert(states.output->end(), {
+                                                JUMP_F, 0, 0
+                                            });
                                             info.arg1 = states.output->size() -2;
 
                                             size_t label = info.arg0;
@@ -782,9 +783,9 @@ namespace sm{
                                     case WHILE_BODY:{
                                         size_t label = info.arg0;
                                         unsigned diff = states.output->size() - label +2;
-                                        states.output->push_back(JUMP_B);
-                                        states.output->push_back((diff >> 8) & 0xFF);
-                                        states.output->push_back(diff & 0xFF);
+                                        states.output->insert(states.output->end(), {
+                                            JUMP_B, bc(diff >> 8), bc(diff & 0xFF)
+                                        });
 
                                         label = info.arg1;
                                         diff = states.output->size() - label -1;
@@ -871,12 +872,12 @@ namespace sm{
                                             --it;
                                         }
 
-                                        states.output->push_back(ITERATE);
-                                        states.output->push_back(IT_NEXT);
-                                        states.output->push_back(FOREACH_CHECK);
-                                        states.output->push_back(0);
-                                        states.output->push_back(0);
-                                        states.output->push_back(START_BLOCK);
+                                        states.output->insert(states.output->end(), {
+                                            ITERATE,
+                                            IT_NEXT,
+                                            FOREACH_CHECK, 0, 0,
+                                            START_BLOCK
+                                        });
 
                                         // FOREACH_CHECK's 'param' address
                                         info.arg1 = states.output->size() -3;
@@ -900,14 +901,15 @@ namespace sm{
                                     case FOR_HEAD2: {
                                         info.parType = FOR_HEAD3;
                                         if(!states.wasStatementEmpty) {
-                                            states.output->push_back(JUMP_IF_NOT_F);
-                                            states.output->push_back(0);
-                                            states.output->push_back(0);
+                                            states.output->insert(states.output->end(), {
+                                                JUMP_IF_NOT_F, 0, 0
+                                            });
                                             info.arg1 = states.output->size() -2;
                                         }
-                                        states.output->push_back(JUMP_F);
-                                        states.output->push_back(0);
-                                        states.output->push_back(0);
+
+                                        states.output->insert(states.output->end(), {
+                                            JUMP_F, 0, 0
+                                        });
                                         info.arg2 = states.output->size() -2;
 
                                         states.isStatementEmpty = true;
@@ -929,9 +931,9 @@ namespace sm{
 
                                         size_t label = info.arg0;
                                         unsigned diff = states.output->size() - label +2;
-                                        states.output->push_back(JUMP_B);
-                                        states.output->push_back((diff >> 8) & 0xFF);
-                                        states.output->push_back(diff & 0xFF);
+                                        states.output->insert(states.output->end(), {
+                                                JUMP_B, bc(diff >> 8), bc(diff & 0xFF)
+                                        });
 
                                         label = info.arg2;
                                         diff = states.output->size() - label -1;
@@ -949,9 +951,9 @@ namespace sm{
                                         size_t label = info.arg2 + 2;
                                         unsigned diff = states.output->size() - label +2;
 
-                                        states.output->push_back(JUMP_B);
-                                        states.output->push_back((diff >> 8) & 0xFF);
-                                        states.output->push_back(diff & 0xFF);
+                                        states.output->insert(states.output->end(), {
+                                            JUMP_B, bc(diff >> 8), bc(diff & 0xFF)
+                                        });
 
                                         label = info.arg1;
                                         if(label){
