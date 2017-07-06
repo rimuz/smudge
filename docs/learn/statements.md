@@ -1,5 +1,6 @@
 # The Smudge Programming Language - The Statements
 
+### Statements
 Any Smudge program consists of a bunch of **statements** inside **functions** or **methods** (we'll see the difference later).
 Each statement ends with a **semicolon** (i.e. `;`) to avoid any case
 of ambiguity.
@@ -16,6 +17,7 @@ io.println(
 );
 ```
 
+### Comments
 To explain hard-to-understand code, you can use **comments**: those
 are arbitrary texts **ignored by the interpreter**.
 Smudge supports three types of comments:
