@@ -85,7 +85,7 @@ namespace sm {
                     _STATEMENTS_END,
 
                     // SPECIALS
-                    CONDITIONAL_OPERATOR1, CASE_HEAD, EXECUTABLE_STATEMENT, RETURN_STATEMENT,
+                    CONDITIONAL_OPERATOR1, CASE_HEAD, RETURN_STATEMENT,
                 };
 
                 struct LoopStatements_t {
