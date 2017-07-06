@@ -388,11 +388,10 @@ namespace sm{
 
                     for(ImportsVec_t::const_iterator cit = states.toImport->begin();
                             cit != states.toImport->end(); ++cit){
-                        _rt->code.push_back(IMPORT);
-                        _rt->code.push_back((std::get<0>(*cit) >> 8) & 0xFF);
-                        _rt->code.push_back(std::get<0>(*cit) & 0xFF);
-                        _rt->code.push_back((std::get<1>(*cit) >> 8) & 0xFF);
-                        _rt->code.push_back(std::get<1>(*cit) & 0xFF);
+                        _rt->code.insert(_rt->code.end(), {
+                            IMPORT, bc(std::get<0>(*cit) >> 8), bc(std::get<0>(*cit) & 0xFF),
+                                    bc(std::get<1>(*cit) >> 8), bc(std::get<1>(*cit) & 0xFF)
+                        });
                     }
 
                     _rt->code.insert(_rt->code.end(), _temp.begin(), _temp.end()); // inserting <init> code
@@ -411,23 +410,11 @@ namespace sm{
                 }
 
                 while(1){
-                    if(++it == states.end){
-                        --it;
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            "expected valid expression before 'eof'.");
-                    } else if(it->type != TT_TEXT){
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            "expected identifier after 'var'.");
-                    }
-
+                    expect_next(*this, states, TT_TEXT);
                     unsigned idx = runtime::genOrdinaryId(*_rt,
                             it->content) - runtime::idsStart;
 
-                    if(++it == states.end){
-                        --it;
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                            "expected valid expression before 'eof'.");
-                    } else if(it->type == TT_ASSIGN){
+                    if(is_next(*this, states, TT_ASSIGN)){
                         states.operators.emplace_back(TT_VAR_KW, it->i);
                         states.parStack.emplace_back(global ? GLOBAL_VAR_DECL
                             : VAR_DECL);
@@ -437,21 +424,18 @@ namespace sm{
                         states.isLastOperand = false;
                         break;
                     } else if(it->type == TT_COMMA){
-                        out.push_back(global ? DEFINE_GLOBAL_NULL_VAR
-                            : DEFINE_NULL_VAR);
-                        out.push_back((idx >> 8) & 0xFF);
-                        out.push_back(idx & 0xFF);
-                        out.push_back(POP);
-
+                        out.insert(out.end(), {
+                            global ? DEFINE_GLOBAL_NULL_VAR : DEFINE_NULL_VAR,
+                            bc(idx >> 8), bc(idx & 0xFF), POP
+                        });
                         states.isLastOperand = true;
                         continue;
                     } else {
                         --it;
-                        out.push_back(global ? DEFINE_GLOBAL_NULL_VAR
-                            : DEFINE_NULL_VAR);
-                        out.push_back((idx >> 8) & 0xFF);
-                        out.push_back(idx & 0xFF);
-
+                        out.insert(out.end(), {
+                            global ? DEFINE_GLOBAL_NULL_VAR : DEFINE_NULL_VAR,
+                            bc(idx >> 8), bc(idx & 0xFF)
+                        });
                         states.isLastOperand = true;
                         break;
                     }
