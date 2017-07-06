@@ -1,5 +1,6 @@
 # The Smudge Programming Language - Functions
 
+### Function usefulness
 To prove the awesomeness of **functions**, I'll give you an example.
 Let's write an application that says hello to our friend Marco in a funny way.
 
@@ -42,6 +43,8 @@ Note: on the fifth line we performed a **concatenation** between strings via the
 Actually there are ways much more elegant than this one, but, for now, this is OK for the explanation.
 
 As you see, sometimes it's actually **more convenient** to write some code inside a function and call that function.
+
+### Arguments
 Functions can take **arguments** (sometimes called also parameters) (in our case there was an argument called `name`) which are objects passed by the function's **caller** that will probably influence the working of the function.
 We call **pure** a function which depends **only** on the given arguments.
 And we call **inpure** the ones which depend also on the _environment_ settings (practically, the global variables).
@@ -85,6 +88,7 @@ A <null> <null>
 
 Note: `<null>` is the result converting `null` to a string.
 
+### Default argument values
 As you can see, arguments not given by default are `null`, but you can **customize** the default value of a function argument by **adding `=`** and the desired value **after** the argument name.
 When an argument has a specified default value, it's called **optional**.
 Let's see an example:
@@ -110,7 +114,7 @@ OUTPUT:
 Note: As shown in this example, functions can **return** a value via the return
 statement which is very simple: `return VALUE;`.
 
-Plus, we can set as default values some morte complex expressions, for example:
+Plus, we can set as default values some more complex expressions, for example:
 
 ```js
 import std.io = io;
@@ -138,7 +142,8 @@ OUTPUT:
 1.5
 ```
 
-At the end, functions can accept a **variable number of arguments**: those are called **VARARGS** functions and can be implemented by adding as **last argument** a special argument ending with three points:
+### VARARGs
+At the end, functions can accept a **variable number of arguments**: those are called **VARARGs** functions and can be implemented by adding as **last argument** a special argument ending with three points:
 ```js
 func varargs_func (arg0, arg1, /* argN, */ specialArg...) {}
 ```
@@ -206,4 +211,4 @@ This **allows** writing `io.println("Hello")`, `io.println("Hello ", "World")`, 
 
 |||
 |--:|:---:|:--|
-| [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
+| [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](if-and-loops.md) |
