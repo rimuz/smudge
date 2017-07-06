@@ -33,6 +33,7 @@ else
 #### Example
 ```js
 import std.io = io;
+
 func main {
     var i = io.int();
     if(!null(i))
