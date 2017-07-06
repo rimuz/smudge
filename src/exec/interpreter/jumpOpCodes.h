@@ -128,7 +128,14 @@ namespace sm{
                 return;
             }
 
-            *(end -4)->o_ptr = (*vec)[0];
+            Object obj = (*vec)[0];
+            if(obj.type == ObjectType::WEAK_REFERENCE){
+                obj = obj.refGet();
+            } else if(obj.type == ObjectType::STRONG_REFERENCE){
+                obj.type = ObjectType::WEAK_REFERENCE;
+            }
+
+            *(end -4)->o_ptr = std::move(obj);
             intp.exprStack.pop_back();
             addr += 3;
         }
