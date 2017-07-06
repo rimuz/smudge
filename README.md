@@ -8,7 +8,18 @@ With its C-like syntax, Smudge provides a **simple** but **effective** and **pow
 
 
 ### How to build
-From **Linux**, **Mac** and **Cygwin**, Smudge can be built with the following commands:
+If you are on **Linux**, **Mac** or **Cygwin** (or any other POSIX compatible platform),
+follow these steps:
+
+First, clone the sources in your current working directory (see it with `pwd`):
+```
+git clone "https://github.com/smudgelang/smudge.git"
+```
+Then, go to the new directory `smudge`
+```
+cd smudge
+```
+And finally build it with the following commands:
 ```
 ./configure
 make
