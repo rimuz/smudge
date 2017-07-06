@@ -8,7 +8,7 @@ With its C-like syntax, Smudge provides a **simple** but **effective** and **pow
 
 
 ### How to build
-If you are on **Linux**, **Mac** or **Cygwin** (or any other POSIX compatible platform),
+If you are on **Linux**, **Mac** or **Cygwin** (or any other POSIX compliant platform),
 follow these steps:
 
 First, clone the sources in your current working directory (see it with `pwd`):
