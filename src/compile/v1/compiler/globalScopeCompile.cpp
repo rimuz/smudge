@@ -403,6 +403,7 @@ namespace sm{
                             _classTemp.swap(_temp);
                             _declareVar(states, true);
                             _classTemp.swap(_temp);
+                            states.output = &_classTemp;
                         } else
                             _declareVar(states, true);
                         break;
@@ -412,9 +413,13 @@ namespace sm{
                         if(states.currClass && states.isClassStatement){
                             goto CloseClass; // see below
                         } else if(!states.isStatementEmpty){
-                            _temp.push_back(POP);
-                            states.isStatementEmpty = true;
+                            (states.currClass ? _classTemp : _temp).push_back(POP);
                         }
+
+                        states.output = &_rt->code;
+                        states.isStatementEmpty = true;
+                        states.isLastOperand = false;
+                        states.expectedLvalue = false;
                         break;
                     }
 
@@ -426,14 +431,18 @@ namespace sm{
                                 fn->address = _rt->code.size();
                                 fn->fnName = runtime::initId;
                                 fn->boxName = states.currBox->boxName;
-
+                                
                                 // inserting init code into bytecode and linking it to the class
                                 states.currClass->objects.insert({runtime::initId, makeFunction(fn)});
                                 _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
                                 _rt->code.push_back(RETURN_NULL);
                                 _classTemp.clear();
                             }
+
                             states.currClass = nullptr;
+                            states.isStatementEmpty = true;
+                            states.isLastOperand = false;
+                            states.expectedLvalue = false;
                             break;
                         }
                         // fallthrough
