@@ -416,8 +416,11 @@ namespace sm{
                                 _declareVar(states, true);
                                 _classTemp.swap(_temp);
                                 states.output = &_classTemp;
-                            } else
+                            } else {
                                 _declareVar(states, true);
+                                states.output = &_temp;
+                            }
+                            resetOutput = false;
                         }
                         if(resetOutput)
                             states.output = &_rt->code;
