@@ -154,7 +154,7 @@ namespace sm{
                             std::string("'new' is not a function in ")
                             + runtime::errorString(intp, self));
                     // such as <init>(), we don't care about the 'new()' return value.
-                    intp.callFunction(func_ptr, {}, self, true);
+                    intp.callFunction(func_ptr, args, self, true);
                 }
 
                 intp.exprStack.emplace_back(std::move(self));
