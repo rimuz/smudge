@@ -36,8 +36,8 @@ namespace sm{
 
     namespace exec{
         _OcFunc(Pop){
-           intp.exprStack.pop_back();
-           ++addr;
+            intp.exprStack.pop_back();
+            ++addr;
         }
 
         _OcFunc(PushInt0){
@@ -285,6 +285,7 @@ namespace sm{
         }
 
         _OcFunc(Iterate){
+            ++addr;
             Object tos = intp.exprStack.back();
             _OcValue(tos);
 
@@ -313,7 +314,6 @@ namespace sm{
             }
 
             intp.makeCall(f_ptr, {}, tos);
-            ++addr;
         }
 
         _OcFunc(ItNext){
