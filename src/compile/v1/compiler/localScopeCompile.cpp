@@ -367,10 +367,7 @@ namespace sm{
                         ParInfo_t* loop = nullptr;
 
                         for(ParStack_t::reverse_iterator rit = states.parStack.rbegin(); rit != states.parStack.rend(); ++rit){
-                            if(rit->parType == EXECUTABLE_STATEMENT){
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                    "'break' is not allowed outside loops.");
-                            } else if(rit->parType == RETURN_STATEMENT){
+                            if(rit->parType == RETURN_STATEMENT){
                                 _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                     "expected ';' before 'break'.");
                             } else if(rit->isCurly()){
@@ -462,10 +459,7 @@ namespace sm{
                         ParInfo_t* loop = nullptr;
 
                         for(ParStack_t::reverse_iterator rit = states.parStack.rbegin(); rit != states.parStack.rend(); ++rit){
-                            if(rit->parType == EXECUTABLE_STATEMENT){
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                    "'continue' is not allowed outside loops.");
-                            } else if(rit->parType == RETURN_STATEMENT){
+                            if(rit->parType == RETURN_STATEMENT){
                                 _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                     "expected ';' before 'continue'.");
                             } else if(rit->isCurly()){
@@ -479,10 +473,7 @@ namespace sm{
                                 }
                                 ++blocksToClose;
                             } else if(rit->isSpecialStatement()){
-                                if(rit->parType == EXECUTABLE_STATEMENT){
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                        "'continue' is not allowed outside loops.");
-                                } else if(rit->parType == WHILE_STATEMENT || rit->parType == FOR_STATEMENT
+                                if(rit->parType == WHILE_STATEMENT || rit->parType == FOR_STATEMENT
                                         || rit->parType == DO_STATEMENT){
                                     loop = &*rit;
                                     break;
