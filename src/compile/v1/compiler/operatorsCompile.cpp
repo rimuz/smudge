@@ -133,9 +133,6 @@ namespace sm{
                                 it != states.parStack.rend(); ++it){
                             if(it->isDeclaration() || it->isRound()){
                                 continue;
-                            } else if(it->parType == EXECUTABLE_STATEMENT){
-                                closingSpecial = EXECUTABLE_STATEMENT;
-                                break;
                             } else if(it->parType == RETURN_STATEMENT){
                                 closingSpecial = RETURN_STATEMENT;
                                 doPop = false;
@@ -151,6 +148,7 @@ namespace sm{
                                 closingSpecial = it->parType;
                                 break;
                             } else {
+                                states.isLastOperand = false;
                                 break;
                             }
                         }
@@ -169,7 +167,6 @@ namespace sm{
                             if(it->parType == GLOBAL_VAR_DECL){
                                 doDeclareGlobalVar = true;
                                 doPop = true;
-                                resetOutput = true;
                                 break;
                             } else if(it->parType == VAR_DECL){
                                 doDeclareVar = true;
@@ -293,8 +290,9 @@ namespace sm{
                                 break;
                             }
 
-                            if(((backOp.pr <= static_cast<unsigned>(it->i)) && !(backOp.pr == 13 && it->i == 13)) // also if tok and it are both assignment operators
-                                    || (closing && closing != TT_IF_KW) || closingSpecial || it->type == TT_COMMA){
+                            if((backOp.pr <= static_cast<unsigned>(it->i) && !(backOp.pr == 13 && it->i == 13)) // also if tok and it are both assignment operators
+                                    || (closing && closing != TT_IF_KW) || closingSpecial
+                                    || it->type == TT_COMMA){
                                 switch(backOp.type){
                                     case TT_ASSIGN:
                                         break;
@@ -394,8 +392,7 @@ namespace sm{
                                 if(backOp.type == TT_ASSIGN){
                                     states.output->push_back(ASSIGN);
                                 } else if(backOp.type >= TT_ASSIGN_START
-                                        && backOp.type <= TT_ASSIGN_END
-                                        && backOp.type != TT_VAR_KW){
+                                        && backOp.type <= TT_ASSIGN_END){
                                     states.output->back() += ASSIGN_START - OPERATORS_START;
                                 }
                             } else {
@@ -411,15 +408,19 @@ namespace sm{
                         if(!closing && !closingSpecial && it->type != TT_SEMICOLON
                                 && it->type != TT_COMMA)
                             states.operators.emplace_back(it->type, it->i);
-                        if(resetOutput)
-                            states.output = &_rt->code;
                         if(doDeclareVar){
-                            states.parStack.pop_back();
                             _declareVar(states, false);
                         } else if(doDeclareGlobalVar){
-                            states.parStack.pop_back();
-                            _declareVar(states, true);
+                            if(states.currClass){
+                                _classTemp.swap(_temp);
+                                _declareVar(states, true);
+                                _classTemp.swap(_temp);
+                                states.output = &_classTemp;
+                            } else
+                                _declareVar(states, true);
                         }
+                        if(resetOutput)
+                            states.output = &_rt->code;
                         if(logicOr) {
                             states.parStack.emplace_back(LOGIC_OR_OPERATOR);
                             states.output->insert(states.output->end(), {
