@@ -114,10 +114,7 @@ namespace sm{
                     std::ostringstream oss;
                     oss << "<instance of "
                         << _BoxName(intp.rt->boxNames[in.i_ptr->base->boxName]) << "::"
-                        << intp.rt->nameFromId(in.i_ptr->base->name)
-                        << " at 0x" << std::setw(8)
-                        << std::setfill('0') << std::hex
-                        << reinterpret_cast<size_t>(in.i_ptr) << ">";
+                        << intp.rt->nameFromId(in.i_ptr->base->name) << ">";
                     return makeString(oss.str().c_str());
                 }
 
@@ -158,10 +155,7 @@ namespace sm{
                         std::ostringstream oss;
                         oss << "<ref to object "
                             << _BoxName(intp.rt->boxNames[obj.i_ptr->base->boxName]) << "::"
-                            << intp.rt->nameFromId(obj.i_ptr->base->name)
-                            << " 0x" << std::setw(_SM_PTR_SIZE*2)
-                            << std::setfill('0') << std::hex
-                            << reinterpret_cast<size_t>(obj.i_ptr) << ">";
+                            << intp.rt->nameFromId(obj.i_ptr->base->name) << ">";
                         return makeString(oss.str().c_str());
                     }
                     return makeString("<reference>");
@@ -183,10 +177,7 @@ namespace sm{
                 std::ostringstream oss;
                 oss << "<instance of "
                     << _BoxName(intp.rt->boxNames[in.i_ptr->base->boxName]) << "::"
-                    << intp.rt->nameFromId(in.i_ptr->base->name)
-                    << " at 0x" << std::setw(8)
-                    << std::setfill('0') << std::hex
-                    << reinterpret_cast<size_t>(in.i_ptr) << ">";
+                    << intp.rt->nameFromId(in.i_ptr->base->name) << ">";
                 return oss.str();
             }
             Object out = implicitToString(intp, in);
