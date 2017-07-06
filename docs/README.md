@@ -62,7 +62,7 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - [Writing an Hello World](learn/hello-world.md)
     - [Statements](learn/statements.md)
     - [Functions](learn/functions.md)
-    - [If statements and loops](learn/if-and-loops.md)
+    - Working in progress..
 - The **Smudge Standard Library** (the **SSL**)
     - [std.io](ssl/stdio.md)
         - [Class FileStream](ssl/stdio.md#class-filestream)
