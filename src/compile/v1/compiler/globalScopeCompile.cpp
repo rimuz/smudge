@@ -399,13 +399,7 @@ namespace sm{
                     }
 
                     case TT_VAR_KW: {
-                        if(states.currClass){
-                            _classTemp.swap(_temp);
-                            _declareVar(states, true);
-                            _classTemp.swap(_temp);
-                            states.output = &_classTemp;
-                        } else
-                            _declareVar(states, true);
+                        _declareVar(states, states.currClass ? _classTemp : _temp, true);
                         break;
                     }
 
@@ -431,7 +425,7 @@ namespace sm{
                                 fn->address = _rt->code.size();
                                 fn->fnName = runtime::initId;
                                 fn->boxName = states.currBox->boxName;
-                                
+
                                 // inserting init code into bytecode and linking it to the class
                                 states.currClass->objects.insert({runtime::initId, makeFunction(fn)});
                                 _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
