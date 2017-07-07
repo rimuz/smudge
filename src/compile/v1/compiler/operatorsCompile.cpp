@@ -409,16 +409,13 @@ namespace sm{
                                 && it->type != TT_COMMA)
                             states.operators.emplace_back(it->type, it->i);
                         if(doDeclareVar){
-                            _declareVar(states, false);
+                            _declareVar(states, *states.output, false);
                         } else if(doDeclareGlobalVar){
+                            states.output = &_rt->code;
                             if(states.currClass){
-                                _classTemp.swap(_temp);
-                                _declareVar(states, true);
-                                _classTemp.swap(_temp);
-                                states.output = &_classTemp;
+                                _declareVar(states, _classTemp, true);
                             } else {
-                                _declareVar(states, true);
-                                states.output = &_temp;
+                                _declareVar(states, _temp, true);
                             }
                             resetOutput = false;
                         }
