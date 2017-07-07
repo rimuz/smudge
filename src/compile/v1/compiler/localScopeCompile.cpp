@@ -123,7 +123,7 @@ namespace sm{
                     }
 
                     case TT_VAR_KW:{
-                        _declareVar(states, false);
+                        _declareVar(states, *states.output, false);
                         break;
                     }
 
