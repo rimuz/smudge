@@ -356,6 +356,7 @@ namespace sm{
                         cl->name = id;
                         cl->boxName = states.currBox->boxName;
                         states.currBox->objects.insert({id, makeClass(cl)});
+                        states.isClassStatement = false;
 
                         if(is_next(*this, states, TT_ROUND_OPEN)){
                             if(!is_next(*this, states, TT_ROUND_CLOSE)){
@@ -404,11 +405,13 @@ namespace sm{
                     }
 
                     case TT_SEMICOLON:{
-                        if(states.currClass && states.isClassStatement){
-                            goto CloseClass; // see below
-                        } else if(!states.isStatementEmpty){
+                        if(!states.isStatementEmpty){
                             (states.currClass ? _classTemp : _temp).push_back(POP);
                         }
+
+                        if(states.currClass && states.isClassStatement){
+                            goto CloseClass; // see below
+                        } 
 
                         states.output = &_rt->code;
                         states.isStatementEmpty = true;
