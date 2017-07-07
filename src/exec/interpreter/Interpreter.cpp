@@ -170,7 +170,48 @@ namespace sm{
                 funcStack.back().inlined = true;
             }
 
-            if(fn->flags & FF_NATIVE){
+            if(self.type == ObjectType::INSTANCE_CREATOR){
+                std::vector <std::tuple<Object, Function*>> inits;
+                Object clazz = self;
+                ObjectDict_t::iterator it;
+                Function* func_ptr;
+                Class* base = clazz.c_ptr;
+
+                Object self = makeFastInstance(rt->gc, clazz.c_ptr, false);
+                do {
+                    it = base->objects.find(runtime::initId);
+                    if(it != base->objects.end()){
+                        inits.emplace_back(self, nullptr);
+                        if(!runtime::callable(it->second, std::get<0>(inits.back()),
+                                std::get<1>(inits.back()))){
+                            rt->sources.printStackTrace(*this, error::ERROR,
+                                std::string("'<init>' is not a function in ")
+                                + runtime::errorString(*this, self));
+                        }
+                    }
+                } while(!base->bases.empty() && (base = base->bases.front()));
+
+                for(auto rit = inits.rbegin(); rit != inits.rend(); ++rit){
+                    // we don't care about the <init>() return value.
+                    callFunction(std::get<1>(*rit), {}, std::get<0>(*rit), true);
+                }
+
+                base = clazz.c_ptr;
+                it = base->objects.find(lib::idNew);
+                if(it != base->objects.end()){
+                    Object newFunc = it->second;
+                    if(!runtime::callable(newFunc, self, func_ptr))
+                        rt->sources.printStackTrace(*this, error::ERROR,
+                            std::string("'new' is not a function in ")
+                            + runtime::errorString(*this, self));
+                    // such as <init>(), we don't care about the 'new()' return value.
+                    callFunction(func_ptr, args, self, true);
+                }
+
+                // pushing the newly created instance on the stack.
+                exprStack.emplace_back(std::move(self));
+                return;
+            } else if(fn->flags & FF_NATIVE){
                 Object ret = (*fn->native_ptr)(*this, fn, self, args);
                 if(ret.type == ObjectType::WEAK_REFERENCE){
                     ret = ret.refGet();
