@@ -201,7 +201,7 @@ namespace sm {
                 void _globalScopeCompile(CompilerStates& states);
                 void _localScopeCompile(CompilerStates& states);
                 void _operatorsCompile(CompilerStates& states);
-                void _declareVar(CompilerStates& states, bool global);
+                void _declareVar(CompilerStates& states, ByteCode_t& out, bool global);
 
                 void _compile(const parse::TokenVec_t& tokens);
             public:
