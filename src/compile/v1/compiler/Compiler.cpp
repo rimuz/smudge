@@ -400,9 +400,8 @@ namespace sm{
                 }
             }
 
-            void Compiler::_declareVar(CompilerStates& states, bool global){
+            void Compiler::_declareVar(CompilerStates& states, ByteCode_t& out, bool global){
                 parse::TokenVec_t::const_iterator& it = states.it;
-                ByteCode_t& out = global ? _temp : *states.output;
 
                 if(states.isLastOperand){
                     _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
