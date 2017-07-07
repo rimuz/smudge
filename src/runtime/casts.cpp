@@ -224,16 +224,10 @@ namespace sm{
                 }
 
                 case ObjectType::CLASS: {
-                    Object func;
-                    if(runtime::find<ObjectType::BOX>(obj, func, lib::idNew)
-                            && func.type == ObjectType::FUNCTION){
-                        out = func.f_ptr;
-                        self = nullptr;
-                        self.type = ObjectType::INSTANCE_CREATOR;
-                        self.c_ptr = obj.c_ptr;
-                        return true;
-                    }
-                    return false;
+                    self = nullptr;
+                    self.type = ObjectType::INSTANCE_CREATOR;
+                    self.c_ptr = obj.c_ptr;
+                    return true;
                 }
 
                 case ObjectType::CLASS_INSTANCE:{
