@@ -209,6 +209,31 @@ func println(objects...){
 
 This **allows** writing `io.println("Hello")`, `io.println("Hello ", "World")`, `io.println("a", "b", "c")` and so on.
 
+### Statement functions
+When the code inside a function is only **a statement**, we can not use the braces:
+```js
+func add(a, b)      // we take 2 arguments
+    return a + b;
+
+func get            // we don't take arguments
+    return 0;
+
+// same as above, but in a single line
+func div(a, b) return a / b;
+func get2 return 0;
+
+/*
+ * The following functions don't do anything,
+ * but they can be helpful in some situations.
+*/
+
+func f(a, b, c); // arguments
+func g(); // no arguments
+func g; // no arguments again
+```
+We'll call that feature **statement functions** to don't mix them up with in-line functions.
+
+
 |||
 |--:|:---:|:--|
 | [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](if-and-loops.md) |
