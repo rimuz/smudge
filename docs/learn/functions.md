@@ -236,4 +236,4 @@ We'll call that feature **statement functions** to don't mix them up with in-lin
 
 |||
 |--:|:---:|:--|
-| [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](if-and-loops.md) |
+| [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
