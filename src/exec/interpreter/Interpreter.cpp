@@ -177,7 +177,7 @@ namespace sm{
                 Function* func_ptr;
                 Class* base = clazz.c_ptr;
 
-                Object self = makeFastInstance(rt->gc, clazz.c_ptr, false);
+                Object self = makeInstance(*this, clazz.c_ptr, false);
                 do {
                     it = base->objects.find(runtime::initId);
                     if(it != base->objects.end()){
