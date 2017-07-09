@@ -61,9 +61,9 @@ namespace sm{
             _NativeFunc(getc);
             _NativeFunc(u_getc);
             _NativeFunc(contains);
-            _NativeFunc(bytes);
-            _NativeFunc(chars);
-            _NativeFunc(join);
+            //_NativeFunc(bytes);
+            //_NativeFunc(chars);
+            //_NativeFunc(join);
             _NativeFunc(ends_with);
             _NativeFunc(starts_with);
             _NativeFunc(hash);
@@ -73,7 +73,7 @@ namespace sm{
             _NativeFunc(u_substr);
             _NativeFunc(replace_first);
             _NativeFunc(replace);
-            _NativeFunc(split);
+            //_NativeFunc(split);
             _NativeFunc(trim);
             _NativeFunc(upper);
             _NativeFunc(lower);
@@ -81,9 +81,10 @@ namespace sm{
             _NativeFunc(u_lower);
             _NativeFunc(clone);
             _NativeFunc(to_string);
-            _NativeFunc(iterate);
+            //_NativeFunc(iterate);
         }
 
+        #if 0
         namespace ListClass {
             class List : public Instance {
             public:
@@ -233,6 +234,7 @@ namespace sm{
 
             _NativeFunc(next);
         }
+        #endif
 
         _LibDecl(lang){
             Class* box = new Class;
@@ -265,9 +267,9 @@ namespace sm{
                 _MethodTuple(StringClass, getc),
                 _MethodTuple(StringClass, u_getc),
                 _MethodTuple(StringClass, contains),
-                _MethodTuple(StringClass, bytes),
-                _MethodTuple(StringClass, chars),
-                _MethodTuple(StringClass, join),
+                //_MethodTuple(StringClass, bytes),
+                //_MethodTuple(StringClass, chars),
+                //_MethodTuple(StringClass, join),
                 _MethodTuple(StringClass, ends_with),
                 _MethodTuple(StringClass, starts_with),
                 _MethodTuple(StringClass, hash),
@@ -277,7 +279,7 @@ namespace sm{
                 _MethodTuple(StringClass, u_substr),
                 _MethodTuple(StringClass, replace_first),
                 _MethodTuple(StringClass, replace),
-                _MethodTuple(StringClass, split),
+                //_MethodTuple(StringClass, split),
                 _MethodTuple(StringClass, trim),
                 _MethodTuple(StringClass, upper),
                 _MethodTuple(StringClass, lower),
@@ -285,9 +287,10 @@ namespace sm{
                 _MethodTuple(StringClass, u_lower),
                 _MethodTuple(StringClass, clone),
                 _MethodTuple(StringClass, to_string),
-                _MethodTuple(StringClass, iterate),
+                //_MethodTuple(StringClass, iterate),
             });
 
+            #if 0
             cList = setClass(rt, box, "List", {
                 _OpTuple(ListClass, parse::TT_SQUARE_OPEN, bracing),
                 _OpTuple(ListClass, parse::TT_PLUS, plus),
@@ -349,6 +352,7 @@ namespace sm{
             cStringIterator = setClass(rt, box, "StringIterator", {
                 _MethodTuple(StringIteratorClass, next),
             });
+            #endif
 
             return box;
         }
@@ -622,6 +626,7 @@ namespace sm{
                 return makeInteger(self.s_ptr->str.contains(args[0].s_ptr->str));
             }
 
+            #if 0
             _NativeFunc(bytes){
                 Object list = makeList(intp.rt->gc, false, ObjectVec_t(self.s_ptr->str.size()));
 
@@ -648,7 +653,6 @@ namespace sm{
                 }
                 return list;
             }
-
             _NativeFunc(join){
                 if(args.empty())
                     return makeString();
@@ -669,6 +673,7 @@ namespace sm{
                 }
                 return out;
             }
+            #endif
 
             _NativeFunc(ends_with){
                 if(args.empty() || args[0].type != ObjectType::STRING)
@@ -791,6 +796,7 @@ namespace sm{
                 return makeString(self.s_ptr->str.replace(args[0].s_ptr->str));
             }
 
+            #if 0
             _NativeFunc(split){
                 Object sep;
                 bool skipEmpty = true;
@@ -820,7 +826,7 @@ namespace sm{
                 }
                 return list;
             }
-
+            #endif
             _NativeFunc(trim){
                 return makeString(self.s_ptr->str.trim());
             }
@@ -849,12 +855,15 @@ namespace sm{
                 return self;
             }
 
+            #if 0
             _NativeFunc(iterate){
                 return makeFastInstance<StringIteratorClass::StringIterator>
                     (intp.rt->gc, cStringIterator, false, self.s_ptr->str);
             }
+            #endif
         }
 
+        #if 0
         namespace ListClass {
             _BindMethod(List, bracing, 1);
             _BindMethod(List, plus, 1);
@@ -1553,24 +1562,29 @@ namespace sm{
                 return makeTuple(intp.rt->gc, false, {Object(), makeFalse()});
             }
         }
+        #endif
     }
 
     Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
-        return makeFastInstance<lib::ListClass::List>(gc, lib::cList, temp, std::move(vec));
+        return Object();
+        //return makeFastInstance<lib::ListClass::List>(gc, lib::cList, temp, std::move(vec));
     }
 
     Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
-        return makeFastInstance<lib::TupleClass::Tuple>(gc, lib::cTuple, temp, std::move(vec));
+        return Object();
+        //return makeFastInstance<lib::TupleClass::Tuple>(gc, lib::cTuple, temp, std::move(vec));
     }
 
+
     bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept{
-        if(runtime::of_type(obj, lib::cList)){
+        return false;
+        /*if(runtime::of_type(obj, lib::cList)){
             vecPtr = &reinterpret_cast<lib::ListClass::List*>(obj.i_ptr)->vec;
             return true;
         } else if(runtime::of_type(obj, lib::cTuple)){
             vecPtr = &reinterpret_cast<lib::TupleClass::Tuple*>(obj.i_ptr)->vec;
             return true;
         }
-        return false;
+        return false;*/
     }
 }
