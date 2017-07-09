@@ -52,8 +52,9 @@ namespace sm{
         _NativeFunc(getc);
         _NativeFunc(next);
         _NativeFunc(nextOp);
-        _NativeFunc(open);
+        //_NativeFunc(open);
 
+        #if 0
         namespace FileStreamClass {
             class FileStream : public Instance {
             public:
@@ -89,6 +90,7 @@ namespace sm{
             _NativeFunc(tell);
             _NativeFunc(good);
         }
+        #endif
 
         Class* cFileStream;
 
@@ -107,11 +109,11 @@ namespace sm{
             setNativeFn(rt, box, "getc", getc);
             setNativeFn(rt, box, "next", next);
 
-            setNativeFn(rt, box, "open", open);
+            //setNativeFn(rt, box, "open", open);
 
             setNativeOp(rt, box, parse::TT_LEFT_SHIFT, print);
             setNativeOp(rt, box, parse::TT_RIGHT_SHIFT, nextOp);
-
+            #if 0
             cFileStream = setClass(rt, box, "FileStream", {
                 _MethodTuple(FileStreamClass, close),
                 _MethodTuple(FileStreamClass, get),
@@ -127,6 +129,7 @@ namespace sm{
                 _MethodTuple(FileStreamClass, good),
                 _OpTuple(FileStreamClass, parse::TT_LEFT_SHIFT, write),
             });
+            #endif
 
             setVar(rt, box, "ln", makeString("\n"));
             setVar(rt, box, "RW", makeInteger(RW));
@@ -249,7 +252,7 @@ namespace sm{
             }
             return makeBox(intp.rt->boxes[thisFn->boxName]);
         }
-
+        #if 0
         _NativeFunc(open){
             unsigned mode = READ | WRITE;
             if(args.empty())
@@ -262,12 +265,11 @@ namespace sm{
             if(args[0].type != ObjectType::STRING && args[0].type != ObjectType::STRING)
                 return Object();
             std::string path (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
-            Object instance = makeFastInstance<FileStreamClass::FileStream>(intp.rt->gc, cFileStream, false, path.c_str(), mode);
+            Object instance = makeInstance<FileStreamClass::FileStream>(intp.rt->gc, cFileStream, false, path.c_str(), mode);
             if(!reinterpret_cast<FileStreamClass::FileStream*>(instance.i_ptr)->stream)
                 return Object();
             return instance;
         }
-
         namespace FileStreamClass {
             _BindMethod(FileStream, close, 0);
             _BindMethod(FileStream, get, 0);
@@ -393,5 +395,6 @@ namespace sm{
                 return makeInteger(stream.good());
             }
         }
+        #endif
     }
 }
