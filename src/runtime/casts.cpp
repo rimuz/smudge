@@ -200,7 +200,6 @@ namespace sm{
 
         /* self: is an output parameter! */
         bool callable(const Object& in, Object& self, Function*& out){
-
             Object obj = in;
             _OcValue(obj);
 
