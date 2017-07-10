@@ -28,35 +28,42 @@
 #include "exec/Interpreter.h"
 #include "typedefs.h"
 
-#define _Id(X) runtime::genOrdinaryId(rt, X)
-#define _OpId(X) runtime::operatorId(X)
-#define _LibDecl(LibName) sm::Box_t* import_##LibName(sm::runtime::Runtime_t& rt, unsigned nBox)
-#define _LibTuple(LibString, LibName) { LibString, import_##LibName }
-#define _NativeFunc(FuncName) Object FuncName(sm::exec::Interpreter& intp, sm::Function* thisFn, const sm::Object& self, const sm::ObjectVec_t& args)
-#define _NativeMethod(MethodName, nArgs) inline sm::Object MethodName(sm::exec::Interpreter& intp, \
-    sm::Function* thisFn, const sm::Object& self, const sm::ObjectArray_t<nArgs>& args)
-#define _BindMethod(ClassName, FuncName, nArgs) \
-    _NativeFunc(FuncName){ \
-        if(!runtime::of_type(self, c##ClassName)) \
-            intp.rt->sources.printStackTrace(*intp.rt, error::FATAL_ERROR, \
-                "called native method '" #FuncName "' from an incompatible " \
-                "object to native class '" #ClassName "'"); \
-        sm::ObjectArray_t<nArgs> newArgs; \
-        size_t argsSize = args.size(); \
-        if(nArgs){ \
-            if(argsSize > nArgs){ \
-                std::copy(args.begin(), args.begin() + nArgs, newArgs.begin()); \
-            } else { \
-                std::copy(args.begin(), args.end(), newArgs.begin()); \
-            } \
-        } \
-        return reinterpret_cast<ClassName*>(self.i_ptr)->FuncName(intp, thisFn, self, newArgs); \
-    }
-#define _MethodTuple(Namespace, MethodName) { _Id(#MethodName), \
-    genFunc(rt, box, #MethodName, Namespace::MethodName) }
-#define _OpTuple(Namespace, Operator, MethodName) { _OpId(Operator),\
-    genOpFunc(rt, box, Operator, Namespace::MethodName) }
+#define smId(X) \
+    runtime::genOrdinaryId(rt, X)
 
+#define smOpId(X) \
+    runtime::operatorId(X)
+
+#define smLibDecl(LibName) \
+    sm::Box_t* import_##LibName(sm::runtime::Runtime_t& rt, unsigned nBox)
+
+#define smLibTuple(LibString, LibName) \
+    { LibString, import_##LibName }
+
+#define smNativeFunc(FuncName) \
+    Object FuncName(sm::exec::Interpreter& intp, \
+        sm::Function* thisFn, const sm::Object& self, \
+        const sm::ObjectVec_t& args)
+
+#define smMethodTuple(Namespace, MethodName) \
+    { smId(#MethodName), genFunc(rt, box, \
+      #MethodName, Namespace::MethodName) }
+
+#define smOpTuple(Namespace, Operator, MethodName) \
+    { smOpId(Operator), genOpFunc(rt, box, \
+      Operator, Namespace::MethodName) }
+
+#define smInitBox \
+    Box_t* thisBox = new Box_t(); \
+    thisBox->boxName = nBox;
+
+#define smReturnBox \
+    return thisBox;
+
+//TODO
+#define smClass(Name)
+#define smEnd
+#define smGlobalVar(Name, Value)
 
 namespace sm {
     namespace lib {
