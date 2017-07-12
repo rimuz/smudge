@@ -25,11 +25,13 @@
 #include "runtime/Object.h"
 #include "runtime/gc.h"
 #include "runtime/id.h"
+#include "runtime/casts.h"
+
 #include "exec/Interpreter.h"
 #include "typedefs.h"
 
 #define smId(X) \
-    runtime::genOrdinaryId(rt, X)
+    runtime::genOrdinaryId(*intp.rt, X)
 
 #define smOpId(X) \
     runtime::operatorId(X)
@@ -45,14 +47,6 @@
         sm::Function* thisFn, const sm::Object& self, \
         const sm::ObjectVec_t& args)
 
-#define smMethodTuple(Namespace, MethodName) \
-    { smId(#MethodName), genFunc(rt, box, \
-      #MethodName, Namespace::MethodName) }
-
-#define smOpTuple(Namespace, Operator, MethodName) \
-    { smOpId(Operator), genOpFunc(rt, box, \
-      Operator, Namespace::MethodName) }
-
 #define smInitBox \
     Box_t* thisBox = new Box_t(); \
     thisBox->boxName = nBox;
@@ -60,26 +54,105 @@
 #define smReturnBox \
     return thisBox;
 
-//TODO
-#define smClass(Name)
-#define smEnd
-#define smGlobalVar(Name, Value)
+#define smClass(Name) \
+    { using namespace Name##Class; \
+    Class*& thisClass = c##Name;\
+    unsigned thisClassName = runtime::genOrdinaryId(rt, #Name); \
+    thisClass = new Class; \
+    thisClass->boxName = thisBox->boxName; \
+    thisClass->name = thisClassName; \
+    thisClass->objects = {
+
+#define smEnd \
+    }; \
+        Object clazz; \
+        clazz.type = ObjectType::CLASS; \
+        clazz.c_ptr = thisClass; \
+        thisBox->objects[thisClassName] = std::move(clazz); \
+    }
+
+
+#define smLambda [] (sm::exec::Interpreter& intp, \
+    sm::Function* thisFn, const sm::Object& self, \
+    const sm::ObjectVec_t& args) -> sm::Object
+
+#define smVar(Name, ...) \
+    setVar(rt, thisBox, #Name, (__VA_ARGS__));
+
+#define smFunc(Name, ...) \
+    setNativeFn(rt, thisBox, #Name, (__VA_ARGS__));
+
+#define smOperator(Op, ...) \
+    setNativeOp(rt, thisBox, Op, (__VA_ARGS__));
+
+#define smAddFunc(Name) \
+    setVar(rt, thisBox, #Name, Name);
+
+#define smAddOperator(Name, Op) \
+    setVar(rt, thisBox, Op, Name);
+
+#define smMethod(MethodName, ...) \
+    { runtime::genOrdinaryId(rt, #MethodName), genFunc(rt, thisBox, \
+    #MethodName, (__VA_ARGS__)) },
+
+#define smOpMethod(Operator, ...) \
+    { runtime::operatorId(Operator), genOpFunc(rt, thisBox, \
+    Operator, (__VA_ARGS__)) },
+
+#define smSetData(Type) \
+    setData<Type>(intp, self)
+
+#define smGetData(Type) \
+    getData<Type>(intp, self)
+
+#define smHas(Id) \
+    (self.i_ptr->objects.find(Id) != self.i_ptr->objects.end())
+
+#define smRef(Id) \
+    (self.i_ptr->objects[Id])
 
 namespace sm {
     namespace lib {
         using InitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
         using LibDict_t = Map_t<string_t, InitFunc_t>;
 
-        _LibDecl(io);
-        _LibDecl(lang);
+        smLibDecl(io);
+        smLibDecl(lang);
 
         const LibDict_t libs = {
-            _LibTuple("std.io!", io),
-            _LibTuple("std.lang!", lang),
+            smLibTuple("std.io!", io),
+            smLibTuple("std.lang!", lang),
         };
 
         inline unsigned id(runtime::Runtime_t& rt, const string_t& str){
             return runtime::genOrdinaryId(rt, str);
+        }
+
+        template <typename Tp>
+        inline Tp*& data(const Object& obj){
+            return reinterpret_cast<Tp*&>(obj.i_ptr->objects[runtime::dataId].ptr);
+        }
+
+        template <typename Tp>
+        inline Tp*& getData(exec::Interpreter& intp, const Object& obj){
+            Tp*& ptrRef = data<Tp>(obj);
+            if(!ptrRef){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("native data not initialized before use in "
+                    "object ") + runtime::errorString(intp, obj));
+            }
+            return ptrRef;
+        }
+
+        template <typename Tp>
+        inline Tp*& setData(exec::Interpreter& intp, const Object& obj){
+            Tp*& ptrRef = data<Tp>(obj);
+            if(ptrRef){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("initializing native data twice in "
+                    "object ") + runtime::errorString(intp, obj));
+            }
+            return ptrRef;
         }
 
         inline void setNativeFn(runtime::Runtime_t& rt, Box_t* box,
@@ -100,18 +173,6 @@ namespace sm {
                 const string_t& name, Object obj){
             unsigned varName = runtime::genOrdinaryId(rt, name);
             box->objects[varName] = std::move(obj);
-        }
-
-        inline Class* setClass(runtime::Runtime_t& rt, Box_t* box,
-                const string_t& name, ObjectDict_t&& dict){
-            unsigned className = runtime::genOrdinaryId(rt, name);
-            Object clazz;
-            clazz.type = ObjectType::CLASS;
-            clazz.c_ptr = new Class;
-            clazz.c_ptr->boxName = box->boxName;
-            clazz.c_ptr->name = className;
-            clazz.c_ptr->objects = std::move(dict);
-            return (box->objects[className] = std::move(clazz)).c_ptr;
         }
 
         inline Object genFunc(runtime::Runtime_t& rt, Box_t* box,
