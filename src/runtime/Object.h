@@ -81,6 +81,7 @@ namespace sm{
             // NONE is 'null'
             NONE, INTEGER, FLOAT, STRING, CLASS_INSTANCE, ENUM, CLASS, FUNCTION,
             METHOD, BOX, WEAK_REFERENCE, STRONG_REFERENCE, INSTANCE_CREATOR,
+            NATIVE_DATA
         };
     }
 
@@ -112,6 +113,7 @@ namespace sm{
         enum_t type;
 
         Object();
+        Object(enum_t tp) : type(tp) {}
 
         Object(const Object& rhs);
         Object(Object&& rhs);
@@ -215,9 +217,14 @@ namespace sm{
     size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept;
 
     Object makeFunction(Function*) noexcept;
-    Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
-    Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    Object makeList(exec::Interpreter& intp, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    Object makeTuple(exec::Interpreter& intp, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+
+    // creates an object
     Object makeInstance(exec::Interpreter& intp, Class* base, bool temp) noexcept;
+    // creates an object AND calls ctor
+    Object newInstance(exec::Interpreter& intp, Class* base, bool temp,
+        const ObjectVec_t& args = {}) noexcept;
 
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
