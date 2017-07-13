@@ -70,6 +70,8 @@ int main(int argc, char** argv){
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
 
+    rt.threads.emplace_back(&intp);
+
     int firstArg = argc;
     bool printPaths = false;
 
