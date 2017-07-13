@@ -25,16 +25,13 @@
 #include "runtime/id.h"
 #include "runtime/gc.h"
 #include "runtime/Object.h"
-#include "exec/Interpreter.h"
-#include "compile/Statement.h"
 #include "runtime/casts.h"
+#include "compile/Statement.h"
+#include "compile/defs.h"
+#include "exec/Interpreter.h"
 
 namespace sm{
     using namespace ObjectType;
-
-    namespace lib {
-        extern oid_t idHash;
-    }
 
     Object::Object()
             : i(0), type(NONE) {}
@@ -187,7 +184,7 @@ namespace sm{
                         std::string("'hash' is not a function in ")
                         + runtime::errorString(intp, hashable));
                 }
-                
+
                 Object ret = intp.callFunction(f_ptr, {}, hashable, true);
                 if(ret.type != INTEGER){
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
@@ -260,6 +257,17 @@ namespace sm{
 
     Object makeInstance(exec::Interpreter& intp, Class* base, bool temp) noexcept{
         return intp.rt->gc.instance(intp, base, temp);
+    }
+
+
+    Object newInstance(exec::Interpreter& intp, Class* base, bool temp,
+            const ObjectVec_t& args) noexcept {
+        Object self, clazz(ObjectType::CLASS);
+        Function* func_ptr;
+        clazz.c_ptr = base;
+
+        runtime::callable(clazz, self, func_ptr);
+        return intp.callFunction(func_ptr, args, self, true);
     }
 
     void Instance::free(bool isGc) noexcept {
