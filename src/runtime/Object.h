@@ -186,6 +186,8 @@ namespace sm{
     };
 
     struct Instance {
+    private:
+        bool deleting = false; // if dtor has been called
     public:
         ObjectDict_t objects;
         InstanceList_t::iterator it;
@@ -211,7 +213,7 @@ namespace sm{
         bool setFirst(string_t name, const Object& obj) noexcept;
         void set(string_t name, const Object& obj) noexcept;
 
-        virtual ~Instance() = default;
+        ~Instance();
     };
 
     size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept;
