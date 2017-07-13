@@ -26,12 +26,12 @@
 namespace sm{
     namespace exec{
         _OcFunc(MakeVoidList){
-            intp.exprStack.push_back(makeList(intp.rt->gc, false));
+            intp.exprStack.push_back(makeList(intp, false));
             ++addr;
         }
 
         _OcFunc(MakeVoidTuple){
-            intp.exprStack.push_back(makeTuple(intp.rt->gc, false));
+            intp.exprStack.push_back(makeTuple(intp, false));
             ++addr;
         }
 
@@ -53,7 +53,7 @@ namespace sm{
             ++addr;
             ObjectVec_t::iterator end = intp.exprStack.end();
             ObjectVec_t::iterator first = end-size;
-            *first = makeList(intp.rt->gc, false, ObjectVec_t(first, end));
+            *first = makeList(intp, false, ObjectVec_t(first, end));
             intp.exprStack.erase(++first, end);
         }
 
@@ -62,7 +62,7 @@ namespace sm{
             ++addr;
             ObjectVec_t::iterator end = intp.exprStack.end();
             ObjectVec_t::iterator first = end-size;
-            *first = makeTuple(intp.rt->gc, false, ObjectVec_t(first, end));
+            *first = makeTuple(intp, false, ObjectVec_t(first, end));
             intp.exprStack.erase(++first, end);
         }
 
