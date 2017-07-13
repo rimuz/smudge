@@ -271,8 +271,27 @@ namespace sm{
     }
 
     void Instance::free(bool isGc) noexcept {
-        if(isGc || !intp.rt->gc.gcWorking)
+        if((isGc || !intp.rt->gc.gcWorking) && !deleting)
             (temporary ? intp.rt->gc.tempInstances : intp.rt->gc.instances).erase(it);
+    }
+
+    Instance::~Instance(){
+        if(!base) return;
+        ObjectDict_t::iterator it = base->objects.find(lib::idDelete);
+        if(it != base->objects.end()){
+            Object self = Object(ObjectType::CLASS_INSTANCE);
+            Function* func_ptr;
+
+            self.i_ptr = this;
+            deleting = true;
+
+            if(!runtime::callable(it->second, self, func_ptr))
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("'delete' is not a function in ")
+                    + runtime::errorString(intp, self));
+            // we don't care about the 'delete()' return value.
+            intp.callFunction(func_ptr, {}, self, true);
+        }
     }
 
     namespace runtime{
