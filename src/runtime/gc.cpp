@@ -25,16 +25,13 @@
 #include "runtime/id.h"
 #include "runtime/gc.h"
 #include "runtime/Object.h"
-#include "exec/Interpreter.h"
-#include "compile/Statement.h"
 #include "runtime/casts.h"
+#include "compile/Statement.h"
+#include "compile/defs.h"
+#include "exec/Interpreter.h"
 
 namespace sm{
     using namespace ObjectType;
-
-    namespace lib {
-        extern oid_t idHash;
-    }
 
     Object::Object()
             : i(0), type(NONE) {}
@@ -43,7 +40,7 @@ namespace sm{
             : i(rhs.i), type(rhs.type) {
         if(i_ptr){
             if(type == CLASS_INSTANCE){
-                i_ptr->join();
+                ++i_ptr->rcount;
             } else if(type == STRING){
                 ++s_ptr->rcount;
             } else if(type == METHOD){
@@ -61,7 +58,9 @@ namespace sm{
     Object& Object::operator=(const Object& rhs){
         if(i_ptr){
             if(type == CLASS_INSTANCE){
-                i_ptr->release();
+                if(!--i_ptr->rcount){
+                    i_ptr->free();
+                }
             } else if(type == STRING){
                 if(!--s_ptr->rcount){
                     delete s_ptr;
@@ -78,20 +77,23 @@ namespace sm{
 
         if(i_ptr){
             if(type == CLASS_INSTANCE){
-                i_ptr->join();
+                ++i_ptr->rcount;
             } else if(type == STRING){
                 ++s_ptr->rcount;
             } else if(type == METHOD){
                 ++m_ptr->rcount;
             }
         }
+
         return *this;
     }
 
     Object& Object::operator=(Object&& rhs){
         if(i_ptr){
             if(type == CLASS_INSTANCE){
-                i_ptr->release();
+                if(!--i_ptr->rcount){
+                    i_ptr->free();
+                }
             } else if(type == STRING){
                 if(!--s_ptr->rcount){
                     delete s_ptr;
@@ -115,7 +117,9 @@ namespace sm{
     Object& Object::operator=(std::nullptr_t){
         if(i_ptr){
             if(type == CLASS_INSTANCE){
-                i_ptr->release();
+                if(!--i_ptr->rcount){
+                    i_ptr->free();
+                }
             } else if(type == STRING){
                 if(!--s_ptr->rcount){
                     delete s_ptr;
@@ -133,96 +137,25 @@ namespace sm{
         return *this;
     }
 
-    Object Object::copyPointer() const{
-        return Object(*this);
-    }
-
-    Object Object::clone() const{
-        //TODO: CLONE
-        return Object();
-    }
-
     Object::~Object(){
-        if(type == CLASS_INSTANCE){
-            i_ptr->release();
-        } else if(type == STRING){
-            if(!--s_ptr->rcount){
-                delete s_ptr;
+        if(i_ptr){
+            if(type == CLASS_INSTANCE){
+                if(!--i_ptr->rcount){
+                    i_ptr->free();
+                }
+            } else if(type == STRING){
+                if(!--s_ptr->rcount){
+                    delete s_ptr;
+                }
+            } else if(type == METHOD){
+                if(!--m_ptr->rcount){
+                    delete m_ptr;
+                }
             }
         }
     }
 
-    Instance::Instance(runtime::GarbageCollector& gc, bool temp)
-            : _gc(&gc), _rcount(1), _temporary(temp) {
-        if(temp){
-            gc.addTemporaryInstance(this);
-        } else {
-            gc.addInstance(this);
-        }
-    }
-
-    Instance::Instance(const Instance& rhs)
-            : _gc(rhs._gc), _rcount(1), _temporary(rhs._temporary), objects(rhs.objects){
-        if(_temporary){
-            _gc->addTemporaryInstance(this);
-        } else {
-            _gc->addInstance(this);
-        }
-    }
-
-    Instance::Instance(Instance&& rhs)
-            : _gc(rhs._gc), _rcount(1), _temporary(rhs._temporary), objects(rhs.objects){
-        if(_temporary){
-            _gc->addTemporaryInstance(this);
-        } else {
-            _gc->addInstance(this);
-        }
-    }
-
-    Instance& Instance::operator=(const Instance& rhs){
-        objects = rhs.objects;
-        _gc = rhs._gc;
-        return *this;
-    }
-
-    Instance& Instance::operator=(Instance&& rhs){
-        objects = rhs.objects;
-        _gc = rhs._gc;
-        return *this;
-    }
-
-    void Instance::validate(){
-        std::lock_guard<std::mutex> lock(_gc->_rt->globalMutex);
-        if(_temporary){
-            _gc->removeTemporaryInstance(this);
-            _gc->addInstance(this);
-        }
-    }
-
-    void Instance::release(){
-        if(!--_rcount){
-            free();
-        }
-    }
-
-    void Instance::join(){
-        ++_rcount;
-    }
-
-    void Instance::free(){
-        if(_temporary){
-            _gc->removeTemporaryInstance(this);
-        } else {
-            _gc->removeInstance(this);
-        }
-        delete this;
-    }
-
-    bool Instance::isTemp() const noexcept{
-        return _temporary;
-    }
-
-    size_t objectHash(exec::Interpreter& intp, const Object& obj){
+    size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept{
         Object hashable = obj;
         if(hashable.type == WEAK_REFERENCE
                 || hashable.type == STRONG_REFERENCE)
@@ -240,6 +173,8 @@ namespace sm{
             case CLASS_INSTANCE: {
                 Object func;
                 Function* f_ptr;
+                exec::Interpreter& intp = hashable.i_ptr->intp;
+
                 if(!runtime::find<CLASS_INSTANCE>(hashable, func, lib::idHash)){
                     intp.rt->sources.printStackTrace(intp, error::ERROR,
                         std::string("function 'hash()' not found in ")
@@ -292,13 +227,6 @@ namespace sm{
         }
     }
 
-    Object newObject(runtime::GarbageCollector& gc, bool temp) noexcept {
-        Object obj;
-        obj.type = ObjectType::CLASS_INSTANCE;
-        obj.i_ptr = new Instance(gc, temp);
-        return obj;
-    }
-
     Object makeFunction(Function* fn) noexcept {
         Object obj;
         obj.type = ObjectType::FUNCTION;
@@ -327,107 +255,159 @@ namespace sm{
         return obj;
     }
 
+    Object makeInstance(exec::Interpreter& intp, Class* base, bool temp) noexcept{
+        return intp.rt->gc.instance(intp, base, temp);
+    }
+
+
+    Object newInstance(exec::Interpreter& intp, Class* base, bool temp,
+            const ObjectVec_t& args) noexcept {
+        Object self, clazz(ObjectType::CLASS);
+        Function* func_ptr;
+        clazz.c_ptr = base;
+
+        runtime::callable(clazz, self, func_ptr);
+        return intp.callFunction(func_ptr, args, self, true);
+    }
+
+    void Instance::free(bool isGc) noexcept {
+        if((isGc || !intp.rt->gc.gcWorking) && !deleting)
+            (temporary ? intp.rt->gc.tempInstances : intp.rt->gc.instances).erase(it);
+    }
+
+    Instance::~Instance(){
+        if(!base) return;
+        ObjectDict_t::iterator it = base->objects.find(lib::idDelete);
+        if(it != base->objects.end()){
+            Object self = Object(ObjectType::CLASS_INSTANCE);
+            Function* func_ptr;
+
+            self.i_ptr = this;
+            deleting = true;
+
+            if(!runtime::callable(it->second, self, func_ptr))
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("'delete' is not a function in ")
+                    + runtime::errorString(intp, self));
+            // we don't care about the 'delete()' return value.
+            intp.callFunction(func_ptr, {}, self, true);
+        }
+    }
+
     namespace runtime{
         std::chrono::steady_clock::time_point* Runtime_t::execStart = nullptr;
+        // Instance Pointer's Vector  -> IPVec_t
+        using IPVec_t = std::vector<Instance*>;
 
-        void GarbageCollector::addInstance(Instance* ptr){
-            std::lock_guard<std::mutex> lock(vecMutex);
-            if(++allocs > threshold){
+        Object GarbageCollector::instance(exec::Interpreter& _intp,
+                Class* _base, bool temp) noexcept {
+            if(++allocs == threshold){
+                allocs = 0;
                 collect();
             }
-            pointers.push_back(ptr);
+
+            InstanceList_t& list = temp ? tempInstances : instances;
+            list.emplace_back(_intp, _base, temp);
+
+            InstanceList_t::iterator it = std::prev(list.end());
+            it->it = it; // this line made my day :D
+
+            Object obj;
+            obj.type = ObjectType::CLASS_INSTANCE;
+            obj.i_ptr = &*it;
+            return obj;
         }
 
-        void GarbageCollector::removeInstance(Instance* ptr){
-            std::lock_guard<std::mutex> lock(vecMutex);
-            allocs--;
-            pointers.erase(std::remove(pointers.begin(), pointers.end(), ptr), pointers.end());
-        }
+        void whiteToGray(IPVec_t& white, IPVec_t& gray, Object& obj){
+            if(obj.type == CLASS_INSTANCE){
+                Instance* ptr = obj.i_ptr;
+                IPVec_t::iterator curr = std::find(white.begin(), white.end(), ptr);
 
-        void GarbageCollector::addTemporaryInstance(Instance* ptr){
-            std::lock_guard<std::mutex> lock(vecMutex);
-            if(++allocs > threshold){
-                collect();
+                /*
+                 * If curr is in WHITE, it's neither in the GRAY nor in the BLACK
+                */
+                if(curr != white.end()) {
+                    *curr = nullptr; // no erases in the vector
+                    gray.emplace_back(ptr);
+
+                    for(auto& child : ptr->objects){
+                        // recursively search inside all objects pointed by obj
+                        whiteToGray(white, gray, child.second);
+                    }
+                }
             }
-            temp.push_back(ptr);
         }
 
-        void GarbageCollector::removeTemporaryInstance(Instance* ptr){
-            std::lock_guard<std::mutex> lock(vecMutex);
-            allocs--;
-            temp.erase(std::remove(temp.begin(), temp.end(), ptr), temp.end());
-        }
-
-        using InVec_t = std::vector<Instance*>;
-        inline void whiteToGray(InVec_t& white, InVec_t& grey, InVec_t& black, const Object& obj){
-            if(obj.type == CLASS_INSTANCE && obj.i_ptr && std::find(grey.begin(), grey.end(), obj.i_ptr) == grey.end()
-                     && std::find(black.begin(), black.end(), obj.i_ptr) == black.end()){
-                std::lock_guard<std::mutex> dataLock(obj.i_ptr->data_mutex);
-                white.erase(std::remove(white.begin(), white.end(), obj.i_ptr), white.end());
-                grey.push_back(obj.i_ptr);
+        inline void loadVec(InstanceList_t& list, IPVec_t& vec){
+            vec.reserve(list.size());
+            for(Instance& inst : list){
+                vec.emplace_back(&inst);
             }
         }
 
         /*
-         * tri-colour garbage, 1st implementation.
-         * TODO: optimize!
+         * Tri-color garbage collection.
+         * 2nd implementation (2017.07.08)
          *
-         * NOTE: collect() doesn't lock vecMutex!
-         * You have to lock it before any call!!
+         * Note: There is no BLACK, because we
+         * can be easily avoid to use it.
+         *
+         * Note 2: It won't erase items from WHITE,
+         * It will set them to nullptr
+         *
         */
+
+        // TODO Class
+        // TODO Methods
         void GarbageCollector::collect(){
-            std::lock_guard<std::mutex> globalLock(_rt->globalMutex);
-            std::lock_guard<std::mutex> threadsLock(_rt->threadsDataMutex);
+            IPVec_t white, gray;
+            gcWorking = true;
 
-            std::vector<Instance*>  white(pointers), grey(temp), black;
+            loadVec(instances, white);
+            loadVec(tempInstances, gray);
 
-            for(BoxVec_t::const_iterator cit = _rt->boxes.begin(); cit != _rt->boxes.end(); ++cit){
-                for(ObjectDict_t::const_iterator cit2 = (*cit)->objects.begin(); cit2 != (*cit)->objects.end(); ++cit2){
-                    whiteToGray(white, grey, black, cit2->second);
+            // searching in the ROOTs
+            for(auto* box : _rt->boxes){
+                for(auto& child : box->objects){
+                    whiteToGray(white, gray, child.second);
                 }
             }
 
-            for(exec::ThreadVec_t::iterator cit = _rt->threads.begin(); cit != _rt->threads.end(); ++cit){
-                const exec::Interpreter& intp = **cit;
-
-                for(ObjectVec_t::const_iterator cit2 = intp.exprStack.begin();
-                        cit2 != intp.exprStack.end(); ++cit2){
-                    whiteToGray(white, grey, black, *cit2);
+            for(auto* intp : _rt->threads){
+                for(Object& obj : intp->exprStack){
+                    whiteToGray(white, gray, obj);
                 }
 
-                for(exec::CallStack_t::const_iterator cit2 = intp.funcStack.begin();
-                        cit2 != intp.funcStack.end(); ++cit2){
-                    whiteToGray(white, grey, black, cit2->thisObject);
-
-                    for(ObjectDictVec_t::const_iterator cit3 = cit2->codeBlocks.begin();
-                            cit3 != cit2->codeBlocks.end(); ++cit3){
-                        for(ObjectDict_t::const_iterator cit4 = (*cit3)->begin();
-                                cit4 != (*cit3)->end(); ++cit4){
-                            whiteToGray(white, grey, black, cit4->second);
+                for(exec::CallInfo_t& callInfo : intp->funcStack){
+                    for(ObjectDict_t* dict : callInfo.codeBlocks){
+                        if(dict){
+                            for(auto& pair : *dict){
+                                whiteToGray(white, gray, pair.second);
+                            }
                         }
                     }
                 }
             }
 
-            // now grey contains all the root pointers and white the other.
-            while(!grey.empty()){
-                Instance* ptr = grey.back();
-                grey.pop_back();
-                black.push_back(ptr);
+            // now GRAY contains all the root pointers and white the other.
+            while(!gray.empty()){
+                Instance* ptr = gray.back();
+                gray.pop_back();
 
-                for(ObjectDict_t::const_iterator cit = ptr->objects.begin(); cit != ptr->objects.end(); ++cit){
-                    const Object& obj = cit->second;
-                    whiteToGray(white, grey, black, obj);
+                for(auto& child : ptr->objects){
+                    whiteToGray(white, gray, child.second);
                 }
             }
 
-            // now black contains used data, and white garbage.
+            // now WHITE contains garbage.
             for(Instance* ptr : white){
-                ptr->free();
+                if(ptr){ // ignore 'erased' elements
+                    ptr->free(true);
+                }
             }
 
             // now we've finished! good job!
-            allocs = 0;
+            gcWorking = false;
         }
 
         string_t Runtime_t::nameFromId(unsigned id) const{

@@ -38,11 +38,11 @@ namespace sm{
     struct Enum;
     struct Function;
     struct Method;
-    struct Instance;
-    struct InstanceInfo;
     struct Box;
     struct RCString;
+
     class Object;
+    class Instance;
 
     /*
      * Only to distinguish when Object is used for strings
@@ -74,12 +74,14 @@ namespace sm{
     using Box_t = Class;
     using BoxVec_t = std::vector<Box_t*>;
     using ClassVec_t = BoxVec_t;
+    using InstanceList_t = std::list<Instance>;
 
     namespace ObjectType {
         enum {
             // NONE is 'null'
             NONE, INTEGER, FLOAT, STRING, CLASS_INSTANCE, ENUM, CLASS, FUNCTION,
             METHOD, BOX, WEAK_REFERENCE, STRONG_REFERENCE, INSTANCE_CREATOR,
+            NATIVE_DATA
         };
     }
 
@@ -111,6 +113,7 @@ namespace sm{
         enum_t type;
 
         Object();
+        Object(enum_t tp) : type(tp) {}
 
         Object(const Object& rhs);
         Object(Object&& rhs);
@@ -120,26 +123,10 @@ namespace sm{
         Object& operator=(std::nullptr_t); // manual reset
 
         /*
-         * copyPointer() doesn't copy the object in
-         * memory, but creates a new Object instance
-         * that points the same object.
-         *
-         * clone(), instead, copies the entire object
-         * to an other indipendent Object instance.
-         *
-         * makeWeak() creates a weak pointer to the
-         * object (weak means that it won't modify
-         * the reference count).
-         *
-        */
-        Object copyPointer() const;
-        Object clone() const;
-
-        /*
         * Only if Object is a reference!!
         */
-        inline Object refGet() const;
-        inline void refSet(Object obj) const;
+        inline Object refGet() const noexcept;
+        inline void refSet(Object obj) const noexcept;
 
         ~Object();
     };
@@ -186,6 +173,8 @@ namespace sm{
         Object self;
         Object* func_ptr;
         std::atomic_uint rcount;
+
+        Method() : rcount(1){}
     };
 
     struct RCString{
@@ -196,56 +185,48 @@ namespace sm{
         RCString(Tp&&... args) : str(std::forward<Tp>(args)...), rcount(1){}
     };
 
-    /*
-     * works only in the Heap because of the use of 'delete'!!
-    */
     struct Instance {
-        friend runtime::GarbageCollector;
-        friend Object;
     private:
-        runtime::GarbageCollector* _gc;
-        std::atomic_uint _rcount;
-        /*
-         * not atomic because before every use
-         * you lock the global mutex in Runtime_t.
-         *
-         * See also: ns/runtime/gc.h
-        */
-        bool _temporary;
-
-        void validate();
+        bool deleting = false; // if dtor has been called
     public:
-        std::mutex data_mutex;
         ObjectDict_t objects;
-        InstanceInfo* ii_ptr;
+        InstanceList_t::iterator it;
+        exec::Interpreter& intp;
         Class* base;
 
-        Instance(runtime::GarbageCollector& gc, bool temp = true);
-        Instance(const Instance& rhs);
-        Instance(Instance&& rhs);
+        unsigned rcount;
+        bool temporary;
 
-        Instance& operator=(const Instance& rhs);
-        Instance& operator=(Instance&& rhs);
+        Instance(exec::Interpreter& _intp, Class* _base, bool temp)
+            : intp(_intp), base(_base), rcount(1), temporary(temp) {}
 
-        void release();
-        void join();
-        void free();
+        Instance(Instance&& rhs) = default;
+        Instance& operator=(Instance&& rhs) = default;
 
-        bool isTemp() const noexcept;
+        // Instance is not copyable
+        Instance(const Instance& rhs) = delete;
+        Instance& operator=(const Instance& rhs) = delete;
+
+        void free(bool isGc = false) noexcept;
 
         Object get(string_t name) const noexcept;
         bool setFirst(string_t name, const Object& obj) noexcept;
         void set(string_t name, const Object& obj) noexcept;
 
-        virtual ~Instance() = default;
+        ~Instance();
     };
 
-    size_t objectHash(exec::Interpreter& intp, const Object& obj);
+    size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept;
 
-    Object newObject(runtime::GarbageCollector& gc, bool temp = true) noexcept;
     Object makeFunction(Function*) noexcept;
-    Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
-    Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    Object makeList(exec::Interpreter& intp, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    Object makeTuple(exec::Interpreter& intp, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+
+    // creates an object
+    Object makeInstance(exec::Interpreter& intp, Class* base, bool temp) noexcept;
+    // creates an object AND calls ctor
+    Object newInstance(exec::Interpreter& intp, Class* base, bool temp,
+        const ObjectVec_t& args = {}) noexcept;
 
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
@@ -254,11 +235,11 @@ namespace sm{
     /* if obj is tuple or list */
     bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept;
 
-    Object Object::refGet() const{
+    Object Object::refGet() const noexcept{
         return *o_ptr;
     }
 
-    void Object::refSet(Object obj) const{
+    void Object::refSet(Object obj) const noexcept{
         *o_ptr = std::move(obj);
     }
 
@@ -308,15 +289,6 @@ namespace sm{
         obj.m_ptr = new Method;
         obj.m_ptr->self = std::move(self);
         obj.m_ptr->func_ptr = func_ptr;
-        return obj;
-    }
-
-    template <typename ClassType = Instance, typename... ArgTypes>
-    inline Object makeFastInstance(runtime::GarbageCollector& gc, Class* base, bool temp, ArgTypes&&... args) noexcept{
-        Object obj;
-        obj.type = ObjectType::CLASS_INSTANCE;
-        obj.i_ptr = new ClassType(gc, temp, std::forward<ArgTypes>(args)...);
-        obj.i_ptr->base = base;
         return obj;
     }
 }

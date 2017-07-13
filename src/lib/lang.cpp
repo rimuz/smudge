@@ -34,1541 +34,1396 @@ namespace sm{
         Class* cListIterator = nullptr;
         Class* cStringIterator = nullptr;
 
-        oid_t idToString;
-        oid_t idHash;
-        oid_t idIterate;
-        oid_t idNext;
-
-        namespace StringClass {
-            _NativeFunc(idx);
-            _NativeFunc(len);
-            _NativeFunc(count);
-            _NativeFunc(empty);
-            _NativeFunc(compare);
-            _NativeFunc(u_compare);
-            _NativeFunc(equal);
-            _NativeFunc(not_equal);
-            _NativeFunc(less);
-            _NativeFunc(greater);
-            _NativeFunc(lessOrEqual);
-            _NativeFunc(greaterOrEqual);
-            _NativeFunc(plus);
-            _NativeFunc(minus);
-            _NativeFunc(minus);
-            _NativeFunc(mul);
-            _NativeFunc(get);
-            _NativeFunc(u_get);
-            _NativeFunc(getc);
-            _NativeFunc(u_getc);
-            _NativeFunc(contains);
-            _NativeFunc(bytes);
-            _NativeFunc(chars);
-            _NativeFunc(join);
-            _NativeFunc(ends_with);
-            _NativeFunc(starts_with);
-            _NativeFunc(hash);
-            _NativeFunc(find);
-            _NativeFunc(find_last);
-            _NativeFunc(substr);
-            _NativeFunc(u_substr);
-            _NativeFunc(replace_first);
-            _NativeFunc(replace);
-            _NativeFunc(split);
-            _NativeFunc(trim);
-            _NativeFunc(upper);
-            _NativeFunc(lower);
-            _NativeFunc(u_upper);
-            _NativeFunc(u_lower);
-            _NativeFunc(clone);
-            _NativeFunc(to_string);
-            _NativeFunc(iterate);
-        }
-
-        namespace ListClass {
-            class List : public Instance {
-            public:
-                ObjectVec_t vec;
-
-                template <class... Tp>
-                List(runtime::GarbageCollector& gc, bool temp, Tp&&...args)
-                    : Instance(gc, temp), vec(std::forward<Tp>(args)...){}
-
-                _NativeMethod(bracing, 1);
-                _NativeMethod(plus, 1);
-                _NativeMethod(minus, 1);
-                _NativeMethod(mul, 1);
-                _NativeMethod(bitor_op, 1);
-                _NativeMethod(bitand_op, 1);
-                _NativeMethod(equal_op, 1);
-                _NativeMethod(not_equal_op, 1);
-
-                _NativeMethod(reserve, 1);
-                _NativeMethod(resize, 1);
-                _NativeMethod(pop, 0);
-                _NativeMethod(push, 1);
-                _NativeMethod(pop_front, 0);
-                _NativeMethod(push_front, 1);
-                _NativeMethod(clone, 2);
-                _NativeMethod(tuple, 2);
-                _NativeMethod(append, 1);
-                _NativeMethod(insert, 2);
-                _NativeMethod(erase, 2);
-                _NativeMethod(insert_list, 2);
-                _NativeMethod(copy_list, 2);
-                _NativeMethod(find, 1);
-                _NativeMethod(count, 1);
-                _NativeMethod(slice, 2);
-                _NativeMethod(reverse, 2);
-                _NativeMethod(sort, 1);
-                _NativeMethod(unique, 0);
-                _NativeMethod(to_string, 0);
-                _NativeMethod(size, 0);
-                _NativeMethod(empty, 0);
-                _NativeMethod(iterate, 0);
-            };
-
-            _NativeFunc(bracing);
-            _NativeFunc(plus);
-            _NativeFunc(minus);
-            _NativeFunc(mul);
-            _NativeFunc(bitor_op);
-            _NativeFunc(bitand_op);
-            _NativeFunc(equal_op);
-            _NativeFunc(not_equal_op);
-
-            _NativeFunc(reserve);
-            _NativeFunc(resize);
-            _NativeFunc(pop);
-            _NativeFunc(push);
-            _NativeFunc(pop_front);
-            _NativeFunc(push_front);
-            _NativeFunc(clone);
-            _NativeFunc(tuple);
-            _NativeFunc(append);
-            _NativeFunc(insert);
-            _NativeFunc(erase);
-            _NativeFunc(insert_list);
-            _NativeFunc(copy_list);
-            _NativeFunc(find);
-            _NativeFunc(count);
-            _NativeFunc(slice);
-            _NativeFunc(reverse);
-            _NativeFunc(sort);
-            _NativeFunc(unique);
-            _NativeFunc(to_string);
-            _NativeFunc(size);
-            _NativeFunc(empty);
-            _NativeFunc(iterate);
-        }
-
-        namespace TupleClass {
-            class Tuple : public Instance {
-            public:
-                ObjectVec_t vec;
-
-                template <class... Tp>
-                Tuple(runtime::GarbageCollector& gc, bool temp, Tp&&...args)
-                    : Instance(gc, temp), vec(std::forward<Tp>(args)...){}
-
-                _NativeMethod(plus, 1);
-                _NativeMethod(minus, 1);
-                _NativeMethod(mul, 1);
-                _NativeMethod(bitor_op, 1);
-                _NativeMethod(bitand_op, 1);
-                _NativeMethod(equal_op, 1);
-                _NativeMethod(not_equal_op, 1);
-                _NativeMethod(slice, 2);
-                _NativeMethod(get, 1);
-                _NativeMethod(list, 2);
-                _NativeMethod(hash, 0);
-                _NativeMethod(size, 0);
-                _NativeMethod(empty, 0);
-                _NativeMethod(to_string, 0);
-                _NativeMethod(iterate, 0);
-            };
-
-            _NativeFunc(plus);
-            _NativeFunc(minus);
-            _NativeFunc(mul);
-            _NativeFunc(bitor_op);
-            _NativeFunc(bitand_op);
-            _NativeFunc(equal_op);
-            _NativeFunc(not_equal_op);
-            _NativeFunc(slice);
-            _NativeFunc(get);
-            _NativeFunc(list);
-            _NativeFunc(hash);
-            _NativeFunc(size);
-            _NativeFunc(empty);
-            _NativeFunc(to_string);
-            _NativeFunc(iterate);
-        }
+        namespace StringClass {}
+        namespace ListClass {}
+        namespace TupleClass {}
 
         namespace ListIteratorClass {
-            class ListIterator : public Instance {
-            public:
+            struct LIData {
                 ObjectVec_t& ref;
-                size_t idx;
-
-                ListIterator(runtime::GarbageCollector& gc, bool temp, ObjectVec_t& vec)
-                    : Instance(gc, temp), ref(vec), idx(0){}
-
-                _NativeMethod(next, 0);
+                unsigned idx;
             };
-
-            _NativeFunc(next);
         }
 
         namespace StringIteratorClass {
-            class StringIterator : public Instance {
-            public:
+            struct SIData {
                 String& ref;
-                size_t idx;
-
-                StringIterator(runtime::GarbageCollector& gc, bool temp, String& vec)
-                    : Instance(gc, temp), ref(vec), idx(0){}
-
-                _NativeMethod(next, 0);
+                unsigned idx;
             };
-
-            _NativeFunc(next);
         }
 
-        _LibDecl(lang){
-            Class* box = new Class;
-            box->boxName = nBox;
+        smLibDecl(lang){
+            smInitBox
 
-            idToString = _Id("to_string");
-            idHash = _Id("hash");
-            idIterate = _Id("iterate");
-            idNext = _Id("next");
+            smClass(String)
+                /*
+                 *
+                 *       .d8888b.   888              d8b
+                 *      d88P  Y88b  888              Y8P
+                 *      Y88b.       888
+                 *       "Y888b.    888888  888d888  888  88888b.    .d88b.
+                 *          "Y88b.  888     888P"    888  888 "88b  d88P"88b
+                 *            "888  888     888      888  888  888  888  888
+                 *      Y88b  d88P  Y88b.   888      888  888  888  Y88b 888
+                 *       "Y8888P"    "Y888  888      888  888  888   "Y88888
+                 *                                                       888
+                 *                                                  Y8b d88P
+                 *                                                   "Y88P"
+                */
 
-            cString = setClass(rt, box, "String", {
-                _OpTuple(StringClass, parse::TT_PLUS, plus),
-                _OpTuple(StringClass, parse::TT_MINUS, minus),
-                _OpTuple(StringClass, parse::TT_MULT, mul),
-                _OpTuple(StringClass, parse::TT_EQUAL, equal),
-                _OpTuple(StringClass, parse::TT_EQUAL, not_equal),
-                _OpTuple(StringClass, parse::TT_LESS, less),
-                _OpTuple(StringClass, parse::TT_GREATER, greater),
-                _OpTuple(StringClass, parse::TT_LESS_OR_EQUAL, lessOrEqual),
-                _OpTuple(StringClass, parse::TT_GREATER_OR_EQUAL, greaterOrEqual),
+                smOpMethod(parse::TT_EQUAL, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return makeInteger(0);
+                    return makeInteger(self.s_ptr->str == args[0].s_ptr->str);
+                })
 
-                _MethodTuple(StringClass, idx),
-                _MethodTuple(StringClass, len),
-                _MethodTuple(StringClass, count),
-                _MethodTuple(StringClass, empty),
-                _MethodTuple(StringClass, compare),
-                _MethodTuple(StringClass, u_compare),
-                _MethodTuple(StringClass, get),
-                _MethodTuple(StringClass, u_get),
-                _MethodTuple(StringClass, getc),
-                _MethodTuple(StringClass, u_getc),
-                _MethodTuple(StringClass, contains),
-                _MethodTuple(StringClass, bytes),
-                _MethodTuple(StringClass, chars),
-                _MethodTuple(StringClass, join),
-                _MethodTuple(StringClass, ends_with),
-                _MethodTuple(StringClass, starts_with),
-                _MethodTuple(StringClass, hash),
-                _MethodTuple(StringClass, find),
-                _MethodTuple(StringClass, find_last),
-                _MethodTuple(StringClass, substr),
-                _MethodTuple(StringClass, u_substr),
-                _MethodTuple(StringClass, replace_first),
-                _MethodTuple(StringClass, replace),
-                _MethodTuple(StringClass, split),
-                _MethodTuple(StringClass, trim),
-                _MethodTuple(StringClass, upper),
-                _MethodTuple(StringClass, lower),
-                _MethodTuple(StringClass, u_upper),
-                _MethodTuple(StringClass, u_lower),
-                _MethodTuple(StringClass, clone),
-                _MethodTuple(StringClass, to_string),
-                _MethodTuple(StringClass, iterate),
-            });
+                smOpMethod(parse::TT_NOT_EQUAL, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return makeInteger(0);
+                    return makeInteger(self.s_ptr->str != args[0].s_ptr->str);
+                })
 
-            cList = setClass(rt, box, "List", {
-                _OpTuple(ListClass, parse::TT_SQUARE_OPEN, bracing),
-                _OpTuple(ListClass, parse::TT_PLUS, plus),
-                _OpTuple(ListClass, parse::TT_MINUS, minus),
-                _OpTuple(ListClass, parse::TT_MULT, mul),
-                _OpTuple(ListClass, parse::TT_OR, bitor_op),
-                _OpTuple(ListClass, parse::TT_AND, bitand_op),
-                _OpTuple(ListClass, parse::TT_EQUAL, equal_op),
-                _OpTuple(ListClass, parse::TT_NOT_EQUAL, not_equal_op),
+                smOpMethod(parse::TT_LESS, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return makeInteger(0);
+                    return makeInteger(self.s_ptr->str < args[0].s_ptr->str);
+                })
 
-                _MethodTuple(ListClass, reserve),
-                _MethodTuple(ListClass, resize),
-                _MethodTuple(ListClass, pop),
-                _MethodTuple(ListClass, push),
-                _MethodTuple(ListClass, pop_front),
-                _MethodTuple(ListClass, push_front),
-                _MethodTuple(ListClass, clone),
-                _MethodTuple(ListClass, tuple),
-                _MethodTuple(ListClass, append),
-                _MethodTuple(ListClass, insert),
-                _MethodTuple(ListClass, erase),
-                _MethodTuple(ListClass, insert_list),
-                _MethodTuple(ListClass, copy_list),
-                _MethodTuple(ListClass, find),
-                _MethodTuple(ListClass, count),
-                _MethodTuple(ListClass, slice),
-                _MethodTuple(ListClass, reverse),
-                _MethodTuple(ListClass, sort),
-                _MethodTuple(ListClass, unique),
-                _MethodTuple(ListClass, to_string),
-                _MethodTuple(ListClass, size),
-                _MethodTuple(ListClass, empty),
-                _MethodTuple(ListClass, iterate),
-            });
+                smOpMethod(parse::TT_GREATER, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return makeInteger(0);
+                    return makeInteger(self.s_ptr->str > args[0].s_ptr->str);
+                })
 
-            cTuple = setClass(rt, box, "Tuple", {
-                _OpTuple(TupleClass, parse::TT_PLUS, plus),
-                _OpTuple(TupleClass, parse::TT_MINUS, minus),
-                _OpTuple(TupleClass, parse::TT_MULT, mul),
-                _OpTuple(TupleClass, parse::TT_OR, bitor_op),
-                _OpTuple(TupleClass, parse::TT_AND, bitand_op),
-                _OpTuple(TupleClass, parse::TT_EQUAL, equal_op),
-                _OpTuple(TupleClass, parse::TT_NOT_EQUAL, not_equal_op),
+                smOpMethod(parse::TT_LESS_OR_EQUAL, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return makeInteger(0);
+                    return makeInteger(self.s_ptr->str <= args[0].s_ptr->str);
+                })
 
-                _MethodTuple(TupleClass, slice),
-                _MethodTuple(TupleClass, get),
-                _MethodTuple(TupleClass, list),
-                _MethodTuple(TupleClass, hash),
-                _MethodTuple(TupleClass, size),
-                _MethodTuple(TupleClass, empty),
-                _MethodTuple(TupleClass, to_string),
-                _MethodTuple(TupleClass, iterate),
-            });
+                smOpMethod(parse::TT_GREATER_OR_EQUAL, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return makeInteger(0);
+                    return makeInteger(self.s_ptr->str >= args[0].s_ptr->str);
+                })
 
-            cListIterator = setClass(rt, box, "ListItearator", {
-                _MethodTuple(ListIteratorClass, next),
-            });
-
-            cStringIterator = setClass(rt, box, "StringIterator", {
-                _MethodTuple(StringIteratorClass, next),
-            });
-
-            return box;
-        }
-
-        namespace StringClass {
-            _NativeFunc(idx){
-                if(args.empty() || args[0].type != ObjectType::INTEGER)
-                    return Object();
-                integer_t i = args[0].i;
-                String::iterator begin = self.s_ptr->str.begin(),
-                    end = self.s_ptr->str.end();
-                if(i > 0){
-                    String::iterator ch_it = String::nthChar(begin, end, i);
-                    return makeInteger(std::distance(begin, ch_it));
-                } else if(i < 0){
-                    integer_t n = self.s_ptr->str.uSize() + i;
-                    if(n <= 0)
+                smOpMethod(parse::TT_PLUS, smLambda {
+                    if(args.empty())
                         return Object();
-                    String::iterator ch_it = String::nthChar(begin, end, n);
-                    return makeInteger(std::distance(begin, ch_it));
-                }
-                return makeInteger(0);
-            }
+                    Object str0 = makeString(self.s_ptr->str);
+                    Object str1 = runtime::implicitToString(intp, args[0]);
+                    str0.s_ptr->str.insert(str0.s_ptr->str.end(), str1.s_ptr->str.begin(),
+                        str1.s_ptr->str.end());
+                    return str0;
+                })
 
-            _NativeFunc(len){
-                return makeInteger(self.s_ptr->str.size());
-            }
+                smOpMethod(parse::TT_MINUS, smLambda {
+                    integer_t i;
+                    if(args.empty() || args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
+                        return Object();
+                    if(i >= static_cast<integer_t>(self.s_ptr->str.size()))
+                        return Object();
+                    return makeString(self.s_ptr->str.begin(), self.s_ptr->str.end() - i);
+                })
 
-            _NativeFunc(count){
-                size_t argc = args.size();
+                smOpMethod(parse::TT_MULT, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                        return Object();
 
-                integer_t start = 0;
-                integer_t size = self.s_ptr->str.size();
-                integer_t end = size;
+                    integer_t i = args[0].i;
+                    Object str0 = makeString();
+                    size_t sz = self.s_ptr->str.size();
 
-                if(argc != 0){
-                    if(args[0].type == ObjectType::INTEGER){
+                    if(i == 0) {
+                        return str0;
+                    } else if(i < 0){
+                        i *= -1;
+                        str0.s_ptr->str.resize(sz * i);
+
+                        String::reverse_iterator beg = self.s_ptr->str.rbegin();
+                        String::reverse_iterator end = self.s_ptr->str.rend();
+                        String::iterator curr = str0.s_ptr->str.begin();
+
+                        for(integer_t j = 0; j != i; ++j){
+                            curr = std::copy(beg, end, curr);
+                        }
+                    } else {
+                        str0.s_ptr->str.resize(sz * i);
+
+                        String::iterator beg = self.s_ptr->str.begin();
+                        String::iterator end = self.s_ptr->str.end();
+                        String::iterator curr = str0.s_ptr->str.begin();
+
+                        for(integer_t j = 0; j != i; ++j){
+                            curr = std::copy(beg, end, curr);
+                        }
+                    }
+                    return str0;
+                })
+
+                smMethod(idx, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                        return Object();
+
+                    integer_t i = args[0].i;
+                    String::iterator begin = self.s_ptr->str.begin(),
+                        end = self.s_ptr->str.end();
+
+                    if(i > 0){
+                        String::iterator ch_it = String::nthChar(begin, end, i);
+                        return makeInteger(std::distance(begin, ch_it));
+                    } else if(i < 0){
+                        integer_t n = self.s_ptr->str.uSize() + i;
+                        if(n <= 0)
+                            return Object();
+                        String::iterator ch_it = String::nthChar(begin, end, n);
+                        return makeInteger(std::distance(begin, ch_it));
+                    }
+                    return makeInteger(0);
+                })
+
+                smMethod(len, smLambda {
+                    return makeInteger(self.s_ptr->str.size());
+                })
+
+                smMethod(count, smLambda {
+                    size_t argc = args.size();
+
+                    integer_t start = 0;
+                    integer_t size = self.s_ptr->str.size();
+                    integer_t end = size;
+
+                    if(argc != 0){
+                        if(args[0].type == ObjectType::INTEGER){
+                            start = args[0].i;
+                            if(!runtime::findIndex(start, start, size))
+                                return Object();
+                        } else if(args[0].type != ObjectType::NONE)
+                            return Object();
+                    }
+
+                    if(argc > 1){
+                        if(args[1].type == ObjectType::INTEGER){
+                            end = args[1].i;
+                            if(end < 0){
+                                end += size;
+                                if(end < 0 || end < start)
+                                    return Object();
+                            } else if(end > size)
+                                end = size;
+                            else if(end < start)
+                                return Object();
+                        } else if(args[1].type != ObjectType::NONE)
+                            return Object();
+                    }
+
+                    String::const_iterator beg = self.s_ptr->str.begin();
+                    return makeInteger(String::uSize(beg + start, beg + end));
+                })
+
+                smMethod(empty, smLambda {
+                    return makeInteger(self.s_ptr->str.empty());
+                })
+
+                smMethod(compare, smLambda {
+                    size_t argc = args.size();
+                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                        return makeInteger(0);
+                    } else if(argc >= 2 && runtime::implicitToBool(args[1])){
+                        return makeInteger(self.s_ptr->str.compareIgnoreCase(args[0].s_ptr->str));
+                    }
+                    return makeInteger(self.s_ptr->str.compare(args[0].s_ptr->str));
+                })
+
+                smMethod(u_compare, smLambda {
+                    size_t argc = args.size();
+                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                        return makeInteger(1);
+                    } else if(argc >= 2 && runtime::implicitToBool(args[1])){
+                        return makeInteger(self.s_ptr->str.uCompareIgnoreCase(args[0].s_ptr->str));
+                    }
+                    return makeInteger(self.s_ptr->str.compare(args[0].s_ptr->str));
+                })
+
+                smMethod(get, smLambda {
+                    String::const_iterator begin = self.s_ptr->str.cbegin();
+
+                    if(self.s_ptr->str.empty())
+                        return Object();
+                    if(args.empty()){
+                        return makeString(begin, begin+1);
+                    } else if(args[0].type == ObjectType::INTEGER){
+                        integer_t idx = args[0].i;
+                        if(idx >= 0){
+                            size_t i = static_cast<size_t>(idx);
+                            if(i >= self.s_ptr->str.size())
+                                return Object();
+                            return makeString(begin+i, begin+i+1);
+                        }
+
+                        idx += static_cast<integer_t>(self.s_ptr->str.size());
+                        if(idx < 0)
+                            return Object();
+                        return makeString(begin+idx, begin+idx+1);
+                    }
+                    return Object();
+                })
+
+                smMethod(u_get, smLambda {
+                    if(self.s_ptr->str.empty())
+                        return Object();
+                    integer_t strSize = self.s_ptr->str.uSize();
+                    if(args.empty()){
+                        return makeString(self.s_ptr->str.uCharAt(0));
+                    } else if(args[0].type == ObjectType::INTEGER){
+                        integer_t idx = args[0].i;
+                        if(idx >= 0){
+                            if(idx >= strSize)
+                                return Object();
+                            return makeString(self.s_ptr->str.uCharAt(idx));
+                        }
+
+                        idx += strSize;
+                        if(idx < 0)
+                            return Object();
+                        return makeString(self.s_ptr->str.uCharAt(idx));
+                    }
+                    return Object();
+                })
+
+                smMethod(getc, smLambda {
+                    if(self.s_ptr->str.empty())
+                        return Object();
+                    if(args.empty()){
+                        return makeInteger(self.s_ptr->str[0]);
+                    } else if(args[0].type == ObjectType::INTEGER){
+                        integer_t idx = args[0].i;
+                        if(idx >= 0){
+                            size_t i = static_cast<size_t>(idx);
+                            if(i >= self.s_ptr->str.size())
+                                return Object();
+                            return makeInteger(self.s_ptr->str[i]);
+                        }
+
+                        idx += static_cast<integer_t>(self.s_ptr->str.size());
+                        if(idx < 0)
+                            return Object();
+                        return makeInteger(self.s_ptr->str[static_cast<size_t>(idx)]);
+                    }
+                    return Object();
+                })
+
+                smMethod(u_getc, smLambda {
+                    if(self.s_ptr->str.empty())
+                        return Object();
+                    integer_t strSize = self.s_ptr->str.uSize();
+                    if(args.empty()){
+                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(0)));
+                    } else if(args[0].type == ObjectType::INTEGER){
+                        integer_t idx = args[0].i;
+                        if(idx >= 0){
+                            if(idx >= strSize)
+                                return Object();
+                            return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
+                        }
+
+                        idx += strSize;
+                        if(idx < 0)
+                            return Object();
+                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
+                    }
+                    return Object();
+                })
+
+                smMethod(contains, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return Object();
+                    return makeInteger(self.s_ptr->str.contains(args[0].s_ptr->str));
+                })
+
+                smMethod(bytes, smLambda {
+                    Object list = makeList(intp, false, ObjectVec_t(self.s_ptr->str.size()));
+
+                    String::const_iterator iit = self.s_ptr->str.begin();
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);
+                    ObjectVec_t::iterator oit = out.begin(), end = out.end();
+
+                    while(oit != end){
+                        *oit++ = makeInteger(static_cast<unsigned char>(*iit++));
+                    }
+                    return list;
+                })
+
+                smMethod(chars, smLambda {
+                    Object list = makeList(intp, false);
+
+                    String::const_iterator curr = self.s_ptr->str.begin();
+                    String::const_iterator end = self.s_ptr->str.end();
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);;
+                    unicode_t ch;
+
+                    while(String::uNext(curr, end, ch)){
+                        out.push_back(makeInteger(uGetCodepoint(ch)));
+                    }
+                    return list;
+                })
+
+                smMethod(join, smLambda {
+                    if(args.empty())
+                        return makeString();
+                    ObjectVec_t* in;
+                    if(!hasVector(args[0], in))
+                        return Object();
+                    Object out = makeString();
+                    ObjectVec_t::const_iterator curr = in->cbegin(), end = in->cend();
+                    if(curr != end){
+                        while(1){
+                            Object str = runtime::implicitToString(intp, *curr);
+                            out.s_ptr->str.append(str.s_ptr->str);
+                            if(++curr == end)
+                                break;
+                            else
+                                out.s_ptr->str.append(self.s_ptr->str);
+                        }
+                    }
+                    return out;
+                })
+
+                smMethod(ends_with, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return Object();
+                    return makeInteger(self.s_ptr->str.endsWith(args[0].s_ptr->str));
+                })
+
+                smMethod(starts_with, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return Object();
+                    return makeInteger(self.s_ptr->str.startsWith(args[0].s_ptr->str));
+                })
+
+                smMethod(hash, smLambda {
+                    return makeInteger(self.s_ptr->str.hash());
+                })
+
+                smMethod(find, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return Object();
+                    return makeInteger(self.s_ptr->str.find(args[0].s_ptr->str)
+                        - self.s_ptr->str.begin());
+                })
+
+                smMethod(find_last, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return Object();
+                    return makeInteger(self.s_ptr->str.findLast(args[0].s_ptr->str)
+                        - self.s_ptr->str.begin());
+                })
+
+                smMethod(substr, smLambda {
+                    size_t argc = args.size();
+
+                    if(argc == 0 || args[0].type != ObjectType::INTEGER){
+                        return Object();
+                    }
+
+                    integer_t size = self.s_ptr->str.size();
+                    integer_t start = args[0].i;
+                    String::iterator begin = self.s_ptr->str.begin();
+
+                    if(start < 0){
+                        start += size;
+                        if(start < 0)
+                            return Object();
+                    } else if(start >= size)
+                        return Object();
+
+                    if(argc >= 2){
+                        integer_t end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
+                            return Object();
+                        else if(end < start)
+                            return Object();
+                        return makeString(begin + start, begin + end);
+                    }
+
+                    return makeString(begin + start, begin + size);
+                })
+
+                smMethod(u_substr, smLambda {
+                    size_t argc = args.size();
+
+                    if(argc == 0 || args[0].type != ObjectType::INTEGER){
+                        return Object();
+                    }
+
+                    integer_t size = self.s_ptr->str.uSize();
+                    integer_t start = args[0].i;
+
+                    if(!runtime::findIndex(start, start, size))
+                        return Object();
+
+                    if(argc >= 2){
+                        integer_t end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
+                            return Object();
+                        else if(end < start)
+                            return Object();
+                        return makeString(self.s_ptr->str.uSubstr(start, end));
+                    }
+
+                    return makeString(self.s_ptr->str.uSubstr(start));
+                })
+
+                smMethod(replace_first, smLambda {
+                    size_t argc = args.size();
+                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                        return self;
+                    } else if(argc >= 2){
+                        if(args[1].type != ObjectType::STRING)
+                            return Object();
+                        return makeString(self.s_ptr->str.replaceFirst(
+                                args[0].s_ptr->str, args[1].s_ptr->str
+                        ));
+                    }
+                    return makeString(self.s_ptr->str.replaceFirst(args[0].s_ptr->str));
+                })
+
+                smMethod(replace, smLambda {
+                    size_t argc = args.size();
+                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                        return self;
+                    } else if(argc >= 2){
+                        if(args[1].type != ObjectType::STRING)
+                            return Object();
+                        return makeString(self.s_ptr->str.replace(
+                                args[0].s_ptr->str, args[1].s_ptr->str
+                        ));
+                    }
+                    return makeString(self.s_ptr->str.replace(args[0].s_ptr->str));
+                })
+
+                smMethod(split, smLambda {
+                    Object sep;
+                    bool skipEmpty = true;
+                    size_t argc = args.size();
+
+                    if(argc == 0){
+                        sep = makeString(" \t\n");
+                    } else {
+                        if(argc > 1){
+                            skipEmpty = runtime::implicitToBool(args[1]);
+                        }
+
+                        if(args[0].type != ObjectType::STRING)
+                            return Object();
+                        sep = args[0];
+                    }
+
+                    std::vector<String> strings = self.s_ptr->str.split(sep.s_ptr->str, skipEmpty);
+                    Object list = makeList(intp, false, ObjectVec_t(strings.size()));
+
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);
+                    ObjectVec_t::iterator beg = out.begin(), end = out.end();
+                    std::vector<String>::const_iterator src = strings.cbegin();
+
+                    for(; beg != end; ++beg, ++src){
+                        *beg = makeString(std::move(*src));
+                    }
+                    return list;
+                })
+
+                smMethod(trim, smLambda {
+                    return makeString(self.s_ptr->str.trim());
+                })
+
+                smMethod(upper, smLambda {
+                    return makeString(self.s_ptr->str.upper());
+                })
+
+                smMethod(lower, smLambda {
+                    return makeString(self.s_ptr->str.lower());
+                })
+
+                smMethod(u_upper, smLambda {
+                    return makeString(self.s_ptr->str.uUpper());
+                })
+
+                smMethod(u_lower, smLambda {
+                    return makeString(self.s_ptr->str.uLower());
+                })
+
+                smMethod(clone, smLambda {
+                    return makeString(self.s_ptr->str);
+                })
+
+                smMethod(to_string, smLambda {
+                    return self;
+                })
+
+                smMethod(iterate, smLambda {
+                    return newInstance(intp, cStringIterator, false, {self});
+                })
+            smEnd
+
+            smClass(List)
+                /*
+                 *
+                 *          888       d8b            888
+                 *          888       Y8P            888
+                 *          888                      888
+                 *          888       888  .d8888b   888888
+                 *          888       888  88K       888
+                 *          888       888  "Y8888b.  888
+                 *          888       888       X88  Y88b.
+                 *          88888888  888   88888P'   "Y888
+                 *
+                */
+
+
+                smMethod(new, smLambda {
+                    smSetData(ObjectVec_t) = new ObjectVec_t();
+                    return Object();
+                })
+
+                smMethod(delete, smLambda {
+                    delete smGetData(ObjectVec_t);
+                    return Object();
+                })
+
+                smOpMethod(parse::TT_SQUARE_OPEN, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    if(args.empty() || vec.empty() || args[0].type != ObjectType::INTEGER)
+                        return Object();
+                    integer_t i = args[0].i;
+                    integer_t sz = vec.size();
+
+                    if(!runtime::findIndex(i, i, sz))
+                        return Object();
+
+                    Object ref;
+                    ref.type = ObjectType::STRONG_REFERENCE;
+                    ref.o_ptr = &vec[i];
+                    return ref;
+                })
+
+                smOpMethod(parse::TT_PLUS, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t* vec2;
+                    if(args.empty() || !hasVector(args[0], vec2))
+                        return Object();
+
+                    Object newVec = makeList(intp, false, vec);
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
+                    out.insert(out.end(), vec2->cbegin(), vec2->cend());
+                    return newVec;
+                })
+
+                smOpMethod(parse::TT_MINUS, smLambda {
+                    integer_t i;
+                    if(args.empty() || args[0].type != ObjectType::INTEGER
+                            || (i = args[0].i) < 0)
+                        return Object();
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    size_t idx = i;
+                    if(idx >= vec.size())
+                        return makeList(intp, false);
+                    return makeList(intp, false, ObjectVec_t(vec.begin(), vec.end() - idx));
+                })
+
+                smOpMethod(parse::TT_MULT, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                        return Object();
+                    integer_t i = args[0].i;
+
+                    Object list = makeList(intp, false);
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t& newVec = *getData<ObjectVec_t>(intp, list);
+                    size_t sz = vec.size();
+
+                    if(i == 0) {
+                        return list;
+                    } else if(i < 0){
+                        i *= -1;
+                        newVec.resize(sz * i);
+
+                        ObjectVec_t::reverse_iterator beg = vec.rbegin();
+                        ObjectVec_t::reverse_iterator end = vec.rend();
+                        ObjectVec_t::iterator curr = newVec.begin();
+
+                        for(integer_t j = 0; j != i; ++j){
+                            curr = std::copy(beg, end, curr);
+                        }
+                    } else {
+                        newVec.resize(sz * i);
+
+                        ObjectVec_t::iterator beg = vec.begin();
+                        ObjectVec_t::iterator end = vec.end();
+                        ObjectVec_t::iterator curr = newVec.begin();
+
+                        for(integer_t j = 0; j != i; ++j){
+                            curr = std::copy(beg, end, curr);
+                        }
+                    }
+                    return list;
+                })
+
+                smOpMethod(parse::TT_OR, smLambda {
+                    ObjectVec_t* vec2;
+                    if(args.empty() || !hasVector(args[0], vec2))
+                        return Object();
+
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    Object newVec = makeList(intp, false, vec);
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
+
+                    for(const Object& obj : *vec2){
+                        if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) == out.end()){
+                            out.push_back(obj);
+                        }
+                    }
+                    return newVec;
+                })
+
+                smOpMethod(parse::TT_AND, smLambda {
+                    ObjectVec_t* vec2;
+                    if(args.empty() || !hasVector(args[0], vec2))
+                        return Object();
+
+                    Object newVec = makeList(intp, false, {});
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+
+                    for(const Object& obj : *vec2){
+                        if(std::find_if(vec.begin(), vec.end(), runtime::Equal(intp, obj)) != vec.end()){
+                            out.push_back(obj);
+                        }
+                    }
+                    return newVec;
+                })
+
+                smOpMethod(parse::TT_EQUAL, smLambda {
+                    if(args.empty() || !runtime::of_type(args[0], cList))
+                        return makeFalse();
+
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t& vec2 = *getData<ObjectVec_t>(intp, args[0]);
+
+                    if(vec.size() != vec2.size())
+                        return makeFalse();
+
+                    return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                        ? makeTrue() : makeFalse();
+                })
+
+                smOpMethod(parse::TT_NOT_EQUAL, smLambda {
+                    if(args.empty() || !runtime::of_type(args[0], cList))
+                        return makeTrue();
+
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t& vec2 = *getData<ObjectVec_t>(intp, args[0]);
+
+                    if(vec.size() != vec2.size())
+                        return makeTrue();
+
+                    return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                        ? makeFalse() : makeTrue();
+                })
+
+                smMethod(reserve, smLambda {
+                    integer_t i;
+                    if(args.empty() || args[0].type != ObjectType::INTEGER
+                            || (i = args[0].i) < 0)
+                        return Object();
+                    smGetData(ObjectVec_t)->reserve(i);
+                    return Object();
+                })
+
+                smMethod(resize, smLambda {
+                    integer_t i;
+                    if(args.empty() || args[0].type != ObjectType::INTEGER
+                            || (i = args[0].i) < 0)
+                        return Object();
+                    smGetData(ObjectVec_t)->resize(i);
+                    return Object();
+                })
+
+                smMethod(pop, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    if(!vec.empty()){
+                        Object back = std::move(vec.back());
+                        vec.pop_back();
+                        return back;
+                    }
+                    return Object();
+                })
+
+                smMethod(push, smLambda {
+                    smGetData(ObjectVec_t)->push_back(args.empty() ? Object() : args[0]);
+                    return Object();
+                })
+
+                smMethod(pop_front, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    if(!vec.empty()){
+                        Object back = std::move(vec.back());
+                        vec.erase(vec.begin());
+                        return back;
+                    }
+                    return Object();
+                })
+
+                smMethod(push_front, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    vec.insert(vec.begin(), args.empty() ? Object() : args[0]);
+                    return Object();
+                })
+
+                smMethod(clone, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+
+                    integer_t start = 0;
+                    integer_t size = vec.size();
+                    integer_t end = size;
+
+                    if(args.empty() || args[0].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[0].type == ObjectType::INTEGER){
                         start = args[0].i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
-                    } else if(args[0].type != ObjectType::NONE)
-                        return Object();
-                }
+                    } else return Object();
 
-                if(argc > 1){
-                    if(args[1].type == ObjectType::INTEGER){
+                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[1].type == ObjectType::INTEGER){
                         end = args[1].i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
                                 return Object();
                         } else if(end > size)
-                            end = size;
+                            return Object();
                         else if(end < start)
                             return Object();
-                    } else if(args[1].type != ObjectType::NONE)
+                    } else return Object();
+
+                    return makeList(intp, false,
+                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                })
+
+                smMethod(tuple, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+
+                    integer_t start = 0;
+                    integer_t size = vec.size();
+                    integer_t end = size;
+
+                    if(args.empty() || args[0].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[0].type == ObjectType::INTEGER){
+                        start = args[0].i;
+                        if(!runtime::findIndex(start, start, size))
+                            return Object();
+                    } else return Object();
+
+                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                        // do nothing
+                    else if(args[1].type == ObjectType::INTEGER){
+                        end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
+                            return Object();
+                        else if(end < start)
+                            return Object();
+                    } else return Object();
+
+                    return makeTuple(intp, false,
+                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                })
+
+                smMethod(append, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t* toAppend;
+                    if(args.empty() || !hasVector(args[0], toAppend))
                         return Object();
-                }
-
-                String::const_iterator beg = self.s_ptr->str.begin();
-                return makeInteger(String::uSize(beg + start, beg + end));
-            }
-
-            _NativeFunc(empty){
-                return makeInteger(self.s_ptr->str.empty());
-            }
-
-            _NativeFunc(compare){
-                size_t argc = args.size();
-                if(argc == 0 || args[0].type != ObjectType::STRING){
-                    return makeInteger(0);
-                } else if(argc >= 2 && runtime::implicitToBool(args[1])){
-                    return makeInteger(self.s_ptr->str.compareIgnoreCase(args[0].s_ptr->str));
-                }
-                return makeInteger(self.s_ptr->str.compare(args[0].s_ptr->str));
-            }
-
-            _NativeFunc(u_compare){
-                size_t argc = args.size();
-                if(argc == 0 || args[0].type != ObjectType::STRING){
-                    return makeInteger(1);
-                } else if(argc >= 2 && runtime::implicitToBool(args[1])){
-                    return makeInteger(self.s_ptr->str.uCompareIgnoreCase(args[0].s_ptr->str));
-                }
-                return makeInteger(self.s_ptr->str.compare(args[0].s_ptr->str));
-            }
-
-            _NativeFunc(equal){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return makeInteger(0);
-                return makeInteger(self.s_ptr->str == args[0].s_ptr->str);
-            }
-
-            _NativeFunc(not_equal){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return makeInteger(0);
-                return makeInteger(self.s_ptr->str != args[0].s_ptr->str);
-            }
-
-            _NativeFunc(less){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return makeInteger(0);
-                return makeInteger(self.s_ptr->str < args[0].s_ptr->str);
-            }
-
-            _NativeFunc(greater){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return makeInteger(0);
-                return makeInteger(self.s_ptr->str > args[0].s_ptr->str);
-            }
-
-            _NativeFunc(lessOrEqual){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return makeInteger(0);
-                return makeInteger(self.s_ptr->str <= args[0].s_ptr->str);
-            }
-
-            _NativeFunc(greaterOrEqual){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return makeInteger(0);
-                return makeInteger(self.s_ptr->str >= args[0].s_ptr->str);
-            }
-
-            _NativeFunc(plus){
-                if(args.empty())
+                    vec.insert(vec.end(), toAppend->begin(), toAppend->end());
                     return Object();
-                Object str0 = makeString(self.s_ptr->str);
-                Object str1 = runtime::implicitToString(intp, args[0]);
-                str0.s_ptr->str.insert(str0.s_ptr->str.end(), str1.s_ptr->str.begin(),
-                    str1.s_ptr->str.end());
-                return str0;
-            }
+                })
 
-            _NativeFunc(minus){
-                integer_t i;
-                if(args.empty() || args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
-                    return Object();
-                if(i >= static_cast<integer_t>(self.s_ptr->str.size()))
-                    return Object();
-                return makeString(self.s_ptr->str.begin(), self.s_ptr->str.end() - i);
-            }
-
-            _NativeFunc(mul){
-                if(args.empty() || args[0].type != ObjectType::INTEGER)
-                    return Object();
-
-                integer_t i = args[0].i;
-                Object str0 = makeString();
-                size_t sz = self.s_ptr->str.size();
-
-                if(i == 0) {
-                    return str0;
-                } else if(i < 0){
-                    i *= -1;
-                    str0.s_ptr->str.resize(sz * i);
-
-                    String::reverse_iterator beg = self.s_ptr->str.rbegin();
-                    String::reverse_iterator end = self.s_ptr->str.rend();
-                    String::iterator curr = str0.s_ptr->str.begin();
-
-                    for(integer_t j = 0; j != i; ++j){
-                        curr = std::copy(beg, end, curr);
-                    }
-                } else {
-                    str0.s_ptr->str.resize(sz * i);
-
-                    String::iterator beg = self.s_ptr->str.begin();
-                    String::iterator end = self.s_ptr->str.end();
-                    String::iterator curr = str0.s_ptr->str.begin();
-
-                    for(integer_t j = 0; j != i; ++j){
-                        curr = std::copy(beg, end, curr);
-                    }
-                }
-                return str0;
-            }
-
-            _NativeFunc(get){
-                String::const_iterator begin = self.s_ptr->str.cbegin();
-
-                if(self.s_ptr->str.empty())
-                    return Object();
-                if(args.empty()){
-                    return makeString(begin, begin+1);
-                } else if(args[0].type == ObjectType::INTEGER){
+                smMethod(insert, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    if(args[0].type != ObjectType::INTEGER)
+                        return Object();
                     integer_t idx = args[0].i;
-                    if(idx >= 0){
-                        size_t i = static_cast<size_t>(idx);
-                        if(i >= self.s_ptr->str.size())
-                            return Object();
-                        return makeString(begin+i, begin+i+1);
-                    }
-
-                    idx += static_cast<integer_t>(self.s_ptr->str.size());
-                    if(idx < 0)
+                    if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                         return Object();
-                    return makeString(begin+idx, begin+idx+1);
-                }
-                return Object();
-            }
-
-            _NativeFunc(u_get){
-                if(self.s_ptr->str.empty())
+                    vec.insert(vec.begin() + idx, args[1]);
                     return Object();
-                integer_t strSize = self.s_ptr->str.uSize();
-                if(args.empty()){
-                    return makeString(self.s_ptr->str.uCharAt(0));
-                } else if(args[0].type == ObjectType::INTEGER){
+                })
+
+                smMethod(erase, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+
+                    integer_t size = vec.size();
+                    integer_t start = 0;
+                    integer_t end;
+
+                    if(args.empty() || args[0].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[0].type == ObjectType::INTEGER){
+                        start = args[0].i;
+                        if(!runtime::findIndex(start, start, size))
+                            return Object();
+                    } else return Object();
+
+                    if(args.size() < 2 || args[1].type == ObjectType::NONE) {
+                        vec.erase(vec.begin() + start);
+                        return Object();
+                    } else if(args[1].type == ObjectType::INTEGER){
+                        end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size){
+                            vec.erase(vec.begin() + start, vec.end());
+                            return Object();
+                        } else if(end < start)
+                            return Object();
+                    } else return Object();
+
+                    vec.erase(vec.begin() + start, vec.begin() + end);
+                    return Object();
+                })
+
+                smMethod(insert_list, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t* toInsert;
+
+                    if(args.size() < 2 || args[0].type != ObjectType::INTEGER
+                            || !hasVector(args[1], toInsert))
+                        return Object();
+
                     integer_t idx = args[0].i;
-                    if(idx >= 0){
-                        if(idx >= strSize)
-                            return Object();
-                        return makeString(self.s_ptr->str.uCharAt(idx));
-                    }
-
-                    idx += strSize;
-                    if(idx < 0)
+                    if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                         return Object();
-                    return makeString(self.s_ptr->str.uCharAt(idx));
-                }
-                return Object();
-            }
-
-            _NativeFunc(getc){
-                if(self.s_ptr->str.empty())
+                    vec.insert(vec.begin() + idx, toInsert->begin(), toInsert->end());
                     return Object();
-                if(args.empty()){
-                    return makeInteger(self.s_ptr->str[0]);
-                } else if(args[0].type == ObjectType::INTEGER){
+                })
+
+                smMethod(copy_list, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t* toCopy;
+
+                    if(args.size() < 2 || args[0].type != ObjectType::INTEGER
+                            || !hasVector(args[1], toCopy))
+                        return  makeFalse();
+
                     integer_t idx = args[0].i;
-                    if(idx >= 0){
-                        size_t i = static_cast<size_t>(idx);
-                        if(i >= self.s_ptr->str.size())
-                            return Object();
-                        return makeInteger(self.s_ptr->str[i]);
-                    }
-
-                    idx += static_cast<integer_t>(self.s_ptr->str.size());
-                    if(idx < 0)
-                        return Object();
-                    return makeInteger(self.s_ptr->str[static_cast<size_t>(idx)]);
-                }
-                return Object();
-            }
-
-            _NativeFunc(u_getc){
-                if(self.s_ptr->str.empty())
-                    return Object();
-                integer_t strSize = self.s_ptr->str.uSize();
-                if(args.empty()){
-                    return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(0)));
-                } else if(args[0].type == ObjectType::INTEGER){
-                    integer_t idx = args[0].i;
-                    if(idx >= 0){
-                        if(idx >= strSize)
-                            return Object();
-                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
-                    }
-
-                    idx += strSize;
-                    if(idx < 0)
-                        return Object();
-                    return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
-                }
-                return Object();
-            }
-
-            _NativeFunc(contains){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return Object();
-                return makeInteger(self.s_ptr->str.contains(args[0].s_ptr->str));
-            }
-
-            _NativeFunc(bytes){
-                Object list = makeList(intp.rt->gc, false, ObjectVec_t(self.s_ptr->str.size()));
-
-                String::const_iterator iit = self.s_ptr->str.begin();
-                ObjectVec_t& out = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
-                ObjectVec_t::iterator oit = out.begin(), end = out.end();
-
-                while(oit != end){
-                    *oit++ = makeInteger(static_cast<unsigned char>(*iit++));
-                }
-                return list;
-            }
-
-            _NativeFunc(chars){
-                Object list = makeList(intp.rt->gc, false);
-
-                String::const_iterator curr = self.s_ptr->str.begin();
-                String::const_iterator end = self.s_ptr->str.end();
-                ObjectVec_t& out = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
-                unicode_t ch;
-
-                while(String::uNext(curr, end, ch)){
-                    out.push_back(makeInteger(uGetCodepoint(ch)));
-                }
-                return list;
-            }
-
-            _NativeFunc(join){
-                if(args.empty())
-                    return makeString();
-                if(!runtime::of_type(args[0], cList))
-                    return Object();
-                Object out = makeString();
-                ObjectVec_t& in = reinterpret_cast<ListClass::List*>(args[0].i_ptr)->vec;
-                ObjectVec_t::const_iterator curr = in.cbegin(), end = in.cend();
-                if(curr != end){
-                    while(1){
-                        Object str = runtime::implicitToString(intp, *curr);
-                        out.s_ptr->str.append(str.s_ptr->str);
-                        if(++curr == end)
-                            break;
-                        else
-                            out.s_ptr->str.append(self.s_ptr->str);
-                    }
-                }
-                return out;
-            }
-
-            _NativeFunc(ends_with){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return Object();
-                return makeInteger(self.s_ptr->str.endsWith(args[0].s_ptr->str));
-            }
-
-            _NativeFunc(starts_with){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return Object();
-                return makeInteger(self.s_ptr->str.startsWith(args[0].s_ptr->str));
-            }
-
-            _NativeFunc(hash){
-                return makeInteger(self.s_ptr->str.hash());
-            }
-
-            _NativeFunc(find){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return Object();
-                return makeInteger(self.s_ptr->str.find(args[0].s_ptr->str)
-                    - self.s_ptr->str.begin());
-            }
-
-            _NativeFunc(find_last){
-                if(args.empty() || args[0].type != ObjectType::STRING)
-                    return Object();
-                return makeInteger(self.s_ptr->str.findLast(args[0].s_ptr->str)
-                    - self.s_ptr->str.begin());
-            }
-
-            _NativeFunc(substr){
-                size_t argc = args.size();
-
-                if(argc == 0 || args[0].type != ObjectType::INTEGER){
-                    return Object();
-                }
-
-                integer_t size = self.s_ptr->str.size();
-                integer_t start = args[0].i;
-                String::iterator begin = self.s_ptr->str.begin();
-
-                if(start < 0){
-                    start += size;
-                    if(start < 0)
-                        return Object();
-                } else if(start >= size)
-                    return Object();
-
-                if(argc >= 2){
-                    integer_t end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
-                            return Object();
-                    } else if(end > size)
-                        return Object();
-                    else if(end < start)
-                        return Object();
-                    return makeString(begin + start, begin + end);
-                }
-
-                return makeString(begin + start, begin + size);
-            }
-
-            _NativeFunc(u_substr){
-                size_t argc = args.size();
-
-                if(argc == 0 || args[0].type != ObjectType::INTEGER){
-                    return Object();
-                }
-
-                integer_t size = self.s_ptr->str.uSize();
-                integer_t start = args[0].i;
-
-                if(!runtime::findIndex(start, start, size))
-                    return Object();
-
-                if(argc >= 2){
-                    integer_t end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
-                            return Object();
-                    } else if(end > size)
-                        return Object();
-                    else if(end < start)
-                        return Object();
-                    return makeString(self.s_ptr->str.uSubstr(start, end));
-                }
-
-                return makeString(self.s_ptr->str.uSubstr(start));
-            }
-
-            _NativeFunc(replace_first){
-                size_t argc = args.size();
-                if(argc == 0 || args[0].type != ObjectType::STRING){
-                    return self;
-                } else if(argc >= 2){
-                    if(args[1].type != ObjectType::STRING)
-                        return Object();
-                    return makeString(self.s_ptr->str.replaceFirst(
-                            args[0].s_ptr->str, args[1].s_ptr->str
-                    ));
-                }
-                return makeString(self.s_ptr->str.replaceFirst(args[0].s_ptr->str));
-            }
-
-            _NativeFunc(replace){
-                size_t argc = args.size();
-                if(argc == 0 || args[0].type != ObjectType::STRING){
-                    return self;
-                } else if(argc >= 2){
-                    if(args[1].type != ObjectType::STRING)
-                        return Object();
-                    return makeString(self.s_ptr->str.replace(
-                            args[0].s_ptr->str, args[1].s_ptr->str
-                    ));
-                }
-                return makeString(self.s_ptr->str.replace(args[0].s_ptr->str));
-            }
-
-            _NativeFunc(split){
-                Object sep;
-                bool skipEmpty = true;
-                size_t argc = args.size();
-
-                if(argc == 0){
-                    sep = makeString(" \t\n");
-                } else {
-                    if(argc > 1){
-                        skipEmpty = runtime::implicitToBool(args[1]);
-                    }
-
-                    if(args[0].type != ObjectType::STRING)
-                        return Object();
-                    sep = args[0];
-                }
-
-                std::vector<String> strings = self.s_ptr->str.split(sep.s_ptr->str, skipEmpty);
-                Object list = makeList(intp.rt->gc, false, ObjectVec_t(strings.size()));
-
-                ObjectVec_t& out = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
-                ObjectVec_t::iterator beg = out.begin(), end = out.end();
-                std::vector<String>::const_iterator src = strings.cbegin();
-
-                for(; beg != end; ++beg, ++src){
-                    *beg = makeString(std::move(*src));
-                }
-                return list;
-            }
-
-            _NativeFunc(trim){
-                return makeString(self.s_ptr->str.trim());
-            }
-
-            _NativeFunc(upper){
-                return makeString(self.s_ptr->str.upper());
-            }
-
-            _NativeFunc(lower){
-                return makeString(self.s_ptr->str.lower());
-            }
-
-            _NativeFunc(u_upper){
-                return makeString(self.s_ptr->str.uUpper());
-            }
-
-            _NativeFunc(u_lower){
-                return makeString(self.s_ptr->str.uLower());
-            }
-
-            _NativeFunc(clone){
-                return makeString(self.s_ptr->str);
-            }
-
-            _NativeFunc(to_string){
-                return self;
-            }
-
-            _NativeFunc(iterate){
-                return makeFastInstance<StringIteratorClass::StringIterator>
-                    (intp.rt->gc, cStringIterator, false, self.s_ptr->str);
-            }
-        }
-
-        namespace ListClass {
-            _BindMethod(List, bracing, 1);
-            _BindMethod(List, plus, 1);
-            _BindMethod(List, minus, 1);
-            _BindMethod(List, mul, 1);
-            _BindMethod(List, bitor_op, 1);
-            _BindMethod(List, bitand_op, 1);
-            _BindMethod(List, equal_op, 1);
-            _BindMethod(List, not_equal_op, 1);
-
-            _BindMethod(List, reserve, 1);
-            _BindMethod(List, resize, 1);
-            _BindMethod(List, pop, 0);
-            _BindMethod(List, push, 1);
-            _BindMethod(List, pop_front, 0);
-            _BindMethod(List, push_front, 1);
-            _BindMethod(List, clone, 2);
-            _BindMethod(List, tuple, 2);
-            _BindMethod(List, append, 1);
-            _BindMethod(List, insert, 2);
-            _BindMethod(List, erase, 2);
-            _BindMethod(List, insert_list, 2);
-            _BindMethod(List, copy_list, 2);
-            _BindMethod(List, find, 1);
-            _BindMethod(List, count, 1);
-            _BindMethod(List, slice, 2);
-            _BindMethod(List, reverse, 2);
-            _BindMethod(List, sort, 1);
-            _BindMethod(List, unique, 0);
-            _BindMethod(List, to_string, 0);
-            _BindMethod(List, size, 0);
-            _BindMethod(List, empty, 0);
-            _BindMethod(List, iterate, 0);
-        }
-
-        namespace TupleClass {
-            _BindMethod(Tuple, plus, 1);
-            _BindMethod(Tuple, minus, 1);
-            _BindMethod(Tuple, mul, 1);
-            _BindMethod(Tuple, bitor_op, 1);
-            _BindMethod(Tuple, bitand_op, 1);
-            _BindMethod(Tuple, equal_op, 1);
-            _BindMethod(Tuple, not_equal_op, 1);
-            _BindMethod(Tuple, slice, 2);
-            _BindMethod(Tuple, get, 1);
-            _BindMethod(Tuple, list, 2);
-            _BindMethod(Tuple, hash, 0);
-            _BindMethod(Tuple, size, 0);
-            _BindMethod(Tuple, empty, 0);
-            _BindMethod(Tuple, to_string, 0);
-            _BindMethod(Tuple, iterate, 0);
-        }
-
-        namespace ListIteratorClass {
-            _BindMethod(ListIterator, next, 0);
-        }
-
-        namespace StringIteratorClass {
-            _BindMethod(StringIterator, next, 0);
-        }
-
-        namespace ListClass {
-            _NativeMethod(List::bracing, 1){
-                if(vec.empty() || args[0].type != ObjectType::INTEGER)
-                    return Object();
-                integer_t i = args[0].i;
-                integer_t sz = vec.size();
-
-                if(!runtime::findIndex(i, i, sz))
-                    return Object();
-
-                Object ref;
-                ref.type = ObjectType::STRONG_REFERENCE;
-                ref.o_ptr = &vec[i];
-                return ref;
-            }
-
-            _NativeMethod(List::plus, 1){
-                ObjectVec_t* vec2;
-                if(!hasVector(args[0], vec2))
-                    return Object();
-                Object newVec = makeList(intp.rt->gc, false, vec);
-                ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
-                out.insert(out.end(), vec2->cbegin(), vec2->cend());
-                return newVec;
-            }
-
-            _NativeMethod(List::minus, 1){
-                integer_t i;
-                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
-                    return Object();
-                size_t idx = i;
-                if(idx >= vec.size())
-                    return makeList(intp.rt->gc, false);
-                return makeList(intp.rt->gc, false, ObjectVec_t(vec.begin(), vec.end() - idx));
-            }
-
-            _NativeMethod(List::mul, 1){
-                if(args[0].type != ObjectType::INTEGER)
-                    return Object();
-                integer_t i = args[0].i;
-
-                Object list = makeList(intp.rt->gc, false);
-                ObjectVec_t& newVec = reinterpret_cast<ListClass::List*>(list.i_ptr)->vec;
-                size_t sz = vec.size();
-
-                if(i == 0) {
-                    return list;
-                } else if(i < 0){
-                    i *= -1;
-                    newVec.resize(sz * i);
-
-                    ObjectVec_t::reverse_iterator beg = vec.rbegin();
-                    ObjectVec_t::reverse_iterator end = vec.rend();
-                    ObjectVec_t::iterator curr = newVec.begin();
-
-                    for(integer_t j = 0; j != i; ++j){
-                        curr = std::copy(beg, end, curr);
-                    }
-                } else {
-                    newVec.resize(sz * i);
-
-                    ObjectVec_t::iterator beg = vec.begin();
-                    ObjectVec_t::iterator end = vec.end();
-                    ObjectVec_t::iterator curr = newVec.begin();
-
-                    for(integer_t j = 0; j != i; ++j){
-                        curr = std::copy(beg, end, curr);
-                    }
-                }
-                return list;
-            }
-
-            _NativeMethod(List::bitor_op, 1){
-                ObjectVec_t* vec2;
-                if(!hasVector(args[0], vec2))
-                    return Object();
-                Object newVec = makeList(intp.rt->gc, false, vec);
-                ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
-
-                for(const Object& obj : *vec2){
-                    if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) == out.end()){
-                        out.push_back(obj);
-                    }
-                }
-                return newVec;
-            }
-
-            _NativeMethod(List::bitand_op, 1){
-                ObjectVec_t* vec2;
-                if(!hasVector(args[0], vec2))
-                    return Object();
-                Object newVec = makeList(intp.rt->gc, false, {});
-                ObjectVec_t& out = reinterpret_cast<List*>(newVec.i_ptr)->vec;
-                for(const Object& obj : *vec2){
-                    if(std::find_if(vec.begin(), vec.end(), runtime::Equal(intp, obj)) != vec.end()){
-                        out.push_back(obj);
-                    }
-                }
-                return newVec;
-            }
-
-            _NativeMethod(List::equal_op, 1){
-                if(!runtime::of_type(args[0], cList))
-                    return makeFalse();
-                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
-                if(vec.size() != vec2.size())
-                    return makeFalse();
-                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
-                    ? makeTrue() : makeFalse();
-            }
-
-            _NativeMethod(List::not_equal_op, 1){
-                if(!runtime::of_type(args[0], cList))
+                    if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
+                        return makeFalse();
+
+                    size_t sz = toCopy->size() + idx;
+                    if(vec.size() < sz)
+                        vec.resize(sz);
+                    std::copy(toCopy->begin(), toCopy->end(), vec.begin() + idx);
                     return makeTrue();
-                ObjectVec_t& vec2 = reinterpret_cast<List*>(args[0].i_ptr)->vec;
-                if(vec.size() != vec2.size())
-                    return makeTrue();
-                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
-                    ? makeFalse() : makeTrue();
-            }
+                })
 
-            _NativeMethod(List::reserve, 1){
-                integer_t i;
-                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
-                    return Object();
-                vec.reserve(i);
-                return Object();
-            }
+                smMethod(find, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
+                    ObjectVec_t::iterator found = std::find_if(vec.begin(), vec.end(),
+                            runtime::Equal(intp, args.empty() ? Object() : args[0]));
 
-            _NativeMethod(List::resize, 1){
-                integer_t i;
-                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
-                    return Object();
-                vec.resize(i);
-                return Object();
-            }
-
-            _NativeMethod(List::pop, 0){
-                if(!vec.empty()){
-                    Object back = std::move(vec.back());
-                    vec.pop_back();
-                    return back;
-                }
-                return Object();
-            }
-
-            _NativeMethod(List::push, 1){
-                vec.push_back(args[0]);
-                return Object();
-            }
-
-            _NativeMethod(List::pop_front, 0){
-                if(!vec.empty()){
-                    Object back = std::move(vec.back());
-                    vec.erase(vec.begin());
-                    return back;
-                }
-                return Object();
-            }
-
-            _NativeMethod(List::push_front, 1){
-                vec.insert(vec.begin(), args[0]);
-                return Object();
-            }
-
-            _NativeMethod(List::clone, 2){
-                integer_t start = 0;
-                integer_t size = vec.size();
-                integer_t end = size;
-
-                if(args[0].type == ObjectType::INTEGER){
-                    start = args[0].i;
-                    if(!runtime::findIndex(start, start, size))
+                    if(found == end)
                         return Object();
-                } else if(args[0].type != ObjectType::NONE)
-                    return Object();
+                    return makeInteger(found - begin);
+                })
 
-                if(args[1].type == ObjectType::INTEGER){
-                    end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
+                smMethod(count, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
+                    return makeInteger(std::count_if(vec.begin(), vec.end(),
+                        runtime::Equal(intp, args.empty() ? Object() : args[0])));
+                })
+
+                smMethod(slice, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    integer_t start = 0;
+                    integer_t size = vec.size();
+                    integer_t end = size;
+
+                    if(args.empty() || args[0].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[0].type == ObjectType::INTEGER){
+                        start = args[0].i;
+                        if(!runtime::findIndex(start, start, size))
                             return Object();
-                    } else if(end > size)
-                        return Object();
-                    else if(end < start)
-                        return Object();
-                } else if(args[1].type != ObjectType::NONE)
-                    return Object();
+                    } else return Object();
 
-                return makeList(intp.rt->gc, false,
-                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
-            }
-
-            _NativeMethod(List::tuple, 2){
-                integer_t start = 0;
-                integer_t size = vec.size();
-                integer_t end = size;
-
-                if(args[0].type == ObjectType::INTEGER){
-                    start = args[0].i;
-                    if(!runtime::findIndex(start, start, size))
-                        return Object();
-                } else if(args[0].type != ObjectType::NONE)
-                    return Object();
-
-                if(args[1].type == ObjectType::INTEGER){
-                    end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
+                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[1].type == ObjectType::INTEGER){
+                        end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
                             return Object();
-                    } else if(end > size)
-                        return Object();
-                    else if(end < start)
-                        return Object();
-                } else if(args[1].type != ObjectType::NONE)
-                    return Object();
-
-                return makeTuple(intp.rt->gc, false,
-                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
-            }
-
-            _NativeMethod(List::append, 1){
-                ObjectVec_t* toAppend;
-                if(!hasVector(args[0], toAppend))
-                    return Object();
-                vec.insert(vec.end(), toAppend->begin(), toAppend->end());
-                return Object();
-            }
-
-            _NativeMethod(List::insert, 2){
-                if(args[0].type != ObjectType::INTEGER)
-                    return Object();
-                integer_t idx = args[0].i;
-                if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
-                    return Object();
-                vec.insert(vec.begin() + idx, args[1]);
-                return Object();
-            }
-
-            _NativeMethod(List::erase, 2){
-                integer_t size = vec.size();
-                integer_t start = 0;
-                integer_t end;
-
-                if(args[0].type == ObjectType::INTEGER){
-                    start = args[0].i;
-                    if(!runtime::findIndex(start, start, size))
-                        return Object();
-                } else if(args[0].type != ObjectType::NONE)
-                    return Object();
-
-                if(args[1].type == ObjectType::INTEGER){
-                    end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
+                        else if(end < start)
                             return Object();
-                    } else if(end > size){
-                        vec.erase(vec.begin() + start, vec.end());
-                        return Object();
-                    } else if(end < start)
-                        return Object();
-                } else if(args[1].type == ObjectType::NONE){
-                    vec.erase(vec.begin() + start);
+                    } else return Object();
+
+                    return makeList(intp, false,
+                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                })
+
+                smMethod(reverse, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t reversed(vec.rbegin(), vec.rend());
+                    vec.swap(reversed);
                     return Object();
-                } else {
+                })
+
+                smMethod(sort, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    if(!args.empty() || runtime::implicitToBool(args[0]))
+                        std::sort(vec.rbegin(), vec.rend(), runtime::BinaryLess(intp));
+                    else
+                        std::sort(vec.begin(), vec.end(), runtime::BinaryLess(intp));
                     return Object();
-                }
+                })
 
-                vec.erase(vec.begin() + start, vec.begin() + end);
-                return Object();
-            }
-
-            _NativeMethod(List::insert_list, 2){
-                ObjectVec_t* toInsert;
-                if(args[0].type != ObjectType::INTEGER
-                        || !hasVector(args[1], toInsert))
+                smMethod(unique, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    vec.erase(std::unique(vec.begin(), vec.end(),
+                        runtime::BinaryEqual(intp)), vec.end());
                     return Object();
+                })
 
-                integer_t idx = args[0].i;
-                if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
-                    return Object();
-                vec.insert(vec.begin() + idx, toInsert->begin(), toInsert->end());
-                return Object();
-            }
+                smMethod(to_string, smLambda {
+                    Object str = makeString("[");
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t::const_iterator it = vec.cbegin();
 
-            _NativeMethod(List::copy_list, 2){
-                ObjectVec_t* toCopy;
-                if(args[0].type != ObjectType::INTEGER
-                        || !hasVector(args[1], toCopy))
-                    return  makeFalse();
-
-                integer_t idx = args[0].i;
-                if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
-                    return makeFalse();
-
-                size_t sz = toCopy->size() + idx;
-                if(vec.size() < sz)
-                    vec.resize(sz);
-                std::copy(toCopy->begin(), toCopy->end(), vec.begin() + idx);
-                return makeTrue();
-            }
-
-            _NativeMethod(List::find, 1){
-                ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
-                ObjectVec_t::iterator found = std::find_if(vec.begin(), vec.end(),
-                        runtime::Equal(intp, args[0]));
-                if(found == end)
-                    return Object();
-                return makeInteger(found - begin);
-            }
-
-            _NativeMethod(List::count, 1){
-                ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
-                return makeInteger(std::count_if(vec.begin(), vec.end(), runtime::Equal(intp, args[0])));
-            }
-
-            _NativeMethod(List::slice, 2){
-                integer_t start = 0;
-                integer_t size = vec.size();
-                integer_t end = size;
-
-                if(args[0].type == ObjectType::INTEGER){
-                    start = args[0].i;
-                    if(!runtime::findIndex(start, start, size))
-                        return Object();
-                } else if(args[0].type != ObjectType::NONE)
-                    return Object();
-
-                if(args[1].type == ObjectType::INTEGER){
-                    end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
-                            return Object();
-                    } else if(end > size)
-                        return Object();
-                    else if(end < start)
-                        return Object();
-                } else if(args[1].type != ObjectType::NONE)
-                    return Object();
-
-                return makeList(intp.rt->gc, false,
-                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
-            }
-
-            _NativeMethod(List::reverse, 2){
-                ObjectVec_t reversed(vec.rbegin(), vec.rend());
-                vec.swap(reversed);
-                return Object();
-            }
-
-            _NativeMethod(List::sort, 1){
-                if(runtime::implicitToBool(args[0]))
-                    std::sort(vec.rbegin(), vec.rend(), runtime::BinaryLess(intp));
-                else
-                    std::sort(vec.begin(), vec.end(), runtime::BinaryLess(intp));
-                return Object();
-            }
-
-            _NativeMethod(List::unique, 0){
-                vec.erase(std::unique(vec.begin(), vec.end(), runtime::BinaryEqual(intp)), vec.end());
-                return Object();
-            }
-
-            _NativeMethod(List::to_string, 0){
-                Object str = makeString("[");
-                ObjectVec_t::const_iterator it = vec.cbegin();
-                if(it != vec.cend()){
-                    while(1) {
-                        Object str2 = runtime::implicitToString(intp, *it++);
-                        str.s_ptr->str.append(str2.s_ptr->str);
-                        if(it == vec.cend())
-                            break;
-                        str.s_ptr->str.append(", ");
+                    if(it != vec.cend()){
+                        while(1) {
+                            Object str2 = runtime::implicitToString(intp, *it++);
+                            str.s_ptr->str.append(str2.s_ptr->str);
+                            if(it == vec.cend())
+                                break;
+                            str.s_ptr->str.append(", ");
+                        }
                     }
-                }
-                str.s_ptr->str.push_back(']');
-                return str;
-            }
+                    str.s_ptr->str.push_back(']');
+                    return str;
+                })
 
-            _NativeMethod(List::empty, 0){
-                return makeInteger(vec.empty());
-            }
+                smMethod(empty, smLambda {
+                    return makeInteger(smGetData(ObjectVec_t)->empty());
+                })
 
-            _NativeMethod(List::size, 0){
-                return makeInteger(vec.size());
-            }
+                smMethod(size, smLambda {
+                    return makeInteger(smGetData(ObjectVec_t)->size());
+                })
 
-            _NativeMethod(List::iterate, 0){
-                return makeFastInstance<ListIteratorClass::ListIterator>
-                    (intp.rt->gc, cListIterator, false, vec);
-            }
-        }
+                smMethod(iterate, smLambda {
+                    return newInstance(intp, cListIterator, false, {self});
+                })
 
-        namespace TupleClass {
-            _NativeMethod(Tuple::plus, 1){
-                ObjectVec_t* vec2;
-                if(!hasVector(args[0], vec2))
+            smEnd
+
+            smClass(Tuple)
+                /*
+                 *
+                 *          88888888888                   888
+                 *              888                       888
+                 *              888                       888
+                 *              888   888  888  88888b.   888   .d88b.
+                 *              888   888  888  888 "88b  888  d8P  Y8b
+                 *              888   888  888  888  888  888  88888888
+                 *              888   Y88b 888  888 d88P  888  Y8b.
+                 *              888    "Y88888  88888P"   888   "Y8888
+                 *                              888
+                 *                              888
+                 *                              888
+                 *
+                */
+
+                smMethod(new, smLambda {
+                    smSetData(ObjectVec_t) = new ObjectVec_t();
                     return Object();
-                Object newVec = makeTuple(intp.rt->gc, false, vec);
-                ObjectVec_t& out = reinterpret_cast<Tuple*>(newVec.i_ptr)->vec;
-                out.insert(out.end(), vec2->cbegin(), vec2->cend());
-                return newVec;
-            }
+                })
 
-            _NativeMethod(Tuple::minus, 1){
-                integer_t i;
-                if(args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
+                smMethod(delete, smLambda {
+                    delete smGetData(ObjectVec_t);
                     return Object();
-                size_t idx = i;
-                if(idx >= vec.size())
-                    return makeTuple(intp.rt->gc, false);
-                return makeTuple(intp.rt->gc, false, ObjectVec_t(vec.begin(), vec.end() - idx));
-            }
+                })
 
-            _NativeMethod(Tuple::mul, 1){
-                if(args[0].type != ObjectType::INTEGER)
-                    return Object();
-                integer_t i = args[0].i;
+                smOpMethod(parse::TT_PLUS, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t* vec2;
 
-                Object tuple = makeTuple(intp.rt->gc, false);
-                ObjectVec_t& newVec = reinterpret_cast<Tuple*>(tuple.i_ptr)->vec;
-                size_t sz = vec.size();
+                    if(args.empty() || !hasVector(args[0], vec2))
+                        return Object();
 
-                if(i == 0) {
+                    Object newVec = makeTuple(intp, false, vec);
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
+                    out.insert(out.end(), vec2->cbegin(), vec2->cend());
+
+                    return newVec;
+                })
+
+                smOpMethod(parse::TT_MINUS, smLambda {
+                    integer_t i;
+                    if(args.empty() || args[0].type != ObjectType::INTEGER
+                            || (i = args[0].i) < 0)
+                        return Object();
+
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    size_t idx = i;
+                    if(idx >= vec.size())
+                        return makeTuple(intp, false);
+                    return makeTuple(intp, false, ObjectVec_t(vec.begin(), vec.end() - idx));
+                })
+
+                smOpMethod(parse::TT_MULT, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                        return Object();
+                    integer_t i = args[0].i;
+
+                    Object tuple = makeTuple(intp, false);
+                    ObjectVec_t& newVec = *getData<ObjectVec_t>(intp, tuple);
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    size_t sz = vec.size();
+
+                    if(i == 0) {
+                        return tuple;
+                    } else if(i < 0){
+                        i *= -1;
+                        newVec.resize(sz * i);
+
+                        ObjectVec_t::reverse_iterator beg = vec.rbegin();
+                        ObjectVec_t::reverse_iterator end = vec.rend();
+                        ObjectVec_t::iterator curr = newVec.begin();
+
+                        for(integer_t j = 0; j != i; ++j){
+                            curr = std::copy(beg, end, curr);
+                        }
+                    } else {
+                        newVec.resize(sz * i);
+
+                        ObjectVec_t::iterator beg = vec.begin();
+                        ObjectVec_t::iterator end = vec.end();
+                        ObjectVec_t::iterator curr = newVec.begin();
+
+                        for(integer_t j = 0; j != i; ++j){
+                            curr = std::copy(beg, end, curr);
+                        }
+                    }
                     return tuple;
-                } else if(i < 0){
-                    i *= -1;
-                    newVec.resize(sz * i);
+                })
 
-                    ObjectVec_t::reverse_iterator beg = vec.rbegin();
-                    ObjectVec_t::reverse_iterator end = vec.rend();
-                    ObjectVec_t::iterator curr = newVec.begin();
-
-                    for(integer_t j = 0; j != i; ++j){
-                        curr = std::copy(beg, end, curr);
-                    }
-                } else {
-                    newVec.resize(sz * i);
-
-                    ObjectVec_t::iterator beg = vec.begin();
-                    ObjectVec_t::iterator end = vec.end();
-                    ObjectVec_t::iterator curr = newVec.begin();
-
-                    for(integer_t j = 0; j != i; ++j){
-                        curr = std::copy(beg, end, curr);
-                    }
-                }
-                return tuple;
-            }
-
-            _NativeMethod(Tuple::bitor_op, 1){
-                ObjectVec_t* vec2;
-                if(!hasVector(args[0], vec2))
-                    return Object();
-                Object newVec = makeTuple(intp.rt->gc, false, vec);
-                ObjectVec_t& out = reinterpret_cast<Tuple*>(newVec.i_ptr)->vec;
-
-                for(const Object& obj : *vec2){
-                    if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) == out.end()){
-                        out.push_back(obj);
-                    }
-                }
-                return newVec;
-            }
-
-            _NativeMethod(Tuple::bitand_op, 1){
-                ObjectVec_t* vec2;
-                if(!hasVector(args[0], vec2))
-                    return Object();
-                Object newVec = makeTuple(intp.rt->gc, false, {});
-                ObjectVec_t& out = reinterpret_cast<Tuple*>(newVec.i_ptr)->vec;
-                for(const Object& obj : *vec2){
-                    if(std::find_if(vec.begin(), vec.end(), runtime::Equal(intp, obj)) != vec.end()){
-                        out.push_back(obj);
-                    }
-                }
-                return newVec;
-            }
-
-            _NativeMethod(Tuple::equal_op, 1){
-                if(!runtime::of_type(args[0], cTuple))
-                    return makeFalse();
-                ObjectVec_t& vec2 = reinterpret_cast<Tuple*>(args[0].i_ptr)->vec;
-                if(vec.size() != vec2.size())
-                    return makeFalse();
-                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
-                    ? makeTrue() : makeFalse();
-            }
-
-            _NativeMethod(Tuple::not_equal_op, 1){
-                if(!runtime::of_type(args[0], cTuple))
-                    return makeTrue();
-                ObjectVec_t& vec2 = reinterpret_cast<Tuple*>(args[0].i_ptr)->vec;
-                if(vec.size() != vec2.size())
-                    return makeTrue();
-                return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
-                    ? makeFalse() : makeTrue();
-            }
-
-            _NativeMethod(Tuple::slice, 2){
-                integer_t start = 0;
-                integer_t size = vec.size();
-                integer_t end = size;
-
-                if(args[0].type == ObjectType::INTEGER){
-                    start = args[0].i;
-                    if(!runtime::findIndex(start, start, size))
+                smOpMethod(parse::TT_OR, smLambda {
+                    ObjectVec_t* vec2;
+                    if(args.empty() || !hasVector(args[0], vec2))
                         return Object();
-                } else if(args[0].type != ObjectType::NONE)
-                    return Object();
 
-                if(args[1].type == ObjectType::INTEGER){
-                    end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    Object newVec = makeTuple(intp, false, vec);
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
+
+                    for(const Object& obj : *vec2){
+                        if(std::find_if(out.begin(), out.end(), runtime::Equal(intp, obj)) == out.end()){
+                            out.push_back(obj);
+                        }
+                    }
+                    return newVec;
+                })
+
+                smOpMethod(parse::TT_AND, smLambda {
+                    ObjectVec_t* vec2;
+                    if(args.empty() || !hasVector(args[0], vec2))
+                        return Object();
+
+                    Object newVec = makeTuple(intp, false, {});
+                    ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+
+                    for(const Object& obj : *vec2){
+                        if(std::find_if(vec.begin(), vec.end(), runtime::Equal(intp, obj)) != vec.end()){
+                            out.push_back(obj);
+                        }
+                    }
+                    return newVec;
+                })
+
+                smOpMethod(parse::TT_EQUAL, smLambda {
+                    if(args.empty() || !runtime::of_type(args[0], cTuple))
+                        return makeFalse();
+
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t& vec2 = *getData<ObjectVec_t>(intp, args[0]);
+
+                    if(vec.size() != vec2.size())
+                        return makeFalse();
+                    return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                        ? makeTrue() : makeFalse();
+                })
+
+                smOpMethod(parse::TT_NOT_EQUAL, smLambda {
+                    if(args.empty() || !runtime::of_type(args[0], cTuple))
+                        return makeTrue();
+
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t& vec2 = *getData<ObjectVec_t>(intp, args[0]);
+
+                    if(vec.size() != vec2.size())
+                        return makeTrue();
+                    return std::equal(vec.begin(), vec.end(), vec2.begin(), runtime::BinaryEqual(intp))
+                        ? makeFalse() : makeTrue();
+                })
+
+                smMethod(slice, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+
+                    integer_t start = 0;
+                    integer_t size = vec.size();
+                    integer_t end = size;
+
+                    if(args.empty() || args[0].type == ObjectType::NONE);
+                        // do nothing
+                    else if(args[0].type == ObjectType::INTEGER){
+                        start = args[0].i;
+                        if(!runtime::findIndex(start, start, size))
                             return Object();
-                    } else if(end > size)
-                        return Object();
-                    else if(end < start)
-                        return Object();
-                } else if(args[1].type != ObjectType::NONE)
-                    return Object();
+                    } else return Object();
 
-                return makeTuple(intp.rt->gc, false,
-                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
-            }
-
-            _NativeMethod(Tuple::get, 1){
-                if(vec.empty() || args[0].type != ObjectType::INTEGER)
-                    return Object();
-                integer_t i = args[0].i;
-                integer_t sz = vec.size();
-                if(!runtime::findIndex(i, i, sz))
-                    return Object();
-                return vec[i];
-            }
-
-            _NativeMethod(Tuple::list, 2){
-                integer_t start = 0;
-                integer_t size = vec.size();
-                integer_t end = size;
-
-                if(args[0].type == ObjectType::INTEGER){
-                    start = args[0].i;
-                    if(!runtime::findIndex(start, start, size))
-                        return Object();
-                } else if(args[0].type != ObjectType::NONE)
-                    return Object();
-
-                if(args[1].type == ObjectType::INTEGER){
-                    end = args[1].i;
-                    if(end < 0){
-                        end += size;
-                        if(end < 0 || end < start)
+                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                        // do nothing
+                    else if(args[1].type == ObjectType::INTEGER){
+                        end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
                             return Object();
-                    } else if(end > size)
+                        else if(end < start)
+                            return Object();
+                    } else return Object();
+
+                    return makeTuple(intp, false,
+                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                })
+
+                smMethod(get, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    if(vec.empty() || args.empty() || args[0].type != ObjectType::INTEGER)
                         return Object();
-                    else if(end < start)
+
+                    integer_t i = args[0].i;
+                    integer_t sz = vec.size();
+
+                    if(!runtime::findIndex(i, i, sz))
                         return Object();
-                } else if(args[1].type != ObjectType::NONE)
-                    return Object();
+                    return vec[i];
+                })
 
-                return makeList(intp.rt->gc, false,
-                    ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
-            }
+                smMethod(list, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
 
-            _NativeMethod(Tuple::hash, 0){
-                // TODO implement a real hash algorithm instead of a sum!
-                size_t hash = 0;
-                for(const Object& obj : vec){
-                    hash += objectHash(intp, obj);
-                }
-                return makeInteger(hash);
-            }
+                    integer_t start = 0;
+                    integer_t size = vec.size();
+                    integer_t end = size;
 
-            _NativeMethod(Tuple::size, 0){
-                return makeInteger(vec.size());
-            }
+                    if(args.empty() || args[0].type == ObjectType::NONE);
+                        // do nothing
+                    else if(args[0].type == ObjectType::INTEGER){
+                        start = args[0].i;
+                        if(!runtime::findIndex(start, start, size))
+                            return Object();
+                    } else return Object();
 
-            _NativeMethod(Tuple::empty, 0){
-                return makeInteger(vec.empty());
-            }
+                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                        // do nothing
+                    else if(args[1].type == ObjectType::INTEGER){
+                        end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
+                            return Object();
+                        else if(end < start)
+                            return Object();
+                    } else return Object();
 
-            _NativeMethod(Tuple::to_string, 0){
-                Object str = makeString("(");
-                ObjectVec_t::const_iterator it = vec.cbegin();
-                if(it != vec.cend()){
-                    while(1) {
-                        Object str2 = runtime::implicitToString(intp, *it++);
-                        str.s_ptr->str.append(str2.s_ptr->str);
-                        if(it == vec.cend())
-                            break;
-                        str.s_ptr->str.append(", ");
+                    return makeList(intp, false,
+                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                })
+
+                smMethod(hash, smLambda {
+                    // TODO implement a real hash algorithm instead of a sum!
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    size_t hash = 0;
+
+                    for(const Object& obj : vec){
+                        hash += objectHash(intp, obj);
                     }
-                }
-                str.s_ptr->str.push_back(')');
-                return str;
-            }
+                    return makeInteger(hash);
+                })
 
-            _NativeMethod(Tuple::iterate, 0){
-                return makeFastInstance<ListIteratorClass::ListIterator>
-                    (intp.rt->gc, cListIterator, false, vec);
-            }
-        }
+                smMethod(size, smLambda {
+                    return makeInteger(smGetData(ObjectVec_t)->size());
+                })
 
-        namespace ListIteratorClass {
-            _NativeMethod(ListIterator::next, 0){
-                Object obj;
-                bool check = idx < ref.size();
-                if(check){
-                    obj = ref[idx++];
-                }
-                return makeTuple(intp.rt->gc, false, {obj, makeBool(check)});
-            }
-        }
+                smMethod(empty, smLambda {
+                    return makeInteger(smGetData(ObjectVec_t)->empty());
+                })
 
-        namespace StringIteratorClass {
-            _NativeMethod(StringIterator::next, 0){
-                String::const_iterator it = ref.begin() + idx;
-                unicode_t ch;
-                bool check = idx < ref.size();
+                smMethod(to_string, smLambda{
+                    Object str = makeString("(");
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    ObjectVec_t::const_iterator it = vec.cbegin();
+                    if(it != vec.cend()){
+                        while(1) {
+                            Object str2 = runtime::implicitToString(intp, *it++);
+                            str.s_ptr->str.append(str2.s_ptr->str);
+                            if(it == vec.cend())
+                                break;
+                            str.s_ptr->str.append(", ");
+                        }
+                    }
+                    str.s_ptr->str.push_back(')');
+                    return str;
+                })
 
-                if(check && String::uNext(it, ref.end(), ch)){
-                    idx = it - ref.begin();
-                    return makeTuple(intp.rt->gc, false, {
-                        makeString(ch), makeTrue()
-                    });
-                }
+                smMethod(iterate, smLambda {
+                    return newInstance(intp, cListIterator, false, {self});
+                })
 
-                return makeTuple(intp.rt->gc, false, {Object(), makeFalse()});
-            }
+            smEnd
+
+            smClass(ListIterator)
+                /*
+                 *
+                 *        888       d8b            888     8888888  888                                888
+                 *        888       Y8P            888       888    888                                888
+                 *        888                      888       888    888                                888
+                 *        888       888  .d8888b   888888    888    888888  .d88b.   888d888  8888b.   888888  .d88b.   888d888
+                 *        888       888  88K       888       888    888    d8P  Y8b  888P"       "88b  888    d88""88b  888P"
+                 *        888       888  "Y8888b.  888       888    888    88888888  888     .d888888  888    888  888  888
+                 *        888       888       X88  Y88b.     888    Y88b.  Y8b.      888     888  888  Y88b.  Y88..88P  888
+                 *        88888888  888   88888P'   "Y888  8888888   "Y888  "Y8888   888     "Y888888   "Y888  "Y88P"   888
+                 *
+                */
+
+                smMethod(new, smLambda {
+                    ObjectVec_t* vec;
+                    if(args.empty() || !hasVector(args[0], vec))
+                        return Object();
+
+                    smSetData(LIData) = new LIData { *vec, 0 };
+                    return Object();
+                })
+
+                smMethod(delete, smLambda {
+                    delete smGetData(LIData);
+                    return Object();
+                })
+
+                smMethod(next, smLambda {
+                    LIData* ptr = smGetData(LIData);
+
+                    Object obj;
+                    bool check = ptr->idx < ptr->ref.size();
+                    if(check){
+                        obj = ptr->ref[ptr->idx++];
+                    }
+                    return makeTuple(intp, false, {obj, makeBool(check)});
+                })
+            smEnd
+
+            smClass(StringIterator)
+                /*
+                 *
+                 *        .d8888b.   888              d8b                      8888888  888                                888
+                 *       d88P  Y88b  888              Y8P                        888    888                                888
+                 *       Y88b.       888                                         888    888                                888
+                 *        "Y888b.    888888  888d888  888  88888b.    .d88b.     888    888888  .d88b.   888d888  8888b.   888888  .d88b.   888d888
+                 *           "Y88b.  888     888P"    888  888 "88b  d88P"88b    888    888    d8P  Y8b  888P"       "88b  888    d88""88b  888P"
+                 *             "888  888     888      888  888  888  888  888    888    888    88888888  888     .d888888  888    888  888  888
+                 *       Y88b  d88P  Y88b.   888      888  888  888  Y88b 888    888    Y88b.  Y8b.      888     888  888  Y88b.  Y88..88P  888
+                 *        "Y8888P"    "Y888  888      888  888  888   "Y88888  8888888   "Y888  "Y8888   888     "Y888888   "Y888  "Y88P"   888
+                 *                                                        888
+                 *                                                   Y8b d88P
+                 *                                                    "Y88P"
+                */
+
+                smMethod(new, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::STRING)
+                        return Object();
+                    smSetData(SIData) = new SIData { args[0].s_ptr->str, 0 };
+                    return Object();
+                })
+
+                smMethod(delete, smLambda {
+                    delete smGetData(SIData);
+                    return Object();
+                })
+
+                smMethod(next, smLambda {
+                    SIData* ptr = smGetData(SIData);
+
+                    String::const_iterator it = ptr->ref.begin() + ptr->idx;
+                    unicode_t ch;
+                    bool check = ptr->idx < ptr->ref.size();
+
+                    if(check && String::uNext(it, ptr->ref.end(), ch)){
+                        ptr->idx = it - ptr->ref.begin();
+                        return makeTuple(intp, false, {
+                            makeString(ch), makeTrue()
+                        });
+                    }
+
+                    return makeTuple(intp, false, {Object(), makeFalse()});
+                })
+            smEnd
+
+            smReturnBox
         }
     }
 
-    Object makeList(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
-        return makeFastInstance<lib::ListClass::List>(gc, lib::cList, temp, std::move(vec));
+    Object makeList(exec::Interpreter& intp, bool temp, ObjectVec_t vec) noexcept{
+        Object list = newInstance(intp, lib::cList, temp);
+        *lib::getData<ObjectVec_t>(intp, list) = std::move(vec);
+        return list;
     }
 
-    Object makeTuple(runtime::GarbageCollector& gc, bool temp, ObjectVec_t vec) noexcept{
-        return makeFastInstance<lib::TupleClass::Tuple>(gc, lib::cTuple, temp, std::move(vec));
+    Object makeTuple(exec::Interpreter& intp, bool temp, ObjectVec_t vec) noexcept{
+        Object tuple = newInstance(intp, lib::cTuple, temp);
+        *lib::getData<ObjectVec_t>(intp, tuple) = std::move(vec);
+        return tuple;
     }
+
 
     bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept{
-        if(runtime::of_type(obj, lib::cList)){
-            vecPtr = &reinterpret_cast<lib::ListClass::List*>(obj.i_ptr)->vec;
-            return true;
-        } else if(runtime::of_type(obj, lib::cTuple)){
-            vecPtr = &reinterpret_cast<lib::TupleClass::Tuple*>(obj.i_ptr)->vec;
+        if(runtime::of_type(obj, lib::cList) || runtime::of_type(obj, lib::cTuple)){
+            vecPtr = lib::getData<ObjectVec_t>(obj.i_ptr->intp, obj);
             return true;
         }
         return false;

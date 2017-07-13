@@ -25,54 +25,134 @@
 #include "runtime/Object.h"
 #include "runtime/gc.h"
 #include "runtime/id.h"
+#include "runtime/casts.h"
+
 #include "exec/Interpreter.h"
 #include "typedefs.h"
 
-#define _Id(X) runtime::genOrdinaryId(rt, X)
-#define _OpId(X) runtime::operatorId(X)
-#define _LibDecl(LibName) sm::Box_t* import_##LibName(sm::runtime::Runtime_t& rt, unsigned nBox)
-#define _LibTuple(LibString, LibName) { LibString, import_##LibName }
-#define _NativeFunc(FuncName) Object FuncName(sm::exec::Interpreter& intp, sm::Function* thisFn, const sm::Object& self, const sm::ObjectVec_t& args)
-#define _NativeMethod(MethodName, nArgs) inline sm::Object MethodName(sm::exec::Interpreter& intp, \
-    sm::Function* thisFn, const sm::Object& self, const sm::ObjectArray_t<nArgs>& args)
-#define _BindMethod(ClassName, FuncName, nArgs) \
-    _NativeFunc(FuncName){ \
-        if(!runtime::of_type(self, c##ClassName)) \
-            intp.rt->sources.printStackTrace(*intp.rt, error::FATAL_ERROR, \
-                "called native method '" #FuncName "' from an incompatible " \
-                "object to native class '" #ClassName "'"); \
-        sm::ObjectArray_t<nArgs> newArgs; \
-        size_t argsSize = args.size(); \
-        if(nArgs){ \
-            if(argsSize > nArgs){ \
-                std::copy(args.begin(), args.begin() + nArgs, newArgs.begin()); \
-            } else { \
-                std::copy(args.begin(), args.end(), newArgs.begin()); \
-            } \
-        } \
-        return reinterpret_cast<ClassName*>(self.i_ptr)->FuncName(intp, thisFn, self, newArgs); \
-    }
-#define _MethodTuple(Namespace, MethodName) { _Id(#MethodName), \
-    genFunc(rt, box, #MethodName, Namespace::MethodName) }
-#define _OpTuple(Namespace, Operator, MethodName) { _OpId(Operator),\
-    genOpFunc(rt, box, Operator, Namespace::MethodName) }
+#define smId(X) \
+    runtime::genOrdinaryId(*intp.rt, X)
 
+#define smOpId(X) \
+    runtime::operatorId(X)
+
+#define smLibDecl(LibName) \
+    sm::Box_t* import_##LibName(sm::runtime::Runtime_t& rt, unsigned nBox)
+
+#define smLibTuple(LibString, LibName) \
+    { LibString, import_##LibName }
+
+#define smNativeFunc(FuncName) \
+    Object FuncName(sm::exec::Interpreter& intp, \
+        sm::Function* thisFn, const sm::Object& self, \
+        const sm::ObjectVec_t& args)
+
+#define smInitBox \
+    Box_t* thisBox = new Box_t(); \
+    thisBox->boxName = nBox;
+
+#define smReturnBox \
+    return thisBox;
+
+#define smClass(Name) \
+    { using namespace Name##Class; \
+    Class*& thisClass = c##Name;\
+    unsigned thisClassName = runtime::genOrdinaryId(rt, #Name); \
+    thisClass = new Class; \
+    thisClass->boxName = thisBox->boxName; \
+    thisClass->name = thisClassName; \
+    thisClass->objects = {
+
+#define smEnd \
+    }; \
+        Object clazz; \
+        clazz.type = ObjectType::CLASS; \
+        clazz.c_ptr = thisClass; \
+        thisBox->objects[thisClassName] = std::move(clazz); \
+    }
+
+
+#define smLambda [] (sm::exec::Interpreter& intp, \
+    sm::Function* thisFn, const sm::Object& self, \
+    const sm::ObjectVec_t& args) -> sm::Object
+
+#define smVar(Name, ...) \
+    setVar(rt, thisBox, #Name, (__VA_ARGS__));
+
+#define smFunc(Name, ...) \
+    setNativeFn(rt, thisBox, #Name, (__VA_ARGS__));
+
+#define smOperator(Op, ...) \
+    setNativeOp(rt, thisBox, Op, (__VA_ARGS__));
+
+#define smAddFunc(Name) \
+    setVar(rt, thisBox, #Name, Name);
+
+#define smAddOperator(Name, Op) \
+    setVar(rt, thisBox, Op, Name);
+
+#define smMethod(MethodName, ...) \
+    { runtime::genOrdinaryId(rt, #MethodName), genFunc(rt, thisBox, \
+    #MethodName, (__VA_ARGS__)) },
+
+#define smOpMethod(Operator, ...) \
+    { runtime::operatorId(Operator), genOpFunc(rt, thisBox, \
+    Operator, (__VA_ARGS__)) },
+
+#define smSetData(Type) \
+    setData<Type>(intp, self)
+
+#define smGetData(Type) \
+    getData<Type>(intp, self)
+
+#define smHas(Id) \
+    (self.i_ptr->objects.find(Id) != self.i_ptr->objects.end())
+
+#define smRef(Id) \
+    (self.i_ptr->objects[Id])
 
 namespace sm {
     namespace lib {
         using InitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
         using LibDict_t = Map_t<string_t, InitFunc_t>;
 
-        _LibDecl(io);
-        _LibDecl(lang);
+        smLibDecl(io);
+        smLibDecl(lang);
 
         const LibDict_t libs = {
-            _LibTuple("std.io!", io),
-            _LibTuple("std.lang!", lang),
+            smLibTuple("std.io!", io),
+            smLibTuple("std.lang!", lang),
         };
 
         inline unsigned id(runtime::Runtime_t& rt, const string_t& str){
             return runtime::genOrdinaryId(rt, str);
+        }
+
+        template <typename Tp>
+        inline Tp*& data(const Object& obj){
+            return reinterpret_cast<Tp*&>(obj.i_ptr->objects[runtime::dataId].ptr);
+        }
+
+        template <typename Tp>
+        inline Tp*& getData(exec::Interpreter& intp, const Object& obj){
+            Tp*& ptrRef = data<Tp>(obj);
+            if(!ptrRef){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("native data not initialized before use in "
+                    "object ") + runtime::errorString(intp, obj));
+            }
+            return ptrRef;
+        }
+
+        template <typename Tp>
+        inline Tp*& setData(exec::Interpreter& intp, const Object& obj){
+            Tp*& ptrRef = data<Tp>(obj);
+            if(ptrRef){
+                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    std::string("initializing native data twice in "
+                    "object ") + runtime::errorString(intp, obj));
+            }
+            return ptrRef;
         }
 
         inline void setNativeFn(runtime::Runtime_t& rt, Box_t* box,
@@ -93,18 +173,6 @@ namespace sm {
                 const string_t& name, Object obj){
             unsigned varName = runtime::genOrdinaryId(rt, name);
             box->objects[varName] = std::move(obj);
-        }
-
-        inline Class* setClass(runtime::Runtime_t& rt, Box_t* box,
-                const string_t& name, ObjectDict_t&& dict){
-            unsigned className = runtime::genOrdinaryId(rt, name);
-            Object clazz;
-            clazz.type = ObjectType::CLASS;
-            clazz.c_ptr = new Class;
-            clazz.c_ptr->boxName = box->boxName;
-            clazz.c_ptr->name = className;
-            clazz.c_ptr->objects = std::move(dict);
-            return (box->objects[className] = std::move(clazz)).c_ptr;
         }
 
         inline Object genFunc(runtime::Runtime_t& rt, Box_t* box,
