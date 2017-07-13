@@ -198,6 +198,7 @@ namespace sm{
 
                 base = clazz.c_ptr;
                 it = base->objects.find(lib::idNew);
+
                 if(it != base->objects.end()){
                     Object newFunc = it->second;
                     if(!runtime::callable(newFunc, self, func_ptr))
@@ -252,10 +253,10 @@ namespace sm{
                     if(is_vararg){
                         Object ls;
                         if(n_args > n_expected){
-                            ls = makeList(rt->gc, false,
+                            ls = makeList(*this, false,
                                 ObjectVec_t(args.begin() + n_expected, args.end()));
                         } else {
-                            ls = makeList(rt->gc, false);
+                            ls = makeList(*this, false);
                         }
                         (*dict)[std::get<0>(fn->arguments[n_expected])] = std::move(ls);
                     }
