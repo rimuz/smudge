@@ -27,6 +27,10 @@ namespace sm {
     namespace lib {
         extern oid_t idNew;
         extern oid_t idDelete;
+        extern oid_t idToString;
+        extern oid_t idHash;
+        extern oid_t idIterate;
+        extern oid_t idNext;
     }
 
     namespace compile {

@@ -36,8 +36,7 @@ using namespace sm::compile;
 
 namespace sm{
     namespace lib {
-        oid_t idNew;
-        oid_t idDelete;
+        oid_t idNew, idDelete, idToString, idHash, idIterate, idNext;
     }
 
     namespace compile{
@@ -140,6 +139,21 @@ namespace sm{
                 src->sourceName = filePath;
                 std::ifstream file(filePath);
                 return file ? src : nullptr;
+            }
+
+            void Compiler::start(){
+                // setting OIDs
+                lib::idNew = runtime::genOrdinaryId(*_rt, "new");
+                lib::idDelete = runtime::genOrdinaryId(*_rt, "delete");
+                lib::idToString = runtime::genOrdinaryId(*_rt, "to_string");
+                lib::idHash = runtime::genOrdinaryId(*_rt, "hash");
+                lib::idIterate = runtime::genOrdinaryId(*_rt, "iterate");
+                lib::idNext = runtime::genOrdinaryId(*_rt, "next");
+            }
+
+            void Compiler::end(){
+                // import box std.lang
+                _rt->boxes.push_back(lib::import_lang(*_rt, _rt->boxNames.size()-1));
             }
 
             void Compiler::code(string_t name, string_t* code){
@@ -439,15 +453,6 @@ namespace sm{
                         break;
                     }
                 }
-            }
-
-            void Compiler::finish(){
-                // setting OIDs
-                lib::idNew = runtime::genOrdinaryId(*_rt, "new");
-                lib::idDelete = runtime::genOrdinaryId(*_rt, "delete");
-
-                // import box std.lang
-                _rt->boxes.push_back(lib::import_lang(*_rt, _rt->boxNames.size()-1));
             }
 
             void expect_next(Compiler& cp, CompilerStates& states,

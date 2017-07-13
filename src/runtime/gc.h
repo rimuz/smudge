@@ -20,12 +20,10 @@
 #ifndef _SM__RUNTIME__GC_H
 #define _SM__RUNTIME__GC_H
 
-#define _SM_GC_DEFAULT_THRESHOLD 80
-
 #include <atomic>
 #include <mutex>
-#include <vector>
 #include <chrono>
+#include <list>
 
 #include "typedefs.h"
 #include "runtime/Object.h"
@@ -33,8 +31,6 @@
 #include "compile/v1/Compiler.h"
 
 namespace sm{
-    class Instance;
-
     namespace exec{
         class Interpreter;
         using ThreadVec_t = std::vector<Interpreter*>;
@@ -55,20 +51,20 @@ namespace sm{
             void collect();
 
         public:
+            InstanceList_t instances, tempInstances;
             unsigned allocs, threshold;
-            std::vector <Instance*> pointers;
-            std::vector <Instance*> temp;
-            std::mutex vecMutex;
+            bool gcWorking;
 
             GarbageCollector(Runtime_t* rt) : _rt(rt), allocs(0),
-                threshold(_SM_GC_DEFAULT_THRESHOLD){};
+                threshold(garbageCollectorThreshold), gcWorking(false) {};
+
+            Object instance(exec::Interpreter& _intp,
+                    Class* _base, bool temp) noexcept;
 
             GarbageCollector(const GarbageCollector&) = delete;
             GarbageCollector(GarbageCollector&&) = delete;
             GarbageCollector& operator=(const GarbageCollector&) = delete;
             GarbageCollector& operator=(GarbageCollector&&) = delete;
-
-            //TODO: quando possibile fare una funzione che converte un temp object in object vero e proprio senza farlo cancellare dalla garbage.
 
             ~GarbageCollector() = default;
         };

@@ -226,8 +226,9 @@ namespace sm {
                 void code(string_t name, string_t* code);
 
                 void path(const string_t& path);
+                void start();
+                void end();
                 bool next();
-                void finish();
 
                 /*
                  * It doesn't delete all data instanced because

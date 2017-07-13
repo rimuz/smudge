@@ -34,7 +34,7 @@ using namespace sm::compile;
 
 namespace sm{
     namespace lib {
-        _LibDecl(lang);
+        smLibDecl(lang);
     }
 
     namespace compile{
@@ -411,7 +411,7 @@ namespace sm{
 
                         if(states.currClass && states.isClassStatement){
                             goto CloseClass; // see below
-                        } 
+                        }
 
                         states.output = &_rt->code;
                         states.isStatementEmpty = true;

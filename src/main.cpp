@@ -70,6 +70,8 @@ int main(int argc, char** argv){
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
 
+    rt.threads.emplace_back(&intp);
+
     int firstArg = argc;
     bool printPaths = false;
 
@@ -142,8 +144,9 @@ int main(int argc, char** argv){
         }
     }
 
+    cp.start();
     while(cp.next()); // compile
-    cp.finish();
+    cp.end();
 
     if(rt.showAll){
         runtime::test::print(rt);
@@ -191,7 +194,7 @@ int main(int argc, char** argv){
             for(int i = 0; i != n_args; ++i){
                 arguments.push_back(makeString(array[i]));
             }
-            args = makeList(rt.gc, false, std::move(arguments));
+            args = makeList(intp, false, std::move(arguments));
         }
 
         if(it == rt.boxes[0]->objects.end()){

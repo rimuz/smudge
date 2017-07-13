@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "exec/interpreter/defines.h"
+#include "compile/defs.h"
 #include "runtime/casts.h"
 #include "runtime/Object.h"
 #include "runtime/id.h"
@@ -30,8 +31,6 @@
 namespace sm{
     namespace lib {
         extern Class* cString;
-        extern oid_t idIterate;
-        extern oid_t idNext;
     }
 
     namespace exec{
@@ -351,8 +350,8 @@ namespace sm{
             if(ref.type != ObjectType::INTEGER){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     std::string("expected integer inside super call "
-                        "(found '") + runtime::errorString(intp, ref)
-                        + "' instead)");
+                        "(found ") + runtime::errorString(intp, ref)
+                        + " instead)");
             } else if(ref.i < 0){
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     "super call's integer must be greater than zero");
@@ -372,7 +371,7 @@ namespace sm{
                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                     std::string("class '")
                     + intp.rt->nameFromId(back.thisObject.i_ptr->base->name)
-                    + "' has not super n." + std::to_string(super) + "");
+                    + "' has not super n." + std::to_string(super));
             }
 
             ObjectDict_t::iterator it;

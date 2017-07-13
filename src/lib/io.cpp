@@ -41,357 +41,321 @@ namespace sm{
             BEG, CURR, END,
         };
 
-        _NativeFunc(print);
-        _NativeFunc(println);
-        _NativeFunc(e_print);
-        _NativeFunc(e_println);
-        _NativeFunc(line);
-        _NativeFunc(i_int);
-        _NativeFunc(i_float);
-        _NativeFunc(get);
-        _NativeFunc(getc);
-        _NativeFunc(next);
-        _NativeFunc(nextOp);
-        _NativeFunc(open);
-
         namespace FileStreamClass {
-            class FileStream : public Instance {
-            public:
+            struct FSData {
                 std::fstream stream;
                 unsigned flags;
-
-                FileStream(runtime::GarbageCollector& gc, bool temp, const char* filepath, unsigned _flags);
-                _NativeMethod(close, 0);
-                _NativeMethod(get, 0);
-                _NativeMethod(getc, 0);
-                _NativeMethod(line, 0);
-                _NativeMethod(peek, 0);
-                _NativeMethod(read, 1);
-                _NativeMethod(read_all, 0);
-                _NativeMethod(write, 1);
-                _NativeMethod(count, 0);
-                _NativeMethod(seek, 2);
-                _NativeMethod(tell, 0);
-                _NativeMethod(good, 0);
             };
-
-            _NativeFunc(close);
-            _NativeFunc(get);
-            _NativeFunc(getc);
-            _NativeFunc(line);
-            _NativeFunc(peek);
-            _NativeFunc(read);
-            _NativeFunc(read_all);
-            _NativeFunc(write);
-            _NativeFunc(count);
-            _NativeFunc(skip);
-            _NativeFunc(seek);
-            _NativeFunc(tell);
-            _NativeFunc(good);
         }
 
         Class* cFileStream;
 
-        _LibDecl(io) {
-            Class* box = new Class;
-            box->boxName = nBox;
-
-            setNativeFn(rt, box, "print", print);
-            setNativeFn(rt, box, "println", println);
-            setNativeFn(rt, box, "e_print", e_print);
-            setNativeFn(rt, box, "e_println", e_println);
-            setNativeFn(rt, box, "line", line);
-            setNativeFn(rt, box, "int", i_int);
-            setNativeFn(rt, box, "float", i_float);
-            setNativeFn(rt, box, "get", get);
-            setNativeFn(rt, box, "getc", getc);
-            setNativeFn(rt, box, "next", next);
-
-            setNativeFn(rt, box, "open", open);
-
-            setNativeOp(rt, box, parse::TT_LEFT_SHIFT, print);
-            setNativeOp(rt, box, parse::TT_RIGHT_SHIFT, nextOp);
-
-            cFileStream = setClass(rt, box, "FileStream", {
-                _MethodTuple(FileStreamClass, close),
-                _MethodTuple(FileStreamClass, get),
-                _MethodTuple(FileStreamClass, getc),
-                _MethodTuple(FileStreamClass, line),
-                _MethodTuple(FileStreamClass, peek),
-                _MethodTuple(FileStreamClass, read),
-                _MethodTuple(FileStreamClass, read_all),
-                _MethodTuple(FileStreamClass, write),
-                _MethodTuple(FileStreamClass, count),
-                _MethodTuple(FileStreamClass, seek),
-                _MethodTuple(FileStreamClass, tell),
-                _MethodTuple(FileStreamClass, good),
-                _OpTuple(FileStreamClass, parse::TT_LEFT_SHIFT, write),
-            });
-
-            setVar(rt, box, "ln", makeString("\n"));
-            setVar(rt, box, "RW", makeInteger(RW));
-            setVar(rt, box, "READ", makeInteger(READ));
-            setVar(rt, box, "WRITE", makeInteger(WRITE));
-            setVar(rt, box, "BIN", makeInteger(BINARY));
-            setVar(rt, box, "TRUNC", makeInteger(TRUNC));
-            setVar(rt, box, "APP", makeInteger(APPEND));
-            setVar(rt, box, "BEG", makeInteger(BEG));
-            setVar(rt, box, "CURR", makeInteger(CURR));
-            setVar(rt, box, "END", makeInteger(END));
-            return box;
-        }
-
-        _NativeFunc(print){
-            for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(intp, *it);
+        smNativeFunc(print){
+            for(const Object& obj : args){
+                Object str = runtime::implicitToString(intp, obj);
                 std::cout << str.s_ptr->str;
             }
             return makeBox(intp.rt->boxes[thisFn->boxName]);
         }
 
-        _NativeFunc(println){
-            for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(intp, *it);
-                std::cout << str.s_ptr->str;
-            }
-            std::cout << '\n';
-            return makeBox(intp.rt->boxes[thisFn->boxName]);
-        }
+        smLibDecl(io){
+            smInitBox
 
-        _NativeFunc(e_print){
-            for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(intp, *it);
-                std::cerr << str.s_ptr->str;
-            }
-            return makeBox(intp.rt->boxes[thisFn->boxName]);
-        }
+            smVar(ln, makeString("\n"));
+            smVar(RW, makeInteger(RW));
+            smVar(READ, makeInteger(READ));
+            smVar(WRITE, makeInteger(WRITE));
+            smVar(BIN, makeInteger(BINARY));
+            smVar(TRUNC, makeInteger(TRUNC));
+            smVar(APP, makeInteger(APPEND));
+            smVar(BEG, makeInteger(BEG));
+            smVar(CURR, makeInteger(CURR));
+            smVar(END, makeInteger(END));
 
-        _NativeFunc(e_println){
-            for(ObjectVec_t::const_iterator it = args.begin(); it != args.end(); ++it){
-                Object str = runtime::implicitToString(intp, *it);
-                std::cerr << str.s_ptr->str;
-            }
-            std::cerr << '\n';
-            return makeBox(intp.rt->boxes[thisFn->boxName]);
-        }
+            smFunc(print, print);
+            smOperator(parse::TT_LEFT_SHIFT, print);
 
-        _NativeFunc(line){
-            Object obj = makeString();
-            String& line = obj.s_ptr->str;
-            int ch;
+            smFunc(println, smLambda {
+                for(const Object& obj : args){
+                    Object str = runtime::implicitToString(intp, obj);
+                    std::cout << str.s_ptr->str;
+                }
+                std::cout << '\n';
+                return makeBox(intp.rt->boxes[thisFn->boxName]);
+            })
 
-            while(1) {
-                ch = std::getchar();
-                if(ch == '\n')
+            smFunc(e_print, smLambda {
+                for(const Object& obj : args){
+                    Object str = runtime::implicitToString(intp, obj);
+                    std::cerr << str.s_ptr->str;
+                }
+                return makeBox(intp.rt->boxes[thisFn->boxName]);
+            })
+
+            smFunc(e_println, smLambda {
+                for(const Object& obj : args){
+                    Object str = runtime::implicitToString(intp, obj);
+                    std::cerr << str.s_ptr->str;
+                }
+                std::cerr << '\n';
+                return makeBox(intp.rt->boxes[thisFn->boxName]);
+            })
+
+            smFunc(line, smLambda {
+                Object obj = makeString();
+                String& line = obj.s_ptr->str;
+                int ch;
+
+                while(1) {
+                    ch = std::getchar();
+                    if(ch == '\n')
+                        return obj;
+                    else if(ch == EOF)
+                        return Object();
+                    line.push_back(static_cast<char>(ch));
+                }
+
+                return Object();
+            })
+
+            smFunc(i_int, smLambda {
+                std::string input;
+                std::getline(std::cin, input);
+                try {
+                    Object obj;
+                    obj.type = ObjectType::INTEGER;
+                    obj.i = std::stol(input);
                     return obj;
-                else if(ch == EOF)
+                } catch(...){
                     return Object();
-                line.push_back(static_cast<char>(ch));
-            }
+                }
+            })
 
-            return Object();
-        }
-
-        _NativeFunc(i_int){
-            std::string input;
-            std::getline(std::cin, input);
-            try {
-                Object obj;
-                obj.type = ObjectType::INTEGER;
-                obj.i = std::stol(input);
-                return obj;
-            } catch(...){
-                return Object();
-            }
-        }
-
-        _NativeFunc(i_float){
-            std::string input;
-            std::getline(std::cin, input);
-            try {
-                Object obj;
-                obj.type = ObjectType::FLOAT;
-                obj.f = std::stod(input);
-                return obj;
-            } catch(...){
-                return Object();
-            }
-        }
-
-        _NativeFunc(get){
-            int ch = std::getchar();
-            if(ch == EOF)
-                return Object();
-            char cch = static_cast<char>(ch);
-            return makeString(&cch, &cch +1);
-        }
-
-        _NativeFunc(getc){
-            int ch = std::getchar();
-            if(ch == EOF)
-                return makeInteger(-1);
-            return makeInteger(ch);
-        }
-
-        _NativeFunc(next){
-            std::string str;
-            std::cin >> str;
-            return makeString(str.c_str());
-        }
-
-        _NativeFunc(nextOp){
-            std::string str;
-            std::cin >> str;
-            const Object& obj = args[0];
-
-            if(obj.type == ObjectType::WEAK_REFERENCE){
-                obj.refSet(makeString(str.c_str()));
-            }
-            return makeBox(intp.rt->boxes[thisFn->boxName]);
-        }
-
-        _NativeFunc(open){
-            unsigned mode = READ | WRITE;
-            if(args.empty())
-                return Object();
-            else if(args.size() > 1) {
-                if(args[1].type != ObjectType::INTEGER)
+            smFunc(i_float, smLambda {
+                std::string input;
+                std::getline(std::cin, input);
+                try {
+                    Object obj;
+                    obj.type = ObjectType::FLOAT;
+                    obj.f = std::stod(input);
+                    return obj;
+                } catch(...){
                     return Object();
-                mode = static_cast<unsigned>(args[1].i);
-            }
-            if(args[0].type != ObjectType::STRING && args[0].type != ObjectType::STRING)
-                return Object();
-            std::string path (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
-            Object instance = makeFastInstance<FileStreamClass::FileStream>(intp.rt->gc, cFileStream, false, path.c_str(), mode);
-            if(!reinterpret_cast<FileStreamClass::FileStream*>(instance.i_ptr)->stream)
-                return Object();
-            return instance;
-        }
-
-        namespace FileStreamClass {
-            _BindMethod(FileStream, close, 0);
-            _BindMethod(FileStream, get, 0);
-            _BindMethod(FileStream, getc, 0);
-            _BindMethod(FileStream, line, 0);
-            _BindMethod(FileStream, peek, 0);
-            _BindMethod(FileStream, read, 1);
-            _BindMethod(FileStream, read_all, 0);
-            _BindMethod(FileStream, write, 1);
-            _BindMethod(FileStream, count, 0);
-            _BindMethod(FileStream, seek, 2);
-            _BindMethod(FileStream, tell, 0);
-            _BindMethod(FileStream, good, 0);
-
-            FileStream::FileStream(runtime::GarbageCollector& gc, bool temp, const char* filepath,
-                    unsigned _flags) : Instance(gc, temp), flags(_flags){
-                std::ios_base::openmode mode;
-
-                if(flags & TRUNC){
-                    mode |= std::ios::trunc;
-                } else if(flags & APPEND){
-                    mode |= std::ios::app;
                 }
+            })
 
-                if(flags & RW){
-                    if(flags & READ){
-                        mode |= std::ios_base::in;
-                    }
-                    if(flags & WRITE){
-                        mode |= std::ios::out;
-                    }
-                } else {
-                    mode |= std::ios::in | std::ios::out;
-                }
-
-                if(flags & BINARY){
-                    mode |= std::ios::binary;
-                }
-
-                stream.open(filepath, mode);
-            }
-
-            _NativeMethod(FileStream::close, 0){
-                stream.close();
-                return Object();
-            }
-
-            _NativeMethod(FileStream::get, 0){
-                int ch = stream.get();
+            smFunc(get, smLambda {
+                int ch = std::getchar();
                 if(ch == EOF)
                     return Object();
                 char cch = static_cast<char>(ch);
                 return makeString(&cch, &cch +1);
-            }
+            })
 
-            _NativeMethod(FileStream::getc, 0){
-                int ch = stream.get();
+            smFunc(getc, smLambda {
+                int ch = std::getchar();
                 if(ch == EOF)
                     return makeInteger(-1);
                 return makeInteger(ch);
-            }
+            })
 
-            _NativeMethod(FileStream::line, 0){
-                if(stream.good()){
-                    std::string str;
-                    std::getline(stream, str);
-                    return makeString(str.c_str());
+            smFunc(next, smLambda {
+                std::string str;
+                std::cin >> str;
+                return makeString(str.c_str());
+            })
+
+            smOperator(parse::TT_RIGHT_SHIFT, smLambda {
+                std::string str;
+                std::cin >> str;
+                const Object& obj = args[0];
+
+                if(obj.type == ObjectType::WEAK_REFERENCE){
+                    obj.refSet(makeString(str.c_str()));
                 }
-                return Object();
-            }
+                return makeBox(intp.rt->boxes[thisFn->boxName]);
+            })
 
-            _NativeMethod(FileStream::peek, 0){
-                return makeInteger(stream.peek());
-            }
+            smFunc(open, smLambda {
+                Object func, objSelf, inst = newInstance(intp, cFileStream, false);
+                Function* f_ptr;
 
-            _NativeMethod(FileStream::read, 1){
-                if(args[0].type != ObjectType::INTEGER || args[0].i < 0)
+                if(!runtime::find<ObjectType::CLASS_INSTANCE>(inst, func, smId("open")))
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("'open' not found in ")
+                        + runtime::errorString(intp, inst));
+                else if(!runtime::callable(func, objSelf = inst, f_ptr))
+                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        std::string("'open' is not a function in ")
+                        + runtime::errorString(intp, inst));
+
+                return intp.callFunction(f_ptr, args, objSelf, true);
+            })
+
+            smClass(FileStream)
+                /*
+                 *
+                 *      8888888888  d8b  888             .d8888b.   888
+                 *      888         Y8P  888            d88P  Y88b  888
+                 *      888              888            Y88b.       888
+                 *      8888888     888  888   .d88b.    "Y888b.    888888  888d888  .d88b.    8888b.   88888b.d88b.
+                 *      888         888  888  d8P  Y8b      "Y88b.  888     888P"   d8P  Y8b      "88b  888 "888 "88b
+                 *      888         888  888  88888888        "888  888     888     88888888  .d888888  888  888  888
+                 *      888         888  888  Y8b.      Y88b  d88P  Y88b.   888     Y8b.      888  888  888  888  888
+                 *      888         888  888   "Y8888    "Y8888P"    "Y888  888      "Y8888   "Y888888  888  888  888
+                 *
+                */
+
+                smMethod(new, smLambda {
+                    smSetData(FSData) = new FSData;
                     return Object();
-                unsigned long sz = args[0].i;
-                Object str = makeString();
-                str.s_ptr->str.resize(sz);
-                stream.read(str.s_ptr->str.data(), sz);
-                return str;
-            }
+                })
 
-            _NativeMethod(FileStream::read_all, 0){
-                Object str = makeString();
-                std::string line;
-                while(1){
-                    str.s_ptr->str.insert(str.s_ptr->str.end(), line.begin(), line.end());
-                    if(!std::getline(stream, line))
-                        break;
-                    str.s_ptr->str.push_back('\n');
-                }
-                return str;
-            }
+                smMethod(delete, smLambda {
+                    delete smGetData(FSData);
+                    return Object();
+                })
 
-            _NativeMethod(FileStream::write, 1){
-                Object str = runtime::implicitToString(intp, args[0]);
-                stream.write(str.s_ptr->str.data(), str.s_ptr->str.size());
-                return self;
-            }
+                smMethod(open, smLambda {
+                    unsigned flags = READ | WRITE;
 
-            _NativeMethod(FileStream::count, 0){
-                return makeInteger(stream.gcount());
-            }
+                    if(args.empty())
+                        return makeFalse();
+                    else if(args.size() > 1) {
+                        if(args[1].type != ObjectType::INTEGER)
+                            return makeFalse();
+                        flags = args[1].i;
+                    }
 
-            _NativeMethod(FileStream::seek, 2){
-                if(args[0].type == ObjectType::INTEGER){
-                    if(args[1].type != ObjectType::INTEGER)
-                        stream.seekg(args[0].i, stream.beg);
-                    else
-                        stream.seekg(args[0].i, args[1].i == BEG ? stream.beg : (args[1].i == CURR ? stream.cur : stream.end));
-                }
-                return Object();
-            }
+                    if(args[0].type != ObjectType::STRING)
+                        return makeFalse();
 
-            _NativeMethod(FileStream::tell, 0){
-                return makeInteger(stream.tellg());
-            }
+                    std::string filepath (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+                    std::ios_base::openmode mode;
 
-            _NativeMethod(FileStream::good, 0){
-                return makeInteger(stream.good());
-            }
+                    if(flags & TRUNC){
+                        mode |= std::ios::trunc;
+                    } else if(flags & APPEND){
+                        mode |= std::ios::app;
+                    }
+
+                    if(flags & RW){
+                        if(flags & READ){
+                            mode |= std::ios_base::in;
+                        }
+                        if(flags & WRITE){
+                            mode |= std::ios::out;
+                        }
+                    } else {
+                        mode |= std::ios::in | std::ios::out;
+                    }
+
+                    if(flags & BINARY){
+                        mode |= std::ios::binary;
+                    }
+
+                    FSData* ptr = smGetData(FSData);
+
+                    ptr->flags = flags;
+                    ptr->stream.open(filepath, mode);
+
+                    if(!ptr->stream)
+                        return makeFalse();
+                    return makeTrue();
+                })
+
+                smMethod(close, smLambda {
+                    smGetData(FSData)->stream.close();
+                    return Object();
+                })
+
+                smMethod(get, smLambda {
+                    int ch = smGetData(FSData)->stream.get();
+                    if(ch == EOF)
+                        return Object();
+                    char cch = static_cast<char>(ch);
+                    return makeString(&cch, &cch +1);
+                })
+
+                smMethod(getc, smLambda {
+                    int ch = smGetData(FSData)->stream.get();
+                    if(ch == EOF)
+                        return makeInteger(-1);
+                    return makeInteger(ch);
+                })
+
+                smMethod(line, smLambda {
+                    FSData* ptr = smGetData(FSData);
+                    if(ptr->stream.good()){
+                        std::string str;
+                        std::getline(ptr->stream, str);
+                        return makeString(str.c_str());
+                    }
+                    return Object();
+                })
+
+                smMethod(peek, smLambda {
+                    return makeInteger(smGetData(FSData)->stream.peek());
+                })
+
+                smMethod(read, smLambda {
+                    if(args.empty() || args[0].type != ObjectType::INTEGER || args[0].i < 0)
+                        return Object();
+                    unsigned long sz = args[0].i;
+                    Object str = makeString();
+                    str.s_ptr->str.resize(sz);
+                    smGetData(FSData)->stream.read(str.s_ptr->str.data(), sz);
+                    return str;
+                })
+
+                smMethod(read_all, smLambda {
+                    Object str = makeString();
+                    std::string line;
+                    FSData* ptr = smGetData(FSData);
+
+                    while(1){
+                        str.s_ptr->str.insert(str.s_ptr->str.end(), line.begin(), line.end());
+                        if(!std::getline(ptr->stream, line))
+                            break;
+                        str.s_ptr->str.push_back('\n');
+                    }
+                    return str;
+                })
+
+                smMethod(write, smLambda {
+                    Object obj = args.empty() ? Object() : args[0];
+                    Object str = runtime::implicitToString(intp, obj);
+                    smGetData(FSData)->stream.write(str.s_ptr->str.data(), str.s_ptr->str.size());
+                    return self;
+                })
+
+                smMethod(count, smLambda {
+                    return makeInteger(smGetData(FSData)->stream.gcount());
+                })
+
+                smMethod(seek, smLambda {
+                    FSData* ptr = smGetData(FSData);
+                    if(!args.empty() && args[0].type == ObjectType::INTEGER){
+                        if(args.size() == 1 || args[1].type != ObjectType::INTEGER)
+                            ptr->stream.seekg(args[0].i, ptr->stream.beg);
+                        else
+                            ptr->stream.seekg(args[0].i, args[1].i == BEG
+                                ? ptr->stream.beg : (args[1].i == CURR ?
+                                ptr->stream.cur : ptr->stream.end));
+                    }
+                    return Object();
+                })
+
+                smMethod(tell, smLambda {
+                    return makeInteger(smGetData(FSData)->stream.tellg());
+                })
+
+                smMethod(good, smLambda {
+                    return makeInteger(smGetData(FSData)->stream.good());
+                })
+            smEnd
+
+            smReturnBox
         }
     }
 }

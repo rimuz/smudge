@@ -41,8 +41,12 @@
 #      define _SM_OS_LINUX
 #   elif defined(__APPLE__) && defined(__MACH__)
 #       define _SM_OS_MACOSX
+#       define _SM_OS_MACOS
 #   elif defined(Macintosh)
 #       define _SM_OS_MACOS9
+#       define _SM_OS_MACOS
+#   elif defined(__unix__)
+#       define _SM_OS_UNIX
 #   else
 #       warning "Compiling for an unsupported Operating System."
 #   endif
@@ -73,6 +77,7 @@ namespace sm{
     using IndexVector_t = std::vector<size_t>;
     using StringCharType_t = char;
 
+    constexpr unsigned garbageCollectorThreshold = 100;
     constexpr unsigned uintMSB = 1u << (8 * sizeof(unsigned) -1);
     constexpr ascii_t fileSeparator =
     #ifdef _SM_OS_WINDOWS
