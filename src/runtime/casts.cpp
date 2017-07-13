@@ -20,11 +20,11 @@
 #include <sstream>
 #include <iomanip>
 
+#include "exec/interpreter/defines.h"
 #include "compile/defs.h"
 #include "runtime/casts.h"
 #include "runtime/gc.h"
 #include "runtime/id.h"
-#include "exec/interpreter/defines.h"
 #include "typedefs.h"
 
 #define _BoxName(Box) (Box.back() == '!' ? Box.substr(0, Box.size()-1) : Box)
@@ -32,7 +32,6 @@
 namespace sm{
     namespace lib{
         extern Class* cString;
-        extern oid_t idToString;
     }
 
     namespace runtime{
