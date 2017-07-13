@@ -31,7 +31,9 @@ namespace sm {
         constexpr unsigned initId = 22;
         constexpr unsigned roundId = 23; // operator ()
         constexpr unsigned squareId = 24; // operator []
-        constexpr unsigned idsStart = 25;
+        constexpr unsigned dataId = 25;
+        // ... all data ids ...
+        constexpr unsigned idsStart = 30;
 
         constexpr unsigned operatorIds[] = {
             // pre operators
