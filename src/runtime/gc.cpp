@@ -282,16 +282,16 @@ namespace sm{
 
         Object GarbageCollector::instance(exec::Interpreter& _intp,
                 Class* _base, bool temp) noexcept {
+            if(++allocs == threshold){
+                allocs = 0;
+                collect();
+            }
+
             InstanceList_t& list = temp ? tempInstances : instances;
             list.emplace_back(_intp, _base, temp);
 
             InstanceList_t::iterator it = std::prev(list.end());
             it->it = it; // this line made my day :D
-
-            if(++allocs > threshold){
-                allocs = 0;
-                collect();
-            }
 
             Object obj;
             obj.type = ObjectType::CLASS_INSTANCE;
@@ -308,7 +308,7 @@ namespace sm{
                  * If curr is in WHITE, it's neither in the GRAY nor in the BLACK
                 */
                 if(curr != white.end()) {
-                    white.erase(curr);
+                    *curr = nullptr; // no erases in the vector
                     gray.emplace_back(ptr);
 
                     for(auto& child : ptr->objects){
@@ -332,6 +332,10 @@ namespace sm{
          *
          * Note: There is no BLACK, because we
          * can be easily avoid to use it.
+         *
+         * Note 2: It won't erase items from WHITE,
+         * It will set them to nullptr
+         *
         */
 
         // TODO Class
@@ -357,14 +361,16 @@ namespace sm{
 
                 for(exec::CallInfo_t& callInfo : intp->funcStack){
                     for(ObjectDict_t* dict : callInfo.codeBlocks){
-                        for(auto& pair : *dict){
-                            whiteToGray(white, gray, pair.second);
+                        if(dict){
+                            for(auto& pair : *dict){
+                                whiteToGray(white, gray, pair.second);
+                            }
                         }
                     }
                 }
             }
 
-            // now grey contains all the root pointers and white the other.
+            // now GRAY contains all the root pointers and white the other.
             while(!gray.empty()){
                 Instance* ptr = gray.back();
                 gray.pop_back();
@@ -374,9 +380,11 @@ namespace sm{
                 }
             }
 
-            // now white contains garbage.
+            // now WHITE contains garbage.
             for(Instance* ptr : white){
-                ptr->free(true);
+                if(ptr){ // ignore 'erased' elements
+                    ptr->free(true);
+                }
             }
 
             // now we've finished! good job!
