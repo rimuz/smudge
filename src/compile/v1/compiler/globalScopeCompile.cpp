@@ -52,7 +52,10 @@ namespace sm{
 
                 switch(it->type){
                     case TT_USING_KW: {
-                        if(states.currClass){
+                        if(states.isLastOperand){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "expected operator before 'import'.");
+                        } else if(states.currClass){
                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                 "cannot import inside a class.");
                         }
@@ -164,7 +167,10 @@ namespace sm{
                     }
 
                     case TT_FUNC_KW:{
-                        if(++it == states.end){
+                        if(states.isLastOperand){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "expected operator before 'func'.");
+                        } else if(++it == states.end){
                             --it;
                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                 "expected identifier, new, delete or overloadable operator before 'eof'.");
@@ -349,6 +355,11 @@ namespace sm{
                     }
 
                     case TT_CLASS_KW: {
+                        if(states.isLastOperand){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "expected operator before 'class'.");
+                        }
+
                         expect_next(*this, states, TT_TEXT);
                         unsigned id = runtime::genOrdinaryId(*_rt, states.it->content);
 
@@ -406,6 +417,11 @@ namespace sm{
 
                     case TT_SEMICOLON:{
                         if(!states.isStatementEmpty){
+                            if(!states.isLastOperand){
+                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    "expected operand before ';'.");
+                            }
+
                             (states.currClass ? _classTemp : _temp).push_back(POP);
                         }
 
@@ -421,6 +437,11 @@ namespace sm{
                     }
 
                     case TT_CURLY_CLOSE:{
+                        if(states.isLastOperand){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "expected operator before '}'.");
+                        }
+
                         if(states.currClass && !states.isClassStatement){
                             CloseClass:
                             if(!_classTemp.empty()){
