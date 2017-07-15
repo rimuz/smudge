@@ -211,7 +211,6 @@ namespace sm{
 
                 // pushing the newly created instance on the stack.
                 exprStack.emplace_back(std::move(self));
-                return;
             } else if(fn->flags & FF_NATIVE){
                 Object ret = (*fn->native_ptr)(*this, fn, self, args);
                 if(ret.type == ObjectType::WEAK_REFERENCE){
