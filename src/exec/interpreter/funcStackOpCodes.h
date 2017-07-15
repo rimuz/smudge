@@ -32,16 +32,16 @@ namespace sm{
         }
 
         _OcFunc(StartBlock){
-            intp.funcStack.back().codeBlocks.emplace_back(nullptr);
             ++addr;
+            intp.funcStack.back().codeBlocks.emplace_back(nullptr);
         }
 
         _OcFunc(EndBlock){
+            ++addr;
             ObjectDict_t* ptr = intp.funcStack.back().codeBlocks.back();
             if(ptr)
                 delete ptr;
             intp.funcStack.back().codeBlocks.pop_back();
-            ++addr;
         }
 
         _OcFunc(Return){
@@ -70,6 +70,8 @@ namespace sm{
 
         _OcFunc(EndBlocks){
             unsigned param = (*++addr << 8) | *++addr;
+            ++addr;
+
             ObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
             ObjectDictVec_t::iterator end = vec.end();
             ObjectDictVec_t::iterator last = end - param;
@@ -80,7 +82,6 @@ namespace sm{
                     delete ptr;
                 vec.pop_back();
             }
-            ++addr;
         }
 
         _OcFunc(Try){
