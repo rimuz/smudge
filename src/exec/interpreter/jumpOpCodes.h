@@ -41,24 +41,24 @@ namespace sm{
             _OcPopStore(tos);
             _OcValue(tos);
 
-            if(!runtime::implicitToBool(tos)){
-                addr += 3;
+            if(runtime::implicitToBool(tos)){
+                addr += (*++addr << 8) | *++addr;
                 return;
             }
 
-            addr += (*++addr << 8) | *++addr;
+            addr += 3;
         }
 
         _OcFunc(JumpIfB){
             _OcPopStore(tos);
             _OcValue(tos);
 
-            if(!runtime::implicitToBool(tos)){
-                addr += 3;
+            if(runtime::implicitToBool(tos)){
+                addr -= (*++addr << 8) | *++addr;
                 return;
             }
 
-            addr -= (*++addr << 8) | *++addr;
+            addr += 3;
         }
 
         _OcFunc(JumpIfNotF){
