@@ -276,6 +276,7 @@ namespace sm{
     }
 
     Instance::~Instance(){
+        --intp.rt->gc.allocs;
         if(!base) return;
         ObjectDict_t::iterator it = base->objects.find(lib::idDelete);
         if(it != base->objects.end()){
