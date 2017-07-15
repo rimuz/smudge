@@ -26,16 +26,17 @@
 namespace sm{
     namespace exec{
         _OcFunc(MakeVoidList){
-            intp.exprStack.push_back(makeList(intp, false));
             ++addr;
+            intp.exprStack.push_back(makeList(intp, false));
         }
 
         _OcFunc(MakeVoidTuple){
-            intp.exprStack.push_back(makeTuple(intp, false));
             ++addr;
+            intp.exprStack.push_back(makeTuple(intp, false));
         }
 
         _OcFunc(MakeRef){
+            ++addr;
             Object& tos = intp.exprStack.back();
             if(tos.type == ObjectType::WEAK_REFERENCE
                     || tos.type == ObjectType::STRONG_REFERENCE){
@@ -45,25 +46,30 @@ namespace sm{
                     std::string("cannot get reference from temporary object ")
                     + runtime::errorString(intp, tos));
             }
-            ++addr;
         }
 
         _OcFunc(MakeList){
             unsigned size = (*++addr << 8) | *++addr;
             ++addr;
+
             ObjectVec_t::iterator end = intp.exprStack.end();
             ObjectVec_t::iterator first = end-size;
-            *first = makeList(intp, false, ObjectVec_t(first, end));
-            intp.exprStack.erase(++first, end);
+            ObjectVec_t vec(first, end);
+
+            intp.exprStack.erase(first, end);
+            intp.exprStack.emplace_back(makeList(intp, false, std::move(vec)));
         }
 
         _OcFunc(MakeTuple){
             unsigned size = (*++addr << 8) | *++addr;
             ++addr;
+
             ObjectVec_t::iterator end = intp.exprStack.end();
             ObjectVec_t::iterator first = end-size;
-            *first = makeTuple(intp, false, ObjectVec_t(first, end));
-            intp.exprStack.erase(++first, end);
+            ObjectVec_t vec(first, end);
+            
+            intp.exprStack.erase(first, end);
+            intp.exprStack.emplace_back(makeTuple(intp, false, std::move(vec)));
         }
 
         _OcFunc(MakeSuper){
