@@ -35,41 +35,41 @@ namespace sm{
 
     namespace exec{
         _OcFunc(Pop){
-            intp.exprStack.pop_back();
             ++addr;
+            intp.exprStack.pop_back();
         }
 
         _OcFunc(PushInt0){
+            ++addr;
             Object obj;
             obj.type = ObjectType::INTEGER;
             obj.i = 0;
             intp.exprStack.emplace_back(obj);
-            ++addr;
         }
 
         _OcFunc(PushInt1){
+            ++addr;
             Object obj;
             obj.type = ObjectType::INTEGER;
             obj.i = 1;
             intp.exprStack.emplace_back(obj);
-            ++addr;
         }
 
         _OcFunc(PushNull){
-            intp.exprStack.emplace_back(Object());
             ++addr;
+            intp.exprStack.emplace_back(Object());
         }
 
         _OcFunc(Dup){
-            intp.exprStack.emplace_back(intp.exprStack.back());
             ++addr;
+            intp.exprStack.emplace_back(intp.exprStack.back());
         }
 
         _OcFunc(Dup1){
+            ++addr;
             size_t sz = intp.exprStack.size();
             intp.exprStack.emplace_back(std::move(intp.exprStack[sz-1]));
             intp.exprStack[sz-1] = intp.exprStack[sz-2];
-            ++addr;
         }
 
         _OcFunc(PushInteger){
@@ -172,26 +172,26 @@ namespace sm{
         }
 
         _OcFunc(PushThis){
-            intp.exprStack.push_back(intp.funcStack.back().thisObject);
             ++addr;
+            intp.exprStack.push_back(intp.funcStack.back().thisObject);
         }
 
         _OcFunc(PushBox){
+            ++addr;
             Object box;
             box.type = ObjectType::BOX;
             box.c_ptr = intp.funcStack.back().box;
             intp.exprStack.push_back(std::move(box));
-            ++addr;
         }
 
         _OcFunc(PushClass){
+            ++addr;
             if(intp.funcStack.back().thisObject.type == ObjectType::CLASS_INSTANCE){
                 Object clazz;
                 clazz.type = ObjectType::CLASS;
                 clazz.c_ptr = intp.funcStack.back().thisObject.i_ptr->base;
                 intp.exprStack.push_back(std::move(clazz));
             }
-            ++addr;
         }
 
         _OcFunc(Find){
@@ -316,6 +316,7 @@ namespace sm{
         }
 
         _OcFunc(ItNext){
+            ++addr;
             Object tos = intp.exprStack.back();
             _OcValue(tos);
 
@@ -337,7 +338,6 @@ namespace sm{
             }
 
             intp.makeCall(f_ptr, {}, tos);
-            ++addr;
         }
 
         _OcFunc(FindSuper){
