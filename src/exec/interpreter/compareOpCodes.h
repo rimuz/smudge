@@ -121,6 +121,7 @@
 namespace sm{
     namespace exec{
         _OcFunc(IsNull){
+            ++addr;
             _OcPopStore(tos);
             _OcValue(tos);
 
@@ -129,7 +130,6 @@ namespace sm{
             obj.i = tos.type == ObjectType::NONE;
 
             intp.exprStack.emplace_back(std::move(obj));
-            ++addr;
         }
 
         _OcFunc(Equal){
