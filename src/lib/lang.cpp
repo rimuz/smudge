@@ -954,7 +954,6 @@ namespace sm{
 
                 smMethod(count, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
                     return makeInteger(std::count_if(vec.begin(), vec.end(),
                         runtime::Equal(intp, args.empty() ? Object() : args[0])));
                 })
