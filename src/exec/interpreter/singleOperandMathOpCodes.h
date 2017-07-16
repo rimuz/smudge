@@ -249,6 +249,11 @@ namespace sm{
         }
 
         _OcFunc(Inc){
+            Object& back = intp.exprStack.back();
+            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
+                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    "cannot apply 'operator++' to temporary object (non-reference)");
+
             ByteCode_t::const_iterator dummy;
             Dup(intp, addr);
             PushInt1(intp, dummy);
@@ -257,6 +262,11 @@ namespace sm{
         }
 
         _OcFunc(Dec){
+            Object& back = intp.exprStack.back();
+            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
+                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    "cannot apply 'operator--' to temporary object (non-reference)");
+
             ByteCode_t::const_iterator dummy;
             Dup(intp, addr);
             PushInt1(intp, dummy);
@@ -265,6 +275,11 @@ namespace sm{
         }
 
         _OcFunc(PostInc){
+            Object& back = intp.exprStack.back();
+            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
+                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    "cannot apply 'operator++' to temporary object (non-reference)");
+                    
             Object copy = intp.exprStack.back();
             ByteCode_t::const_iterator dummy;
 
@@ -277,6 +292,11 @@ namespace sm{
         }
 
         _OcFunc(PostDec){
+            Object& back = intp.exprStack.back();
+            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
+                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    "cannot apply 'operator--' to temporary object (non-reference)");
+
             Object copy = intp.exprStack.back();
             ByteCode_t::const_iterator dummy;
 
