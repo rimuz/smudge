@@ -85,7 +85,7 @@ namespace sm{
 
         if(errType == error::FATAL_ERROR || errType == error::SYNTAX_ERROR || errType == error::ERROR
                 || errType == error::BUG){
-            runtime::Runtime_t::exit(1);
+            std::exit(1);
         }
     }
 
@@ -94,7 +94,7 @@ namespace sm{
 
         if(errType == error::FATAL_ERROR || errType == error::SYNTAX_ERROR || errType == error::ERROR
                 || errType == error::BUG){
-            runtime::Runtime_t::exit(1);
+            std::exit(1);
         }
     }
 
@@ -116,7 +116,7 @@ namespace sm{
 
         if(errType == error::FATAL_ERROR || errType == error::SYNTAX_ERROR || errType == error::ERROR
                 || errType == error::BUG){
-            runtime::Runtime_t::exit(1);
+            std::exit(1);
         }
     }
 }
