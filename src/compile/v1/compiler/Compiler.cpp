@@ -438,7 +438,7 @@ namespace sm{
                         break;
                     } else if(it->type == TT_COMMA){
                         out.insert(out.end(), {
-                            global ? DEFINE_GLOBAL_NULL_VAR : DEFINE_NULL_VAR,
+                            bc(global ? DEFINE_GLOBAL_NULL_VAR : DEFINE_NULL_VAR),
                             bc(idx >> 8), bc(idx & 0xFF), POP
                         });
                         states.isLastOperand = true;
@@ -446,7 +446,7 @@ namespace sm{
                     } else {
                         --it;
                         out.insert(out.end(), {
-                            global ? DEFINE_GLOBAL_NULL_VAR : DEFINE_NULL_VAR,
+                            bc(global ? DEFINE_GLOBAL_NULL_VAR : DEFINE_NULL_VAR),
                             bc(idx >> 8), bc(idx & 0xFF)
                         });
                         states.isLastOperand = true;
