@@ -302,7 +302,7 @@ namespace sm{
                                         bool isGlobal = back.parType == GLOBAL_VAR_DECL;
 
                                         states.output->insert(states.output->end(), {
-                                            isGlobal ? DEFINE_GLOBAL_VAR : DEFINE_VAR,
+                                            bc(isGlobal ? DEFINE_GLOBAL_VAR : DEFINE_VAR),
                                             bc(idx >> 8), bc(idx & 0xFF)
                                         });
                                         states.parStack.pop_back();
