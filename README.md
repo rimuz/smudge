@@ -12,7 +12,7 @@ follow these steps:
 
 First, clone the sources in your current working directory (see it with `pwd`):
 ```
-git clone "https://github.com/smudgelang/smudge.git"
+git clone https://github.com/smudgelang/smudge
 ```
 Then, go to the new directory `smudge`
 ```
@@ -26,7 +26,7 @@ make install
 ```
 Note: Command `./configure` can take different options, to see them type `./configure --help`.
 
-Smudge is installed by default in directory `/usr/bin`, while additional libraries should be added inside `/usr/lib/smudge` or `/usr/lib/smudge/VERSION` 
+Smudge is installed by default in directory `/usr/bin`, while additional libraries should be added inside `/usr/lib/smudge` or `/usr/lib/smudge/VERSION`
 
 ### Language overview
 Go to this [link](https://smudgelang.github.io/smudge/) to learn how to program in Smudge.
