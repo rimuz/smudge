@@ -428,14 +428,13 @@ namespace sm{
             }
         }
 
-        void Runtime_t::exit(int returnValue) noexcept{
+        void Runtime_t::exit() noexcept{
             if(execStart){
                 std::chrono::steady_clock::time_point execEnd = std::chrono::steady_clock::now();
                 std::cout << ".. Total time: " <<
                 (static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(execEnd - *execStart).count())
                 / 1000.f) << " ms." << std::endl;
             }
-            std::exit(returnValue);
         }
 
         namespace test{
