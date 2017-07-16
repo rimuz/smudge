@@ -156,13 +156,11 @@ namespace sm{
 
             switch(tosX.type){
                 case ObjectType::BOX:
-                    if(runtime::find<ObjectType::BOX>(tosX, func,
-                            runtime::operatorId(parse::TT_SQUARE_OPEN)))
+                    if(runtime::find<ObjectType::BOX>(tosX, func, runtime::squareId))
                         break;
 
                 case ObjectType::CLASS_INSTANCE:
-                    if(runtime::find<ObjectType::CLASS_INSTANCE>(tosX, func,
-                            runtime::operatorId(parse::TT_SQUARE_OPEN))){
+                    if(runtime::find<ObjectType::CLASS_INSTANCE>(tosX, func, runtime::squareId)){
                         self = tosX;
                         break;
                     }
