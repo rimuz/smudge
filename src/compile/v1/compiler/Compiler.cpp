@@ -166,19 +166,15 @@ namespace sm{
 
             void Compiler::_ultimateToken(CompilerStates& states){
                 switch(states.it->type){
-                    case TT_INTEGER:
-                    case TT_FLOAT:
-                    case TT_STRING:
-                    case TT_TRUE_KW:
-                    case TT_FALSE_KW:
-                    case TT_NULL_KW:
+                    case TT_INTEGER:        case TT_FLOAT:
+                    case TT_STRING:         case TT_TRUE_KW:
+                    case TT_FALSE_KW:       case TT_NULL_KW:
                         if(states.isLastOperand){
                             _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
                                 std::string("expected operator before ")
                                     + representation(*states.it) + ".");
                         }
                         states.isLastOperand = true;
-                        states.rvalue = true;
                         break;
 
                     case TT_TEXT:
@@ -187,22 +183,16 @@ namespace sm{
                                 std::string("expected operator before ")
                                     + representation(*states.it) + ".");
                         }
-                        states.rvalue = !states.preOperators.empty();
                         states.isLastOperand = true;
                         break;
 
                     case TT_PRE_INC:
                     case TT_PRE_DEC:
-                        if(!states.preOperators.empty() && states.expectedLvalue)
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
-                                std::string("expected lvalue expression before ")
-                                    + representation(*states.it) + ".");
                         if(states.isLastOperand){
                             _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
                                 std::string("expected operator before ")
                                     + representation(*states.it) + ".");
                         }
-                        states.expectedLvalue = true;
                         break;
 
                     case TT_POST_INC:
@@ -212,12 +202,6 @@ namespace sm{
                                 std::string("expected operand before ")
                                     + representation(*states.it) + ".");
                         }
-                        if(states.rvalue){
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
-                                std::string("expected lvalue expression before ")
-                                    + representation(*states.it) + ".");
-                        }
-                        states.rvalue = true;
                         break;
                 }
 
@@ -252,135 +236,7 @@ namespace sm{
                         _globalScopeCompile(states);
                     } else {
                         _localScopeCompile(states);
-
-                        if(!states.preOperators.empty()){
-                            if(it->type == TT_TEXT){
-                                for(ByteCode_t::const_reverse_iterator cit = states.preOperators.rbegin();
-                                        cit != states.preOperators.rend(); ++cit){
-                                    if(*cit == parse::TT_ROUND_OPEN){
-                                        break;
-                                    }
-
-                                    states.output->push_back(*cit);
-                                    states.preOperators.pop_back();
-                                }
-                                states.expectedLvalue = false;
-                            } else if(states.expectedLvalue){
-                                switch(it->type){
-                                    // if curr is a pre operator
-                                    case TT_PRE_MINUS:
-                                    case TT_PRE_PLUS:
-                                    case TT_PRE_INC:
-                                    case TT_PRE_DEC:
-                                    case TT_DOT:
-                                        break;
-
-                                    case TT_ROUND_OPEN:
-                                    case TT_SQUARE_OPEN:
-                                    case TT_CURLY_OPEN:
-                                        states.preOperators.push_back(parse::TT_ROUND_OPEN);
-                                        break;
-
-                                    case TT_ROUND_CLOSE:
-                                    case TT_SQUARE_CLOSE:
-                                    case TT_CURLY_CLOSE:{
-                                        bool found = false;
-                                        for(ByteCode_t::const_reverse_iterator cit = states.preOperators.rbegin();
-                                                cit != states.preOperators.rend(); ++cit){
-                                            if(*cit == parse::TT_ROUND_OPEN){
-                                                if(found){
-                                                    break;
-                                                } else {
-                                                    found = true;
-                                                    states.preOperators.pop_back();
-                                                }
-                                            } else {
-                                                states.output->push_back(*cit);
-                                                states.preOperators.pop_back();
-                                            }
-                                        }
-                                        states.expectedLvalue = false;
-                                        break;
-                                    }
-
-                                    case TT_COMPL:
-                                    case TT_NOT:
-                                    case TT_INTEGER:
-                                    case TT_FLOAT:
-                                    case TT_STRING:
-                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                            std::string("expected lvalue expression before ")
-                                                + representation(*it) + ".");
-                                        break;
-
-                                    default:
-                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                            std::string("expected operand before ")
-                                                + representation(*it) + ".");
-                                        break;
-                                }
-                            } else {
-                              switch(it->type){
-                                  // if curr is a pre operator
-                                  case TT_COMPL:
-                                  case TT_NOT:
-                                  case TT_PRE_MINUS:
-                                  case TT_PRE_PLUS:
-                                  case TT_PRE_INC:
-                                  case TT_PRE_DEC:
-                                  case TT_DOT:
-                                      break;
-
-                                  case TT_ROUND_OPEN:
-                                  case TT_CURLY_OPEN:
-                                  case TT_SQUARE_OPEN:
-                                      states.preOperators.push_back(parse::TT_ROUND_OPEN);
-                                      break;
-
-                                  case TT_ROUND_CLOSE:
-                                  case TT_SQUARE_CLOSE:
-                                  case TT_CURLY_CLOSE: {
-                                      bool found = false;
-                                      for(ByteCode_t::const_reverse_iterator cit = states.preOperators.rbegin();
-                                              cit != states.preOperators.rend(); ++cit){
-                                          if(*cit == parse::TT_ROUND_OPEN){
-                                              if(found){
-                                                  break;
-                                              } else {
-                                                  found = true;
-                                                  states.preOperators.pop_back();
-                                              }
-                                          } else {
-                                              states.output->push_back(*cit);
-                                              states.preOperators.pop_back();
-                                          }
-                                      }
-                                      states.expectedLvalue = false;
-                                      break;
-                                  }
-
-                                  case TT_INTEGER:
-                                  case TT_FLOAT:
-                                  case TT_STRING:
-                                      for(ByteCode_t::const_reverse_iterator cit = states.preOperators.rbegin();
-                                              cit != states.preOperators.rend(); ++cit){
-                                          if(*cit == parse::TT_ROUND_OPEN){
-                                              break;
-                                          }
-
-                                          states.output->push_back(*cit);
-                                          states.preOperators.pop_back();
-                                      }
-                                      states.rvalue = false;
-                                      break;
-
-                                  default:
-                                      break;
-                              }
-
-                            }
-                        }
-                    } // end else ( from if(states.parStack.empty()) )
+                    }
 
                     if(++it == states.end){
                         if(states.parStack.empty()){
