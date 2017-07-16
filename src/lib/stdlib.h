@@ -80,24 +80,24 @@
     setVar(rt, thisBox, #Name, (__VA_ARGS__));
 
 #define smFunc(Name, ...) \
-    setNativeFn(rt, thisBox, #Name, (__VA_ARGS__));
+    setNativeFunc(thisBox, runtime::genOrdinaryId(rt, #Name), (__VA_ARGS__));
 
 #define smOperator(Op, ...) \
-    setNativeOp(rt, thisBox, Op, (__VA_ARGS__));
+    setNativeFunc(thisBox, runtime::operatorId(Op), (__VA_ARGS__));
 
-#define smAddFunc(Name) \
-    setVar(rt, thisBox, #Name, Name);
-
-#define smAddOperator(Name, Op) \
-    setVar(rt, thisBox, Op, Name);
+#define smIdFunc(Id, ...) \
+    setNativeFunc(thisBox, Id, (__VA_ARGS__));
 
 #define smMethod(MethodName, ...) \
-    { runtime::genOrdinaryId(rt, #MethodName), genFunc(rt, thisBox, \
-    #MethodName, (__VA_ARGS__)) },
+    { runtime::genOrdinaryId(rt, #MethodName), \
+        genFunc(thisBox, runtime::genOrdinaryId(rt, #MethodName), (__VA_ARGS__)) },
 
 #define smOpMethod(Operator, ...) \
-    { runtime::operatorId(Operator), genOpFunc(rt, thisBox, \
-    Operator, (__VA_ARGS__)) },
+    { runtime::operatorId(Operator), \
+    genFunc(thisBox, runtime::operatorId(Operator), (__VA_ARGS__)) },
+
+#define smIdMethod(Id, ...) \
+    { Id, genFunc(thisBox, Id, (__VA_ARGS__)) },
 
 #define smSetData(Type) \
     setData<Type>(intp, self)
@@ -118,15 +118,13 @@ namespace sm {
 
         smLibDecl(io);
         smLibDecl(lang);
+        smLibDecl(system);
 
         const LibDict_t libs = {
             smLibTuple("std.io!", io),
             smLibTuple("std.lang!", lang),
+            smLibTuple("std.system!", system),
         };
-
-        inline unsigned id(runtime::Runtime_t& rt, const string_t& str){
-            return runtime::genOrdinaryId(rt, str);
-        }
 
         template <typename Tp>
         inline Tp*& data(const Object& obj){
@@ -155,18 +153,8 @@ namespace sm {
             return ptrRef;
         }
 
-        inline void setNativeFn(runtime::Runtime_t& rt, Box_t* box,
-                const string_t& name, NativeFuncPtr_t fn){
-            unsigned fnName = runtime::genOrdinaryId(rt, name);
-            Object func = makeNativeFunction(fnName, box->boxName, fn);
-            box->objects[fnName] = std::move(func);
-        }
-
-        inline void setNativeOp(runtime::Runtime_t& rt, Box_t* box,
-                enum_t op, NativeFuncPtr_t fn){
-            unsigned fnName = runtime::operatorId(op);
-            Object func = makeNativeFunction(fnName, box->boxName, fn);
-            box->objects[fnName] = std::move(func);
+        inline void setNativeFunc(Box_t* box, oid_t id, NativeFuncPtr_t fn){
+            box->objects[id] = makeNativeFunction(id, box->boxName, fn);
         }
 
         inline void setVar(runtime::Runtime_t& rt, Box_t* box,
@@ -175,18 +163,8 @@ namespace sm {
             box->objects[varName] = std::move(obj);
         }
 
-        inline Object genFunc(runtime::Runtime_t& rt, Box_t* box,
-                const string_t& name, NativeFuncPtr_t fn){
-            unsigned fnName = runtime::genOrdinaryId(rt, name);
-            Object func = makeNativeFunction(fnName, box->boxName, fn);
-            return func;
-        }
-
-        inline Object genOpFunc(runtime::Runtime_t& rt, Box_t* box,
-                enum_t op, NativeFuncPtr_t fn){
-            unsigned fnName = runtime::operatorId(op);
-            Object func = makeNativeFunction(fnName, box->boxName, fn);
-            return func;
+        inline Object genFunc(Box_t* box, oid_t id, NativeFuncPtr_t fn){
+            return makeNativeFunction(id, box->boxName, fn);
         }
     }
 }
