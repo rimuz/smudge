@@ -264,10 +264,7 @@ namespace sm{
                     ptr->flags = flags;
                     ptr->stream.open(filepath, mode);
 
-                    if(!ptr->stream){
-                        return makeFalse();
-                    }
-                    return makeTrue();
+                    return makeBool(static_cast<bool>(ptr->stream));
                 })
 
                 smMethod(close, smLambda {
