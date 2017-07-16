@@ -95,6 +95,7 @@ int main(int argc, char** argv){
                 break;
             } else if(!std::strcmp(argv[i], "l") || !std::strcmp(argv[i], "-license")){
                 printLicense();
+                return 0;
             } else if(!std::strcmp(argv[i], "n") || !std::strcmp(argv[i], "-no-stdlib")){
                 rt.noStd = true;
             } else if(!std::strcmp(argv[i], "s") || !std::strcmp(argv[i], "-show-paths")){
@@ -105,9 +106,10 @@ int main(int argc, char** argv){
                 rt.execStart = new std::chrono::steady_clock::time_point(std::chrono::steady_clock::now());
             } else if(!std::strcmp(argv[i], "v") || !std::strcmp(argv[i], "-version")){
                 std::cout << sm_version << std::endl;
-                runtime::Runtime_t::exit(0);
+                return 0;
             } else { // includes also -h & --help cases!
                 printUsage();
+                return 0;
             }
         } else {
             cp.source(argv[i]);
@@ -147,6 +149,8 @@ int main(int argc, char** argv){
     cp.start();
     while(cp.next()); // compile
     cp.end();
+
+    std::atexit(runtime::Runtime_t::exit);
 
     if(rt.showAll){
         runtime::test::print(rt);
@@ -212,11 +216,9 @@ int main(int argc, char** argv){
         Object ret = intp.callFunction(mainFn, {args}, self);
 
         if(ret.type == ObjectType::INTEGER){
-            runtime::Runtime_t::exit(ret.i);
+            return ret.i;
         }
     }
-
-    runtime::Runtime_t::exit(0);
     return 0;
 }
 
@@ -246,10 +248,8 @@ constexpr const char* usage_str =
 
 void printUsage() noexcept{
     std::cout << usage_str << std::endl;
-    runtime::Runtime_t::exit(0);
 }
 
 void printLicense() noexcept{
     std::cout << license_str << std::endl;
-    runtime::Runtime_t::exit(0);
 }
