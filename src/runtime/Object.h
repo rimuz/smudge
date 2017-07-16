@@ -185,7 +185,7 @@ namespace sm{
         RCString(Tp&&... args) : str(std::forward<Tp>(args)...), rcount(1){}
     };
 
-    struct Instance {
+    class Instance {
     private:
         bool deleting = false; // if dtor has been called
     public:
