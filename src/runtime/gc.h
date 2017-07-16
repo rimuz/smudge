@@ -73,7 +73,7 @@ namespace sm{
         class Runtime_t {
         public:
             static std::chrono::steady_clock::time_point* execStart;
-            static void exit(int = 0) noexcept;
+            static void exit() noexcept;
 
             GarbageCollector gc;
             std::mutex globalMutex, threadsDataMutex;
