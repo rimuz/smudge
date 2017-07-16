@@ -40,7 +40,7 @@ namespace sm{
 
 namespace std {
     template <class Tp, class A>
-    class hash <sm::string<Tp, A>> {
+    struct hash <sm::string<Tp, A>> {
     public:
         size_t operator()(const sm::string<Tp, A>&) const;
     };
