@@ -164,7 +164,6 @@ namespace sm {
             using ParStack_t = std::vector<ParType::ParInfo_t>;
 
             struct CompilerStates{
-                ByteCode_t preOperators;
                 ParStack_t parStack;
                 std::vector<ParType::Operator_t> operators;
                 std::vector<unsigned> toImportAll;
