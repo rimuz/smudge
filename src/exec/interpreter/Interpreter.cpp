@@ -157,7 +157,7 @@ namespace sm{
                 const Object& self, bool inlined){
             if(!funcStack.empty() && !inlined){
                 std::cerr << "error: alredy calling function." << std::endl;
-                runtime::Runtime_t::exit(1);
+                std::exit(1);
             }
             makeCall(fn, args, self, inlined);
             return _start();
