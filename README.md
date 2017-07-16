@@ -6,7 +6,6 @@ Smudge is a **very lightweight** and **general-purpose** interpreted language th
 
 With its C-like syntax, Smudge provides a **simple** but **effective** and **powerful** way to write **elegant** and **modular** code. For newbies Smudge could at first glance appear much more complicated than other programming languages like Python, Ruby, Swift or Go, but, after some practise, they will find coding Smudge **natural** and **fun**. C/C++, Java, JavaScript and C# developers, however, will love Smudge from the beginning.
 
-
 ### How to build
 If you are on **Linux**, **Mac** or **Cygwin** (or any other POSIX compliant platform),
 follow these steps:
@@ -19,13 +18,15 @@ Then, go to the new directory `smudge`
 ```
 cd smudge
 ```
-And finally build it with the following commands:
+And finally build and install it with the following commands:
 ```
 ./configure
 make
 make install
 ```
-Command `./configure` can take different options, to see them type `./configure --help`
+Note: Command `./configure` can take different options, to see them type `./configure --help`.
+
+Smudge is installed by default in directory `/usr/bin`, while additional libraries should be added inside `/usr/lib/smudge` or `/usr/lib/smudge/VERSION` 
 
 ### Language overview
 Go to this [link](https://smudgelang.github.io/smudge/) to learn how to program in Smudge.
