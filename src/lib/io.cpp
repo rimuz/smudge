@@ -189,7 +189,10 @@ namespace sm{
                         std::string("'open' is not a function in ")
                         + runtime::errorString(intp, inst));
 
-                return intp.callFunction(f_ptr, args, objSelf, true);
+                Object obj =  intp.callFunction(f_ptr, args, objSelf, true);
+                if(runtime::implicitToBool(obj))
+                    return inst;
+                return Object();
             })
 
             smClass(FileStream)
@@ -207,12 +210,14 @@ namespace sm{
                 */
 
                 smMethod(new, smLambda {
-                    smSetData(FSData) = new FSData;
+                    smSetData(FSData) = new FSData();
                     return Object();
                 })
 
                 smMethod(delete, smLambda {
-                    delete smGetData(FSData);
+                    FSData* ptr = smGetData(FSData);
+                    ptr->stream.close();
+                    delete ptr;
                     return Object();
                 })
 
@@ -259,8 +264,9 @@ namespace sm{
                     ptr->flags = flags;
                     ptr->stream.open(filepath, mode);
 
-                    if(!ptr->stream)
+                    if(!ptr->stream){
                         return makeFalse();
+                    }
                     return makeTrue();
                 })
 
