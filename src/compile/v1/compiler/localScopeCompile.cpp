@@ -616,18 +616,10 @@ namespace sm{
                         break;
                     }
 
-                    case TT_NOT:{
-                        states.preOperators.push_back(NOT);
-                        break;
-                    }
-
-                    case TT_COMPL:{
-                        states.preOperators.push_back(COMPL);
-                        break;
-                    }
-
-                    case TT_PRE_INC:{
-                        states.preOperators.push_back(INC);
+                    case TT_NOT:            case TT_COMPL:
+                    case TT_PRE_INC:        case TT_PRE_DEC:
+                    case TT_PRE_PLUS:       case TT_PRE_MINUS: {
+                        states.operators.emplace_back(it->type, it->i);
                         break;
                     }
 
@@ -638,21 +630,6 @@ namespace sm{
 
                     case TT_POST_DEC:{
                         states.output->push_back(POST_DEC);
-                        break;
-                    }
-
-                    case TT_PRE_DEC: {
-                        states.preOperators.push_back(DEC);
-                        break;
-                    }
-
-                    case TT_PRE_PLUS:{
-                        states.preOperators.push_back(UNARY_PLUS);
-                        break;
-                    }
-
-                    case TT_PRE_MINUS:{
-                        states.preOperators.push_back(UNARY_MINUS);
                         break;
                     }
 
