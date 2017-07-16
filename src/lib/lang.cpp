@@ -598,7 +598,7 @@ namespace sm{
                     return Object();
                 })
 
-                smOpMethod(parse::TT_SQUARE_OPEN, smLambda {
+                smIdMethod(runtime::squareId, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     if(args.empty() || vec.empty() || args[0].type != ObjectType::INTEGER)
                         return Object();
