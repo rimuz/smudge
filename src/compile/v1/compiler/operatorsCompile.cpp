@@ -383,6 +383,24 @@ namespace sm{
                                     case TT_RIGHT_SHIFT:
                                         states.output->push_back(RIGHT_SHIFT);
                                         break;
+                                    case TT_NOT:
+                                        states.output->push_back(NOT);
+                                        break;
+                                    case TT_COMPL:
+                                        states.output->push_back(COMPL);
+                                        break;
+                                    case TT_PRE_INC:
+                                        states.output->push_back(INC);
+                                        break;
+                                    case TT_PRE_DEC:
+                                        states.output->push_back(DEC);
+                                        break;
+                                    case TT_PRE_PLUS:
+                                        states.output->push_back(UNARY_PLUS);
+                                        break;
+                                    case TT_PRE_MINUS:
+                                        states.output->push_back(UNARY_MINUS);
+                                        break;
                                     default:
                                         _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                             std::string("unexpected operator: ")
