@@ -190,9 +190,7 @@ namespace sm{
                         + runtime::errorString(intp, inst));
 
                 Object obj =  intp.callFunction(f_ptr, args, objSelf, true);
-                if(runtime::implicitToBool(obj))
-                    return inst;
-                return Object();
+                return runtime::implicitToBool(obj) ? inst : Object();
             })
 
             smClass(FileStream)
