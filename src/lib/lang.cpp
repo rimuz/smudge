@@ -40,14 +40,14 @@ namespace sm{
 
         namespace ListIteratorClass {
             struct LIData {
-                ObjectVec_t& ref;
+                Object list;
                 unsigned idx;
             };
         }
 
         namespace StringIteratorClass {
             struct SIData {
-                String& ref;
+                Object str;
                 unsigned idx;
             };
         }
@@ -1332,11 +1332,11 @@ namespace sm{
                 */
 
                 smMethod(new, smLambda {
-                    ObjectVec_t* vec;
-                    if(args.empty() || !hasVector(args[0], vec))
+                    ObjectVec_t* dummy;
+                    if(args.empty() || !hasVector(args[0], dummy))
                         return Object();
 
-                    smSetData(LIData) = new LIData { *vec, 0 };
+                    smSetData(LIData) = new LIData { args[0], 0 };
                     return Object();
                 })
 
@@ -1346,12 +1346,13 @@ namespace sm{
                 })
 
                 smMethod(next, smLambda {
-                    LIData* ptr = smGetData(LIData);
-
                     Object obj;
-                    bool check = ptr->idx < ptr->ref.size();
+                    LIData* ptr = smGetData(LIData);
+                    ObjectVec_t& ref = *data<ObjectVec_t>(ptr->list);
+                    bool check = ptr->idx < ref.size();
+
                     if(check){
-                        obj = ptr->ref[ptr->idx++];
+                        obj = ref[ptr->idx++];
                     }
                     return makeTuple(intp, false, {obj, makeBool(check)});
                 })
@@ -1376,7 +1377,7 @@ namespace sm{
                 smMethod(new, smLambda {
                     if(args.empty() || args[0].type != ObjectType::STRING)
                         return Object();
-                    smSetData(SIData) = new SIData { args[0].s_ptr->str, 0 };
+                    smSetData(SIData) = new SIData { args[0], 0 };
                     return Object();
                 })
 
@@ -1387,13 +1388,14 @@ namespace sm{
 
                 smMethod(next, smLambda {
                     SIData* ptr = smGetData(SIData);
+                    String& ref = ptr->str.s_ptr->str;
 
-                    String::const_iterator it = ptr->ref.begin() + ptr->idx;
+                    String::const_iterator it = ref.begin() + ptr->idx;
                     unicode_t ch;
-                    bool check = ptr->idx < ptr->ref.size();
+                    bool check = ptr->idx < ref.size();
 
-                    if(check && String::uNext(it, ptr->ref.end(), ch)){
-                        ptr->idx = it - ptr->ref.begin();
+                    if(check && String::uNext(it, ref.end(), ch)){
+                        ptr->idx = it - ref.begin();
                         return makeTuple(intp, false, {
                             makeString(ch), makeTrue()
                         });
