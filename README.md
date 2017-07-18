@@ -31,6 +31,9 @@ Smudge is installed by default in directory `/usr/bin`, while additional librari
 ### Language overview
 Go to this [link](https://smudgelang.github.io/smudge/) to learn how to program in Smudge.
 
+### On Holiday :D
+I won't commit for the next two weeks: from 7/18 to 8/5
+
 ### Licensing
 Smudge is licensed under the Apache License 2.0. To read the conditions take a look to the file `LICENSE` in the main folder.
 Copyright 2016-2017 Riccardo Musso
