@@ -11,14 +11,14 @@ A string can be instanced by enclosing its content with a couple of quotes
 `'` or double quotes `"`.
 
 ```js
-	/*
-	 * These are all strings:
-	*/
+/*
+ * These are all strings:
+*/
 
-	"string"
-	"Hello, world!"
-	'hel" lo" world'
-	"writin'"
+"string"
+"Hello, world!"
+'hel" lo" world'
+"writin'"
 ```
 
 
