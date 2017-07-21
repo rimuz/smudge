@@ -5,9 +5,22 @@ of strings, lists and tuples.
 ## Class `String`
 Class `String` provides all the methods invokable from a string object.
 This class is very special, because it's the **only one** of the SSL which
-has **not** a matching **native class** (with native I mean a C++ class).
+is **not completely** a Smudge class, because it is an independent type.
+
 A string can be instanced by enclosing its content with a couple of quotes
 `'` or double quotes `"`.
+
+```js
+	/*
+	 * These are all strings:
+	*/
+
+	"string"
+	"Hello, world!"
+	'hel" lo" world'
+	"writin'"
+```
+
 
 ## `String` and **UTF-8**
 Smudge's strings fully support **UTF-8** with some
