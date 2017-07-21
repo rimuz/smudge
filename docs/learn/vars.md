@@ -101,14 +101,14 @@ In this code both `x` and `y` will have value `100`.
 ```js
 var x;
 func main ()
-	x = (var y = 100); // same as x = var y = 100;
+    x = (var y = 100); // same as x = var y = 100;
 ```
 
 In fact, Smudge treats variable **definitions just like assignments**: they will "return" a reference of the variable that can be, in turn, **reassigned**.
 
 ```js
 func main()
-	((var x = 3) = 5) *= 2; // setting x to 10 in an original way.
+    ((var x = 3) = 5) *= 2; // setting x to 10 in an original way.
 ```
 
 This, of course, gives you a lot of **power**.
@@ -133,8 +133,8 @@ var x = 1, y = 2;
  *
 */
 func callF(f, exclude, value = 0) {
-	(exclude ? var x : var y) = value;
-	return f(x, y);
+    (exclude ? var x : var y) = value;
+    return f(x, y);
 }
 ```
 
@@ -151,14 +151,14 @@ func a io.println("a()");
 func b io.println("b()");
 
 func main {
-	// swapping a and b
-	var tmp = a;
-	a = b;
-	b = tmp;
+    // swapping a and b
+    var tmp = a;
+    a = b;
+    b = tmp;
 
-	// calling functions
-	a();
-	b();
+    // calling functions
+    a();
+    b();
 }
 ```
 
