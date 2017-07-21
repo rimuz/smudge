@@ -142,7 +142,7 @@ Note: the one with `?` and `:` is called conditional expression,
 and allows to inline an `if` condition in an expression (Again, too early to understand it at all).
 
 ### Functions, function arguments and variables
-When we declare a **function**, it will be stored in a global variable of the current box. So, we can treat them as normal variables.
+When we declare a **function**, it will be stored in a **global** variable of the current box. So, we can treat them as **normal variables**.
 
 ```js
 import std.io = io;
@@ -167,4 +167,14 @@ OUTPUT:
 ```
 b()
 a()
+```
+
+While **function arguments** are stored in its **local** scope:
+
+```
+import std.io = io;
+
+func main(args){
+    f(args[0], args.slice(1));   
+}
 ```
