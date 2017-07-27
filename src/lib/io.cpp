@@ -118,7 +118,7 @@ namespace sm{
                 return Object();
             })
 
-            smFunc(i_int, smLambda {
+            smFunc(int, smLambda {
                 std::string input;
                 std::getline(std::cin, input);
                 try {
@@ -131,7 +131,7 @@ namespace sm{
                 }
             })
 
-            smFunc(i_float, smLambda {
+            smFunc(float, smLambda {
                 std::string input;
                 std::getline(std::cin, input);
                 try {
@@ -214,6 +214,8 @@ namespace sm{
 
                 smMethod(delete, smLambda {
                     FSData* ptr = smGetData(FSData);
+                    data<FSData>(self) = nullptr;
+
                     ptr->stream.close();
                     delete ptr;
                     return Object();
