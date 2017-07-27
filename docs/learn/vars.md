@@ -171,10 +171,17 @@ a()
 
 While **function arguments** are stored in its **local** scope:
 
-```
+```js
 import std.io = io;
 
-func main(args){
-    f(args[0], args.slice(1));   
+func main(args, iargs){
+    f(args[0], args.slice(1)); // using argument
+    args = 100; // assigning argument
+}
+
+func f(x...){
+    x.push("Hello"); // using argument
+    io.println(x); // using argument
 }
 ```
+
