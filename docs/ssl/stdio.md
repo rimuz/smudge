@@ -1,5 +1,6 @@
 ## The Smudge Programming Language - Documentation of box `std.io`
 Usually imported as `io`, box `std.io` allows you to handle console and file I/O.
+**Note:** in this page I'll often say `character` **instead of `byte`**, so, unless specified don't think about Unicode (differently from the `std.lang` SmudgeDoc).
 
 ### Var `ln`
 A string containing a newline character (`\n`).
