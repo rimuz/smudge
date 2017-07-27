@@ -1,19 +1,22 @@
 ## The Smudge Programming Language - Documentation of box `std.io`
 Usually imported as `io`, box `std.io` allows you to handle console and file I/O.
 
-### Function `print (obj)`
-Prints a text representation of the object given to the `stdout`.
+### Var `ln`
+A string containing a newline character (`\n`).
+
+### Function `print (obj...)`
+Prints a text representation of the objects given to the `stdout`.
 **Returns** the box object.
 
-### Function `println (obj)`
-Prints a text representation of the object given to the `stdout` **and** a newline character (`\n`).
+### Function `println (obj...)`
+Prints a text representation of the objects given to the `stdout` **and** a newline character (`\n`).
 **Returns** the box object.
 
-### Function `e_print (obj)`
-Prints a text representation of the object given to the `stderr`.
+### Function `e_print (obj..)`
+Prints a text representation of the objects given to the `stderr`.
 **Returns** the box object.
 
-### Function `e_println (obj)`
+### Function `e_println (obj...)`
 Prints a text representation of the object given to the `stderr` **and** a newline character (`\n`).
 **Returns** the box object.
 
@@ -43,16 +46,13 @@ Reads a character from `stdin`.
 Inputs a string from `stdin` ending by **newline** character (`\n`), **tab** character (`\t`), or **spaces**.
 **Returns** the string, and never returns `null`.
 
-### Function `operator<< (obj)`
+### Function `<< (obj)`
 Alias for **`print (obj)`**.
 Like **`print (obj)`**, **Returns** the box object.
 
-### Function `operator>> (obj)`
+### Function `>> (obj)`
 Calls function **`next ()`** and sets **`obj`** to its return value. To make the magic work, **`obj`** should be a reference to a valid variable (got through `ref` keyword), otherwise this function won't do anything.
 **Returns** the box object.
-
-### Var `ln`
-A string containing a newline character (`\n`).
 
 ### Function `open (path[, mode = RW])`
 Opens a file stream and creates a **`FileStream`** instance to handle it.
@@ -77,17 +77,29 @@ The implementation of the class is native and consist of an object containing
 an `std::fstream` instanced and open with the given arguments, when an
 instance of class `FileStream` is deleted, the stream is automatically closed.
 
+### Methods `new ()` and `delete ()`
+Implemented natively, will cause errors if called manually.
+
+### Method `open (path[, mode = RW])`
+Opens the file given with a certain mode.
+See [`std.io::open()`] for more, which is better to use.
+**Returns** `false` if the stream couldn't be open, `true` otherwise.
+
 ### Method `close ()`
 Closes the stream.
 **Returns** `null`.
 
+### Method `get ()`
+Reads a character from the stream.
+**Returns** a string containing the character or `null` if `EOF` is reached.
+
 ### Method `getc ()`
-Reads a character from `stdin`.
+Reads a character from the stream.
 **Returns** an integer containing its ASCII value or -1 if `EOF` is reached.
 
 ### Method `line ()`
 Reads a text line from the stream and stores it as a string.
-**Returns** the string or, if the operation fails, returns `null`.
+**Returns** the string or `null` if the operation fails.
 
 ### Method `peek ()`
 Peeks the next character.
@@ -98,8 +110,8 @@ Reads next **`n`** characters from the stream and stores them as a string.
 **Returns** the string or `null` is **`n`** is an invalid parameter.
 
 ### Method `read_all ()`
-Reads all the text from the stream and stores it in a string.
-**Returns** the string: **`read_all()`** never returns `null`.
+Reads all the text from the stream until it finds `EOF` and stores it in a string.
+**Returns** the string. **`read_all()`** never returns `null`.
 
 ### Method `write (obj)`
 Writes a text representation of the object given to the stream at the current
@@ -107,7 +119,7 @@ position.
 **Returns** the **`FileStream`** instance.
 
 ### Method `count ()`
-**Returns** the number of characters read from the last **input** operation in
+**Returns** the number of bytes read from the last **input** operation in
 an integer.
 **Note**: if called after **`peek()`**, **`count()`** will always return 0.
 
