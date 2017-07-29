@@ -99,14 +99,14 @@ namespace sm{
                             if(str.type != ObjectType::STRING){
                                 intp.rt->sources.printStackTrace(intp, error::ERROR,
                                     std::string("method 'to_string()' in ")
-                                    + runtime::errorString(intp, out)
+                                    + runtime::errorString(intp, self)
                                     + " didn't return a string");
                             }
                             return str;
                         } else {
                             intp.rt->sources.printStackTrace(intp, error::ERROR,
                                 std::string("'to_string()' must be a function in ")
-                                + runtime::errorString(intp, out));
+                                + runtime::errorString(intp, in));
                         }
                     }
 
