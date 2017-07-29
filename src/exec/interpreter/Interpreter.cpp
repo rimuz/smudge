@@ -40,6 +40,10 @@
     }
 
 namespace sm{
+    namespace lib{
+        extern Class* cString;
+    }
+
     namespace exec{
         Object Interpreter::_start(){
             while(!funcStack.empty()){
@@ -171,6 +175,11 @@ namespace sm{
             }
 
             if(self.type == ObjectType::INSTANCE_CREATOR){
+                if(self.c_ptr == lib::cString){
+                    exprStack.emplace_back(makeString());
+                    return;
+                }
+
                 std::vector <std::tuple<Object, Function*>> inits;
                 Object clazz = self;
                 ObjectDict_t::iterator it;
