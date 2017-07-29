@@ -114,7 +114,9 @@ namespace sm{
                                 {
                                     size_t match = 0;
                                     for(const string_t& imp : _rt->boxNames){
-                                        if(imp == imported){
+                                        if(imp == imported || (!imp.empty()
+                                                && imp.size() == imported.size()+1
+                                                && std::equal(imp.begin(), imp.end()-1, imported.begin()))){
                                             isAlredyImported = true;
                                             std::get<0>(states.toImport->back()) = match;
                                             break;
