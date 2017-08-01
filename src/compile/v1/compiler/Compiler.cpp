@@ -147,9 +147,13 @@ namespace sm{
             }
 
             error::CodeSource* Compiler::readf(const string_t& filePath){
-                error::CodeSource* src = new error::CodeSource;
-                src->sourceName = filePath;
-                return src;
+                std::ifstream file(filePath);
+                if(file){
+                    error::CodeSource* src = new error::CodeSource;
+                    src->sourceName = filePath;
+                    return src;    
+                }
+                return nullptr;                
             }
 
             void Compiler::start(){
