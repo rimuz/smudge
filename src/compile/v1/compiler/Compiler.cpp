@@ -75,6 +75,9 @@ namespace sm{
                 }
 
                 error::CodeSource* src = readf(filePath);
+                if(!src)
+                    _rt->sources.msg(error::FATAL_ERROR,
+                        std::string("cannot open file '") + filePath + "'.");
                 _rt->sources.newSource(src);
             }
 
