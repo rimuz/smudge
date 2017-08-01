@@ -758,7 +758,6 @@ namespace sm{
                         back->content.push_back(ch);
                     } else {
                         states.nullToken = false;
-                        states.nullToken = false;
                         Token newToken;
                         newToken.ln = states.file_line;
                         newToken.ch = states.file_char;
