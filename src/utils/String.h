@@ -624,7 +624,8 @@ namespace sm{
             }
             Continue: ;
         }
-        vec.emplace_back(last, it);
+        if(!skipEmpty || last != it)
+            vec.emplace_back(last, it);
         return vec;
     }
 
@@ -644,7 +645,8 @@ namespace sm{
             }
             Continue: ;
         }
-        vec.emplace_back(last, it);
+        if(!skipEmpty || last != it)
+            vec.emplace_back(last, it);
         return vec;
     }
 
