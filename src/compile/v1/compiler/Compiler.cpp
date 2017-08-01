@@ -46,35 +46,36 @@ namespace sm{
             Compiler::Compiler(runtime::Runtime_t& rt)
                 : _rt(&rt), _nfile(0){}
 
-            void Compiler::source(const string_t& filePath){
-                size_t lastSep;
-                if((lastSep = filePath.find_last_of("/\\")) != std::string::npos){
-                    paths.push_back(filePath.substr(0, lastSep+1));
-                    // removes file path and extension
-                    size_t dot = filePath.find_last_of('.');
-                    _rt->boxNames.push_back(filePath.substr(lastSep+1, dot != std::string::npos ? dot-lastSep-1 : filePath.size()));
+            void Compiler::source(string_t filePath){
+                // replaces slashes with OS-dependent fileSeparator character
+                #if fileSeparator != '/'
+                std::replace(filePath.begin(), filePath.end(), '/', fileSeparator);
+                #endif
+
+                size_t sep = filePath.find_last_of(fileSeparator);
+                if(sep == std::string::npos){
+                    sep = 0;
                 } else {
-                    size_t dot = filePath.find_last_of('.');
-                    _rt->boxNames.push_back(filePath.substr(0, dot != std::string::npos ? dot : filePath.size()));
+                    paths.emplace_back(filePath.begin(), filePath.begin()+sep+1);
                 }
 
-                #if defined(_SM_OS_WINDOWS)
-                    std::string newPath(filePath);
-                    std::replace(newPath.begin(), newPath.end(), '/', '\\');
-                    error::CodeSource* src = readf(newPath);
-                    if(src){
-                        _rt->sources.newSource(src);
-                    } else {
-                        _rt->sources.msg(error::FATAL_ERROR, std::string("cannot find file '") + newPath + "'.");
-                    }
-                #else
-                    error::CodeSource* src = readf(filePath);
-                    if(src){
-                        _rt->sources.newSource(src);
-                    } else {
-                        _rt->sources.msg(error::FATAL_ERROR, std::string("cannot find file '") + filePath + "'.");
-                    }
-                #endif
+                std::string fileName(filePath.begin()+sep+1, filePath.end());
+                
+                // if the given path is a directory, looks for a file main.sm inside it. 
+                if(fileName.empty()){
+                    filePath += (fileName = "main.sm");
+                }
+
+                size_t dot = fileName.find_last_of('.');
+                if(dot != std::string::npos && fileName.size() > 2
+                        && !std::strcmp(fileName.c_str()+dot, ".sm")){
+                    _rt->boxNames.emplace_back(fileName.begin(), fileName.begin()+dot);
+                } else {
+                    _rt->boxNames.emplace_back(fileName);
+                }
+
+                error::CodeSource* src = readf(filePath);
+                _rt->sources.newSource(src);
             }
 
             void Compiler::source(error::CodeSource* source){
@@ -104,15 +105,26 @@ namespace sm{
                 if(_rt->boxNames[_nfile].back() == '!')
                     return ++_nfile < _rt->sources._sources.size();
 
-                if((reset = !(src = _rt->sources.getSource(_nfile))->code)){
+                src = _rt->sources.getSource(_nfile);
+                if((reset = !src->code)){
                     std::string line;
                     std::ifstream file(src->sourceName);
 
+                    if(!file.is_open())
+                        _rt->sources.msg(error::FATAL_ERROR,
+                            std::string("cannot open file '") + src->sourceName + "'.");
+                    
                     while(std::getline(file, line)){
                         text += line;
                         text.push_back('\n');
                     }
-                    text.pop_back();
+
+                    if(file.bad()){
+                        _rt->sources.msg(error::FATAL_ERROR,
+                            std::string("unable to read file '")
+                            + src->sourceName + "'.");
+                    }
+                    
                     src->code = &text;
                 }
 
@@ -137,8 +149,7 @@ namespace sm{
             error::CodeSource* Compiler::readf(const string_t& filePath){
                 error::CodeSource* src = new error::CodeSource;
                 src->sourceName = filePath;
-                std::ifstream file(filePath);
-                return file ? src : nullptr;
+                return src;
             }
 
             void Compiler::start(){
