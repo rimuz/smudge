@@ -71,6 +71,14 @@ namespace sm{
                  *                                                   "Y88P"
                 */
 
+                smMethod(new, smLambda {
+                    return Object();
+                })
+
+                smMethod(delete, smLambda {
+                    return Object();
+                })
+
                 smOpMethod(parse::TT_EQUAL, smLambda {
                     if(args.empty() || args[0].type != ObjectType::STRING)
                         return makeInteger(0);
