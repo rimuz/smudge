@@ -77,6 +77,10 @@ The implementation of the class is native and consist of an object containing
 an `std::fstream` instanced and open with the given arguments, when an
 instance of class `FileStream` is deleted, the stream is automatically closed.
 
+### Method `open ()`
+Closes the stream.
+**Returns** `null`.
+
 ### Method `close ()`
 Closes the stream.
 **Returns** `null`.
