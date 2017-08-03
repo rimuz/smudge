@@ -101,7 +101,7 @@ namespace sm{
 
             string_t nameFromId(unsigned id) const;
 
-            ~Runtime_t() = default;
+            ~Runtime_t();
         };
 
         namespace test{
