@@ -71,6 +71,14 @@ namespace sm{
                  *                                                   "Y88P"
                 */
 
+                smMethod(new, smLambda {
+                    return Object();
+                })
+
+                smMethod(delete, smLambda {
+                    return Object();
+                })
+
                 smOpMethod(parse::TT_EQUAL, smLambda {
                     if(args.empty() || args[0].type != ObjectType::STRING)
                         return makeInteger(0);
@@ -594,7 +602,9 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    delete smGetData(ObjectVec_t);
+                    ObjectVec_t* ptr = smGetData(ObjectVec_t);
+                    data<ObjectVec_t>(self) = nullptr;
+                    delete ptr;
                     return Object();
                 })
 
@@ -1068,7 +1078,9 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    delete smGetData(ObjectVec_t);
+                    ObjectVec_t* ptr = smGetData(ObjectVec_t);
+                    data<ObjectVec_t>(self) = nullptr;
+                    delete ptr;
                     return Object();
                 })
 
@@ -1341,7 +1353,9 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    delete smGetData(LIData);
+                    LIData* ptr = smGetData(LIData);
+                    data<LIData>(self) = nullptr;
+                    delete ptr;
                     return Object();
                 })
 
@@ -1382,7 +1396,9 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    delete smGetData(SIData);
+                    SIData* ptr = smGetData(SIData);
+                    data<SIData>(self) = nullptr;
+                    delete ptr;
                     return Object();
                 })
 

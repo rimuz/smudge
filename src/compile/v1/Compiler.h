@@ -220,7 +220,7 @@ namespace sm {
                 Compiler& operator=(const Compiler&) = delete;
                 Compiler& operator=(Compiler&&) = delete;
 
-                void source(const string_t& filePath);
+                void source(string_t filePath);
                 void source(error::CodeSource* source);
                 void code(string_t name, string_t* code);
 

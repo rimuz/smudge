@@ -28,11 +28,11 @@ Note: Command `./configure` can take different options, to see them type `./conf
 
 Smudge is installed by default in directory `/usr/bin`, while additional libraries should be added inside `/usr/lib/smudge` or `/usr/lib/smudge/VERSION`
 
-### Language overview
+### [Getting Started](https://smudgelang.github.io/smudge/)
 Go to this [link](https://smudgelang.github.io/smudge/) to learn how to program in Smudge.
 
 ### On Holiday :D
-I won't commit for the next two weeks: from 7/18 to 8/5
+I won't commit a lot for the next two weeks: from 7/18 to 8/3s
 
 ### Licensing
 Smudge is licensed under the Apache License 2.0. To read the conditions take a look to the file `LICENSE` in the main folder.

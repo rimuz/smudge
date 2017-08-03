@@ -145,12 +145,12 @@ int main(int argc, char** argv){
             }
         }
     }
+    
+    std::atexit(runtime::Runtime_t::exit);
 
     cp.start();
     while(cp.next()); // compile
     cp.end();
-
-    std::atexit(runtime::Runtime_t::exit);
 
     if(rt.showAll){
         runtime::test::print(rt);
