@@ -437,6 +437,24 @@ namespace sm{
             }
         }
 
+        Runtime_t::~Runtime_t() {
+            gc.gcWorking = true;
+            for(auto* intp : threads){
+                intp->exprStack.clear();
+
+                for(exec::CallInfo_t& callInfo : intp->funcStack)
+                    for(ObjectDict_t* dict : callInfo.codeBlocks)
+                        if(dict) delete dict;
+            }
+
+            for(auto* box : boxes)
+                delete box;
+
+            gc.instances.clear();
+            gc.tempInstances.clear();
+            gc.gcWorking = false;
+        }
+
         namespace test{
             void print(const Runtime_t& rt){
                 size_t i = 0;
