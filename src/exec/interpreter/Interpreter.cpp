@@ -40,6 +40,10 @@
     }
 
 namespace sm{
+    namespace lib{
+        extern Class* cString;
+    }
+
     namespace exec{
         Object Interpreter::_start(){
             while(!funcStack.empty()){
@@ -171,6 +175,11 @@ namespace sm{
             }
 
             if(self.type == ObjectType::INSTANCE_CREATOR){
+                if(self.c_ptr == lib::cString){
+                    exprStack.emplace_back(makeString());
+                    return;
+                }
+
                 std::vector <std::tuple<Object, Function*>> inits;
                 Object clazz = self;
                 ObjectDict_t::iterator it;
@@ -221,26 +230,29 @@ namespace sm{
                 exprStack.emplace_back(std::move(ret));
             } else {
                 funcStack.emplace_back();
-                CallInfo_t& backInfo = funcStack.back();
-                backInfo.codeBlocks.reserve(5);
-                size_t address;
+                funcStack.back().codeBlocks.reserve(5);
+                size_t address = 0;
+
+                /*
+                 * 'fn->arguments' are the arguments expected by the
+                 * function, 'args' are the arguments actually given by
+                 * the caller.
+                */
+
+                ObjectDict_t* dict = new ObjectDict_t;
+                funcStack.back().codeBlocks.push_back(dict);
+                
+                bool is_vararg = fn->flags & FF_VARARGS;
+                size_t n_args = args.size();
+                size_t n_expected = is_vararg ? fn->arguments.size()-1 : fn->arguments.size();
 
                 if(fn->arguments.empty()){
                     address = fn->address;
+                    
+                    if(is_vararg){
+                        (*dict)[std::get<0>(fn->arguments.back())] = makeList(*this, false);
+                    }
                 } else {
-                    /*
-                     * 'fn->arguments' are the arguments expected by the
-                     * function, 'args' are the arguments actually given by
-                     * the caller.
-                    */
-
-                    ObjectDict_t* dict = new ObjectDict_t;
-                    backInfo.codeBlocks.push_back(dict);
-
-                    bool is_vararg = fn->flags & FF_VARARGS;
-                    size_t n_args = args.size();
-                    size_t n_expected = is_vararg ? fn->arguments.size()-1 : fn->arguments.size();
-
                     for(size_t i = 0; i != n_expected; ++i){
                         Object obj;
                         if(i < n_args){
@@ -257,7 +269,7 @@ namespace sm{
                         } else {
                             ls = makeList(*this, false);
                         }
-                        (*dict)[std::get<0>(fn->arguments[n_expected])] = std::move(ls);
+                        (*dict)[std::get<0>(fn->arguments.back())] = std::move(ls);
                     }
 
                     if(n_args == 0){
@@ -269,7 +281,7 @@ namespace sm{
                     }
                 }
 
-                backInfo.codeBlocks.push_back(nullptr);
+                CallInfo_t& backInfo = funcStack.back();
                 backInfo.function = fn;
                 backInfo.addr = rt->code.begin() + address;
                 backInfo.box = rt->boxes[fn->boxName];
