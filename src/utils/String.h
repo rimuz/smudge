@@ -458,12 +458,12 @@ namespace sm{
     string<Tp, A> string<Tp, A>::trim() const {
         if(this->empty())
             return string<Tp, A>();
-        const_iterator start = this->begin(), end = this->end();
+        const_iterator start = this->begin(), end = this->end()-1;
         while (start != this->end() && isSpace(*start))
             ++start;
         while (end != start && isSpace(*end))
             --end;
-        return string<Tp, A>(start, end);
+        return string<Tp, A>(start, ++end);
     }
 
     template <class Tp, class A>
@@ -624,7 +624,8 @@ namespace sm{
             }
             Continue: ;
         }
-        vec.emplace_back(last, it);
+        if(!skipEmpty || last != it)
+            vec.emplace_back(last, it);
         return vec;
     }
 
@@ -644,7 +645,8 @@ namespace sm{
             }
             Continue: ;
         }
-        vec.emplace_back(last, it);
+        if(!skipEmpty || last != it)
+            vec.emplace_back(last, it);
         return vec;
     }
 

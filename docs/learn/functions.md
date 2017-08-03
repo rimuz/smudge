@@ -233,7 +233,6 @@ func g; // no arguments again
 ```
 We'll call that feature **statement functions** to don't mix them up with in-line functions.
 
-
 |||
 |--:|:---:|:--|
-| [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
+| [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](vars.md) |

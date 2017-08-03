@@ -12,7 +12,7 @@ var name = default_value;
 
 In the first statement we declare a variable named `name` with value `null`,
 while in the second we specify a **default value**.
-Also, it's possible to declare multiple variable at once:
+Also, it's possible to declare **multiple variables** at once:
 
 ```js
 var a, b, c, d; // all nulls
@@ -20,7 +20,7 @@ var e = 100, f, g = 1, h = e+1; // only f is null
 ```
 
 ### Using variables
-We can reassign a variable with another value or read its value as well:
+We can **reassign** a variable with **another value** or read its value as well:
 
 ```js
 import std.io = io;
@@ -41,7 +41,7 @@ a is: 10
 ```
 
 It's **not mandatory** to keep a **same type** for a variable: you can, for example,
-declare a variable with as default value an integer and put in it a string later.
+declare a variable with as default value an **integer** and put in it a **string** later.
 
 ### Variable types
 Here are the fateful **variable types** (or **object types**):
@@ -59,7 +59,7 @@ For now it's not important to understand all of them, there's plenty of time to 
 | **Box** | keyword `box` (to get the current one) | - |
 | **Reference** | through `ref(...)` | A reference (address of) another variable |
 
-So, because a variable can have a value of any of the above types (plus others used internally by the interpreter), we can type:
+So, because a variable can have a value of **any of** the above types (plus others used internally by the interpreter), we can type:
 
 ```js
 import std.io = io;
@@ -70,7 +70,7 @@ func main {
 }
 ```
 
-Aliases can be easily created using variables.
+**Aliases** can be easily created using variables.
 
 ### Scopes and variables' life
 Smudge, unlike many other interpreted programming languages, inherited the powerful
@@ -94,4 +94,94 @@ func main (){
 Usually, we don't create an **inner-scope** directly with the braces like the above example,
 but they will be created when using if statements and loops (that we'll see later).
 
-TODO
+### Variable declaration inside expressions
+In Smudge we **can put** variable declations bigger expressions as well:
+In this code both `x` and `y` will have value `100`.
+
+```js
+var x;
+func main ()
+    x = (var y = 100); // same as x = var y = 100;
+```
+
+In fact, Smudge treats variable **definitions just like assignments**: they will "return" a reference of the variable that can be, in turn, **reassigned**.
+
+```js
+func main()
+    ((var x = 3) = 5) *= 2; // setting x to 10 in an original way.
+```
+
+This, of course, gives you a lot of **power**.
+Here is an weird use of this feature:
+
+```js
+var x = 1, y = 2;
+
+/*
+ * Will call function given with
+ * global var x *or* y, selected 
+ * by boolean value exclude.
+ * The other parameter value
+ * can be given or not.
+ * Examples:
+ *
+ * callF(f, false, null)
+ *    will call f(x, null)
+ * 
+ * callF(f, true)
+ *    will call f(0, y)
+ *
+*/
+func callF(f, exclude, value = 0) {
+    (exclude ? var x : var y) = value;
+    return f(x, y);
+}
+```
+
+Note: the one with `?` and `:` is called conditional expression,
+and allows to inline an `if` condition in an expression (Again, too early to understand it at all).
+
+### Functions, function arguments and variables
+When we declare a **function**, it will be stored in a **global** variable of the current box. So, we can treat them as **normal variables**.
+
+```js
+import std.io = io;
+
+func a io.println("a()");
+func b io.println("b()");
+
+func main {
+    // swapping a and b
+    var tmp = a;
+    a = b;
+    b = tmp;
+
+    // calling functions
+    a();
+    b();
+}
+```
+
+OUTPUT:
+
+```
+b()
+a()
+```
+
+While **function arguments** are stored in its **local** scope:
+
+```js
+import std.io = io;
+
+func main(args, iargs){
+    f(args[0], args.slice(1)); // using argument
+    args = 100; // assigning argument
+}
+
+func f(x...){
+    x.push("Hello"); // using argument
+    io.println(x); // using argument
+}
+```
+
