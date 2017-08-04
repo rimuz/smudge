@@ -57,11 +57,12 @@ namespace sm{
                     sep = 0;
                 } else {
                     paths.emplace_back(filePath.begin(), filePath.begin()+sep+1);
+                    ++sep;
                 }
 
-                std::string fileName(filePath.begin()+sep+1, filePath.end());
-                
-                // if the given path is a directory, looks for a file main.sm inside it. 
+                std::string fileName(filePath.begin()+sep, filePath.end());
+
+                // if the given path is a directory, looks for a file main.sm inside it.
                 if(fileName.empty()){
                     filePath += (fileName = "main.sm");
                 }
@@ -116,7 +117,7 @@ namespace sm{
                     if(!file.is_open())
                         _rt->sources.msg(error::FATAL_ERROR,
                             std::string("cannot open file '") + src->sourceName + "'.");
-                    
+
                     while(std::getline(file, line)){
                         text += line;
                         text.push_back('\n');
@@ -127,7 +128,7 @@ namespace sm{
                             std::string("unable to read file '")
                             + src->sourceName + "'.");
                     }
-                    
+
                     src->code = &text;
                 }
 
@@ -154,9 +155,9 @@ namespace sm{
                 if(file){
                     error::CodeSource* src = new error::CodeSource;
                     src->sourceName = filePath;
-                    return src;    
+                    return src;
                 }
-                return nullptr;                
+                return nullptr;
             }
 
             void Compiler::start(){
