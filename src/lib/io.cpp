@@ -34,7 +34,7 @@ namespace sm{
             * T = trunc, R = read, W = write, A = append, B = binary
             */
             TRUNC = 0x10, READ = 0x8, WRITE = 0x4, APPEND = 0x2, BINARY = 0x1,
-            RW = 0xC
+            RW = 0xC, TA = 0x12
         };
 
         enum StreamPos {
@@ -215,8 +215,6 @@ namespace sm{
                 smMethod(delete, smLambda {
                     FSData* ptr = smGetData(FSData);
                     data<FSData>(self) = nullptr;
-
-                    ptr->stream.close();
                     delete ptr;
                     return Object();
                 })
@@ -238,11 +236,10 @@ namespace sm{
                     std::string filepath (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
                     std::ios_base::openmode mode;
 
-                    if(flags & TRUNC){
+                    if(flags & TRUNC)
                         mode |= std::ios::trunc;
-                    } else if(flags & APPEND){
+                    else // also if flags & APPEND is true
                         mode |= std::ios::app;
-                    }
 
                     if(flags & RW){
                         if(flags & READ){
