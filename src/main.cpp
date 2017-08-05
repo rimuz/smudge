@@ -145,7 +145,7 @@ int main(int argc, char** argv){
             }
         }
     }
-    
+
     std::atexit(runtime::Runtime_t::exit);
 
     cp.start();
@@ -227,9 +227,9 @@ constexpr const char* license_str =
 ;
 
 constexpr const char* usage_str =
-    "Usage: " _SM_EXECUTABLE_NAME " options... <File> arguments...\n"
-    "Interpret code contained in <File> with arguments and options given.\n"
-    "Also, you can replace <File> with option -i to use stdin instead.\n\n"
+    "Usage: " _SM_EXECUTABLE_NAME " options... [File] arguments...\n"
+    "Interpret code contained in [File] with arguments and options given.\n"
+    "Also, you can replace [File] with option -i to use stdin instead.\n\n"
 
     "Options:\n"
     "  -D <directory>           Add <directory> to the search paths.\n"
