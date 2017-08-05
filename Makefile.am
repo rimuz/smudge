@@ -3,6 +3,7 @@ AUTOMAKE_OPTIONS = foreign
 bin_PROGRAMS = smudge
 smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS)
 smudge_CFLAGS =
+
 smudge_SOURCES = \
 			src/compile/v1/compiler/Compiler.cpp \
 			src/compile/v1/compiler/globalScopeCompile.cpp \
@@ -20,3 +21,6 @@ smudge_SOURCES = \
 			src/runtime/id.cpp \
 			src/utils/unicode/utf8.cpp \
 			src/main.cpp
+
+man1_MANS = \
+			mans/smudge.man
