@@ -1,0 +1,65 @@
+.TH SMUDGE 1
+
+.SH NAME
+smudge \- a general\-purpose, interpreted and object-oriented programming language.
+
+.SH SYNOPSIS
+\fBsmudge \fR[\fIOPTION\fR]... \fBFile\fR    [\fIARGUMENT\fR]...
+.br
+\fBsmudge \fR[\fIOPTION\fR]... \fB\-\-stdin\fR [\fIARGUMENT\fR]...
+.br
+\fBsmudge \fR[\fIOPTION\fR]... \fB\-i\fR      [\fIARGUMENT\fR]...
+
+.SH DESCRIPTION
+\fBsmudge\fR is a \fBS\fRimple, \fBM\fRulti platform, \fBU\fRser-friendly,
+\fBD\fRynamically typed, \fBG\fRarbage-collected and \fBE\fRlegant
+programming language written in pure C++11.
+
+.SH OPTIONS
+.TP
+\fB\-D \fIdir\fR
+.br
+Add the directory \fIdir\fR to the \fBsearch paths\fR of the current runtime settings.
+To set one or more directories as default search paths add them to the
+\fBSMUDGE_PATH\fR environment variable.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+.br
+Show the list of options.
+.TP
+\fB\-i\fR, \fB\-\-stdin\fR
+.br
+Use \fBstdin\fR instead of reading from \fBfile\fR;
+what comes next this option is given as argument to the program.
+.TP
+\fB\-l\fR, \fB\-\-license\fR
+.br
+Show the Apache 2.0 license.
+.TP
+\fB\-n\fR, \fB\-\-no\-stdlib\fR
+.br
+The Smudge Stardard Library (\fBSSL\fR) won't be used by the program.
+.br
+Anyway, the box \fBstd.lang\fR will be used internally by the interpreter
+while working on strings, lists or tuples.
+.TP
+\fB\-s\fR, \fB\-\-show\-paths\fR
+.br
+Show the \fBsearch paths\fR of the current runtime settings.
+.TP
+\fB\-S\fR, \fB\-\-show\-all\fR
+.br
+Show the parsed \fBtokens\fR, the \fBbytecode\fR, the \fBsymbol table\fR and
+all \fBtables of constants\fR. Useful for debug purposes.
+.TP
+\fB\-t\fR, \fB\-\-time\fR
+.br
+Show the number of \fBmilliseconds\fR passed from the start to the end of the program.
+Useful for benchmarking.
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+.br
+Show the version of the interpreter.
+
+.SH AUTHOR
+Riccardo Musso \- smudge.language@gmail.com, musso.riccardo2001@gmail.com
