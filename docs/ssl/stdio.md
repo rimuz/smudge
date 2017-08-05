@@ -73,6 +73,14 @@ values (with `+` or `|` operators):
 
 **Returns** the instance of **`FileStream`** or `null` if the stream can't be open.
 
+### Function `remove (fileName)`
+**Deletes** the file named `fileName`.
+**Returns** `false` if the operation failed, `true` otherwise.
+
+### Function `rename (old, new)`
+**Renames** file `old` with the new name `new`.
+**Returns** `false` if the operation failed, `true` otherwise.
+
 ## Class `FileStream`
 The implementation of the class is native and consist of an object containing
 an `std::fstream` instanced and open with the given arguments, when an
