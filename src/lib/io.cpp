@@ -234,12 +234,7 @@ namespace sm{
                         return makeFalse();
 
                     std::string filepath (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
-                    std::ios_base::openmode mode;
-
-                    if(flags & TRUNC)
-                        mode |= std::ios::trunc;
-                    else // also if flags & APPEND is true
-                        mode |= std::ios::app;
+                    std::ios_base::openmode mode = flags & TRUNC ? std::ios::trunc : std::ios::app;
 
                     if(flags & RW){
                         if(flags & READ){
