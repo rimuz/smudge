@@ -93,6 +93,10 @@ sequences**.
 | `\uNNNN` | codepoint U+NNNN | Arbitrary hexadecimal 32-bit Unicode codepoint (**UTF-8**) |
 | `\UNNNNNNNN` | codepoint U+NNNNNNNN | Arbitrary hexadecimal 64-bit Unicode codepoint  (**UTF-8**) |
 
+### Methods `new ()` and `delete ()`
+Do nothing.
+**Return** `null`.
+
 ### Method `idx (i)`
 Calculates the index in **bytes** from the given index in **characters** `i`.
 If `i` is negative, the characters will be counted from the end.
@@ -273,6 +277,9 @@ memory.
 ### Method `to_string ()`
 **Returns** the string.
 
+### Method `iterate ()`
+**Returns** an instance of `StringIterator` pointing to the start of the string.
+
 ## Class `List`
 This is the class which provides all the Smudge lists' functionalities.
 A `List` can be instanced simply with **a couple of brackets** containing
@@ -281,6 +288,9 @@ the elements separed by `,`. Lists' elements could be of **any type**.
 /* A list could contain integers, strings and lists as well */
 var my_list = [0, 1, "Hello!", [0, "World!"], xyz];
 ```
+
+### Methods `new ()` and `delete ()`
+Create and destroy the list, shouldn't be called manually. **Return** `null`.
 
 ### Method `[] (idx)`
 **Returns** a **reference** to the element located ad the given index `idx`,
@@ -398,6 +408,10 @@ Counts how many equivalent objects to `obj` (checked via `operator== ()`).
 ### Method `slice ([start = 0[, end = size()]])`
 Alias for `clone()`.
 
+### Method `reverse ()`
+Reverses the list in place.
+**Returns** `null`.
+
 ### Method `sort ([reversed = false])`
 Sorts the list in place in ascending order if `reversed` is `false`, or
 descending order if `reversed` is `true`. The elements of the list are
@@ -415,7 +429,10 @@ equivalent elements from the list. **Returns** `null`.
 **Returns** `true` if the list is empty (has no elements), `false` otherwise.
 
 ### Method `size ()`
-**Returns** the number of elements contained by the list.  
+**Returns** the number of elements contained by the list.
+
+### Method `iterate ()`
+**Returns** an instance of `ListIterator` pointing to the start of the list.
 
 ## Class `Tuple`
 Tuples are immutable lists. You can instance a `Tuple` by enclosing its
@@ -424,6 +441,9 @@ elements with a couple of round brackets (i.e. `()`).
 /* Tuples are just like lists, but are immutable. */
 var my_tuple = (1, 2, "Hello", ("World", [0, 1, "!"], ()), []);
 ```
+
+### Methods `new ()` and `delete ()`
+Create and destroy the tuple, shouldn't be called manually. **Return** `null`.
 
 ### Method `+ (lst)`
 **Returns** a new tuple created by concatenating the tuple to list or tuple
@@ -479,6 +499,30 @@ Same as `slice()`, but returns a list.
 ### Method `to_string ()`
 **Returns** a string representation of the tuple, very similar to tuple's with
 round brackets instead of brackets.
+
+### Method `iterate ()`
+**Returns** an instance of `ListIterator` pointing to the start of the tuple.
+
+## Class `StringIterator`
+An Iterator class for `String`.
+
+### Method `new (str)`
+Initializes a new `StringIterator` starting from the begin of String `str`.
+**Returns** `null`.
+
+### Method `delete ()`
+Destroy the `StringIterator` instance.
+**Returns** `null`.
+
+### Method `next ()`
+Advance the iterator.
+**Returns** a tuple containing the current item and an integer (1 if it's a valid item, 0 otherwise).
+
+## Class `ListIterator`
+Same as `StringIterator`, but for `List`s or `Tuple`s.
+
+### Methods `new (lst)`, `delete ()`, `next ()`
+See [StringIterator](stdlang.md#class-stringiterator).
 
 ||
 |:---:|
