@@ -193,6 +193,22 @@ namespace sm{
                 return runtime::implicitToBool(obj) ? inst : Object();
             })
 
+            smFunc(remove, smLambda {
+                if(args.empty() || args[0].type != ObjectType::STRING)
+                    return Object();
+                std::string filepath(args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+                return makeBool(!std::remove(filepath.c_str()));
+            })
+
+            smFunc(rename, smLambda {
+                if(args.size() < 2 || args[0].type != ObjectType::STRING
+                        || args[1].type != ObjectType::STRING)
+                    return Object();
+                std::string oldName (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+                std::string newName (args[1].s_ptr->str.begin(), args[1].s_ptr->str.end());
+                return makeBool(!std::rename(oldName.c_str(), newName.c_str()));
+            })
+
             smClass(FileStream)
                 /*
                  *
