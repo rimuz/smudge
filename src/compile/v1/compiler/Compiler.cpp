@@ -89,10 +89,9 @@ namespace sm{
             void Compiler::path(const string_t& path){
                 if(!path.empty()){
                     if(path.back() != fileSeparator){
-                        _rt->sources.msg(error::FATAL_ERROR, std::string("path must be followed by '")
-                            + fileSeparator + "'.");
+                        paths.emplace_back(path + _SM_FILE_SEPARATOR)
                     }
-                    paths.push_back(path);
+                    paths.emplace_back(path);
                 }
             }
 
