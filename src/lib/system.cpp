@@ -70,6 +70,10 @@ namespace sm {
                 return Object();
             })
 
+            smFunc(abort, smLambda {
+                std::abort();
+            })
+
             smFunc(get, smLambda {
                 if(args.empty() || args[0].type != ObjectType::STRING)
                     return Object();
