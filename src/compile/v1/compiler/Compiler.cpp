@@ -89,7 +89,7 @@ namespace sm{
             void Compiler::path(const string_t& path){
                 if(!path.empty()){
                     if(path.back() != fileSeparator){
-                        paths.emplace_back(path + _SM_FILE_SEPARATOR)
+                        paths.emplace_back(path + fileSeparator);
                     }
                     paths.emplace_back(path);
                 }
