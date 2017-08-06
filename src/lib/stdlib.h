@@ -116,15 +116,8 @@ namespace sm {
         using InitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
         using LibDict_t = Map_t<string_t, InitFunc_t>;
 
-        smLibDecl(io);
         smLibDecl(lang);
-        smLibDecl(system);
-
-        const LibDict_t libs = {
-            smLibTuple("std.io!", io),
-            smLibTuple("std.lang!", lang),
-            smLibTuple("std.system!", system),
-        };
+        extern const LibDict_t libs;
 
         template <typename Tp>
         inline Tp*& data(const Object& obj){
