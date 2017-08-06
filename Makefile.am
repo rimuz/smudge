@@ -12,9 +12,11 @@ smudge_SOURCES = \
 			src/compile/Statement.cpp \
 			src/error/error.cpp \
 			src/exec/interpreter/Interpreter.cpp \
+			src/lib/stdlib.cpp \
 			src/lib/io.cpp \
 			src/lib/lang.cpp \
 			src/lib/system.cpp \
+			src/lib/cast.cpp \
 			src/parse/Tokenizer.cpp \
 			src/runtime/casts.cpp \
 			src/runtime/gc.cpp \
