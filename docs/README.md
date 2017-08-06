@@ -62,6 +62,7 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - [Writing an Hello World](learn/hello-world.md)
     - [Statements](learn/statements.md)
     - [Functions](learn/functions.md)
+    - [If statement and loops](learn/if-and-loops.md)
     - Working in progress..
 - The **Smudge Standard Library** (the **SSL**)
     - [std.io](ssl/stdio.md)
@@ -72,10 +73,4 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
         - [Class Tuple](ssl/stdlang.md#class-tuple)
 
 ## For the contributors
-- How Smudge works
-    - Smudge explained
-    - The Sources
-    - The Tokenizer
-    - The Compiler
-    - The bytecode
-    - The Interpreter
+- Working in progress..
