@@ -119,7 +119,7 @@ var x = 1, y = 2;
 
 /*
  * Will call function given with
- * global var x *or* y, selected 
+ * global var x *or* y, selected
  * by boolean value exclude.
  * The other parameter value
  * can be given or not.
@@ -127,7 +127,7 @@ var x = 1, y = 2;
  *
  * callF(f, false, null)
  *    will call f(x, null)
- * 
+ *
  * callF(f, true)
  *    will call f(0, y)
  *
@@ -174,14 +174,22 @@ While **function arguments** are stored in its **local** scope:
 ```js
 import std.io = io;
 
-func main(args, iargs){
-    f(args[0], args.slice(1)); // using argument
-    args = 100; // assigning argument
+func main(){
+    var x = "old value";
+    f(x);
+    io.println(x);
 }
 
-func f(x...){
-    x.push("Hello"); // using argument
-    io.println(x); // using argument
-}
+func f(a){ // a is a *copy* of x, so
+    a = "new value"; // we set local a value
+} // a destroyed
 ```
 
+OUPUT:
+```
+old value
+```
+
+|||
+|--:|:---:|:--|
+| [Previous](functions.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](if-and-loops.md) |
