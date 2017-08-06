@@ -250,6 +250,13 @@ namespace sm{
         return obj;
     }
 
+    inline Object makeFloat(float_t value) noexcept{
+        Object obj;
+        obj.type = ObjectType::FLOAT;
+        obj.f = value;
+        return obj;
+    }
+
     template <class... Tp>
     inline Object makeString(Tp&&... args) noexcept{
         Object obj;
