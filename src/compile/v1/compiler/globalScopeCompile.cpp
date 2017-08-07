@@ -60,111 +60,131 @@ namespace sm{
                                 "cannot import inside a class.");
                         }
 
-                        bool isAlredyImported = false;
-                        if(++it != states.end){
-                            if(it->type == TT_TEXT){
-                                bool dot = false, first = false, second = false;
-                                states.toImport->emplace_back();
-                                std::string imported(it->content);
+                        bool repeat;
+                        do {
+                            bool isAlredyImported = false;
+                            repeat = false;
 
-                                while(true){
-                                    if(++it == states.end){
-                                        --it;
-                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                            "expected valid expression before 'eof'.");
-                                    }
+                            if(++it != states.end){
+                                if(it->type == TT_TEXT){
+                                    bool dot = false, first = false, second = false;
+                                    states.toImport->emplace_back();
+                                    std::string imported(it->content);
 
-                                    if(dot){
-                                        if(it->type == TT_TEXT){
-                                            imported += it->content;
-                                            dot = false;
-                                        } else {
+                                    while(true){
+                                        if(++it == states.end){
+                                            --it;
                                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                                std::string("expected identifier before ") + representation(*it) + ".");
+                                                "expected valid expression before 'eof'.");
                                         }
-                                    } else if(first){
-                                        if(it->type == TT_TEXT){
-                                            std::get<1>(states.toImport->back()) = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
-                                            first = false;
-                                            second = true;
-                                        } else {
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                                std::string("expected identifier before ") + representation(*it) + ".");
-                                        }
-                                    } else if(second){
-                                        if(it->type == TT_SEMICOLON){
-                                            break;
-                                        } else {
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                                std::string("expected ';' before ") + representation(*it) + ".");
-                                        }
-                                    } else {
-                                        if(it->type == TT_DOT){
-                                            imported.push_back('.');
-                                            dot = true;
-                                        } else if(it->type == TT_ASSIGN){
-                                            first = true;
-                                        } else {
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                                std::string("expected '.' before ") + representation(*it) + ".");
-                                        }
-                                    }
-                                }
-                                
-                                {
-                                    size_t match = 0;
-                                    for(const string_t& imp : _rt->boxNames){
-                                        if(imp == imported || (!imp.empty()
-                                                && imp.size() == imported.size()+1 && imp.back() == '!'
-                                                && std::equal(imp.begin(), imp.end()-1, imported.begin()))){
-                                            isAlredyImported = true;
-                                            std::get<0>(states.toImport->back()) = match;
-                                            break;
-                                        }
-                                        match ++;
-                                    }
-                                }
 
-                                if(!isAlredyImported){
-                                    _rt->boxNames.emplace_back(imported);
-                                    std::replace(imported.begin(), imported.end(), '.', fileSeparator);
-                                    imported.append(".sm");
-                                    unsigned id = _rt->boxNames.size()-1;
-                                    bool found = false;
-
-                                    for(const string_t& dir : paths){
-                                        std::string path = dir + imported;
-                                        error::CodeSource* src = readf(path);
-                                        if(src){
-                                            _rt->sources.newSource(src);
-                                            found = true;
-                                            break;
+                                        if(dot){
+                                            if(it->type == TT_TEXT){
+                                                imported += it->content;
+                                                dot = false;
+                                            } else {
+                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                    std::string("expected identifier before ") + representation(*it) + ".");
+                                            }
+                                        } else if(first){
+                                            if(it->type == TT_TEXT){
+                                                std::get<1>(states.toImport->back()) = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
+                                                first = false;
+                                                second = true;
+                                            } else {
+                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                    std::string("expected identifier before ") + representation(*it) + ".");
+                                            }
+                                        } else if(second){
+                                            if(it->type == TT_SEMICOLON){
+                                                break;
+                                            } else if(it->type == TT_COMMA){
+                                                repeat = true;
+                                                break;
+                                            } else {
+                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                    std::string("expected ';' before ") + representation(*it) + ".");
+                                            }
+                                        } else {
+                                            if(it->type == TT_DOT){
+                                                imported.push_back('.');
+                                                dot = true;
+                                            } else if(it->type == TT_SEMICOLON || it->type == TT_COMMA){
+                                                size_t dot_pos = imported.find_last_of('.');
+                                                unsigned id;
+                                                if(dot_pos == std::string::npos)
+                                                    id = runtime::genOrdinaryId(*_rt, imported)
+                                                        - runtime::idsStart;
+                                                else
+                                                    id = runtime::genOrdinaryId(*_rt, imported.substr(dot_pos+1))
+                                                        - runtime::idsStart;
+                                                std::get<1>(states.toImport->back()) = id;
+                                                repeat = it->type == TT_COMMA;
+                                                break;
+                                            } else if(it->type == TT_ASSIGN){
+                                                first = true;
+                                            } else {
+                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                    std::string("expected '.' before ") + representation(*it) + ".");
+                                            }
                                         }
                                     }
 
-                                    if(!found){
-                                        _rt->boxNames.back().push_back('!');
-                                        lib::LibDict_t::const_iterator cit = lib::libs.find(_rt->boxNames.back());
-                                        if(cit == lib::libs.end() || _rt->noStd){
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                                std::string("can't import '") + imported + "'. Make sure the file exists.");
-                                        } else {
-                                            Class* box = cit->second(*_rt, id);
-                                            _rt->boxes.push_back(box);
-                                            _rt->sources.newSource(nullptr);
+                                    {
+                                        size_t match = 0;
+                                        for(const string_t& imp : _rt->boxNames){
+                                            if(imp == imported || (!imp.empty()
+                                                    && imp.size() == imported.size()+1 && imp.back() == '!'
+                                                    && std::equal(imp.begin(), imp.end()-1, imported.begin()))){
+                                                isAlredyImported = true;
+                                                std::get<0>(states.toImport->back()) = match;
+                                                break;
+                                            }
+                                            match ++;
                                         }
                                     }
-                                    std::get<0>(states.toImport->back()) = id;
+
+                                    if(!isAlredyImported){
+                                        _rt->boxNames.emplace_back(imported);
+                                        std::replace(imported.begin(), imported.end(), '.', fileSeparator);
+                                        imported.append(".sm");
+                                        unsigned id = _rt->boxNames.size()-1;
+                                        bool found = false;
+
+                                        for(const string_t& dir : paths){
+                                            std::string path = dir + imported;
+                                            error::CodeSource* src = readf(path);
+                                            if(src){
+                                                _rt->sources.newSource(src);
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if(!found){
+                                            _rt->boxNames.back().push_back('!');
+                                            lib::LibDict_t::const_iterator cit = lib::libs.find(_rt->boxNames.back());
+                                            if(cit == lib::libs.end() || _rt->noStd){
+                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                    std::string("can't import '") + imported + "'. Make sure the file exists.");
+                                            } else {
+                                                Class* box = cit->second(*_rt, id);
+                                                _rt->boxes.push_back(box);
+                                                _rt->sources.newSource(nullptr);
+                                            }
+                                        }
+                                        std::get<0>(states.toImport->back()) = id;
+                                    }
+                                } else {
+                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                        std::string("expected identifier before ") + representation(*it) + ".");
                                 }
                             } else {
+                                --it;
                                 _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                    std::string("expected identifier before ") + representation(*it) + ".");
+                                    "expected identifier before 'eof'.");
                             }
-                        } else {
-                            --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
-                                "expected identifier before 'eof'.");
-                        }
+                        } while(repeat);
                         break;
                     }
 
