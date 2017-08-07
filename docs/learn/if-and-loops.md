@@ -158,18 +158,22 @@ import std.io = io;
 
 func main {
     io << sum(1, 2, 3, 4) << io.ln;
-    io << sum([1], 2, 3, 4) << io.ln;
+    io << sum([1], [2], [3], [4]) << io.ln;
 }
 
 func sum(args...){
     var sum = args[0];
-    for(arg : args)
-        sum += arg;
+    for(arg : args.slice(1)){
+        sum = sum + arg;
+    }
     return sum;
 }
 ```
 
 OUPUT:
 ```
-
+10
+[1, 2, 3, 4]
 ```
+
+See also [`std.lang::List::slice()`](ssl/stdio.md#method-slice-start--0-end--size).
