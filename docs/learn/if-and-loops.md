@@ -154,7 +154,7 @@ while the interpreter could get the values in other ways.
 Here is an example of usage (combining `for-each` with a **VARARG**):
 
 ```js
-import std.io = io;
+import std.io;
 
 func main {
     io << sum(1, 2, 3, 4) << io.ln;
