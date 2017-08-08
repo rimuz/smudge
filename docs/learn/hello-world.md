@@ -5,7 +5,7 @@ Let's write a simple Hello World program!
 We type the following code into a file named `hello.sm`:
 
 ```js
-import std.io = io;
+import std.io;
 func main(){
     io.println("Hello, world!");
 }
@@ -33,7 +33,11 @@ all other scripts are automatically found thanks to the **box system**.
 The first line of the program **imports** the **box** `std.io` (which is part of the **SSL**, the Smudge Standard Library) with the label `io`.
 **Boxes** are the Smudge way to make the code **modular**, **clear** and **self-explaining**.
 Each source file has its own box which can be imported from other boxes.
-The import syntax is the following:
+The import syntaxes are the following:
+
+```js
+import <path>.<name>;
+```
 
 ```js
 import <path>.<name> = <label>;
@@ -41,7 +45,8 @@ import <path>.<name> = <label>;
 
 `<path>` cannot contain spaces and instead of *slashes* (i.e. `/`) it has *dots* (i.e. `.`).
 `<name>` is the name of the file whose box has to be imported. **Note**: each box must have extension `.sm` (the **main box is an exception**), which is not part of `<name>`.
-`<label>` is the name used by the current box as **link** to the imported box.
+`<label>` is the name used by the current box as **link** to the imported box, in the first
+syntax `<label>` is equal to `<name>`.
 
 The same box **shouldn't** be imported in different ways (i.e. **different `PATH`s**), but can be imported different times (with **different** link **names**, obviously).
 The **search directories** (i.e. the directories where the boxes are searched) can be shown with the option `-s` or `--show-paths`.
