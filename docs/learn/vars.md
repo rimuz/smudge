@@ -23,7 +23,7 @@ var e = 100, f, g = 1, h = e+1; // only f is null
 We can **reassign** a variable with **another value** or read its value as well:
 
 ```js
-import std.io = io;
+import std.io;
 
 var a = 2, b = 5; // here we declare the variables
 func main(){
@@ -62,7 +62,7 @@ For now it's not important to understand all of them, there's plenty of time to 
 So, because a variable can have a value of **any of** the above types (plus others used internally by the interpreter), we can type:
 
 ```js
-import std.io = io;
+import std.io;
 
 func main {
     var p = io.println; // we're assigning a function to p
@@ -145,7 +145,7 @@ and allows to inline an `if` condition in an expression (Again, too early to und
 When we declare a **function**, it will be stored in a **global** variable of the current box. So, we can treat them as **normal variables**.
 
 ```js
-import std.io = io;
+import std.io;
 
 func a io.println("a()");
 func b io.println("b()");
@@ -172,7 +172,7 @@ a()
 While **function arguments** are stored in its **local** scope:
 
 ```js
-import std.io = io;
+import std.io;
 
 func main(){
     var x = "old value";
