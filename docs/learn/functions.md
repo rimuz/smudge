@@ -5,7 +5,7 @@ To prove the awesomeness of **functions**, I'll give you an example.
 Let's write an application that says hello to our friend Marco in a funny way.
 
 ```js
-import std.io = io;
+import std.io;
 
 func main(){
     /*
@@ -22,7 +22,7 @@ Now, we want to greet also our friends David, Aaron and Bill, but we want to **r
 obviously:
 
 ```js
-import std.io = io;
+import std.io;
 
 func greet(name){
     io.println(" ---------- ");
@@ -63,7 +63,7 @@ However, is **good practise** to **always** type them, to make a **clearer** cod
 Smudge is not finicky about the **arguments**: function callers, in fact, can give **more** or **less** of them than the expected number, or even **not give** arguments at all. The following example is **valid** code:
 
 ```js
-import std.io = io;
+import std.io;
 
 func my_function(first_arg, second_arg, third_arg){
     io.println(first_arg, " ", second_arg, " ", third_arg);
@@ -94,7 +94,7 @@ When an argument has a specified default value, it's called **optional**.
 Let's see an example:
 
 ```js
-import std.io = io;
+import std.io;
 
 func sum(a, b = 1){
     return a + b;
@@ -117,7 +117,7 @@ statement which is very simple: `return VALUE;`.
 Plus, we can set as default values some more complex expressions, for example:
 
 ```js
-import std.io = io;
+import std.io;
 
 func f2 (lhs, rhs){
     return lhs + lhs*rhs;
@@ -153,7 +153,7 @@ to `specialArg` it will be an **empty list**. Otherwise it will be a list contai
 Let's see a simple example:
 
 ```js
-import std.io = io;
+import std.io;
 
 func foo(args...){
     io.println("args: ", args);
