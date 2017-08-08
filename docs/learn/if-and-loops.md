@@ -32,7 +32,7 @@ else
 
 #### Example
 ```js
-import std.io = io;
+import std.io;
 
 func main {
     var i = io.int();
@@ -106,7 +106,7 @@ while(condition){
 ```
 
 So, in the `for` loop the `init_expr` is **executed once** at the **beginning** of the cycle.
-Then, it executes some code untill the `condition` is `false`, executing at the end of each
+Then, it executes some code **until** the `condition` is `false`, executing at the end of each
 iteration the `init_expr`.
 
 This example is equivalent to the previous one.
@@ -175,5 +175,42 @@ OUPUT:
 10
 [1, 2, 3, 4]
 ```
+
+### The `switch` statement (note: not a loop!)
+While in most programming languages `switch` works only with **specific types** (typically **PODs**,
+Plain Old Data types), in Smudge you can use any type, in fact, as long as it does **support the
+`operator == ()`**, you **can** insert it in a `switch`.
+Plus, objects in the `case`s of the `switch` are **not necessary constant** expressions.
+
+The `switch` is practically a **jump table**, below is the syntax:
+
+```js
+switch(object){
+    case object1:
+        code1;
+    case object2:
+        code2;
+    ...
+    case objectN:
+        codeN;
+    default:
+        code3;
+}
+```
+
+When this code is executed, the interpreter will call the `operator == ()` against
+`object` to **check if** it's **equal to** `object1`:
+- if **it is**, it will run `code1` then `code2` then `codeN` and then `code3`.
+- if **it is not**, it will check if `object` is equal to `object2` and:
+    - if it is, it will run `code2` then `codeN` and then `code3`.
+    - if it is not, it will check if `object` is equal to any other case,
+        and, if **it's different**, it will run only `code3` (the `default` case).
+
+**Some tips about `switch`es**:
+- `default` is **not necessary**.
+- prefer `switch` instead of nested `else-if`s
+- use `break` (we'll see it few lines below) to exit the switch after `case`s
+
+
 
 See also [`std.lang::List::slice()`](ssl/stdio.md#method-slice-start--0-end--size).
