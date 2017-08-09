@@ -60,7 +60,8 @@ namespace sm{
                             }
                         }
 
-                        if(std::prev(it)->type != TT_ROUND_OPEN && !states.isLastOperand){
+                        if(std::prev(it)->type != TT_ROUND_OPEN && !states.isLastOperand
+                                && !(states.isStatementEmpty && states.parStack.back().parType == FOR_HEAD3)){
                             _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
                                 "expected valid operand before ')'.");
                         }
