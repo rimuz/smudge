@@ -53,6 +53,10 @@ namespace sm {
         smLibDecl(system){
             smInitBox
 
+            smVar(VERSION, makeInteger(_SM_INT_VERSION));
+            smVar(STR_VERSION, makeString(_SM_STR_VERSION));
+            smVar(DATE_VERSION, makeString(_SM_DATE_VERSION));
+
             smFunc(run, system);
             smIdFunc(runtime::roundId, system);
 
