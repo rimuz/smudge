@@ -416,7 +416,7 @@ namespace sm{
                                 }
 
                                 states.output->insert(states.output->end(), {
-                                    END_BLOCK, bc(blocksToClose >> 8), bc(blocksToClose & 0xFF)
+                                    END_BLOCKS, bc(blocksToClose >> 8), bc(blocksToClose & 0xFF)
                                 });
                             }
                         }
@@ -503,7 +503,7 @@ namespace sm{
                                 }
 
                                 states.output->insert(states.output->end(), {
-                                    END_BLOCK, bc(blocksToClose >> 8), bc(blocksToClose & 0xFF)
+                                    END_BLOCKS, bc(blocksToClose >> 8), bc(blocksToClose & 0xFF)
                                 });
                             }
                         }
