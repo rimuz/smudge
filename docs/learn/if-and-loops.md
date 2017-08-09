@@ -176,6 +176,8 @@ OUPUT:
 [1, 2, 3, 4]
 ```
 
+See also [`std.lang::List::slice()`](ssl/stdio.md#method-slice-start--0-end--size).
+
 ### The `switch` statement (note: not a loop!)
 While in most programming languages `switch` works only with **specific types** (typically **PODs**,
 Plain Old Data types), in Smudge you can use any type, in fact, as long as it does **support the
@@ -209,8 +211,83 @@ When this code is executed, the interpreter will call the `operator == ()` again
 **Some tips about `switch`es**:
 - `default` is **not necessary**.
 - prefer `switch` instead of nested `else-if`s
-- use `break` (we'll see it few lines below) to exit the switch after `case`s
+- use `break` to exit the switch after `case`s
 
+### `break` statement
+Sometimes we need to **stop** a loop while it's iterating: in these cases we can use `break`.
 
+```js
+import std.io;
 
-See also [`std.lang::List::slice()`](ssl/stdio.md#method-slice-start--0-end--size).
+func main {
+    io.println("Start of the program");
+    var line;
+    while(line = io.line()){
+        if(line == "hello")
+            io.println("Hello, world!");
+        else if(line == "exit")
+            break;
+    }
+    io.println("End of the program");
+}
+```
+
+See [`std.io::line()`](ssl/stdio.md#function-line-).
+
+This code will print `Hello, world!` if the input is `hello`, while will
+end when `exit` is prompted (if the input is different, it will be ignored).
+
+#### `break` and `switch`
+`break` can be used in `switch`es, too.
+Try the following code inputting **different values** and see what happens:
+
+```js
+import std.io;
+
+func main {
+    var magic = 200, x = 10;
+    var val = io.int();
+
+    switch(val){
+        case magic:
+            io << "MAGIC!" << io.ln;
+            break;
+        case x:
+            io << "X!" << io.ln;
+            break;
+        case 200: // never used
+            io << "200" << io.ln; // dead code
+            break;
+        case 10: // never used
+            io << "10" << io.ln; // dead code
+            break;
+        case 3:
+            io << "3" << io.ln;
+            // no break;
+        default:
+            io << "unexpected" << io.ln;
+    }
+}
+```
+
+Some examples:
+
+```
+INPUT -> OUTPUT
+
+200 -> MAGIC!
+10 -> X!
+3 -> 3 & unexpected
+33 -> unexpected
+```
+
+### `continue` statement
+Differently from the `break` statement, `continue` **doesn't stop** the loop,
+but **jumps** to its next **iteration**; when applied to a `for` loop, it will also
+run the `iter_expr` (described above).
+
+**Note**: `continue` works in loops only (so not in `switch`es).
+
+|||
+|--:|:---:|:--|
+| [Previous](vars.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
