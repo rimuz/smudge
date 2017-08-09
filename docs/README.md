@@ -62,7 +62,8 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - [Writing an Hello World](learn/hello-world.md)
     - [Statements](learn/statements.md)
     - [Functions](learn/functions.md)
-    - [If statement and loops](learn/if-and-loops.md)
+    - [Variables](learn/vars.md)
+    - [If, switch and loops](learn/if-and-loops.md)
     - Working in progress..
 - The **Smudge Standard Library** (the **SSL**)
     - [std.io](ssl/stdio.md)
@@ -71,6 +72,6 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
         - [Class String](ssl/stdlang.md#class-string)
         - [Class List](ssl/stdlang.md#class-list)
         - [Class Tuple](ssl/stdlang.md#class-tuple)
-
+    - Working in progress..
 ## For the contributors
 - Working in progress..
