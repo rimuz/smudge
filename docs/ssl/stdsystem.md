@@ -7,7 +7,7 @@ An integer containing the Smudge version using the following rule:
 in **hexadecimal**:
 
 |||
-|:-|:-:|:-|
+|:---|:---:|:--|
 | `XX` (major) | `YY` (minor) | `ZZ` (patch) |
 
 For example: version **`7.4.3`** becomes **`070403`**.
