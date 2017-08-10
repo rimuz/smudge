@@ -158,6 +158,8 @@ int main(int argc, char** argv){
     }
 
     { // call init function of the main box.
+        rt.boxes[0]->isInitialized = true;
+
         ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(runtime::initId);
         if(it != rt.boxes[0]->objects.end()){
             Function* initFn;
