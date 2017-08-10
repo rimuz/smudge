@@ -72,6 +72,12 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
         - [Class String](ssl/stdlang.md#class-string)
         - [Class List](ssl/stdlang.md#class-list)
         - [Class Tuple](ssl/stdlang.md#class-tuple)
+        - [Class StringIterator](ssl/stdlang#class-stringiterator)
+        - [Class ListIterator](ssl/stdlang#class-listiterator)
+    - [std.system](ssl/stdsystem.md)
+        - [Class Chunk](ssl/stdsystem.md#class-chunk)
+        - [Class ChunkIterator](ssl/stdsystem.md#class-chunkiterator)
     - Working in progress..
+
 ## For the contributors
 - Working in progress..
