@@ -445,14 +445,13 @@ namespace sm{
                 for(exec::CallInfo_t& callInfo : intp->funcStack)
                     for(ObjectDict_t* dict : callInfo.codeBlocks)
                         if(dict) delete dict;
+                intp->funcStack.clear();
             }
 
             for(auto* box : boxes)
                 delete box;
 
-            gc.instances.clear();
-            gc.tempInstances.clear();
-            gc.gcWorking = false;
+            // keeping gcWorking true
         }
 
         namespace test{
