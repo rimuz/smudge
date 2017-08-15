@@ -66,7 +66,7 @@ namespace sm{
 
             smFunc(string, smLambda {
                 if(args.empty())
-                    return Object();
+                    return makeString("<null>");
                 return runtime::implicitToString(intp, args[0]);
             })
 
