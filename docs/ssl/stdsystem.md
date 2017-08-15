@@ -1,5 +1,5 @@
 ## The Smudge Programming Language - Documentation of box `std.system`
-Usually imported as `sys`, `std.system` contains miscellaneous environment
+The box `std.system` contains miscellaneous environment
 settings and utilities.
 
 ### Var `VERSION`
