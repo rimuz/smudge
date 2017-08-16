@@ -17,6 +17,7 @@ smudge_SOURCES = \
 			src/lib/lang.cpp \
 			src/lib/system.cpp \
 			src/lib/cast.cpp \
+			src/lib/math.cpp \
 			src/parse/Tokenizer.cpp \
 			src/runtime/casts.cpp \
 			src/runtime/gc.cpp \
