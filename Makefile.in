@@ -111,7 +111,7 @@ am_smudge_OBJECTS = src/compile/v1/compiler/smudge-Compiler.$(OBJEXT) \
 	src/exec/interpreter/smudge-Interpreter.$(OBJEXT) \
 	src/lib/smudge-stdlib.$(OBJEXT) src/lib/smudge-io.$(OBJEXT) \
 	src/lib/smudge-lang.$(OBJEXT) src/lib/smudge-system.$(OBJEXT) \
-	src/lib/smudge-cast.$(OBJEXT) \
+	src/lib/smudge-cast.$(OBJEXT) src/lib/smudge-math.$(OBJEXT) \
 	src/parse/smudge-Tokenizer.$(OBJEXT) \
 	src/runtime/smudge-casts.$(OBJEXT) \
 	src/runtime/smudge-gc.$(OBJEXT) \
@@ -334,6 +334,7 @@ smudge_SOURCES = \
 			src/lib/lang.cpp \
 			src/lib/system.cpp \
 			src/lib/cast.cpp \
+			src/lib/math.cpp \
 			src/parse/Tokenizer.cpp \
 			src/runtime/casts.cpp \
 			src/runtime/gc.cpp \
@@ -482,6 +483,8 @@ src/lib/smudge-system.$(OBJEXT): src/lib/$(am__dirstamp) \
 	src/lib/$(DEPDIR)/$(am__dirstamp)
 src/lib/smudge-cast.$(OBJEXT): src/lib/$(am__dirstamp) \
 	src/lib/$(DEPDIR)/$(am__dirstamp)
+src/lib/smudge-math.$(OBJEXT): src/lib/$(am__dirstamp) \
+	src/lib/$(DEPDIR)/$(am__dirstamp)
 src/parse/$(am__dirstamp):
 	@$(MKDIR_P) src/parse
 	@: > src/parse/$(am__dirstamp)
@@ -550,6 +553,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-cast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-io.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-lang.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-math.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-stdlib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-system.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/parse/$(DEPDIR)/smudge-Tokenizer.Po@am__quote@
@@ -741,6 +745,20 @@ src/lib/smudge-cast.obj: src/lib/cast.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/cast.cpp' object='src/lib/smudge-cast.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-cast.obj `if test -f 'src/lib/cast.cpp'; then $(CYGPATH_W) 'src/lib/cast.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/cast.cpp'; fi`
+
+src/lib/smudge-math.o: src/lib/math.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-math.o -MD -MP -MF src/lib/$(DEPDIR)/smudge-math.Tpo -c -o src/lib/smudge-math.o `test -f 'src/lib/math.cpp' || echo '$(srcdir)/'`src/lib/math.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-math.Tpo src/lib/$(DEPDIR)/smudge-math.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/math.cpp' object='src/lib/smudge-math.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-math.o `test -f 'src/lib/math.cpp' || echo '$(srcdir)/'`src/lib/math.cpp
+
+src/lib/smudge-math.obj: src/lib/math.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-math.obj -MD -MP -MF src/lib/$(DEPDIR)/smudge-math.Tpo -c -o src/lib/smudge-math.obj `if test -f 'src/lib/math.cpp'; then $(CYGPATH_W) 'src/lib/math.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/math.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-math.Tpo src/lib/$(DEPDIR)/smudge-math.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/math.cpp' object='src/lib/smudge-math.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-math.obj `if test -f 'src/lib/math.cpp'; then $(CYGPATH_W) 'src/lib/math.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/math.cpp'; fi`
 
 src/parse/smudge-Tokenizer.o: src/parse/Tokenizer.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/parse/smudge-Tokenizer.o -MD -MP -MF src/parse/$(DEPDIR)/smudge-Tokenizer.Tpo -c -o src/parse/smudge-Tokenizer.o `test -f 'src/parse/Tokenizer.cpp' || echo '$(srcdir)/'`src/parse/Tokenizer.cpp
