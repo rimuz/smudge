@@ -25,12 +25,14 @@ namespace sm {
         smLibDecl(lang);
         smLibDecl(system);
         smLibDecl(cast);
+        smLibDecl(math);
 
         const LibDict_t libs = {
             smLibTuple("std.io!", io),
             smLibTuple("std.lang!", lang),
             smLibTuple("std.system!", system),
             smLibTuple("std.cast!", cast),
+            smLibTuple("std.math!", math),
         };
     }
 }
