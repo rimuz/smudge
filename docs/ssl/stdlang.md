@@ -201,7 +201,7 @@ of the origin string.
 Concatenates all the string equivalent of `list`'s elements (got via a call to
 elements' `to_string()` method) with the string as separator. `list` can be
 either a `List` or a `Tuple`.
-**Returns** the string, or **`null`** if `list` is neither a `List` nor a
+**Returns** the string or **`null`** if `list` is neither a `List` nor a
 `Tuple`.
 
 ### Method `ends_with (str)`
@@ -246,7 +246,7 @@ Same as `replace()`, but only the first occurrence is replaced.
 ### Method `split (separators[, skipEmpty = true])`
 Splits the string into tokens separated by **any** of the string
 `separators`'s **bytes**. If `skipEmpty` is set to `false`, are valid tokens
-empty ones, too. **Returns** a `List` containing the created tokens, or
+empty ones, too. **Returns** a `List` containing the created tokens or
 `null` if `separators` is not a string.
 
 ### Method `trim ()`
@@ -302,7 +302,7 @@ Concatenates the list with the given list or tuple `lst`.
 **Returns** the new list or `null` if `lst` is neither a list nor a tuple.
 
 ### Method `- (n)`
-**Returns** the list without the last `n` elements, or `null` if `n` is
+**Returns** the list without the last `n` elements or `null` if `n` is
 not an integer or negative.
 
 ### Method `* (times)`
@@ -317,7 +317,7 @@ repeating the objects in common only **once** (works well with lists containing
 
 ### Method `& (lst)`
 **Returns** a list containing **only** the objects **in common** between this
-list and `lst` (works well if each list has only unique elements), or `null`
+list and `lst` (works well if each list has only unique elements) or `null`
 if `lst` is neither a list nor a tuple.
 
 ### Method `== (lst)`
@@ -356,7 +356,7 @@ Adds object `obj` at the beginning of the list.
 
 ### Method `clone ([start = 0[, end = size()]])`
 **Returns** a list containing a copy of the objects from index `start`
-(included) to index `end` (excluded), or null if either `start` or `end`
+(included) to index `end` (excluded) or null if either `start` or `end`
 is not an integer or an out of range one. As always, indexes can be negative,
 in that case they will be counted from the end of the list.
 
@@ -384,7 +384,7 @@ from the list. Since the `end`'s default value is `start`'s plus one,
 when **only `start`** index is specified, **only** the object at that index
 will be removed. `start` and `end` can be negative, in that case they will be
 counted from the end. Does nothing when either `start` or `end` is not an
-integer, or the range given is broken (e.g. start < end). '**Returns** `null`.
+integer or the range given is broken (e.g. start < end). '**Returns** `null`.
 
 ### Method `copy_list (idx, lst)`
 Copies the content of list or tuple `lst` in the list starting from index idx
@@ -399,7 +399,7 @@ following the table:
 
 ### Method `find (obj)`
 Searches an equivalent object to `obj` (checked via `operator== ()`).
-**Returns** the index of the first occurence, or `null` if not found.
+**Returns** the index of the first occurence or `null` if not found.
 
 ### Method `count (obj)`
 Counts how many equivalent objects to `obj` (checked via `operator== ()`).
@@ -413,7 +413,7 @@ Reverses the list in place.
 **Returns** `null`.
 
 ### Method `sort ([reversed = false])`
-Sorts the list in place in ascending order if `reversed` is `false`, or
+Sorts the list in place in ascending order if `reversed` is `false` or
 descending order if `reversed` is `true`. The elements of the list are
 compared via the operator `<`, which can be overloaded. **Returns** `null`.
 
@@ -465,7 +465,7 @@ repeating the objects in common only **once** (works well with tuples containing
 
 ### Method `& (tup)`
 **Returns** a tuple containing **only** the objects **in common** between this
-tuple and `tup` (works well if each tuple has only unique elements), or `null`
+tuple and `tup` (works well if each tuple has only unique elements) or `null`
 if `tup` is neither a list nor a tuple.
 
 ### Method `== (lst)`
@@ -478,13 +478,13 @@ tuple's, `true` otherwise.
 
 ### Method `slice ([start = 0[, end = size()]])`
 **Returns** a tuple containing a copy of the objects from index `start`
-(included) to index `end` (excluded), or null if either `start` or `end`
+(included) to index `end` (excluded) or `null` if either `start` or `end`
 is not an integer or an out of range one. As always, indexes can be negative,
 in that case they will be counted from the end of the list.
 
 ### Method `get (idx)`
-**Returns** the element located at the given index `idx`, or `null` if `idx` is
-not an integer, or out of range. `idx` can be negative, in that case it will be
+**Returns** the element located at the given index `idx` or `null` if `idx` is
+not an integer or if out of range. `idx` can be negative, in that case it will be
 counted from the end.
 
 ### Method `list ([start = 0[, end = size()]])`
