@@ -44,7 +44,7 @@ Reads a character from `stdin`.
 `EOF` is entered `EOF` (e.g. Ctrl+D on Unix).
 
 ### Function `next ()`
-Inputs a string from `stdin` ending by **newline** character (`\n`), **tab** character (`\t`), or **spaces**.
+Inputs a string from `stdin` ending by **newline** character (`\n`), **tab** character (`\t`) or **spaces**.
 **Returns** the string, and never returns `null`.
 
 ### Function `<< (obj)`
