@@ -20,7 +20,12 @@
 #include <random>
 #include "lib/stdlib.h"
 
+
 namespace sm{
+    constexpr float_t PI = 3.141592653589793;
+    constexpr float_t DOUBLE_PI = 3.141592653589793*2;
+    constexpr float_t E = 2.718281828459045;
+
     namespace lib{
         namespace random {
             std::random_device random_device;
@@ -32,7 +37,9 @@ namespace sm{
         smLibDecl(math){
             smInitBox
 
-            smVar(PI, makeFloat(3.141592653589793));
+            smVar(PI, makeFloat(PI));
+            smVar(DOUBLE_PI, makeFloat(DOUBLE_PI));
+            smVar(E, makeFloat(E));
             smVar(NAN, makeFloat(NAN));
             smVar(INF, makeFloat(INFINITY))
 
@@ -187,6 +194,22 @@ namespace sm{
                 if(args.empty() || args[0].type != ObjectType::FLOAT)
                     return makeFalse();
                 return makeBool(std::isinf(args[0].f));
+            })
+
+            smFunc(deg, smLambda {
+                if(args[0].type == ObjectType::FLOAT)
+                    return makeFloat(args[0].f / DOUBLE_PI * 360.f);
+                else if(args[0].type == ObjectType::INTEGER)
+                    return makeFloat(args[0].i / DOUBLE_PI * 360.f);
+                return Object();
+            })
+
+            smFunc(rad, smLambda {
+                if(args[0].type == ObjectType::FLOAT)
+                    return makeFloat(args[0].f / 360.f * DOUBLE_PI);
+                else if(args[0].type == ObjectType::INTEGER)
+                    return makeFloat(args[0].i / 360.f * DOUBLE_PI);
+                return Object();
             })
 
             smReturnBox
