@@ -54,7 +54,7 @@ If `obj` is an instance, it **has to** have a method named **`to_string()`**.
 | Other | `u` |
 
 ### Function `classof (obj)`
-**Returns** the `class` of the object `obj`, or `null` if `obj` is neither a class instance nor a string.
+**Returns** the `class` of the object `obj` or `null` if `obj` is neither a class instance nor a string.
 
 ### Function `baseof (c[, n = 0])`
 **Returns** the `n`th super class of the class `c` or `null` if `c` is not a class or has not that super class.
