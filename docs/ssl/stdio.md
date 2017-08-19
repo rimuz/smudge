@@ -69,7 +69,13 @@ values (with `+` or `|` operators):
 | **`WRITE`**|    100       |       4     |  Opens an **output** stream.      |
 | **`READ`** |    1000      |       8     |  Opens an **input** stream.       |
 | **`RW`**   | 1100 | C | both **`READ`** and **`WRITE`**, default value.     |
-| **`TRUNC`**|    10000     |      10     | Deletes the content of the file   |
+| **`TRUNC`**| 10000 | 10 | Deletes the content of the file before writing    |
+
+Note that:
+- if neither **`READ`** nor **`WRITE`** is set, they will be both selected by the interpreter.
+- if both **`TRUNC`** and **`APP`** are set, wins **`TRUNC`**
+- if neither **`TRUNC`** nor **`APP`** is set and **`WRITE`** is set,
+the output will start from the beginning of the file.
 
 **Returns** the instance of **`FileStream`** or `null` if the stream can't be open.
 
