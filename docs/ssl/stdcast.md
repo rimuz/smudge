@@ -34,7 +34,7 @@ If `obj` is an instance, it **has to** have a method named **`to_string()`**.
 **Returns** the **Unicode codepoint** of the first character in the string `str` or `null` if `str` is not a valid string.
 
 ### Function `value (x)`
-**Returns** `x`. If `x` is a **reference**, **returns** the object pointed by `x`. 
+**Returns** `x`. If `x` is a **reference**, **returns** the object pointed by `x`.
 
 ### Function `typeof (obj)`
 **Returns** a string representing the type of the object `obj` following the rules:
@@ -67,3 +67,7 @@ If `obj` is an instance, it **has to** have a method named **`to_string()`**.
 
 ### Function `kin (c1, c2)`
 **Returns** `true` if class `c2` is **derived** from or the **same** as class `c1`. `c1` and `c2` can be also class instances, in that case their base classes will be used instead (see `classof()`).
+
+||
+|:---:|
+| [Home](https://smudgelang.github.io/smudge/) |
