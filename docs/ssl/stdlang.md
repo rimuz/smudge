@@ -328,6 +328,11 @@ list's, `false` otherwise.
 **Returns** `false` if `lst` is a list and its content is equivalent to this
 list's, `true` otherwise.
 
+### Method `get (idx)`
+**Returns** the element located at the given index `idx` or `null` if `idx` is
+not an integer or if out of range. `idx` can be negative, in that case it will be
+counted from the end.
+
 ### Method `reserve (size)`
 Reserves enough space in memory for the list to contain `size` elements.
 If `size` is not an integer or is negative, it does nothing.
@@ -495,6 +500,12 @@ Same as `slice()`, but returns a list.
 
 ### Method `empty ()`
 **Returns** `true` if the tuple is empty (has no elements), `false` otherwise.
+
+### Method `clone ([start = 0[, end = size()]])`
+**Returns** a tuple containing a copy of the objects from index `start`
+(included) to index `end` (excluded) or null if either `start` or `end`
+is not an integer or an out of range one. As always, indexes can be negative,
+in that case they will be counted from the end of the list.
 
 ### Method `to_string ()`
 **Returns** a string representation of the tuple, very similar to tuple's with
