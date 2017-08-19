@@ -624,6 +624,19 @@ namespace sm{
                     return ref;
                 })
 
+                smMethod(get, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+                    if(args.empty() || vec.empty() || args[0].type != ObjectType::INTEGER)
+                        return Object();
+                    integer_t i = args[0].i;
+                    integer_t sz = vec.size();
+
+                    if(!runtime::findIndex(i, i, sz))
+                        return Object();
+
+                    return vec[i];
+                })
+
                 smOpMethod(parse::TT_PLUS, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t* vec2;
@@ -1304,6 +1317,39 @@ namespace sm{
 
                 smMethod(empty, smLambda {
                     return makeInteger(smGetData(ObjectVec_t)->empty());
+                })
+
+                smMethod(clone, smLambda {
+                    ObjectVec_t& vec = *smGetData(ObjectVec_t);
+
+                    integer_t start = 0;
+                    integer_t size = vec.size();
+                    integer_t end = size;
+
+                    if(args.empty() || args[0].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[0].type == ObjectType::INTEGER){
+                        start = args[0].i;
+                        if(!runtime::findIndex(start, start, size))
+                            return Object();
+                    } else return Object();
+
+                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                        // do nothing!
+                    else if(args[1].type == ObjectType::INTEGER){
+                        end = args[1].i;
+                        if(end < 0){
+                            end += size;
+                            if(end < 0 || end < start)
+                                return Object();
+                        } else if(end > size)
+                            return Object();
+                        else if(end < start)
+                            return Object();
+                    } else return Object();
+
+                    return makeTuple(intp, false,
+                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(to_string, smLambda{
