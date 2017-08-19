@@ -95,7 +95,7 @@ Usually, we don't create an **inner-scope** directly with the braces like the ab
 but they will be created when using if statements and loops (that we'll see later).
 
 ### Variable declaration inside expressions
-In Smudge we **can put** variable declations bigger expressions as well:
+In Smudge we **can put** variable declarations bigger expressions as well:
 In this code both `x` and `y` will have value `100`.
 
 ```js
@@ -138,8 +138,16 @@ func callF(f, exclude, value = 0) {
 }
 ```
 
-Note: the one with `?` and `:` is called conditional expression,
+Note 1: the one with `?` and `:` is called conditional expression,
 and allows to inline an `if` condition in an expression (Again, too early to understand it at all).
+
+Note 2: the above syntax **doesn't apply** to **multiple var definitions**; take
+a look at the following code:
+
+```js
+(var x, y, z); // illegal syntax: ambiguous
+((var x), y, z); // legal syntax: making a tuple from 'null' and values of x and y
+```
 
 ### Functions, function arguments and variables
 When we declare a **function**, it will be stored in a **global** variable of the current box. So, we can treat them as **normal variables**.
