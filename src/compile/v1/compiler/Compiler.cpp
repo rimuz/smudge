@@ -297,6 +297,8 @@ namespace sm{
                         "expected operator before 'var'.");
                 }
 
+                bool empty = states.wasStatementEmpty;
+
                 while(1){
                     expect_next(*this, states, TT_TEXT);
                     unsigned idx = runtime::genOrdinaryId(*_rt,
@@ -312,6 +314,11 @@ namespace sm{
                         states.isLastOperand = false;
                         break;
                     } else if(it->type == TT_COMMA){
+                        if(!empty){
+                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                "multiple var definition is not allowed in bigger expressions.");
+                        }
+
                         out.insert(out.end(), {
                             bc(global ? DEFINE_GLOBAL_NULL_VAR : DEFINE_NULL_VAR),
                             bc(idx >> 8), bc(idx & 0xFF), POP
