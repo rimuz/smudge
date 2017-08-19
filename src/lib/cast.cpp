@@ -93,6 +93,10 @@ namespace sm{
                 return makeInteger(cp);
             })
 
+            smFunc(value, smLambda {
+                return args.empty() ? Object() : args[0];
+            })
+
             smFunc(is_int, smLambda {
                 return makeBool(!args.empty() && args[0].type == ObjectType::INTEGER);
             })
