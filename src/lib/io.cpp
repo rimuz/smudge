@@ -250,17 +250,36 @@ namespace sm{
                         return makeFalse();
 
                     std::string filepath (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
-                    std::ios_base::openmode mode = flags & TRUNC ? std::ios::trunc : std::ios::app;
+                    std::ios_base::openmode mode;
+                    bool to_set = false;
+
+                    if(flags & TRUNC)
+                        mode = std::ios::trunc;
+                    else if(flags & APPEND)
+                        mode = std::ios::app;
+                    else
+                        to_set = true;
 
                     if(flags & RW){
                         if(flags & READ){
-                            mode |= std::ios_base::in;
+                            if(to_set){
+                                mode = std::ios::in;
+                                to_set = false;
+                            } else
+                                mode |= std::ios::in;
                         }
+
                         if(flags & WRITE){
-                            mode |= std::ios::out;
+                            if(to_set)
+                                mode = std::ios::out;
+                            else
+                                mode |= std::ios::out;
                         }
                     } else {
-                        mode |= std::ios::in | std::ios::out;
+                        if(to_set)
+                            mode = std::ios::in | std::ios::out;
+                        else
+                            mode |= std::ios::in | std::ios::out;
                     }
 
                     if(flags & BINARY){
