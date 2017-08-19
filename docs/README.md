@@ -66,19 +66,19 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - [If, switch and loops](learn/if-and-loops.md)
     - Working in progress..
 - The **Smudge Standard Library** (the **SSL**)
+    - [std.cast](ssl/stdcast.md)
     - [std.io](ssl/stdio.md)
-        - [Class FileStream](ssl/stdio.md#class-filestream)
     - [std.lang](ssl/stdlang.md)
         - [Class String](ssl/stdlang.md#class-string)
         - [Class List](ssl/stdlang.md#class-list)
         - [Class Tuple](ssl/stdlang.md#class-tuple)
         - [Class StringIterator](ssl/stdlang#class-stringiterator)
         - [Class ListIterator](ssl/stdlang#class-listiterator)
+    - [std.math](ssl/stdmath.md)
+        - [Class FileStream](ssl/stdio.md#class-filestream)
     - [std.system](ssl/stdsystem.md)
         - [Class Chunk](ssl/stdsystem.md#class-chunk)
         - [Class ChunkIterator](ssl/stdsystem.md#class-chunkiterator)
-    - [std.cast](ssl/stdcast.md)
-    - [std.math](ssl/stdmath.md)
 
 ## For the contributors
 - Working in progress..
