@@ -78,7 +78,7 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
         - [Class Chunk](ssl/stdsystem.md#class-chunk)
         - [Class ChunkIterator](ssl/stdsystem.md#class-chunkiterator)
     - [std.cast](ssl/stdcast.md)
-    - Working in progress..
+    - [std.math](ssl/stdmath.md)
 
 ## For the contributors
 - Working in progress..
