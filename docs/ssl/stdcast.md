@@ -33,6 +33,9 @@ If `obj` is an instance, it **has to** have a method named **`to_string()`**.
 ### Function `ucode (str)`
 **Returns** the **Unicode codepoint** of the first character in the string `str` or `null` if `str` is not a valid string.
 
+### Function `value (x)`
+**Returns** `x`. If `x` is a **reference**, **returns** the object pointed by `x`. 
+
 ### Function `typeof (obj)`
 **Returns** a string representing the type of the object `obj` following the rules:
 
