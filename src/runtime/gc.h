@@ -92,6 +92,8 @@ namespace sm{
             std::vector<String>         stringConstants;
             compile::NamesMap_t         nameIds;
 
+            std::vector<void*>          sharedLibs;
+
             Runtime_t() : gc(this) {};
 
             Runtime_t(const Runtime_t&) = delete;
