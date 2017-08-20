@@ -30,6 +30,12 @@
 #include "compile/defs.h"
 #include "exec/Interpreter.h"
 
+#ifdef _SM_OS_WINDOWS
+// TODO
+#else
+#include <dlfcn.h>
+#endif
+
 namespace sm{
     using namespace ObjectType;
 
@@ -450,6 +456,13 @@ namespace sm{
 
             for(auto* box : boxes)
                 delete box;
+
+            #ifdef _SM_OS_WINDOWS
+            // TODO
+            #else
+            for(auto* lib : sharedLibs)
+                dlclose(lib);
+            #endif
 
             // keeping gcWorking true
         }
