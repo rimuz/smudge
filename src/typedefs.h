@@ -51,12 +51,19 @@
 #       warning "Compiling for an unsupported Operating System."
 #   endif
 
-#ifdef _SM_OS_WINDOWS
-#define _SM_FILE_SEPARATOR "\\"
-#define _SM_PATH_SEPARATOR ";"
-#else
-#define _SM_FILE_SEPARATOR "/"
-#define _SM_PATH_SEPARATOR ":"
+
+#   ifdef _SM_OS_WINDOWS
+#       define _SM_FILE_SEPARATOR "\\"
+#       define _SM_PATH_SEPARATOR ";"
+#       define _SM_DL_EXT ".dll"
+#   else
+#       define _SM_FILE_SEPARATOR "/"
+#       define _SM_PATH_SEPARATOR ":"
+#       ifdef _SM_OS_MACOS
+#           define _SM_DL_EXT ".dylib"
+#       else
+#           define _SM_DL_EXT ".so"
+#       endif
 #endif
 
 namespace sm{
