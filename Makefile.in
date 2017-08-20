@@ -119,7 +119,7 @@ am_smudge_OBJECTS = src/compile/v1/compiler/smudge-Compiler.$(OBJEXT) \
 	src/utils/unicode/smudge-utf8.$(OBJEXT) \
 	src/smudge-main.$(OBJEXT)
 smudge_OBJECTS = $(am_smudge_OBJECTS)
-smudge_LDADD = $(LDADD)
+smudge_DEPENDENCIES =
 smudge_LINK = $(CXXLD) $(smudge_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
@@ -319,7 +319,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS)
+smudge_CXXFLAGS = -O3 -std=c++11 -Wall -Wl,-E -I./src $(COMPILE_ARGS)
+smudge_LDADD = -ldl
 smudge_CFLAGS = 
 smudge_SOURCES = \
 			src/compile/v1/compiler/Compiler.cpp \
