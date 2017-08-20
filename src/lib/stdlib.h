@@ -48,7 +48,7 @@
         const sm::ObjectVec_t& args)
 
 #define smInitBox \
-    Box_t* thisBox = new Box_t(); \
+    sm::Box_t* thisBox = new sm::Box_t(); \
     thisBox->boxName = nBox;
 
 #define smReturnBox \
@@ -56,17 +56,17 @@
 
 #define smClass(Name) \
     { using namespace Name##Class; \
-    Class*& thisClass = c##Name;\
-    unsigned thisClassName = runtime::genOrdinaryId(rt, #Name); \
-    thisClass = new Class; \
+    sm::Class*& thisClass = c##Name;\
+    unsigned thisClassName = sm::runtime::genOrdinaryId(rt, #Name); \
+    thisClass = new sm::Class; \
     thisClass->boxName = thisBox->boxName; \
     thisClass->name = thisClassName; \
     thisClass->objects = {
 
 #define smEnd \
     }; \
-        Object clazz; \
-        clazz.type = ObjectType::CLASS; \
+        sm::Object clazz; \
+        clazz.type = sm::ObjectType::CLASS; \
         clazz.c_ptr = thisClass; \
         thisBox->objects[thisClassName] = std::move(clazz); \
     }
@@ -77,33 +77,33 @@
     const sm::ObjectVec_t& args) -> sm::Object
 
 #define smVar(Name, ...) \
-    setVar(rt, thisBox, #Name, (__VA_ARGS__));
+    sm::lib::setVar(rt, thisBox, #Name, (__VA_ARGS__));
 
 #define smFunc(Name, ...) \
-    setNativeFunc(thisBox, runtime::genOrdinaryId(rt, #Name), (__VA_ARGS__));
+    sm::lib::setNativeFunc(thisBox, sm::runtime::genOrdinaryId(rt, #Name), (__VA_ARGS__));
 
 #define smOperator(Op, ...) \
-    setNativeFunc(thisBox, runtime::operatorId(Op), (__VA_ARGS__));
+    sm::lib::setNativeFunc(thisBox, sm::runtime::operatorId(Op), (__VA_ARGS__));
 
 #define smIdFunc(Id, ...) \
-    setNativeFunc(thisBox, Id, (__VA_ARGS__));
+    sm::lib::setNativeFunc(thisBox, Id, (__VA_ARGS__));
 
 #define smMethod(MethodName, ...) \
-    { runtime::genOrdinaryId(rt, #MethodName), \
-        genFunc(thisBox, runtime::genOrdinaryId(rt, #MethodName), (__VA_ARGS__)) },
+    { sm::runtime::genOrdinaryId(rt, #MethodName), \
+        sm::lib::genFunc(thisBox, sm::runtime::genOrdinaryId(rt, #MethodName), (__VA_ARGS__)) },
 
 #define smOpMethod(Operator, ...) \
-    { runtime::operatorId(Operator), \
-    genFunc(thisBox, runtime::operatorId(Operator), (__VA_ARGS__)) },
+    { sm::runtime::operatorId(Operator), \
+        sm::lib::genFunc(thisBox, sm::runtime::operatorId(Operator), (__VA_ARGS__)) },
 
 #define smIdMethod(Id, ...) \
-    { Id, genFunc(thisBox, Id, (__VA_ARGS__)) },
+    { Id, sm::lib::genFunc(thisBox, Id, (__VA_ARGS__)) },
 
 #define smSetData(Type) \
-    setData<Type>(intp, self)
+    sm::lib::setData<Type>(intp, self)
 
 #define smGetData(Type) \
-    getData<Type>(intp, self)
+    sm::lib::getData<Type>(intp, self)
 
 #define smHas(Id) \
     (self.i_ptr->objects.find(Id) != self.i_ptr->objects.end())
