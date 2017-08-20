@@ -147,16 +147,28 @@ namespace sm{
                                     if(!isAlredyImported){
                                         _rt->boxNames.emplace_back(imported);
                                         std::replace(imported.begin(), imported.end(), '.', fileSeparator);
-                                        imported.append(".sm");
                                         unsigned id = _rt->boxNames.size()-1;
                                         bool found = false;
 
                                         for(const string_t& dir : paths){
                                             std::string path = dir + imported;
-                                            error::CodeSource* src = readf(path);
+                                            error::CodeSource* src = readf(path + ".sm");
                                             if(src){
                                                 _rt->sources.newSource(src);
                                                 found = true;
+                                                break;
+                                            } else {
+                                                Box_t* box;
+                                                path += _SM_DL_EXT;
+                                                if(load_native(path.c_str(), id, box)){
+                                                    if(!box)
+                                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                            std::string("dynamic library '") + path + "' is not a Smudge native box.");
+                                                    found = true;
+                                                    _rt->boxNames.back().push_back('!');
+                                                    _rt->boxes.push_back(box);
+                                                    _rt->sources.newSource(nullptr);
+                                                }
                                                 break;
                                             }
                                         }
