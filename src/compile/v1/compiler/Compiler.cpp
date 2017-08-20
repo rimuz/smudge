@@ -34,6 +34,12 @@
 using namespace sm::parse;
 using namespace sm::compile;
 
+#ifdef _SM_OS_WINDOWS
+// TODO
+#else
+#include <dlfcn.h>
+#endif
+
 namespace sm{
     namespace lib {
         oid_t idNew, idDelete, idToString, idHash, idIterate, idNext;
@@ -55,6 +61,7 @@ namespace sm{
                 size_t sep = filePath.find_last_of(fileSeparator);
                 if(sep == std::string::npos){
                     sep = 0;
+                    paths.emplace_back("." _SM_FILE_SEPARATOR);
                 } else {
                     paths.emplace_back(filePath.begin(), filePath.begin()+sep+1);
                     ++sep;
@@ -88,10 +95,10 @@ namespace sm{
 
             void Compiler::path(const string_t& path){
                 if(!path.empty()){
-                    if(path.back() != fileSeparator){
+                    if(path.back() != fileSeparator)
                         paths.emplace_back(path + fileSeparator);
-                    }
-                    paths.emplace_back(path);
+                    else
+                        paths.emplace_back(path);
                 }
             }
 
@@ -335,6 +342,24 @@ namespace sm{
                         break;
                     }
                 }
+            }
+
+            bool Compiler::load_native(const char* path, unsigned id, Box_t*& box) noexcept{
+                #ifdef _SM_OS_WINDOWS
+                // TODO
+                #else
+                void* library = dlopen(path, RTLD_LAZY);
+                if(!library)
+                    return false;
+                _rt->sharedLibs.emplace_back(library);
+                void* func = dlsym(library, "import_");
+                if(!func){
+                    box = nullptr;
+                    return true;
+                }
+                box = reinterpret_cast<lib::InitFunc_t>(func)(*_rt, id);
+                return true;
+                #endif
             }
 
             void expect_next(Compiler& cp, CompilerStates& states,
