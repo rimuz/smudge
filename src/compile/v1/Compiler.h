@@ -235,6 +235,13 @@ namespace sm {
                 */
                 ~Compiler() = default;
 
+                /*
+                 * if the box is not found,
+                 * it returns false, if the dynamic
+                 * library doesn't contain the smLibDecl
+                 * box will be set to nullptr
+                */
+                bool load_native(const char* path, unsigned id, Box_t*& box) noexcept;
                 static error::CodeSource* readf(const string_t& filePath);
             };
         }
