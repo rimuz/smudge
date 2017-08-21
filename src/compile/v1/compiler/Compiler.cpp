@@ -346,7 +346,7 @@ namespace sm{
 
             bool Compiler::load_native(const char* path, unsigned id, Box_t*& box) noexcept{
                 #ifdef _SM_OS_WINDOWS
-                // TODO
+                return false;
                 #else
                 void* library = dlopen(path, RTLD_LAZY);
                 if(!library)
