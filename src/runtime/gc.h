@@ -21,7 +21,6 @@
 #define _SM__RUNTIME__GC_H
 
 #include <atomic>
-#include <mutex>
 #include <chrono>
 #include <list>
 
@@ -76,7 +75,6 @@ namespace sm{
             static void exit() noexcept;
 
             GarbageCollector gc;
-            std::mutex globalMutex, threadsDataMutex;
 
             BoxVec_t boxes;
             Sources sources;

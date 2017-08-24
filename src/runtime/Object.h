@@ -22,7 +22,6 @@
 
 #include <vector>
 #include <atomic>
-#include <mutex>
 #include <cstddef>
 #include <utility>
 #include <ostream>
