@@ -1,9 +1,14 @@
 AUTOMAKE_OPTIONS = foreign
 
 bin_PROGRAMS = smudge
-smudge_CXXFLAGS = -O3 -std=c++11 -Wall -Wl,-E -I./src $(COMPILE_ARGS)
-smudge_LDADD = -ldl
+smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS)
 smudge_CFLAGS =
+
+if IS_WINDOWS
+else
+smudge_CXXFLAGS += -Wl,-E
+smudge_LDADD = -ldl
+endif
 
 smudge_SOURCES = \
 			src/compile/v1/compiler/Compiler.cpp \
