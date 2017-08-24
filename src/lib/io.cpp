@@ -250,6 +250,9 @@ namespace sm{
                         return makeFalse();
 
                     std::string filepath (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+                    #if fileSeparator != '/'
+                    std::replace(filepath.begin(), filepath.end(), '/', fileSeparator);
+                    #endif
                     std::ios_base::openmode mode;
                     bool to_set = false;
 
