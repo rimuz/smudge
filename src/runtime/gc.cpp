@@ -182,18 +182,18 @@ namespace sm{
                 exec::Interpreter& intp = hashable.i_ptr->intp;
 
                 if(!runtime::find<CLASS_INSTANCE>(hashable, func, lib::idHash)){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("function 'hash()' not found in ")
                         + runtime::errorString(intp, hashable));
                 } else if(!runtime::callable(func, hashable, f_ptr)){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'hash' is not a function in ")
                         + runtime::errorString(intp, hashable));
                 }
 
                 Object ret = intp.callFunction(f_ptr, {}, hashable, true);
                 if(ret.type != INTEGER){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'hash()' must return an int value in ")
                         + runtime::errorString(intp, hashable));
                 }
@@ -206,18 +206,18 @@ namespace sm{
                 Object self;
                 Function* f_ptr;
                 if(!runtime::find<BOX>(hashable, func, lib::idHash)){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("function 'hash()' not found in ")
                         + runtime::errorString(intp, hashable));
                 } else if(!runtime::callable(func, self, f_ptr)){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'hash' is not a function in ")
                         + runtime::errorString(intp, hashable));
                 }
 
                 Object ret = intp.callFunction(f_ptr, {}, self, true);
                 if(ret.type != INTEGER){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'hash()' must return an int value in ")
                         + runtime::errorString(intp, hashable));
                 }
@@ -226,7 +226,7 @@ namespace sm{
             }
 
             default:
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     runtime::errorString(intp, hashable)
                     + " is not an hashable object.");
                 return 0;
@@ -293,7 +293,7 @@ namespace sm{
             deleting = true;
 
             if(!runtime::callable(it->second, self, func_ptr))
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("'delete' is not a function in ")
                     + runtime::errorString(intp, self));
             // we don't care about the 'delete()' return value.
@@ -303,6 +303,12 @@ namespace sm{
 
     namespace runtime{
         std::chrono::steady_clock::time_point* Runtime_t::execStart = nullptr;
+        #ifdef _SM_OS_WINDOWS
+        std::vector<HMODULE> Runtime_t::sharedLibs;
+        #else
+        std::vector<void*> Runtime_t::sharedLibs;
+        #endif
+
         // Instance Pointer's Vector  -> IPVec_t
         using IPVec_t = std::vector<Instance*>;
 
@@ -441,6 +447,18 @@ namespace sm{
                 (static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(execEnd - *execStart).count())
                 / 1000.f) << " ms." << std::endl;
             }
+            freeLibraries();
+        }
+
+        void Runtime_t::freeLibraries() noexcept{
+            #ifdef _SM_OS_WINDOWS
+            for(HMODULE lib : sharedLibs)
+                FreeLibrary(lib);
+            #else
+            for(auto* lib : sharedLibs)
+                dlclose(lib);
+            #endif
+            sharedLibs.clear();
         }
 
         Runtime_t::~Runtime_t() {
@@ -456,13 +474,7 @@ namespace sm{
 
             for(auto* box : boxes)
                 delete box;
-
-            #ifdef _SM_OS_WINDOWS
-            // TODO
-            #else
-            for(auto* lib : sharedLibs)
-                dlclose(lib);
-            #endif
+            freeLibraries();
 
             // keeping gcWorking true
         }
