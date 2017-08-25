@@ -90,7 +90,11 @@ namespace sm{
             std::vector<String>         stringConstants;
             compile::NamesMap_t         nameIds;
 
-            std::vector<void*>          sharedLibs;
+            #ifdef _SM_OS_WINDOWS
+            static std::vector<HMODULE>        sharedLibs;
+            #else
+            static std::vector<void*>          sharedLibs;
+            #endif
 
             Runtime_t() : gc(this) {};
 
@@ -100,6 +104,7 @@ namespace sm{
             Runtime_t& operator=(Runtime_t&&) = default;
 
             string_t nameFromId(unsigned id) const;
+            static void freeLibraries() noexcept;
 
             ~Runtime_t();
         };
