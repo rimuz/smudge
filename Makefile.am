@@ -5,8 +5,9 @@ smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS)
 smudge_CFLAGS =
 
 if IS_WINDOWS
+smudge_CXXFLAGS += -Wl,--export-all-symbols,--out-implib,libsmudge.a
 else
-smudge_CXXFLAGS += -Wl,-E
+smudge_CXXFLAGS += -Wl,--export-dynamic
 smudge_LDADD = -ldl
 endif
 
