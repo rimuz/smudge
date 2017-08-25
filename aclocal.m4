@@ -225,7 +225,7 @@ AC_CACHE_CHECK([dependency style of $depcc],
     # This happens at least with the AIX C compiler.
     : > sub/conftest.c
     for i in 1 2 3 4 5 6; do
-      echo '#include "conftst'$i'.h"' >> sub/conftest.c
+      echo '#include "sm/conftst'$i'.h"' >> sub/conftest.c
       # Using ": > sub/conftst$i.h" creates only sub/conftst1.h with
       # Solaris 10 /bin/sh.
       echo '/* dummy */' > sub/conftst$i.h
