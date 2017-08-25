@@ -84,7 +84,7 @@ namespace sm{
 
                 error::CodeSource* src = readf(filePath);
                 if(!src)
-                    _rt->sources.msg(error::FATAL_ERROR,
+                    _rt->sources.msg(error::ET_FATAL_ERROR,
                         std::string("cannot open file '") + filePath + "'.");
                 _rt->sources.newSource(src);
             }
@@ -108,7 +108,7 @@ namespace sm{
                 bool reset;
 
                 if(_nfile >= _rt->sources._sources.size()){
-                    _rt->sources.msg(error::FATAL_ERROR, "no input files.");
+                    _rt->sources.msg(error::ET_FATAL_ERROR, "no input files.");
                     return false;
                 }
 
@@ -121,7 +121,7 @@ namespace sm{
                     std::ifstream file(src->sourceName);
 
                     if(!file.is_open())
-                        _rt->sources.msg(error::FATAL_ERROR,
+                        _rt->sources.msg(error::ET_FATAL_ERROR,
                             std::string("cannot open file '") + src->sourceName + "'.");
 
                     while(std::getline(file, line)){
@@ -130,7 +130,7 @@ namespace sm{
                     }
 
                     if(file.bad()){
-                        _rt->sources.msg(error::FATAL_ERROR,
+                        _rt->sources.msg(error::ET_FATAL_ERROR,
                             std::string("unable to read file '")
                             + src->sourceName + "'.");
                     }
@@ -196,7 +196,7 @@ namespace sm{
                     case TT_STRING:         case TT_TRUE_KW:
                     case TT_FALSE_KW:       case TT_NULL_KW:
                         if(states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 std::string("expected operator before ")
                                     + representation(*states.it) + ".");
                         }
@@ -205,7 +205,7 @@ namespace sm{
 
                     case TT_TEXT:
                         if(!states.isLastDot && states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 std::string("expected operator before ")
                                     + representation(*states.it) + ".");
                         }
@@ -215,7 +215,7 @@ namespace sm{
                     case TT_PRE_INC:
                     case TT_PRE_DEC:
                         if(states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 std::string("expected operator before ")
                                     + representation(*states.it) + ".");
                         }
@@ -224,7 +224,7 @@ namespace sm{
                     case TT_POST_INC:
                     case TT_POST_DEC:
                         if(!states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 std::string("expected operand before ")
                                     + representation(*states.it) + ".");
                         }
@@ -269,7 +269,7 @@ namespace sm{
                             break;
                         } else {
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected valid expression before 'eof'.");
                         }
                     }
@@ -300,7 +300,7 @@ namespace sm{
                 parse::TokenVec_t::const_iterator& it = states.it;
 
                 if(states.isLastOperand){
-                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                         "expected operator before 'var'.");
                 }
 
@@ -322,7 +322,7 @@ namespace sm{
                         break;
                     } else if(it->type == TT_COMMA){
                         if(!empty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "multiple var definition is not allowed in bigger expressions.");
                         }
 
@@ -346,30 +346,44 @@ namespace sm{
 
             bool Compiler::load_native(const char* path, unsigned id, Box_t*& box) noexcept{
                 #ifdef _SM_OS_WINDOWS
-                return false;
-                #else
-                void* library = dlopen(path, RTLD_LAZY);
-                if(!library)
-                    return false;
-                _rt->sharedLibs.emplace_back(library);
-                void* func = dlsym(library, "import_");
-                if(!func){
-                    box = nullptr;
+                    HMODULE library = LoadLibrary(path);
+                    if(!library)
+                        return false;
+                    _rt->sharedLibs.emplace_back(library);
+
+                    FARPROC func = GetProcAddress(library, "import_library");
+                    if(!func){
+                        box = nullptr;
+                        return true;
+                    }
+
+                    box = reinterpret_cast<lib::DynInitFunc_t>(func)(*_rt, id);
                     return true;
-                }
-                box = reinterpret_cast<lib::InitFunc_t>(func)(*_rt, id);
-                return true;
+                #else
+                    void* library = dlopen(path, RTLD_LAZY);
+                    if(!library)
+                        return false;
+                    _rt->sharedLibs.emplace_back(library);
+
+                    void* func = dlsym(library, "import_library");
+                    if(!func){
+                        box = nullptr;
+                        return true;
+                    }
+
+                    box = reinterpret_cast<lib::DynInitFunc_t>(func)(*_rt, id);
+                    return true;
                 #endif
             }
 
             void expect_next(Compiler& cp, CompilerStates& states,
                     enum_t expected) noexcept{
                 if(++states.it == states.end)
-                    cp._rt->sources.msg(error::ERROR, cp._nfile, states.it->ln, states.it->ch,
+                    cp._rt->sources.msg(error::ET_ERROR, cp._nfile, states.it->ln, states.it->ch,
                         std::string("expected ") + parse::representations[expected]
                         + " before 'eof'.");
                 else if(states.it->type != expected)
-                    cp._rt->sources.msg(error::ERROR, cp._nfile, states.it->ln, states.it->ch,
+                    cp._rt->sources.msg(error::ET_ERROR, cp._nfile, states.it->ln, states.it->ch,
                         std::string("expected ") + parse::representations[expected]
                         + " before " + representation(*states.it));
             }
@@ -377,7 +391,7 @@ namespace sm{
             bool is_next(Compiler& cp, CompilerStates& states,
                     enum_t expected) noexcept{
                 if(++states.it == states.end)
-                    cp._rt->sources.msg(error::ERROR, cp._nfile, states.it->ln, states.it->ch,
+                    cp._rt->sources.msg(error::ET_ERROR, cp._nfile, states.it->ln, states.it->ch,
                         std::string("expected ") + parse::representations[expected]
                         + " before 'eof'.");
                 return states.it->type == expected;
