@@ -40,7 +40,7 @@ namespace sm{
             ObjectDict_t::const_iterator it = dict->find(id);
 
             if(it != dict->end()){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + "' in the same scope");
             }
@@ -64,7 +64,7 @@ namespace sm{
             ObjectDict_t::const_iterator it = dict.find(id);
 
             if(it != dict.end()){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + (back.thisObject.type == ObjectType::NONE ?
                         (std::string("' in the class ")
@@ -91,7 +91,7 @@ namespace sm{
             ObjectDict_t::const_iterator it = dict->find(id);
 
             if(it != dict->end()){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + "' in the same scope");
             }
@@ -113,7 +113,7 @@ namespace sm{
             ObjectDict_t::const_iterator it = dict.find(id);
 
             if(it != dict.end()){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + (back.thisObject.type == ObjectType::NONE ?
                         (std::string("' in the class ")

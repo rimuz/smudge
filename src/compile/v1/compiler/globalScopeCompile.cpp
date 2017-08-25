@@ -13,7 +13,7 @@
  *      See the License for the specific language governing permissions and
  *      limitations under the License.
  *
- *      File compile/v1/compiler/gloablScopeCompile.cpp
+ *      File compile/v1/compiler/globalScopeCompile.cpp
  *
 */
 
@@ -53,10 +53,10 @@ namespace sm{
                 switch(it->type){
                     case TT_USING_KW: {
                         if(states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected operator before 'import'.");
                         } else if(states.currClass){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "cannot import inside a class.");
                         }
 
@@ -74,7 +74,7 @@ namespace sm{
                                     while(true){
                                         if(++it == states.end){
                                             --it;
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                 "expected valid expression before 'eof'.");
                                         }
 
@@ -83,7 +83,7 @@ namespace sm{
                                                 imported += it->content;
                                                 dot = false;
                                             } else {
-                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                     std::string("expected identifier before ") + representation(*it) + ".");
                                             }
                                         } else if(first){
@@ -92,7 +92,7 @@ namespace sm{
                                                 first = false;
                                                 second = true;
                                             } else {
-                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                     std::string("expected identifier before ") + representation(*it) + ".");
                                             }
                                         } else if(second){
@@ -102,7 +102,7 @@ namespace sm{
                                                 repeat = true;
                                                 break;
                                             } else {
-                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                     std::string("expected ';' before ") + representation(*it) + ".");
                                             }
                                         } else {
@@ -124,7 +124,7 @@ namespace sm{
                                             } else if(it->type == TT_ASSIGN){
                                                 first = true;
                                             } else {
-                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                     std::string("expected '.' before ") + representation(*it) + ".");
                                             }
                                         }
@@ -162,7 +162,7 @@ namespace sm{
                                                 path += _SM_DL_EXT;
                                                 if(load_native(path.c_str(), id, box)){
                                                     if(!box)
-                                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                             std::string("dynamic library '") + path + "' is not a Smudge native box.");
                                                     found = true;
                                                     _rt->boxNames.back().push_back('!');
@@ -177,7 +177,7 @@ namespace sm{
                                             _rt->boxNames.back().push_back('!');
                                             lib::LibDict_t::const_iterator cit = lib::libs.find(_rt->boxNames.back());
                                             if(cit == lib::libs.end() || _rt->noStd){
-                                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                     std::string("can't import '") + imported + "'. Make sure the file exists.");
                                             } else {
                                                 Class* box = cit->second(*_rt, id);
@@ -188,12 +188,12 @@ namespace sm{
                                         std::get<0>(states.toImport->back()) = id;
                                     }
                                 } else {
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         std::string("expected identifier before ") + representation(*it) + ".");
                                 }
                             } else {
                                 --it;
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     "expected identifier before 'eof'.");
                             }
                         } while(repeat);
@@ -202,11 +202,11 @@ namespace sm{
 
                     case TT_FUNC_KW:{
                         if(states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected operator before 'func'.");
                         } else if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected identifier, new, delete or overloadable operator before 'eof'.");
                         }
 
@@ -231,10 +231,10 @@ namespace sm{
                             case TT_ROUND_OPEN:
                                 if(++it == states.end ){
                                     --it;
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         "expected ')' before 'eof'.");
                                 } else if(it->type != TT_ROUND_CLOSE){
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         std::string("expected ')' before ")
                                         + representation(*it) + ".");
                                 }
@@ -244,10 +244,10 @@ namespace sm{
                             case TT_SQUARE_OPEN:
                                 if(++it == states.end ){
                                     --it;
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         "expected ']' before 'eof'.");
                                 } else if(it->type != TT_SQUARE_CLOSE){
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         std::string("expected ']' before ")
                                         + representation(*it) + ".");
                                 }
@@ -255,7 +255,7 @@ namespace sm{
                                 break;
 
                             default:
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     std::string("expected identifier, new, delete or overloadable operator before")
                                     + representation(*it) + ".");
                                 break;
@@ -271,7 +271,7 @@ namespace sm{
 
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected '(' or '{' before 'eof'.");
                         }
 
@@ -294,7 +294,7 @@ namespace sm{
                         while(1) {
                             if(++it == states.end){
                                 --it;
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     "expected ')' or identifier before 'eof'.");
                             } else if(it->type == TT_ROUND_CLOSE){
                                 roundClose = true;
@@ -303,7 +303,7 @@ namespace sm{
                                 size_t arg_id = runtime::genOrdinaryId(*_rt, it->content);
                                 if(++it == states.end){
                                     --it;
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         "expected ',' or '=' before 'eof'.");
                                 } else if(it->type == TT_COMMA || (roundClose = it->type == TT_ROUND_CLOSE)){
                                     size_t name_id = arg_id - runtime::idsStart;
@@ -321,10 +321,10 @@ namespace sm{
                                     for (int i = 0; i != 2; ++i){ /* three varargs dots!*/
                                         if(++it == states.end){
                                             --it;
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                 "expected '.' before 'eof'.");
                                         } else if(it->type != TT_DOT){
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                 std::string("expected '.' before ")
                                                 + representation(*it) + ".");
                                         }
@@ -332,18 +332,18 @@ namespace sm{
 
                                     if(++it == states.end){
                                         --it;
-                                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                             "expected ')' before 'eof'.");
                                     } else if (it->type != TT_ROUND_CLOSE){
                                         if(it->type == TT_COMMA){
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                 "VARARG argument must be the last argument"
                                                 " in the function definition.");
                                         } else if(it->type == TT_ASSIGN){
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                 "VARARG argument cannot have a default value.");
                                         } else {
-                                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                 std::string("expected ')' before ")
                                                 + representation(*it) + ".");
                                         }
@@ -354,12 +354,12 @@ namespace sm{
                                     roundClose = true;
                                     break;
                                 } else {
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         std::string("expected ',' or '=' before ")
                                         + representation(*it) + ".");
                                 }
                             } else {
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     std::string("expected ')' or identifier before ")
                                     + representation(*it) + ".");
                             }
@@ -368,7 +368,7 @@ namespace sm{
                         if(roundClose){
                             if(++it == states.end){
                                 --it;
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     "expected '{' before 'eof'.");
                             } else if(it->type == TT_CURLY_OPEN) {
                                 states.parStack.emplace_back(FUNCTION_BODY);
@@ -390,7 +390,7 @@ namespace sm{
 
                     case TT_CLASS_KW: {
                         if(states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected operator before 'class'.");
                         }
 
@@ -452,7 +452,7 @@ namespace sm{
                     case TT_SEMICOLON:{
                         if(!states.isStatementEmpty){
                             if(!states.isLastOperand){
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     "expected operand before ';'.");
                             }
 
@@ -472,7 +472,7 @@ namespace sm{
 
                     case TT_CURLY_CLOSE:{
                         if(states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected operator before '}'.");
                         }
 
@@ -501,7 +501,7 @@ namespace sm{
                     }
 
                     default: {
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                             std::string("expected class, function, import, var before ")
                             + representation(*it) + ".");
                     }

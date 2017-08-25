@@ -115,12 +115,12 @@ namespace sm {
 
                     Object func;
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(_self, func, ID)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("can't find operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() in " + runtime::errorString(intp, _self));
                     } else if(!runtime::callable(func, self, fn)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() is not a function in " + runtime::errorString(intp, _self));
@@ -132,12 +132,12 @@ namespace sm {
                     Object func;
                     mode = CALL_COMPARE_FUNCTION;
                     if(!runtime::find<ObjectType::BOX>(_self, func, ID)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("can't find operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() in " + runtime::errorString(intp, _self));
                     } else if(!runtime::callable(func, self, fn)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() is not a function in " + runtime::errorString(intp, _self));
@@ -146,7 +146,7 @@ namespace sm {
                 }
 
                 default:
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("can't find operator") +
                         parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                         + "() in " + runtime::errorString(intp, self));
@@ -163,7 +163,7 @@ namespace sm {
                         case ObjectType::FLOAT:
                             return compare<float_t>(self.i, obj.f);
                         default:
-                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
                                 parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                                 + "() between <int> and " + runtime::errorString(intp, self));
@@ -177,7 +177,7 @@ namespace sm {
                         case ObjectType::FLOAT:
                             return compare<float_t>(self.f, obj.f);
                         default:
-                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
                                 parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                                 + "() between <float> and " + runtime::errorString(intp, self));
@@ -187,7 +187,7 @@ namespace sm {
                 case STRING_COMPARE: {
                     if(obj.type == ObjectType::STRING)
                         return compare<const String&>(self.s_ptr->str, obj.s_ptr->str);
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("can't perform operator") +
                         parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                         + "() between <string> and " + runtime::errorString(intp, self));
@@ -216,7 +216,7 @@ namespace sm {
                         case ObjectType::FLOAT:
                             return Comparator<TT>::template compare<integer_t>(lhs.i, rhs.f);
                         default:
-                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
                                 parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                                 + "() between <int> and " + runtime::errorString(intp, rhs));
@@ -230,7 +230,7 @@ namespace sm {
                         case ObjectType::FLOAT:
                             return Comparator<TT>::template compare<float_t>(lhs.f, rhs.f);
                         default:
-                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
                                 parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                                 + "() between <float> and " + runtime::errorString(intp, rhs));
@@ -240,7 +240,7 @@ namespace sm {
                 case ObjectType::STRING: {
                     if(rhs.type == ObjectType::STRING)
                         return Comparator<TT>::template compare<const String&>(lhs.s_ptr->str, rhs.s_ptr->str);
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("can't perform operator") +
                         parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                         + "() between <string> and " + runtime::errorString(intp, rhs));
@@ -252,12 +252,12 @@ namespace sm {
                     Function* fn;
 
                     if(!runtime::find<ObjectType::BOX>(lhs, func, Comparator<TT>::ID)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("can't find operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() in " + runtime::errorString(intp, lhs));
                     } else if(!runtime::callable(func, self, fn)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() is not a function in " + runtime::errorString(intp, lhs));
@@ -272,12 +272,12 @@ namespace sm {
                     Function* fn;
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(lhs, func, Comparator<TT>::ID)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("can't find operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() in " + runtime::errorString(intp, lhs));
                     } else if(!runtime::callable(func, self, fn)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("operator") +
                             parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
                             + "() is not a function in " + runtime::errorString(intp, lhs));

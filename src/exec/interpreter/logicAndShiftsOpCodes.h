@@ -35,7 +35,7 @@ namespace sm{
             _OcFloatError(const Interpreter& in) : intp(&in) {}
 
             inline float operator() (float_t a, float_t b){
-                intp->rt->sources.printStackTrace(*intp, error::ERROR,
+                intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
                     std::string("cannot perform 'operator") + Operator
                     + "' with floating-point numbers.");
                 return 0.f;

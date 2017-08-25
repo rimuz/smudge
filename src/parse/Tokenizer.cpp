@@ -152,7 +152,7 @@ namespace sm{
                         unsigned codePoint = static_cast<unsigned>(std::stoul(unihex, nullptr, 16));
                         unicode_t ucode = uByCodepoint(codePoint);
                         if(ucode == UTF8_ERROR){
-                            states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                            states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                 "Unicode codepoint too big");
                         }
                         String::uAppend(tok.content, ucode);
@@ -175,7 +175,7 @@ namespace sm{
                         unsigned codePoint = static_cast<unsigned>(std::stoul(unihex, nullptr, 16));
                         unicode_t ucode = uByCodepoint(codePoint);
                         if(ucode == UTF8_ERROR){
-                            states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                            states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                 "Unicode codepoint too big");
                         }
                         String::uAppend(tok.content, ucode);
@@ -183,7 +183,7 @@ namespace sm{
                     }
 
                     default:{
-                        states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                        states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                             "invalid escape character");
                     }
                 }
@@ -206,7 +206,7 @@ namespace sm{
                     try {
                         tok.i = std::stol(tok.content, nullptr, base);
                     } catch(std::out_of_range){
-                        states.rt->sources.msg(error::ERROR, tok.source, tok.ln, tok.ch,
+                        states.rt->sources.msg(error::ET_ERROR, tok.source, tok.ln, tok.ch,
                             "integer unsupported by Smudge (too big)");
                     }
                 } else {
@@ -214,7 +214,7 @@ namespace sm{
                     try {
                         tok.f = std::stod(tok.content, nullptr);
                     } catch(std::out_of_range){
-                        states.rt->sources.msg(error::ERROR, tok.source, tok.ln, tok.ch,
+                        states.rt->sources.msg(error::ET_ERROR, tok.source, tok.ln, tok.ch,
                             "floating-point unsupported by Smudge (too big)");
                     }
                 }
@@ -305,7 +305,7 @@ namespace sm{
                     }
 
                     if(!foundOperator){
-                        states.rt->sources.msg(error::ERROR, tok.source, tok.ln, tok.ch,
+                        states.rt->sources.msg(error::ET_ERROR, tok.source, tok.ln, tok.ch,
                             std::string("can't parse operator: \'") + tok.content + "\'.");
                     }
 
@@ -516,7 +516,7 @@ namespace sm{
                         continue;
                     if(back && back->type == TT_UNPARSED_NUMBER){
                         if(back->i){ // if it is floating point, octal, hexadecimal, binary or has open exp.
-                            states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                            states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                 "\'.\' not expected here");
                         } else {
                             back->i |= UNH_FLOATING_POINT;
@@ -552,7 +552,7 @@ namespace sm{
                                 case '2': case '3': case '4':
                                 case '5': case '6': case '7':{
                                     if(back->i & UNH_BINARY){
-                                        states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                        states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                             "expected binary digit after '0b'");
                                     } else {
                                         back->content.push_back(ch);
@@ -562,10 +562,10 @@ namespace sm{
 
                                 case '8': case '9':{
                                     if(back->i & UNH_BINARY){
-                                        states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                        states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                             "expected binary digit after '0b'");
                                     } else if (back->i & UNH_OCTAL){
-                                        states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                        states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                             "expected octal digit after '0'");
                                     } else {
                                         back->content.push_back(ch);
@@ -574,7 +574,7 @@ namespace sm{
                                 }
 
                                 default:{
-                                    states.rt->sources.msg(error::FATAL_ERROR, states.source, states.file_line, states.file_char,
+                                    states.rt->sources.msg(error::ET_FATAL_ERROR, states.source, states.file_line, states.file_char,
                                         "something gone wrong (err 1).");
                                 }
                             }
@@ -609,7 +609,7 @@ namespace sm{
                                 if(back->i & UNH_HEXADECIMAL){
                                     back->content.push_back(ch);
                                 } else {
-                                    states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                    states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                         "unexpected hex digit in a non-hex literal");
                                 }
                                 break;
@@ -624,7 +624,7 @@ namespace sm{
                                         back->content.push_back(ch);
                                         back->i |= UNH_BINARY;
                                     } else {
-                                        states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                        states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                             "unexpected hex digit in a non-hex literal");
                                     }
                                 }
@@ -635,7 +635,7 @@ namespace sm{
                             case 'E':{
                                 if(back->i & UNH_FLOATING_POINT){
                                     if(back->i & UNH_OPEN_EXPONENT || back->i & UNH_ALREDY_OPEN_EXPONENT){
-                                        states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                        states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                             "cannot perform exponentiation of exponentiation");
                                     } else {
                                         back->content.push_back(ch);
@@ -645,7 +645,7 @@ namespace sm{
                                 } else if(back->i & UNH_HEXADECIMAL){
                                     back->content.push_back(ch);
                                 } else {
-                                    states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                    states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                         "unexpected hex digit in a non-hex number literal");
                                 }
                                 break;
@@ -658,14 +658,14 @@ namespace sm{
                                     back->i |= UNH_HEXADECIMAL;
                                     break;
                                 } else {
-                                    states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                    states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                         "unexpected character in number literal");
                                 }
                                 break;
                             }
 
                             default:{
-                                states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                                states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                                     "unexpected character in number literal");
                                 break;
                             }
@@ -692,7 +692,7 @@ namespace sm{
                                 ch_idx += 2;
                                 while(true){
                                     if(ch_idx == code.size()){
-                                        states.rt->sources.msg(error::ERROR, states.source,
+                                        states.rt->sources.msg(error::ET_ERROR, states.source,
                                             states.file_line, states.file_char,
                                                 "multi line comment never closed");
                                     }
@@ -770,19 +770,19 @@ namespace sm{
                     submit(tokens, states, TT_USELESS);
                     if(states.double_quote || states.single_quote)
                         continue;
-                    states.rt->sources.msg(error::ERROR, states.source, states.file_line, states.file_char,
+                    states.rt->sources.msg(error::ET_ERROR, states.source, states.file_line, states.file_char,
                         "illegal character in code");
                 }
             }
             submit(tokens, states, TT_UNPARSED);
 
             if(states.single_quote || states.double_quote){
-                states.rt->sources.msg(error::ERROR, states.source, tokens.back().ln, tokens.back().ch,
+                states.rt->sources.msg(error::ET_ERROR, states.source, tokens.back().ln, tokens.back().ch,
                     "string literal never closed");
             }
 
             if(states.back_slash){
-                states.rt->sources.msg(error::ERROR, states.source, tokens.back().ln, tokens.back().ch,
+                states.rt->sources.msg(error::ET_ERROR, states.source, tokens.back().ln, tokens.back().ch,
                     "escape character reaches eof");
             }
             return tokens;

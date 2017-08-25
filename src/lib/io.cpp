@@ -182,11 +182,11 @@ namespace sm{
                 Function* f_ptr;
 
                 if(!runtime::find<ObjectType::CLASS_INSTANCE>(inst, func, smId("open")))
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'open' not found in ")
                         + runtime::errorString(intp, inst));
                 else if(!runtime::callable(func, objSelf = inst, f_ptr))
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'open' is not a function in ")
                         + runtime::errorString(intp, inst));
 

@@ -145,7 +145,7 @@ namespace sm{
                     _OcCase(IMPORT, Import);
 
                     default: {
-                        rt->sources.printStackTrace(*this, error::FATAL_ERROR,
+                        rt->sources.printStackTrace(*this, error::ET_FATAL_ERROR,
                             std::string("unsupported instruction's opcode (")
                             + std::to_string(static_cast<unsigned>(*addr)) + ").");
                     }
@@ -193,7 +193,7 @@ namespace sm{
                         inits.emplace_back(self, nullptr);
                         if(!runtime::callable(it->second, std::get<0>(inits.back()),
                                 std::get<1>(inits.back()))){
-                            rt->sources.printStackTrace(*this, error::ERROR,
+                            rt->sources.printStackTrace(*this, error::ET_ERROR,
                                 std::string("'<init>' is not a function in ")
                                 + runtime::errorString(*this, self));
                         }
@@ -211,7 +211,7 @@ namespace sm{
                 if(it != base->objects.end()){
                     Object newFunc = it->second;
                     if(!runtime::callable(newFunc, self, func_ptr))
-                        rt->sources.printStackTrace(*this, error::ERROR,
+                        rt->sources.printStackTrace(*this, error::ET_ERROR,
                             std::string("'new' is not a function in ")
                             + runtime::errorString(*this, self));
                     // such as <init>(), we don't care about the 'new()' return value.

@@ -139,15 +139,15 @@ namespace sm{
 
                     case TT_IF_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'if'.");
                         }
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected '(' before 'eof'.");
                         } else if(it->type != TT_ROUND_OPEN){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 std::string("expected '(' before ") + representation(*it) + ".");
                         }
 
@@ -158,22 +158,22 @@ namespace sm{
                     }
 
                     case TT_ELSE_KW:{
-                        _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                             "epected 'if' before 'else'.");
                         break;
                     }
 
                     case TT_WHILE_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'while'.");
                         }
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected '(' before 'eof'.");
                         } else if(it->type != TT_ROUND_OPEN){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 std::string("expected '(' before ") + representation(*it) + ".");
                         }
 
@@ -186,12 +186,12 @@ namespace sm{
 
                     case TT_DO_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'do'.");
                         }
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected '{' or expression before 'eof'.");
                         }
 
@@ -211,15 +211,15 @@ namespace sm{
 
                     case TT_FOR_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'for'.");
                         }
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected '(' before 'eof'.");
                         } else if(it->type != TT_ROUND_OPEN){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 std::string("expected '(' before ") + representation(*it) + ".");
                         }
 
@@ -253,15 +253,15 @@ namespace sm{
 
                     case TT_SWITCH_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'switch'.");
                         }
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected '(' before 'eof'.");
                         } else if(it->type != TT_ROUND_OPEN){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 std::string("expected '(' before ") + representation(*it) + ".");
                         }
 
@@ -273,12 +273,12 @@ namespace sm{
 
                     case TT_CASE_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'case'.");
                         }
 
                         if(info.parType != SWITCH_BODY){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "'case' allowed only inside a switch block.");
                         }
 
@@ -308,23 +308,23 @@ namespace sm{
 
                     case TT_DEFAULT_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'default'.");
                         }
 
                         if(info.parType != SWITCH_BODY){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "'default' allowed only inside a switch block.");
                         }
 
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ':' before 'eof'.");
                         }
 
                         if(it->type != TT_COLON){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ':' after 'default'.");
                         }
 
@@ -344,21 +344,21 @@ namespace sm{
 
                     case TT_BREAK_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'break'.");
                         }
 
                         if(!info.isCodeBlock()){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "'break' allowed only in a distinct statement inside a cycle.");
                         }
 
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' after 'break'.");
                         } else if(it->type != TT_SEMICOLON){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' after 'break'.");
                         }
                         --it;
@@ -368,7 +368,7 @@ namespace sm{
 
                         for(ParStack_t::reverse_iterator rit = states.parStack.rbegin(); rit != states.parStack.rend(); ++rit){
                             if(rit->parType == RETURN_STATEMENT){
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     "expected ';' before 'break'.");
                             } else if(rit->isCurly()){
                                 if(rit->parType == WHILE_BODY || rit->parType == FOR_BODY
@@ -380,7 +380,7 @@ namespace sm{
                                     loop = &*rit;
                                     break;
                                 } else if(rit->parType == FUNCTION_BODY){
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         "'break' is not allowed outside loops.");
                                 }
                                 ++blocksToClose;
@@ -391,12 +391,12 @@ namespace sm{
                                     loop = &*rit;
                                     break;
                                 } else if(rit->parType == FUNCTION_STATEMENT){
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         "'break' is not allowed outside loops.");
                                 }
                                 ++blocksToClose;
                             } else {
-                                _rt->sources.msg(error::BUG, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_BUG, _nfile, it->ln, it->ch,
                                     "expected only CODE_BLOCKs outside CODE_BLOCK (err #1)");
                             }
                         }
@@ -411,7 +411,7 @@ namespace sm{
                                 });
                             } else {
                                 if(blocksToClose >> 16){
-                                    _rt->sources.msg(error::BUG, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_BUG, _nfile, it->ln, it->ch,
                                         "cannot close more than 65535 scopes.");
                                 }
 
@@ -436,21 +436,21 @@ namespace sm{
 
                     case TT_CONTINUE_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'continue'.");
                         }
 
                         if(!info.isCodeBlock()){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "'continue' allowed only in a distinct statement inside a cycle.");
                         }
 
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' after 'continue'.");
                         } else if(it->type != TT_SEMICOLON){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' after 'continue'.");
                         }
                         --it;
@@ -460,7 +460,7 @@ namespace sm{
 
                         for(ParStack_t::reverse_iterator rit = states.parStack.rbegin(); rit != states.parStack.rend(); ++rit){
                             if(rit->parType == RETURN_STATEMENT){
-                                _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                     "expected ';' before 'continue'.");
                             } else if(rit->isCurly()){
                                 if(rit->parType == WHILE_BODY || rit->parType == FOR_BODY
@@ -468,7 +468,7 @@ namespace sm{
                                     loop = &*rit;
                                     break;
                                 } else if(rit->parType == FUNCTION_BODY){
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         "'continue' is not allowed outside loops.");
                                 }
                                 ++blocksToClose;
@@ -478,12 +478,12 @@ namespace sm{
                                     loop = &*rit;
                                     break;
                                 } else if(rit->parType == FUNCTION_STATEMENT){
-                                    _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                         "'break' is not allowed outside loops.");
                                 }
                                 ++blocksToClose;
                             } else {
-                                _rt->sources.msg(error::BUG, _nfile, it->ln, it->ch,
+                                _rt->sources.msg(error::ET_BUG, _nfile, it->ln, it->ch,
                                     "expected only CODE_BLOCKs outside CODE_BLOCK (err #2)");
                             }
                         }
@@ -498,7 +498,7 @@ namespace sm{
                                 });
                             } else {
                                 if(blocksToClose >> 16){
-                                    _rt->sources.msg(error::BUG, _nfile, it->ln, it->ch,
+                                    _rt->sources.msg(error::ET_BUG, _nfile, it->ln, it->ch,
                                         "cannot close more than 65535 scopes.");
                                 }
 
@@ -523,10 +523,10 @@ namespace sm{
 
                     case TT_RETURN_KW:{
                         if(!states.wasStatementEmpty){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected ';' before 'return'.");
                         } else if(!info.isCodeBlock()){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "'return' is allowed only in a distinct statement inside function.");
                         }
 
@@ -538,16 +538,16 @@ namespace sm{
 
                     case TT_REF_KW:{
                         if(states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 "expected operator before 'ref'.");
                         }
 
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 "expected '(' before 'eof'.");
                         } else if(it->type != TT_ROUND_OPEN){
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 std::string("expected '(' before ") + representation(*it) + ".");
                         }
 
@@ -561,7 +561,7 @@ namespace sm{
                     case TT_NULL_KW:{
                         if(++it == states.end){
                             --it;
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 "expected '(' or ';' before 'eof'.");
                         } else if(it->type == TT_ROUND_OPEN){
                             states.operators.emplace_back(TT_ROUND_OPEN, parse::operatorPriorities[TT_ROUND_OPEN - TT_OPERATORS_START]);
@@ -598,7 +598,7 @@ namespace sm{
                             states.isStatementEmpty = true;
                             states.isLastOperand = false;
                         } else {
-                            _rt->sources.msg(error::ERROR, _nfile, states.it->ln, states.it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, states.it->ln, states.it->ch,
                                 "illegal use of 'super'.");
                         }
                         break;
@@ -651,7 +651,7 @@ namespace sm{
                         if(info.isSpecialStatement()){
                             info.parType -= _STATEMENTS_START - _CURLY_START;
                         } else if(!info.isCurly()){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected valid expression before '{'.");
                         } else {
                             states.parStack.emplace_back(CODE_BLOCK);
@@ -664,7 +664,7 @@ namespace sm{
 
                     case TT_ELVIS:{
                         if(!states.isLastOperand){
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected operand before '?:'.");
                         }
 
@@ -684,7 +684,7 @@ namespace sm{
                             states.isLastDot = true;
                             // keeps isLastOperand to true
                         } else {
-                            _rt->sources.msg(error::ERROR, _nfile, it->ln, it->ch,
+                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected operand before '.'");
                         }
                         break;

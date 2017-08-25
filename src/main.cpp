@@ -165,7 +165,7 @@ int main(int argc, char** argv){
             Function* initFn;
             Object self;
             if(!runtime::callable(it->second, self, initFn)){
-                rt.sources.msg(error::ERROR, std::string("'<init>' is not a function in box '")
+                rt.sources.msg(error::ET_ERROR, std::string("'<init>' is not a function in box '")
                     + rt.boxNames[0] + "'.");
             }
 
@@ -179,7 +179,7 @@ int main(int argc, char** argv){
             Function* newFn;
             Object self;
             if(!runtime::callable(it->second, self, newFn)){
-                rt.sources.msg(error::ERROR, std::string("'new' is not a function in box '")
+                rt.sources.msg(error::ET_ERROR, std::string("'new' is not a function in box '")
                     + rt.boxNames[0] + "'.");
             }
 
@@ -204,14 +204,14 @@ int main(int argc, char** argv){
         }
 
         if(it == rt.boxes[0]->objects.end()){
-            rt.sources.msg(error::ERROR, std::string("cannot find 'main()' function in box '")
+            rt.sources.msg(error::ET_ERROR, std::string("cannot find 'main()' function in box '")
                 + rt.boxNames[0] + "'.");
         }
 
         Function* mainFn;
         Object self;
         if(!runtime::callable(it->second, self, mainFn)){
-            rt.sources.msg(error::ERROR, std::string("'main' is not a function in box '")
+            rt.sources.msg(error::ET_ERROR, std::string("'main' is not a function in box '")
                 + rt.boxNames[0] + "'.");
         }
 

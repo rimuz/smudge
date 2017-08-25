@@ -160,7 +160,7 @@ namespace sm{
             oit = objects.find(id);
 
             if(oit == objects.end()){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot find symbol '")
                     + intp.rt->nameFromId(id) + "'");
             }
@@ -210,7 +210,7 @@ namespace sm{
                         return;
                     }
 
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
                 }
@@ -246,7 +246,7 @@ namespace sm{
                         to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
                     }
 
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
                 }
@@ -258,7 +258,7 @@ namespace sm{
                         return;
                     }
 
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
                 }
@@ -271,13 +271,13 @@ namespace sm{
                         return;
                     }
 
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
                 }
 
                 default:
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
             }
@@ -290,7 +290,7 @@ namespace sm{
 
             bool isString = tos.type == ObjectType::STRING;
             if(tos.type != ObjectType::CLASS_INSTANCE && !isString){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "for-each supported only for objects (no PODs)");
             }
 
@@ -299,11 +299,11 @@ namespace sm{
 
             if(!isString){
                 if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, func, lib::idIterate)){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find 'iterate' in ")
                         + runtime::errorString(intp, tos) + " (required by for-each)");
                 } else if(!runtime::callable(func, tos, f_ptr)){
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'iterate' is not a function in ")
                         + runtime::errorString(intp, tos) + " (required by for-each)");
                 }
@@ -321,18 +321,18 @@ namespace sm{
             _OcValue(tos);
 
             if(tos.type != ObjectType::CLASS_INSTANCE){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "'iterate()' did not return a function.");
             }
 
             Object func;
             Function* f_ptr;
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, func, lib::idNext)){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot find 'next' in ")
                     + runtime::errorString(intp, tos) + " (required by for-each)");
             } else if(!runtime::callable(func, tos, f_ptr)){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("'next' is not a function in ")
                     + runtime::errorString(intp, tos) + " (required by for-each)");
             }
@@ -348,19 +348,19 @@ namespace sm{
             _OcValue(ref);
 
             if(ref.type != ObjectType::INTEGER){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("expected integer inside super call "
                         "(found ") + runtime::errorString(intp, ref)
                         + " instead)");
             } else if(ref.i < 0){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "super call's integer must be greater than zero");
             }
             unsigned super = ref.i;
 
             auto& back = intp.funcStack.back();
             if(back.thisObject.type == ObjectType::NONE){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("'super' is <null>, unable to find '")
                     + intp.rt->nameFromId(id) + "'");
             }
@@ -368,7 +368,7 @@ namespace sm{
             std::vector<Class*>& supers = back.thisObject.i_ptr->base->bases;
 
             if(supers.size() <= super){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("class '")
                     + intp.rt->nameFromId(back.thisObject.i_ptr->base->name)
                     + "' has not super n." + std::to_string(super));
@@ -394,7 +394,7 @@ namespace sm{
                 to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
             }
 
-            intp.rt->sources.printStackTrace(intp, error::ERROR,
+            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                 std::string("cannot find function '")
                 + intp.rt->nameFromId(id) + "' in <super> of class '"
                 + intp.rt->nameFromId(supers[super]->name) + "'");

@@ -97,14 +97,14 @@ namespace sm{
                         if(runtime::callable(out, self, f_ptr)){
                             Object str = intp.callFunction(f_ptr, ObjectVec_t(), self, true);
                             if(str.type != ObjectType::STRING){
-                                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                     std::string("method 'to_string()' in ")
                                     + runtime::errorString(intp, self)
                                     + " didn't return a string");
                             }
                             return str;
                         } else {
-                            intp.rt->sources.printStackTrace(intp, error::ERROR,
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("'to_string()' must be a function in ")
                                 + runtime::errorString(intp, in));
                         }
