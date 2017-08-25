@@ -106,22 +106,21 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_smudge_OBJECTS = src/compile/v1/compiler/smudge-Compiler.$(OBJEXT) \
-	src/compile/v1/compiler/smudge-globalScopeCompile.$(OBJEXT) \
-	src/compile/v1/compiler/smudge-localScopeCompile.$(OBJEXT) \
-	src/compile/v1/compiler/smudge-operatorsCompile.$(OBJEXT) \
-	src/compile/smudge-Statement.$(OBJEXT) \
-	src/error/smudge-error.$(OBJEXT) \
-	src/exec/interpreter/smudge-Interpreter.$(OBJEXT) \
-	src/lib/smudge-stdlib.$(OBJEXT) src/lib/smudge-io.$(OBJEXT) \
-	src/lib/smudge-lang.$(OBJEXT) src/lib/smudge-system.$(OBJEXT) \
-	src/lib/smudge-cast.$(OBJEXT) src/lib/smudge-math.$(OBJEXT) \
-	src/parse/smudge-Tokenizer.$(OBJEXT) \
-	src/runtime/smudge-casts.$(OBJEXT) \
-	src/runtime/smudge-gc.$(OBJEXT) \
-	src/runtime/smudge-id.$(OBJEXT) \
-	src/utils/unicode/smudge-utf8.$(OBJEXT) \
-	src/smudge-main.$(OBJEXT)
+am_smudge_OBJECTS = sm/compile/v1/compiler/smudge-Compiler.$(OBJEXT) \
+	sm/compile/v1/compiler/smudge-globalScopeCompile.$(OBJEXT) \
+	sm/compile/v1/compiler/smudge-localScopeCompile.$(OBJEXT) \
+	sm/compile/v1/compiler/smudge-operatorsCompile.$(OBJEXT) \
+	sm/compile/smudge-Statement.$(OBJEXT) \
+	sm/error/smudge-error.$(OBJEXT) \
+	sm/exec/interpreter/smudge-Interpreter.$(OBJEXT) \
+	sm/lib/smudge-stdlib.$(OBJEXT) sm/lib/smudge-io.$(OBJEXT) \
+	sm/lib/smudge-lang.$(OBJEXT) sm/lib/smudge-system.$(OBJEXT) \
+	sm/lib/smudge-cast.$(OBJEXT) sm/lib/smudge-math.$(OBJEXT) \
+	sm/parse/smudge-Tokenizer.$(OBJEXT) \
+	sm/runtime/smudge-casts.$(OBJEXT) \
+	sm/runtime/smudge-gc.$(OBJEXT) sm/runtime/smudge-id.$(OBJEXT) \
+	sm/utils/unicode/smudge-utf8.$(OBJEXT) \
+	sm/smudge-main.$(OBJEXT)
 smudge_OBJECTS = $(am_smudge_OBJECTS)
 smudge_DEPENDENCIES =
 smudge_LINK = $(CXXLD) $(smudge_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
@@ -338,25 +337,25 @@ smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS) \
 smudge_CFLAGS = 
 @IS_WINDOWS_FALSE@smudge_LDADD = -ldl
 smudge_SOURCES = \
-			src/compile/v1/compiler/Compiler.cpp \
-			src/compile/v1/compiler/globalScopeCompile.cpp \
-			src/compile/v1/compiler/localScopeCompile.cpp \
-			src/compile/v1/compiler/operatorsCompile.cpp \
-			src/compile/Statement.cpp \
-			src/error/error.cpp \
-			src/exec/interpreter/Interpreter.cpp \
-			src/lib/stdlib.cpp \
-			src/lib/io.cpp \
-			src/lib/lang.cpp \
-			src/lib/system.cpp \
-			src/lib/cast.cpp \
-			src/lib/math.cpp \
-			src/parse/Tokenizer.cpp \
-			src/runtime/casts.cpp \
-			src/runtime/gc.cpp \
-			src/runtime/id.cpp \
-			src/utils/unicode/utf8.cpp \
-			src/main.cpp
+			sm/compile/v1/compiler/Compiler.cpp \
+			sm/compile/v1/compiler/globalScopeCompile.cpp \
+			sm/compile/v1/compiler/localScopeCompile.cpp \
+			sm/compile/v1/compiler/operatorsCompile.cpp \
+			sm/compile/Statement.cpp \
+			sm/error/error.cpp \
+			sm/exec/interpreter/Interpreter.cpp \
+			sm/lib/stdlib.cpp \
+			sm/lib/io.cpp \
+			sm/lib/lang.cpp \
+			sm/lib/system.cpp \
+			sm/lib/cast.cpp \
+			sm/lib/math.cpp \
+			sm/parse/Tokenizer.cpp \
+			sm/runtime/casts.cpp \
+			sm/runtime/gc.cpp \
+			sm/runtime/id.cpp \
+			sm/utils/unicode/utf8.cpp \
+			sm/main.cpp
 
 man1_MANS = \
 			mans/smudge.man
@@ -440,104 +439,104 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-src/compile/v1/compiler/$(am__dirstamp):
-	@$(MKDIR_P) src/compile/v1/compiler
-	@: > src/compile/v1/compiler/$(am__dirstamp)
-src/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/compile/v1/compiler/$(DEPDIR)
-	@: > src/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
-src/compile/v1/compiler/smudge-Compiler.$(OBJEXT):  \
-	src/compile/v1/compiler/$(am__dirstamp) \
-	src/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
-src/compile/v1/compiler/smudge-globalScopeCompile.$(OBJEXT):  \
-	src/compile/v1/compiler/$(am__dirstamp) \
-	src/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
-src/compile/v1/compiler/smudge-localScopeCompile.$(OBJEXT):  \
-	src/compile/v1/compiler/$(am__dirstamp) \
-	src/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
-src/compile/v1/compiler/smudge-operatorsCompile.$(OBJEXT):  \
-	src/compile/v1/compiler/$(am__dirstamp) \
-	src/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
-src/compile/$(am__dirstamp):
-	@$(MKDIR_P) src/compile
-	@: > src/compile/$(am__dirstamp)
-src/compile/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/compile/$(DEPDIR)
-	@: > src/compile/$(DEPDIR)/$(am__dirstamp)
-src/compile/smudge-Statement.$(OBJEXT): src/compile/$(am__dirstamp) \
-	src/compile/$(DEPDIR)/$(am__dirstamp)
-src/error/$(am__dirstamp):
-	@$(MKDIR_P) src/error
-	@: > src/error/$(am__dirstamp)
-src/error/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/error/$(DEPDIR)
-	@: > src/error/$(DEPDIR)/$(am__dirstamp)
-src/error/smudge-error.$(OBJEXT): src/error/$(am__dirstamp) \
-	src/error/$(DEPDIR)/$(am__dirstamp)
-src/exec/interpreter/$(am__dirstamp):
-	@$(MKDIR_P) src/exec/interpreter
-	@: > src/exec/interpreter/$(am__dirstamp)
-src/exec/interpreter/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/exec/interpreter/$(DEPDIR)
-	@: > src/exec/interpreter/$(DEPDIR)/$(am__dirstamp)
-src/exec/interpreter/smudge-Interpreter.$(OBJEXT):  \
-	src/exec/interpreter/$(am__dirstamp) \
-	src/exec/interpreter/$(DEPDIR)/$(am__dirstamp)
-src/lib/$(am__dirstamp):
-	@$(MKDIR_P) src/lib
-	@: > src/lib/$(am__dirstamp)
-src/lib/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/lib/$(DEPDIR)
-	@: > src/lib/$(DEPDIR)/$(am__dirstamp)
-src/lib/smudge-stdlib.$(OBJEXT): src/lib/$(am__dirstamp) \
-	src/lib/$(DEPDIR)/$(am__dirstamp)
-src/lib/smudge-io.$(OBJEXT): src/lib/$(am__dirstamp) \
-	src/lib/$(DEPDIR)/$(am__dirstamp)
-src/lib/smudge-lang.$(OBJEXT): src/lib/$(am__dirstamp) \
-	src/lib/$(DEPDIR)/$(am__dirstamp)
-src/lib/smudge-system.$(OBJEXT): src/lib/$(am__dirstamp) \
-	src/lib/$(DEPDIR)/$(am__dirstamp)
-src/lib/smudge-cast.$(OBJEXT): src/lib/$(am__dirstamp) \
-	src/lib/$(DEPDIR)/$(am__dirstamp)
-src/lib/smudge-math.$(OBJEXT): src/lib/$(am__dirstamp) \
-	src/lib/$(DEPDIR)/$(am__dirstamp)
-src/parse/$(am__dirstamp):
-	@$(MKDIR_P) src/parse
-	@: > src/parse/$(am__dirstamp)
-src/parse/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/parse/$(DEPDIR)
-	@: > src/parse/$(DEPDIR)/$(am__dirstamp)
-src/parse/smudge-Tokenizer.$(OBJEXT): src/parse/$(am__dirstamp) \
-	src/parse/$(DEPDIR)/$(am__dirstamp)
-src/runtime/$(am__dirstamp):
-	@$(MKDIR_P) src/runtime
-	@: > src/runtime/$(am__dirstamp)
-src/runtime/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/runtime/$(DEPDIR)
-	@: > src/runtime/$(DEPDIR)/$(am__dirstamp)
-src/runtime/smudge-casts.$(OBJEXT): src/runtime/$(am__dirstamp) \
-	src/runtime/$(DEPDIR)/$(am__dirstamp)
-src/runtime/smudge-gc.$(OBJEXT): src/runtime/$(am__dirstamp) \
-	src/runtime/$(DEPDIR)/$(am__dirstamp)
-src/runtime/smudge-id.$(OBJEXT): src/runtime/$(am__dirstamp) \
-	src/runtime/$(DEPDIR)/$(am__dirstamp)
-src/utils/unicode/$(am__dirstamp):
-	@$(MKDIR_P) src/utils/unicode
-	@: > src/utils/unicode/$(am__dirstamp)
-src/utils/unicode/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/utils/unicode/$(DEPDIR)
-	@: > src/utils/unicode/$(DEPDIR)/$(am__dirstamp)
-src/utils/unicode/smudge-utf8.$(OBJEXT):  \
-	src/utils/unicode/$(am__dirstamp) \
-	src/utils/unicode/$(DEPDIR)/$(am__dirstamp)
-src/$(am__dirstamp):
-	@$(MKDIR_P) src
-	@: > src/$(am__dirstamp)
-src/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/$(DEPDIR)
-	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/smudge-main.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
+sm/compile/v1/compiler/$(am__dirstamp):
+	@$(MKDIR_P) sm/compile/v1/compiler
+	@: > sm/compile/v1/compiler/$(am__dirstamp)
+sm/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/compile/v1/compiler/$(DEPDIR)
+	@: > sm/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
+sm/compile/v1/compiler/smudge-Compiler.$(OBJEXT):  \
+	sm/compile/v1/compiler/$(am__dirstamp) \
+	sm/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
+sm/compile/v1/compiler/smudge-globalScopeCompile.$(OBJEXT):  \
+	sm/compile/v1/compiler/$(am__dirstamp) \
+	sm/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
+sm/compile/v1/compiler/smudge-localScopeCompile.$(OBJEXT):  \
+	sm/compile/v1/compiler/$(am__dirstamp) \
+	sm/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
+sm/compile/v1/compiler/smudge-operatorsCompile.$(OBJEXT):  \
+	sm/compile/v1/compiler/$(am__dirstamp) \
+	sm/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
+sm/compile/$(am__dirstamp):
+	@$(MKDIR_P) sm/compile
+	@: > sm/compile/$(am__dirstamp)
+sm/compile/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/compile/$(DEPDIR)
+	@: > sm/compile/$(DEPDIR)/$(am__dirstamp)
+sm/compile/smudge-Statement.$(OBJEXT): sm/compile/$(am__dirstamp) \
+	sm/compile/$(DEPDIR)/$(am__dirstamp)
+sm/error/$(am__dirstamp):
+	@$(MKDIR_P) sm/error
+	@: > sm/error/$(am__dirstamp)
+sm/error/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/error/$(DEPDIR)
+	@: > sm/error/$(DEPDIR)/$(am__dirstamp)
+sm/error/smudge-error.$(OBJEXT): sm/error/$(am__dirstamp) \
+	sm/error/$(DEPDIR)/$(am__dirstamp)
+sm/exec/interpreter/$(am__dirstamp):
+	@$(MKDIR_P) sm/exec/interpreter
+	@: > sm/exec/interpreter/$(am__dirstamp)
+sm/exec/interpreter/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/exec/interpreter/$(DEPDIR)
+	@: > sm/exec/interpreter/$(DEPDIR)/$(am__dirstamp)
+sm/exec/interpreter/smudge-Interpreter.$(OBJEXT):  \
+	sm/exec/interpreter/$(am__dirstamp) \
+	sm/exec/interpreter/$(DEPDIR)/$(am__dirstamp)
+sm/lib/$(am__dirstamp):
+	@$(MKDIR_P) sm/lib
+	@: > sm/lib/$(am__dirstamp)
+sm/lib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/lib/$(DEPDIR)
+	@: > sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/lib/smudge-stdlib.$(OBJEXT): sm/lib/$(am__dirstamp) \
+	sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/lib/smudge-io.$(OBJEXT): sm/lib/$(am__dirstamp) \
+	sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/lib/smudge-lang.$(OBJEXT): sm/lib/$(am__dirstamp) \
+	sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/lib/smudge-system.$(OBJEXT): sm/lib/$(am__dirstamp) \
+	sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/lib/smudge-cast.$(OBJEXT): sm/lib/$(am__dirstamp) \
+	sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/lib/smudge-math.$(OBJEXT): sm/lib/$(am__dirstamp) \
+	sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/parse/$(am__dirstamp):
+	@$(MKDIR_P) sm/parse
+	@: > sm/parse/$(am__dirstamp)
+sm/parse/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/parse/$(DEPDIR)
+	@: > sm/parse/$(DEPDIR)/$(am__dirstamp)
+sm/parse/smudge-Tokenizer.$(OBJEXT): sm/parse/$(am__dirstamp) \
+	sm/parse/$(DEPDIR)/$(am__dirstamp)
+sm/runtime/$(am__dirstamp):
+	@$(MKDIR_P) sm/runtime
+	@: > sm/runtime/$(am__dirstamp)
+sm/runtime/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/runtime/$(DEPDIR)
+	@: > sm/runtime/$(DEPDIR)/$(am__dirstamp)
+sm/runtime/smudge-casts.$(OBJEXT): sm/runtime/$(am__dirstamp) \
+	sm/runtime/$(DEPDIR)/$(am__dirstamp)
+sm/runtime/smudge-gc.$(OBJEXT): sm/runtime/$(am__dirstamp) \
+	sm/runtime/$(DEPDIR)/$(am__dirstamp)
+sm/runtime/smudge-id.$(OBJEXT): sm/runtime/$(am__dirstamp) \
+	sm/runtime/$(DEPDIR)/$(am__dirstamp)
+sm/utils/unicode/$(am__dirstamp):
+	@$(MKDIR_P) sm/utils/unicode
+	@: > sm/utils/unicode/$(am__dirstamp)
+sm/utils/unicode/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/utils/unicode/$(DEPDIR)
+	@: > sm/utils/unicode/$(DEPDIR)/$(am__dirstamp)
+sm/utils/unicode/smudge-utf8.$(OBJEXT):  \
+	sm/utils/unicode/$(am__dirstamp) \
+	sm/utils/unicode/$(DEPDIR)/$(am__dirstamp)
+sm/$(am__dirstamp):
+	@$(MKDIR_P) sm
+	@: > sm/$(am__dirstamp)
+sm/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/$(DEPDIR)
+	@: > sm/$(DEPDIR)/$(am__dirstamp)
+sm/smudge-main.$(OBJEXT): sm/$(am__dirstamp) \
+	sm/$(DEPDIR)/$(am__dirstamp)
 
 smudge$(EXEEXT): $(smudge_OBJECTS) $(smudge_DEPENDENCIES) $(EXTRA_smudge_DEPENDENCIES) 
 	@rm -f smudge$(EXEEXT)
@@ -545,38 +544,38 @@ smudge$(EXEEXT): $(smudge_OBJECTS) $(smudge_DEPENDENCIES) $(EXTRA_smudge_DEPENDE
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f src/*.$(OBJEXT)
-	-rm -f src/compile/*.$(OBJEXT)
-	-rm -f src/compile/v1/compiler/*.$(OBJEXT)
-	-rm -f src/error/*.$(OBJEXT)
-	-rm -f src/exec/interpreter/*.$(OBJEXT)
-	-rm -f src/lib/*.$(OBJEXT)
-	-rm -f src/parse/*.$(OBJEXT)
-	-rm -f src/runtime/*.$(OBJEXT)
-	-rm -f src/utils/unicode/*.$(OBJEXT)
+	-rm -f sm/*.$(OBJEXT)
+	-rm -f sm/compile/*.$(OBJEXT)
+	-rm -f sm/compile/v1/compiler/*.$(OBJEXT)
+	-rm -f sm/error/*.$(OBJEXT)
+	-rm -f sm/exec/interpreter/*.$(OBJEXT)
+	-rm -f sm/lib/*.$(OBJEXT)
+	-rm -f sm/parse/*.$(OBJEXT)
+	-rm -f sm/runtime/*.$(OBJEXT)
+	-rm -f sm/utils/unicode/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/smudge-main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/compile/$(DEPDIR)/smudge-Statement.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/error/$(DEPDIR)/smudge-error.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-cast.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-io.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-lang.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-math.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-stdlib.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/lib/$(DEPDIR)/smudge-system.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/parse/$(DEPDIR)/smudge-Tokenizer.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/runtime/$(DEPDIR)/smudge-casts.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/runtime/$(DEPDIR)/smudge-gc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/runtime/$(DEPDIR)/smudge-id.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/utils/unicode/$(DEPDIR)/smudge-utf8.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/$(DEPDIR)/smudge-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/compile/$(DEPDIR)/smudge-Statement.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/error/$(DEPDIR)/smudge-error.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-cast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-io.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-lang.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-math.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-stdlib.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-system.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/parse/$(DEPDIR)/smudge-Tokenizer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-casts.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-gc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-id.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/utils/unicode/$(DEPDIR)/smudge-utf8.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -594,271 +593,271 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-src/compile/v1/compiler/smudge-Compiler.o: src/compile/v1/compiler/Compiler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-Compiler.o -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo -c -o src/compile/v1/compiler/smudge-Compiler.o `test -f 'src/compile/v1/compiler/Compiler.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/Compiler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/Compiler.cpp' object='src/compile/v1/compiler/smudge-Compiler.o' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-Compiler.o: sm/compile/v1/compiler/Compiler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-Compiler.o -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo -c -o sm/compile/v1/compiler/smudge-Compiler.o `test -f 'sm/compile/v1/compiler/Compiler.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/Compiler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/Compiler.cpp' object='sm/compile/v1/compiler/smudge-Compiler.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-Compiler.o `test -f 'src/compile/v1/compiler/Compiler.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/Compiler.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-Compiler.o `test -f 'sm/compile/v1/compiler/Compiler.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/Compiler.cpp
 
-src/compile/v1/compiler/smudge-Compiler.obj: src/compile/v1/compiler/Compiler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-Compiler.obj -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo -c -o src/compile/v1/compiler/smudge-Compiler.obj `if test -f 'src/compile/v1/compiler/Compiler.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/Compiler.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/Compiler.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/Compiler.cpp' object='src/compile/v1/compiler/smudge-Compiler.obj' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-Compiler.obj: sm/compile/v1/compiler/Compiler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-Compiler.obj -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo -c -o sm/compile/v1/compiler/smudge-Compiler.obj `if test -f 'sm/compile/v1/compiler/Compiler.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/Compiler.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/Compiler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-Compiler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/Compiler.cpp' object='sm/compile/v1/compiler/smudge-Compiler.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-Compiler.obj `if test -f 'src/compile/v1/compiler/Compiler.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/Compiler.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/Compiler.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-Compiler.obj `if test -f 'sm/compile/v1/compiler/Compiler.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/Compiler.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/Compiler.cpp'; fi`
 
-src/compile/v1/compiler/smudge-globalScopeCompile.o: src/compile/v1/compiler/globalScopeCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-globalScopeCompile.o -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo -c -o src/compile/v1/compiler/smudge-globalScopeCompile.o `test -f 'src/compile/v1/compiler/globalScopeCompile.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/globalScopeCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/globalScopeCompile.cpp' object='src/compile/v1/compiler/smudge-globalScopeCompile.o' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-globalScopeCompile.o: sm/compile/v1/compiler/globalScopeCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-globalScopeCompile.o -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo -c -o sm/compile/v1/compiler/smudge-globalScopeCompile.o `test -f 'sm/compile/v1/compiler/globalScopeCompile.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/globalScopeCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/globalScopeCompile.cpp' object='sm/compile/v1/compiler/smudge-globalScopeCompile.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-globalScopeCompile.o `test -f 'src/compile/v1/compiler/globalScopeCompile.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/globalScopeCompile.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-globalScopeCompile.o `test -f 'sm/compile/v1/compiler/globalScopeCompile.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/globalScopeCompile.cpp
 
-src/compile/v1/compiler/smudge-globalScopeCompile.obj: src/compile/v1/compiler/globalScopeCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-globalScopeCompile.obj -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo -c -o src/compile/v1/compiler/smudge-globalScopeCompile.obj `if test -f 'src/compile/v1/compiler/globalScopeCompile.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/globalScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/globalScopeCompile.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/globalScopeCompile.cpp' object='src/compile/v1/compiler/smudge-globalScopeCompile.obj' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-globalScopeCompile.obj: sm/compile/v1/compiler/globalScopeCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-globalScopeCompile.obj -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo -c -o sm/compile/v1/compiler/smudge-globalScopeCompile.obj `if test -f 'sm/compile/v1/compiler/globalScopeCompile.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/globalScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/globalScopeCompile.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-globalScopeCompile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/globalScopeCompile.cpp' object='sm/compile/v1/compiler/smudge-globalScopeCompile.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-globalScopeCompile.obj `if test -f 'src/compile/v1/compiler/globalScopeCompile.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/globalScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/globalScopeCompile.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-globalScopeCompile.obj `if test -f 'sm/compile/v1/compiler/globalScopeCompile.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/globalScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/globalScopeCompile.cpp'; fi`
 
-src/compile/v1/compiler/smudge-localScopeCompile.o: src/compile/v1/compiler/localScopeCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-localScopeCompile.o -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo -c -o src/compile/v1/compiler/smudge-localScopeCompile.o `test -f 'src/compile/v1/compiler/localScopeCompile.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/localScopeCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/localScopeCompile.cpp' object='src/compile/v1/compiler/smudge-localScopeCompile.o' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-localScopeCompile.o: sm/compile/v1/compiler/localScopeCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-localScopeCompile.o -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo -c -o sm/compile/v1/compiler/smudge-localScopeCompile.o `test -f 'sm/compile/v1/compiler/localScopeCompile.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/localScopeCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/localScopeCompile.cpp' object='sm/compile/v1/compiler/smudge-localScopeCompile.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-localScopeCompile.o `test -f 'src/compile/v1/compiler/localScopeCompile.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/localScopeCompile.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-localScopeCompile.o `test -f 'sm/compile/v1/compiler/localScopeCompile.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/localScopeCompile.cpp
 
-src/compile/v1/compiler/smudge-localScopeCompile.obj: src/compile/v1/compiler/localScopeCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-localScopeCompile.obj -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo -c -o src/compile/v1/compiler/smudge-localScopeCompile.obj `if test -f 'src/compile/v1/compiler/localScopeCompile.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/localScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/localScopeCompile.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/localScopeCompile.cpp' object='src/compile/v1/compiler/smudge-localScopeCompile.obj' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-localScopeCompile.obj: sm/compile/v1/compiler/localScopeCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-localScopeCompile.obj -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo -c -o sm/compile/v1/compiler/smudge-localScopeCompile.obj `if test -f 'sm/compile/v1/compiler/localScopeCompile.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/localScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/localScopeCompile.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-localScopeCompile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/localScopeCompile.cpp' object='sm/compile/v1/compiler/smudge-localScopeCompile.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-localScopeCompile.obj `if test -f 'src/compile/v1/compiler/localScopeCompile.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/localScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/localScopeCompile.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-localScopeCompile.obj `if test -f 'sm/compile/v1/compiler/localScopeCompile.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/localScopeCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/localScopeCompile.cpp'; fi`
 
-src/compile/v1/compiler/smudge-operatorsCompile.o: src/compile/v1/compiler/operatorsCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-operatorsCompile.o -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo -c -o src/compile/v1/compiler/smudge-operatorsCompile.o `test -f 'src/compile/v1/compiler/operatorsCompile.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/operatorsCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/operatorsCompile.cpp' object='src/compile/v1/compiler/smudge-operatorsCompile.o' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-operatorsCompile.o: sm/compile/v1/compiler/operatorsCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-operatorsCompile.o -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo -c -o sm/compile/v1/compiler/smudge-operatorsCompile.o `test -f 'sm/compile/v1/compiler/operatorsCompile.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/operatorsCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/operatorsCompile.cpp' object='sm/compile/v1/compiler/smudge-operatorsCompile.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-operatorsCompile.o `test -f 'src/compile/v1/compiler/operatorsCompile.cpp' || echo '$(srcdir)/'`src/compile/v1/compiler/operatorsCompile.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-operatorsCompile.o `test -f 'sm/compile/v1/compiler/operatorsCompile.cpp' || echo '$(srcdir)/'`sm/compile/v1/compiler/operatorsCompile.cpp
 
-src/compile/v1/compiler/smudge-operatorsCompile.obj: src/compile/v1/compiler/operatorsCompile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/v1/compiler/smudge-operatorsCompile.obj -MD -MP -MF src/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo -c -o src/compile/v1/compiler/smudge-operatorsCompile.obj `if test -f 'src/compile/v1/compiler/operatorsCompile.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/operatorsCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/operatorsCompile.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo src/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/v1/compiler/operatorsCompile.cpp' object='src/compile/v1/compiler/smudge-operatorsCompile.obj' libtool=no @AMDEPBACKSLASH@
+sm/compile/v1/compiler/smudge-operatorsCompile.obj: sm/compile/v1/compiler/operatorsCompile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/v1/compiler/smudge-operatorsCompile.obj -MD -MP -MF sm/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo -c -o sm/compile/v1/compiler/smudge-operatorsCompile.obj `if test -f 'sm/compile/v1/compiler/operatorsCompile.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/operatorsCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/operatorsCompile.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Tpo sm/compile/v1/compiler/$(DEPDIR)/smudge-operatorsCompile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/v1/compiler/operatorsCompile.cpp' object='sm/compile/v1/compiler/smudge-operatorsCompile.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/v1/compiler/smudge-operatorsCompile.obj `if test -f 'src/compile/v1/compiler/operatorsCompile.cpp'; then $(CYGPATH_W) 'src/compile/v1/compiler/operatorsCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/v1/compiler/operatorsCompile.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/v1/compiler/smudge-operatorsCompile.obj `if test -f 'sm/compile/v1/compiler/operatorsCompile.cpp'; then $(CYGPATH_W) 'sm/compile/v1/compiler/operatorsCompile.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/v1/compiler/operatorsCompile.cpp'; fi`
 
-src/compile/smudge-Statement.o: src/compile/Statement.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/smudge-Statement.o -MD -MP -MF src/compile/$(DEPDIR)/smudge-Statement.Tpo -c -o src/compile/smudge-Statement.o `test -f 'src/compile/Statement.cpp' || echo '$(srcdir)/'`src/compile/Statement.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/$(DEPDIR)/smudge-Statement.Tpo src/compile/$(DEPDIR)/smudge-Statement.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/Statement.cpp' object='src/compile/smudge-Statement.o' libtool=no @AMDEPBACKSLASH@
+sm/compile/smudge-Statement.o: sm/compile/Statement.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/smudge-Statement.o -MD -MP -MF sm/compile/$(DEPDIR)/smudge-Statement.Tpo -c -o sm/compile/smudge-Statement.o `test -f 'sm/compile/Statement.cpp' || echo '$(srcdir)/'`sm/compile/Statement.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/$(DEPDIR)/smudge-Statement.Tpo sm/compile/$(DEPDIR)/smudge-Statement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/Statement.cpp' object='sm/compile/smudge-Statement.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/smudge-Statement.o `test -f 'src/compile/Statement.cpp' || echo '$(srcdir)/'`src/compile/Statement.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/smudge-Statement.o `test -f 'sm/compile/Statement.cpp' || echo '$(srcdir)/'`sm/compile/Statement.cpp
 
-src/compile/smudge-Statement.obj: src/compile/Statement.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/compile/smudge-Statement.obj -MD -MP -MF src/compile/$(DEPDIR)/smudge-Statement.Tpo -c -o src/compile/smudge-Statement.obj `if test -f 'src/compile/Statement.cpp'; then $(CYGPATH_W) 'src/compile/Statement.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/Statement.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/compile/$(DEPDIR)/smudge-Statement.Tpo src/compile/$(DEPDIR)/smudge-Statement.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/compile/Statement.cpp' object='src/compile/smudge-Statement.obj' libtool=no @AMDEPBACKSLASH@
+sm/compile/smudge-Statement.obj: sm/compile/Statement.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/compile/smudge-Statement.obj -MD -MP -MF sm/compile/$(DEPDIR)/smudge-Statement.Tpo -c -o sm/compile/smudge-Statement.obj `if test -f 'sm/compile/Statement.cpp'; then $(CYGPATH_W) 'sm/compile/Statement.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/Statement.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/compile/$(DEPDIR)/smudge-Statement.Tpo sm/compile/$(DEPDIR)/smudge-Statement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/compile/Statement.cpp' object='sm/compile/smudge-Statement.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/compile/smudge-Statement.obj `if test -f 'src/compile/Statement.cpp'; then $(CYGPATH_W) 'src/compile/Statement.cpp'; else $(CYGPATH_W) '$(srcdir)/src/compile/Statement.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/compile/smudge-Statement.obj `if test -f 'sm/compile/Statement.cpp'; then $(CYGPATH_W) 'sm/compile/Statement.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/compile/Statement.cpp'; fi`
 
-src/error/smudge-error.o: src/error/error.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/error/smudge-error.o -MD -MP -MF src/error/$(DEPDIR)/smudge-error.Tpo -c -o src/error/smudge-error.o `test -f 'src/error/error.cpp' || echo '$(srcdir)/'`src/error/error.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/error/$(DEPDIR)/smudge-error.Tpo src/error/$(DEPDIR)/smudge-error.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/error/error.cpp' object='src/error/smudge-error.o' libtool=no @AMDEPBACKSLASH@
+sm/error/smudge-error.o: sm/error/error.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/error/smudge-error.o -MD -MP -MF sm/error/$(DEPDIR)/smudge-error.Tpo -c -o sm/error/smudge-error.o `test -f 'sm/error/error.cpp' || echo '$(srcdir)/'`sm/error/error.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/error/$(DEPDIR)/smudge-error.Tpo sm/error/$(DEPDIR)/smudge-error.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/error/error.cpp' object='sm/error/smudge-error.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/error/smudge-error.o `test -f 'src/error/error.cpp' || echo '$(srcdir)/'`src/error/error.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/error/smudge-error.o `test -f 'sm/error/error.cpp' || echo '$(srcdir)/'`sm/error/error.cpp
 
-src/error/smudge-error.obj: src/error/error.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/error/smudge-error.obj -MD -MP -MF src/error/$(DEPDIR)/smudge-error.Tpo -c -o src/error/smudge-error.obj `if test -f 'src/error/error.cpp'; then $(CYGPATH_W) 'src/error/error.cpp'; else $(CYGPATH_W) '$(srcdir)/src/error/error.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/error/$(DEPDIR)/smudge-error.Tpo src/error/$(DEPDIR)/smudge-error.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/error/error.cpp' object='src/error/smudge-error.obj' libtool=no @AMDEPBACKSLASH@
+sm/error/smudge-error.obj: sm/error/error.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/error/smudge-error.obj -MD -MP -MF sm/error/$(DEPDIR)/smudge-error.Tpo -c -o sm/error/smudge-error.obj `if test -f 'sm/error/error.cpp'; then $(CYGPATH_W) 'sm/error/error.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/error/error.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/error/$(DEPDIR)/smudge-error.Tpo sm/error/$(DEPDIR)/smudge-error.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/error/error.cpp' object='sm/error/smudge-error.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/error/smudge-error.obj `if test -f 'src/error/error.cpp'; then $(CYGPATH_W) 'src/error/error.cpp'; else $(CYGPATH_W) '$(srcdir)/src/error/error.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/error/smudge-error.obj `if test -f 'sm/error/error.cpp'; then $(CYGPATH_W) 'sm/error/error.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/error/error.cpp'; fi`
 
-src/exec/interpreter/smudge-Interpreter.o: src/exec/interpreter/Interpreter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/exec/interpreter/smudge-Interpreter.o -MD -MP -MF src/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo -c -o src/exec/interpreter/smudge-Interpreter.o `test -f 'src/exec/interpreter/Interpreter.cpp' || echo '$(srcdir)/'`src/exec/interpreter/Interpreter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo src/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/exec/interpreter/Interpreter.cpp' object='src/exec/interpreter/smudge-Interpreter.o' libtool=no @AMDEPBACKSLASH@
+sm/exec/interpreter/smudge-Interpreter.o: sm/exec/interpreter/Interpreter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/exec/interpreter/smudge-Interpreter.o -MD -MP -MF sm/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo -c -o sm/exec/interpreter/smudge-Interpreter.o `test -f 'sm/exec/interpreter/Interpreter.cpp' || echo '$(srcdir)/'`sm/exec/interpreter/Interpreter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo sm/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/exec/interpreter/Interpreter.cpp' object='sm/exec/interpreter/smudge-Interpreter.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/exec/interpreter/smudge-Interpreter.o `test -f 'src/exec/interpreter/Interpreter.cpp' || echo '$(srcdir)/'`src/exec/interpreter/Interpreter.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/exec/interpreter/smudge-Interpreter.o `test -f 'sm/exec/interpreter/Interpreter.cpp' || echo '$(srcdir)/'`sm/exec/interpreter/Interpreter.cpp
 
-src/exec/interpreter/smudge-Interpreter.obj: src/exec/interpreter/Interpreter.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/exec/interpreter/smudge-Interpreter.obj -MD -MP -MF src/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo -c -o src/exec/interpreter/smudge-Interpreter.obj `if test -f 'src/exec/interpreter/Interpreter.cpp'; then $(CYGPATH_W) 'src/exec/interpreter/Interpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/src/exec/interpreter/Interpreter.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo src/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/exec/interpreter/Interpreter.cpp' object='src/exec/interpreter/smudge-Interpreter.obj' libtool=no @AMDEPBACKSLASH@
+sm/exec/interpreter/smudge-Interpreter.obj: sm/exec/interpreter/Interpreter.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/exec/interpreter/smudge-Interpreter.obj -MD -MP -MF sm/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo -c -o sm/exec/interpreter/smudge-Interpreter.obj `if test -f 'sm/exec/interpreter/Interpreter.cpp'; then $(CYGPATH_W) 'sm/exec/interpreter/Interpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/exec/interpreter/Interpreter.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Tpo sm/exec/interpreter/$(DEPDIR)/smudge-Interpreter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/exec/interpreter/Interpreter.cpp' object='sm/exec/interpreter/smudge-Interpreter.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/exec/interpreter/smudge-Interpreter.obj `if test -f 'src/exec/interpreter/Interpreter.cpp'; then $(CYGPATH_W) 'src/exec/interpreter/Interpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/src/exec/interpreter/Interpreter.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/exec/interpreter/smudge-Interpreter.obj `if test -f 'sm/exec/interpreter/Interpreter.cpp'; then $(CYGPATH_W) 'sm/exec/interpreter/Interpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/exec/interpreter/Interpreter.cpp'; fi`
 
-src/lib/smudge-stdlib.o: src/lib/stdlib.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-stdlib.o -MD -MP -MF src/lib/$(DEPDIR)/smudge-stdlib.Tpo -c -o src/lib/smudge-stdlib.o `test -f 'src/lib/stdlib.cpp' || echo '$(srcdir)/'`src/lib/stdlib.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-stdlib.Tpo src/lib/$(DEPDIR)/smudge-stdlib.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/stdlib.cpp' object='src/lib/smudge-stdlib.o' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-stdlib.o: sm/lib/stdlib.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-stdlib.o -MD -MP -MF sm/lib/$(DEPDIR)/smudge-stdlib.Tpo -c -o sm/lib/smudge-stdlib.o `test -f 'sm/lib/stdlib.cpp' || echo '$(srcdir)/'`sm/lib/stdlib.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-stdlib.Tpo sm/lib/$(DEPDIR)/smudge-stdlib.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/stdlib.cpp' object='sm/lib/smudge-stdlib.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-stdlib.o `test -f 'src/lib/stdlib.cpp' || echo '$(srcdir)/'`src/lib/stdlib.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-stdlib.o `test -f 'sm/lib/stdlib.cpp' || echo '$(srcdir)/'`sm/lib/stdlib.cpp
 
-src/lib/smudge-stdlib.obj: src/lib/stdlib.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-stdlib.obj -MD -MP -MF src/lib/$(DEPDIR)/smudge-stdlib.Tpo -c -o src/lib/smudge-stdlib.obj `if test -f 'src/lib/stdlib.cpp'; then $(CYGPATH_W) 'src/lib/stdlib.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/stdlib.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-stdlib.Tpo src/lib/$(DEPDIR)/smudge-stdlib.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/stdlib.cpp' object='src/lib/smudge-stdlib.obj' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-stdlib.obj: sm/lib/stdlib.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-stdlib.obj -MD -MP -MF sm/lib/$(DEPDIR)/smudge-stdlib.Tpo -c -o sm/lib/smudge-stdlib.obj `if test -f 'sm/lib/stdlib.cpp'; then $(CYGPATH_W) 'sm/lib/stdlib.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/stdlib.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-stdlib.Tpo sm/lib/$(DEPDIR)/smudge-stdlib.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/stdlib.cpp' object='sm/lib/smudge-stdlib.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-stdlib.obj `if test -f 'src/lib/stdlib.cpp'; then $(CYGPATH_W) 'src/lib/stdlib.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/stdlib.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-stdlib.obj `if test -f 'sm/lib/stdlib.cpp'; then $(CYGPATH_W) 'sm/lib/stdlib.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/stdlib.cpp'; fi`
 
-src/lib/smudge-io.o: src/lib/io.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-io.o -MD -MP -MF src/lib/$(DEPDIR)/smudge-io.Tpo -c -o src/lib/smudge-io.o `test -f 'src/lib/io.cpp' || echo '$(srcdir)/'`src/lib/io.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-io.Tpo src/lib/$(DEPDIR)/smudge-io.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/io.cpp' object='src/lib/smudge-io.o' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-io.o: sm/lib/io.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-io.o -MD -MP -MF sm/lib/$(DEPDIR)/smudge-io.Tpo -c -o sm/lib/smudge-io.o `test -f 'sm/lib/io.cpp' || echo '$(srcdir)/'`sm/lib/io.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-io.Tpo sm/lib/$(DEPDIR)/smudge-io.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/io.cpp' object='sm/lib/smudge-io.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-io.o `test -f 'src/lib/io.cpp' || echo '$(srcdir)/'`src/lib/io.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-io.o `test -f 'sm/lib/io.cpp' || echo '$(srcdir)/'`sm/lib/io.cpp
 
-src/lib/smudge-io.obj: src/lib/io.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-io.obj -MD -MP -MF src/lib/$(DEPDIR)/smudge-io.Tpo -c -o src/lib/smudge-io.obj `if test -f 'src/lib/io.cpp'; then $(CYGPATH_W) 'src/lib/io.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/io.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-io.Tpo src/lib/$(DEPDIR)/smudge-io.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/io.cpp' object='src/lib/smudge-io.obj' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-io.obj: sm/lib/io.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-io.obj -MD -MP -MF sm/lib/$(DEPDIR)/smudge-io.Tpo -c -o sm/lib/smudge-io.obj `if test -f 'sm/lib/io.cpp'; then $(CYGPATH_W) 'sm/lib/io.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/io.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-io.Tpo sm/lib/$(DEPDIR)/smudge-io.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/io.cpp' object='sm/lib/smudge-io.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-io.obj `if test -f 'src/lib/io.cpp'; then $(CYGPATH_W) 'src/lib/io.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/io.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-io.obj `if test -f 'sm/lib/io.cpp'; then $(CYGPATH_W) 'sm/lib/io.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/io.cpp'; fi`
 
-src/lib/smudge-lang.o: src/lib/lang.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-lang.o -MD -MP -MF src/lib/$(DEPDIR)/smudge-lang.Tpo -c -o src/lib/smudge-lang.o `test -f 'src/lib/lang.cpp' || echo '$(srcdir)/'`src/lib/lang.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-lang.Tpo src/lib/$(DEPDIR)/smudge-lang.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/lang.cpp' object='src/lib/smudge-lang.o' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-lang.o: sm/lib/lang.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-lang.o -MD -MP -MF sm/lib/$(DEPDIR)/smudge-lang.Tpo -c -o sm/lib/smudge-lang.o `test -f 'sm/lib/lang.cpp' || echo '$(srcdir)/'`sm/lib/lang.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-lang.Tpo sm/lib/$(DEPDIR)/smudge-lang.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/lang.cpp' object='sm/lib/smudge-lang.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-lang.o `test -f 'src/lib/lang.cpp' || echo '$(srcdir)/'`src/lib/lang.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-lang.o `test -f 'sm/lib/lang.cpp' || echo '$(srcdir)/'`sm/lib/lang.cpp
 
-src/lib/smudge-lang.obj: src/lib/lang.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-lang.obj -MD -MP -MF src/lib/$(DEPDIR)/smudge-lang.Tpo -c -o src/lib/smudge-lang.obj `if test -f 'src/lib/lang.cpp'; then $(CYGPATH_W) 'src/lib/lang.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/lang.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-lang.Tpo src/lib/$(DEPDIR)/smudge-lang.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/lang.cpp' object='src/lib/smudge-lang.obj' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-lang.obj: sm/lib/lang.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-lang.obj -MD -MP -MF sm/lib/$(DEPDIR)/smudge-lang.Tpo -c -o sm/lib/smudge-lang.obj `if test -f 'sm/lib/lang.cpp'; then $(CYGPATH_W) 'sm/lib/lang.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/lang.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-lang.Tpo sm/lib/$(DEPDIR)/smudge-lang.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/lang.cpp' object='sm/lib/smudge-lang.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-lang.obj `if test -f 'src/lib/lang.cpp'; then $(CYGPATH_W) 'src/lib/lang.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/lang.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-lang.obj `if test -f 'sm/lib/lang.cpp'; then $(CYGPATH_W) 'sm/lib/lang.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/lang.cpp'; fi`
 
-src/lib/smudge-system.o: src/lib/system.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-system.o -MD -MP -MF src/lib/$(DEPDIR)/smudge-system.Tpo -c -o src/lib/smudge-system.o `test -f 'src/lib/system.cpp' || echo '$(srcdir)/'`src/lib/system.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-system.Tpo src/lib/$(DEPDIR)/smudge-system.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/system.cpp' object='src/lib/smudge-system.o' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-system.o: sm/lib/system.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-system.o -MD -MP -MF sm/lib/$(DEPDIR)/smudge-system.Tpo -c -o sm/lib/smudge-system.o `test -f 'sm/lib/system.cpp' || echo '$(srcdir)/'`sm/lib/system.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-system.Tpo sm/lib/$(DEPDIR)/smudge-system.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/system.cpp' object='sm/lib/smudge-system.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-system.o `test -f 'src/lib/system.cpp' || echo '$(srcdir)/'`src/lib/system.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-system.o `test -f 'sm/lib/system.cpp' || echo '$(srcdir)/'`sm/lib/system.cpp
 
-src/lib/smudge-system.obj: src/lib/system.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-system.obj -MD -MP -MF src/lib/$(DEPDIR)/smudge-system.Tpo -c -o src/lib/smudge-system.obj `if test -f 'src/lib/system.cpp'; then $(CYGPATH_W) 'src/lib/system.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/system.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-system.Tpo src/lib/$(DEPDIR)/smudge-system.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/system.cpp' object='src/lib/smudge-system.obj' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-system.obj: sm/lib/system.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-system.obj -MD -MP -MF sm/lib/$(DEPDIR)/smudge-system.Tpo -c -o sm/lib/smudge-system.obj `if test -f 'sm/lib/system.cpp'; then $(CYGPATH_W) 'sm/lib/system.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/system.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-system.Tpo sm/lib/$(DEPDIR)/smudge-system.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/system.cpp' object='sm/lib/smudge-system.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-system.obj `if test -f 'src/lib/system.cpp'; then $(CYGPATH_W) 'src/lib/system.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/system.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-system.obj `if test -f 'sm/lib/system.cpp'; then $(CYGPATH_W) 'sm/lib/system.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/system.cpp'; fi`
 
-src/lib/smudge-cast.o: src/lib/cast.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-cast.o -MD -MP -MF src/lib/$(DEPDIR)/smudge-cast.Tpo -c -o src/lib/smudge-cast.o `test -f 'src/lib/cast.cpp' || echo '$(srcdir)/'`src/lib/cast.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-cast.Tpo src/lib/$(DEPDIR)/smudge-cast.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/cast.cpp' object='src/lib/smudge-cast.o' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-cast.o: sm/lib/cast.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-cast.o -MD -MP -MF sm/lib/$(DEPDIR)/smudge-cast.Tpo -c -o sm/lib/smudge-cast.o `test -f 'sm/lib/cast.cpp' || echo '$(srcdir)/'`sm/lib/cast.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-cast.Tpo sm/lib/$(DEPDIR)/smudge-cast.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/cast.cpp' object='sm/lib/smudge-cast.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-cast.o `test -f 'src/lib/cast.cpp' || echo '$(srcdir)/'`src/lib/cast.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-cast.o `test -f 'sm/lib/cast.cpp' || echo '$(srcdir)/'`sm/lib/cast.cpp
 
-src/lib/smudge-cast.obj: src/lib/cast.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-cast.obj -MD -MP -MF src/lib/$(DEPDIR)/smudge-cast.Tpo -c -o src/lib/smudge-cast.obj `if test -f 'src/lib/cast.cpp'; then $(CYGPATH_W) 'src/lib/cast.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/cast.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-cast.Tpo src/lib/$(DEPDIR)/smudge-cast.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/cast.cpp' object='src/lib/smudge-cast.obj' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-cast.obj: sm/lib/cast.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-cast.obj -MD -MP -MF sm/lib/$(DEPDIR)/smudge-cast.Tpo -c -o sm/lib/smudge-cast.obj `if test -f 'sm/lib/cast.cpp'; then $(CYGPATH_W) 'sm/lib/cast.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/cast.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-cast.Tpo sm/lib/$(DEPDIR)/smudge-cast.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/cast.cpp' object='sm/lib/smudge-cast.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-cast.obj `if test -f 'src/lib/cast.cpp'; then $(CYGPATH_W) 'src/lib/cast.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/cast.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-cast.obj `if test -f 'sm/lib/cast.cpp'; then $(CYGPATH_W) 'sm/lib/cast.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/cast.cpp'; fi`
 
-src/lib/smudge-math.o: src/lib/math.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-math.o -MD -MP -MF src/lib/$(DEPDIR)/smudge-math.Tpo -c -o src/lib/smudge-math.o `test -f 'src/lib/math.cpp' || echo '$(srcdir)/'`src/lib/math.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-math.Tpo src/lib/$(DEPDIR)/smudge-math.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/math.cpp' object='src/lib/smudge-math.o' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-math.o: sm/lib/math.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-math.o -MD -MP -MF sm/lib/$(DEPDIR)/smudge-math.Tpo -c -o sm/lib/smudge-math.o `test -f 'sm/lib/math.cpp' || echo '$(srcdir)/'`sm/lib/math.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-math.Tpo sm/lib/$(DEPDIR)/smudge-math.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/math.cpp' object='sm/lib/smudge-math.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-math.o `test -f 'src/lib/math.cpp' || echo '$(srcdir)/'`src/lib/math.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-math.o `test -f 'sm/lib/math.cpp' || echo '$(srcdir)/'`sm/lib/math.cpp
 
-src/lib/smudge-math.obj: src/lib/math.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/lib/smudge-math.obj -MD -MP -MF src/lib/$(DEPDIR)/smudge-math.Tpo -c -o src/lib/smudge-math.obj `if test -f 'src/lib/math.cpp'; then $(CYGPATH_W) 'src/lib/math.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/math.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/lib/$(DEPDIR)/smudge-math.Tpo src/lib/$(DEPDIR)/smudge-math.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/lib/math.cpp' object='src/lib/smudge-math.obj' libtool=no @AMDEPBACKSLASH@
+sm/lib/smudge-math.obj: sm/lib/math.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/lib/smudge-math.obj -MD -MP -MF sm/lib/$(DEPDIR)/smudge-math.Tpo -c -o sm/lib/smudge-math.obj `if test -f 'sm/lib/math.cpp'; then $(CYGPATH_W) 'sm/lib/math.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/math.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/lib/$(DEPDIR)/smudge-math.Tpo sm/lib/$(DEPDIR)/smudge-math.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/math.cpp' object='sm/lib/smudge-math.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/lib/smudge-math.obj `if test -f 'src/lib/math.cpp'; then $(CYGPATH_W) 'src/lib/math.cpp'; else $(CYGPATH_W) '$(srcdir)/src/lib/math.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-math.obj `if test -f 'sm/lib/math.cpp'; then $(CYGPATH_W) 'sm/lib/math.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/math.cpp'; fi`
 
-src/parse/smudge-Tokenizer.o: src/parse/Tokenizer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/parse/smudge-Tokenizer.o -MD -MP -MF src/parse/$(DEPDIR)/smudge-Tokenizer.Tpo -c -o src/parse/smudge-Tokenizer.o `test -f 'src/parse/Tokenizer.cpp' || echo '$(srcdir)/'`src/parse/Tokenizer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/parse/$(DEPDIR)/smudge-Tokenizer.Tpo src/parse/$(DEPDIR)/smudge-Tokenizer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parse/Tokenizer.cpp' object='src/parse/smudge-Tokenizer.o' libtool=no @AMDEPBACKSLASH@
+sm/parse/smudge-Tokenizer.o: sm/parse/Tokenizer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/parse/smudge-Tokenizer.o -MD -MP -MF sm/parse/$(DEPDIR)/smudge-Tokenizer.Tpo -c -o sm/parse/smudge-Tokenizer.o `test -f 'sm/parse/Tokenizer.cpp' || echo '$(srcdir)/'`sm/parse/Tokenizer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/parse/$(DEPDIR)/smudge-Tokenizer.Tpo sm/parse/$(DEPDIR)/smudge-Tokenizer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/parse/Tokenizer.cpp' object='sm/parse/smudge-Tokenizer.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/parse/smudge-Tokenizer.o `test -f 'src/parse/Tokenizer.cpp' || echo '$(srcdir)/'`src/parse/Tokenizer.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/parse/smudge-Tokenizer.o `test -f 'sm/parse/Tokenizer.cpp' || echo '$(srcdir)/'`sm/parse/Tokenizer.cpp
 
-src/parse/smudge-Tokenizer.obj: src/parse/Tokenizer.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/parse/smudge-Tokenizer.obj -MD -MP -MF src/parse/$(DEPDIR)/smudge-Tokenizer.Tpo -c -o src/parse/smudge-Tokenizer.obj `if test -f 'src/parse/Tokenizer.cpp'; then $(CYGPATH_W) 'src/parse/Tokenizer.cpp'; else $(CYGPATH_W) '$(srcdir)/src/parse/Tokenizer.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/parse/$(DEPDIR)/smudge-Tokenizer.Tpo src/parse/$(DEPDIR)/smudge-Tokenizer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/parse/Tokenizer.cpp' object='src/parse/smudge-Tokenizer.obj' libtool=no @AMDEPBACKSLASH@
+sm/parse/smudge-Tokenizer.obj: sm/parse/Tokenizer.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/parse/smudge-Tokenizer.obj -MD -MP -MF sm/parse/$(DEPDIR)/smudge-Tokenizer.Tpo -c -o sm/parse/smudge-Tokenizer.obj `if test -f 'sm/parse/Tokenizer.cpp'; then $(CYGPATH_W) 'sm/parse/Tokenizer.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/parse/Tokenizer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/parse/$(DEPDIR)/smudge-Tokenizer.Tpo sm/parse/$(DEPDIR)/smudge-Tokenizer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/parse/Tokenizer.cpp' object='sm/parse/smudge-Tokenizer.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/parse/smudge-Tokenizer.obj `if test -f 'src/parse/Tokenizer.cpp'; then $(CYGPATH_W) 'src/parse/Tokenizer.cpp'; else $(CYGPATH_W) '$(srcdir)/src/parse/Tokenizer.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/parse/smudge-Tokenizer.obj `if test -f 'sm/parse/Tokenizer.cpp'; then $(CYGPATH_W) 'sm/parse/Tokenizer.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/parse/Tokenizer.cpp'; fi`
 
-src/runtime/smudge-casts.o: src/runtime/casts.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/runtime/smudge-casts.o -MD -MP -MF src/runtime/$(DEPDIR)/smudge-casts.Tpo -c -o src/runtime/smudge-casts.o `test -f 'src/runtime/casts.cpp' || echo '$(srcdir)/'`src/runtime/casts.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/runtime/$(DEPDIR)/smudge-casts.Tpo src/runtime/$(DEPDIR)/smudge-casts.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/runtime/casts.cpp' object='src/runtime/smudge-casts.o' libtool=no @AMDEPBACKSLASH@
+sm/runtime/smudge-casts.o: sm/runtime/casts.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/runtime/smudge-casts.o -MD -MP -MF sm/runtime/$(DEPDIR)/smudge-casts.Tpo -c -o sm/runtime/smudge-casts.o `test -f 'sm/runtime/casts.cpp' || echo '$(srcdir)/'`sm/runtime/casts.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/runtime/$(DEPDIR)/smudge-casts.Tpo sm/runtime/$(DEPDIR)/smudge-casts.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/runtime/casts.cpp' object='sm/runtime/smudge-casts.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/runtime/smudge-casts.o `test -f 'src/runtime/casts.cpp' || echo '$(srcdir)/'`src/runtime/casts.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/runtime/smudge-casts.o `test -f 'sm/runtime/casts.cpp' || echo '$(srcdir)/'`sm/runtime/casts.cpp
 
-src/runtime/smudge-casts.obj: src/runtime/casts.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/runtime/smudge-casts.obj -MD -MP -MF src/runtime/$(DEPDIR)/smudge-casts.Tpo -c -o src/runtime/smudge-casts.obj `if test -f 'src/runtime/casts.cpp'; then $(CYGPATH_W) 'src/runtime/casts.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/casts.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/runtime/$(DEPDIR)/smudge-casts.Tpo src/runtime/$(DEPDIR)/smudge-casts.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/runtime/casts.cpp' object='src/runtime/smudge-casts.obj' libtool=no @AMDEPBACKSLASH@
+sm/runtime/smudge-casts.obj: sm/runtime/casts.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/runtime/smudge-casts.obj -MD -MP -MF sm/runtime/$(DEPDIR)/smudge-casts.Tpo -c -o sm/runtime/smudge-casts.obj `if test -f 'sm/runtime/casts.cpp'; then $(CYGPATH_W) 'sm/runtime/casts.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/runtime/casts.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/runtime/$(DEPDIR)/smudge-casts.Tpo sm/runtime/$(DEPDIR)/smudge-casts.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/runtime/casts.cpp' object='sm/runtime/smudge-casts.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/runtime/smudge-casts.obj `if test -f 'src/runtime/casts.cpp'; then $(CYGPATH_W) 'src/runtime/casts.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/casts.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/runtime/smudge-casts.obj `if test -f 'sm/runtime/casts.cpp'; then $(CYGPATH_W) 'sm/runtime/casts.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/runtime/casts.cpp'; fi`
 
-src/runtime/smudge-gc.o: src/runtime/gc.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/runtime/smudge-gc.o -MD -MP -MF src/runtime/$(DEPDIR)/smudge-gc.Tpo -c -o src/runtime/smudge-gc.o `test -f 'src/runtime/gc.cpp' || echo '$(srcdir)/'`src/runtime/gc.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/runtime/$(DEPDIR)/smudge-gc.Tpo src/runtime/$(DEPDIR)/smudge-gc.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/runtime/gc.cpp' object='src/runtime/smudge-gc.o' libtool=no @AMDEPBACKSLASH@
+sm/runtime/smudge-gc.o: sm/runtime/gc.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/runtime/smudge-gc.o -MD -MP -MF sm/runtime/$(DEPDIR)/smudge-gc.Tpo -c -o sm/runtime/smudge-gc.o `test -f 'sm/runtime/gc.cpp' || echo '$(srcdir)/'`sm/runtime/gc.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/runtime/$(DEPDIR)/smudge-gc.Tpo sm/runtime/$(DEPDIR)/smudge-gc.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/runtime/gc.cpp' object='sm/runtime/smudge-gc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/runtime/smudge-gc.o `test -f 'src/runtime/gc.cpp' || echo '$(srcdir)/'`src/runtime/gc.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/runtime/smudge-gc.o `test -f 'sm/runtime/gc.cpp' || echo '$(srcdir)/'`sm/runtime/gc.cpp
 
-src/runtime/smudge-gc.obj: src/runtime/gc.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/runtime/smudge-gc.obj -MD -MP -MF src/runtime/$(DEPDIR)/smudge-gc.Tpo -c -o src/runtime/smudge-gc.obj `if test -f 'src/runtime/gc.cpp'; then $(CYGPATH_W) 'src/runtime/gc.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/gc.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/runtime/$(DEPDIR)/smudge-gc.Tpo src/runtime/$(DEPDIR)/smudge-gc.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/runtime/gc.cpp' object='src/runtime/smudge-gc.obj' libtool=no @AMDEPBACKSLASH@
+sm/runtime/smudge-gc.obj: sm/runtime/gc.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/runtime/smudge-gc.obj -MD -MP -MF sm/runtime/$(DEPDIR)/smudge-gc.Tpo -c -o sm/runtime/smudge-gc.obj `if test -f 'sm/runtime/gc.cpp'; then $(CYGPATH_W) 'sm/runtime/gc.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/runtime/gc.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/runtime/$(DEPDIR)/smudge-gc.Tpo sm/runtime/$(DEPDIR)/smudge-gc.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/runtime/gc.cpp' object='sm/runtime/smudge-gc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/runtime/smudge-gc.obj `if test -f 'src/runtime/gc.cpp'; then $(CYGPATH_W) 'src/runtime/gc.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/gc.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/runtime/smudge-gc.obj `if test -f 'sm/runtime/gc.cpp'; then $(CYGPATH_W) 'sm/runtime/gc.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/runtime/gc.cpp'; fi`
 
-src/runtime/smudge-id.o: src/runtime/id.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/runtime/smudge-id.o -MD -MP -MF src/runtime/$(DEPDIR)/smudge-id.Tpo -c -o src/runtime/smudge-id.o `test -f 'src/runtime/id.cpp' || echo '$(srcdir)/'`src/runtime/id.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/runtime/$(DEPDIR)/smudge-id.Tpo src/runtime/$(DEPDIR)/smudge-id.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/runtime/id.cpp' object='src/runtime/smudge-id.o' libtool=no @AMDEPBACKSLASH@
+sm/runtime/smudge-id.o: sm/runtime/id.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/runtime/smudge-id.o -MD -MP -MF sm/runtime/$(DEPDIR)/smudge-id.Tpo -c -o sm/runtime/smudge-id.o `test -f 'sm/runtime/id.cpp' || echo '$(srcdir)/'`sm/runtime/id.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/runtime/$(DEPDIR)/smudge-id.Tpo sm/runtime/$(DEPDIR)/smudge-id.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/runtime/id.cpp' object='sm/runtime/smudge-id.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/runtime/smudge-id.o `test -f 'src/runtime/id.cpp' || echo '$(srcdir)/'`src/runtime/id.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/runtime/smudge-id.o `test -f 'sm/runtime/id.cpp' || echo '$(srcdir)/'`sm/runtime/id.cpp
 
-src/runtime/smudge-id.obj: src/runtime/id.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/runtime/smudge-id.obj -MD -MP -MF src/runtime/$(DEPDIR)/smudge-id.Tpo -c -o src/runtime/smudge-id.obj `if test -f 'src/runtime/id.cpp'; then $(CYGPATH_W) 'src/runtime/id.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/id.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/runtime/$(DEPDIR)/smudge-id.Tpo src/runtime/$(DEPDIR)/smudge-id.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/runtime/id.cpp' object='src/runtime/smudge-id.obj' libtool=no @AMDEPBACKSLASH@
+sm/runtime/smudge-id.obj: sm/runtime/id.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/runtime/smudge-id.obj -MD -MP -MF sm/runtime/$(DEPDIR)/smudge-id.Tpo -c -o sm/runtime/smudge-id.obj `if test -f 'sm/runtime/id.cpp'; then $(CYGPATH_W) 'sm/runtime/id.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/runtime/id.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/runtime/$(DEPDIR)/smudge-id.Tpo sm/runtime/$(DEPDIR)/smudge-id.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/runtime/id.cpp' object='sm/runtime/smudge-id.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/runtime/smudge-id.obj `if test -f 'src/runtime/id.cpp'; then $(CYGPATH_W) 'src/runtime/id.cpp'; else $(CYGPATH_W) '$(srcdir)/src/runtime/id.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/runtime/smudge-id.obj `if test -f 'sm/runtime/id.cpp'; then $(CYGPATH_W) 'sm/runtime/id.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/runtime/id.cpp'; fi`
 
-src/utils/unicode/smudge-utf8.o: src/utils/unicode/utf8.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/utils/unicode/smudge-utf8.o -MD -MP -MF src/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo -c -o src/utils/unicode/smudge-utf8.o `test -f 'src/utils/unicode/utf8.cpp' || echo '$(srcdir)/'`src/utils/unicode/utf8.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo src/utils/unicode/$(DEPDIR)/smudge-utf8.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/utils/unicode/utf8.cpp' object='src/utils/unicode/smudge-utf8.o' libtool=no @AMDEPBACKSLASH@
+sm/utils/unicode/smudge-utf8.o: sm/utils/unicode/utf8.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/utils/unicode/smudge-utf8.o -MD -MP -MF sm/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo -c -o sm/utils/unicode/smudge-utf8.o `test -f 'sm/utils/unicode/utf8.cpp' || echo '$(srcdir)/'`sm/utils/unicode/utf8.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo sm/utils/unicode/$(DEPDIR)/smudge-utf8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/utils/unicode/utf8.cpp' object='sm/utils/unicode/smudge-utf8.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/utils/unicode/smudge-utf8.o `test -f 'src/utils/unicode/utf8.cpp' || echo '$(srcdir)/'`src/utils/unicode/utf8.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/utils/unicode/smudge-utf8.o `test -f 'sm/utils/unicode/utf8.cpp' || echo '$(srcdir)/'`sm/utils/unicode/utf8.cpp
 
-src/utils/unicode/smudge-utf8.obj: src/utils/unicode/utf8.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/utils/unicode/smudge-utf8.obj -MD -MP -MF src/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo -c -o src/utils/unicode/smudge-utf8.obj `if test -f 'src/utils/unicode/utf8.cpp'; then $(CYGPATH_W) 'src/utils/unicode/utf8.cpp'; else $(CYGPATH_W) '$(srcdir)/src/utils/unicode/utf8.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo src/utils/unicode/$(DEPDIR)/smudge-utf8.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/utils/unicode/utf8.cpp' object='src/utils/unicode/smudge-utf8.obj' libtool=no @AMDEPBACKSLASH@
+sm/utils/unicode/smudge-utf8.obj: sm/utils/unicode/utf8.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/utils/unicode/smudge-utf8.obj -MD -MP -MF sm/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo -c -o sm/utils/unicode/smudge-utf8.obj `if test -f 'sm/utils/unicode/utf8.cpp'; then $(CYGPATH_W) 'sm/utils/unicode/utf8.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/utils/unicode/utf8.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/utils/unicode/$(DEPDIR)/smudge-utf8.Tpo sm/utils/unicode/$(DEPDIR)/smudge-utf8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/utils/unicode/utf8.cpp' object='sm/utils/unicode/smudge-utf8.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/utils/unicode/smudge-utf8.obj `if test -f 'src/utils/unicode/utf8.cpp'; then $(CYGPATH_W) 'src/utils/unicode/utf8.cpp'; else $(CYGPATH_W) '$(srcdir)/src/utils/unicode/utf8.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/utils/unicode/smudge-utf8.obj `if test -f 'sm/utils/unicode/utf8.cpp'; then $(CYGPATH_W) 'sm/utils/unicode/utf8.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/utils/unicode/utf8.cpp'; fi`
 
-src/smudge-main.o: src/main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/smudge-main.o -MD -MP -MF src/$(DEPDIR)/smudge-main.Tpo -c -o src/smudge-main.o `test -f 'src/main.cpp' || echo '$(srcdir)/'`src/main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/smudge-main.Tpo src/$(DEPDIR)/smudge-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/main.cpp' object='src/smudge-main.o' libtool=no @AMDEPBACKSLASH@
+sm/smudge-main.o: sm/main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/smudge-main.o -MD -MP -MF sm/$(DEPDIR)/smudge-main.Tpo -c -o sm/smudge-main.o `test -f 'sm/main.cpp' || echo '$(srcdir)/'`sm/main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/$(DEPDIR)/smudge-main.Tpo sm/$(DEPDIR)/smudge-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/main.cpp' object='sm/smudge-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/smudge-main.o `test -f 'src/main.cpp' || echo '$(srcdir)/'`src/main.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/smudge-main.o `test -f 'sm/main.cpp' || echo '$(srcdir)/'`sm/main.cpp
 
-src/smudge-main.obj: src/main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT src/smudge-main.obj -MD -MP -MF src/$(DEPDIR)/smudge-main.Tpo -c -o src/smudge-main.obj `if test -f 'src/main.cpp'; then $(CYGPATH_W) 'src/main.cpp'; else $(CYGPATH_W) '$(srcdir)/src/main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/smudge-main.Tpo src/$(DEPDIR)/smudge-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/main.cpp' object='src/smudge-main.obj' libtool=no @AMDEPBACKSLASH@
+sm/smudge-main.obj: sm/main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/smudge-main.obj -MD -MP -MF sm/$(DEPDIR)/smudge-main.Tpo -c -o sm/smudge-main.obj `if test -f 'sm/main.cpp'; then $(CYGPATH_W) 'sm/main.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/main.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/$(DEPDIR)/smudge-main.Tpo sm/$(DEPDIR)/smudge-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/main.cpp' object='sm/smudge-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o src/smudge-main.obj `if test -f 'src/main.cpp'; then $(CYGPATH_W) 'src/main.cpp'; else $(CYGPATH_W) '$(srcdir)/src/main.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/smudge-main.obj `if test -f 'sm/main.cpp'; then $(CYGPATH_W) 'sm/main.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/main.cpp'; fi`
 install-man1: $(man1_MANS)
 	@$(NORMAL_INSTALL)
 	@list1='$(man1_MANS)'; \
@@ -1156,24 +1155,24 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f src/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/$(am__dirstamp)
-	-rm -f src/compile/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/compile/$(am__dirstamp)
-	-rm -f src/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/compile/v1/compiler/$(am__dirstamp)
-	-rm -f src/error/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/error/$(am__dirstamp)
-	-rm -f src/exec/interpreter/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/exec/interpreter/$(am__dirstamp)
-	-rm -f src/lib/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/lib/$(am__dirstamp)
-	-rm -f src/parse/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/parse/$(am__dirstamp)
-	-rm -f src/runtime/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/runtime/$(am__dirstamp)
-	-rm -f src/utils/unicode/$(DEPDIR)/$(am__dirstamp)
-	-rm -f src/utils/unicode/$(am__dirstamp)
+	-rm -f sm/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/$(am__dirstamp)
+	-rm -f sm/compile/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/compile/$(am__dirstamp)
+	-rm -f sm/compile/v1/compiler/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/compile/v1/compiler/$(am__dirstamp)
+	-rm -f sm/error/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/error/$(am__dirstamp)
+	-rm -f sm/exec/interpreter/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/exec/interpreter/$(am__dirstamp)
+	-rm -f sm/lib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/lib/$(am__dirstamp)
+	-rm -f sm/parse/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/parse/$(am__dirstamp)
+	-rm -f sm/runtime/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/runtime/$(am__dirstamp)
+	-rm -f sm/utils/unicode/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/utils/unicode/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1184,7 +1183,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf src/$(DEPDIR) src/compile/$(DEPDIR) src/compile/v1/compiler/$(DEPDIR) src/error/$(DEPDIR) src/exec/interpreter/$(DEPDIR) src/lib/$(DEPDIR) src/parse/$(DEPDIR) src/runtime/$(DEPDIR) src/utils/unicode/$(DEPDIR)
+	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1232,7 +1231,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf src/$(DEPDIR) src/compile/$(DEPDIR) src/compile/v1/compiler/$(DEPDIR) src/error/$(DEPDIR) src/exec/interpreter/$(DEPDIR) src/lib/$(DEPDIR) src/parse/$(DEPDIR) src/runtime/$(DEPDIR) src/utils/unicode/$(DEPDIR)
+	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
