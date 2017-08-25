@@ -89,7 +89,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = smudge$(EXEEXT)
-@IS_WINDOWS_FALSE@am__append_1 = -Wl,-E
+@IS_WINDOWS_TRUE@am__append_1 = -Wl,--export-all-symbols,--out-implib,libsmudge.a
+@IS_WINDOWS_FALSE@am__append_2 = -Wl,--export-dynamic
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -333,7 +334,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS) \
-	$(am__append_1)
+	$(am__append_1) $(am__append_2)
 smudge_CFLAGS = 
 @IS_WINDOWS_FALSE@smudge_LDADD = -ldl
 smudge_SOURCES = \
