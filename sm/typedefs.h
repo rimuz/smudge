@@ -24,7 +24,7 @@
 #include <vector>
 #include "sm/require_cpp11.h"
 
-#define _SM_INT_VERSION 000203
+#define _SM_INT_VERSION 203
 #define _SM_STR_VERSION "0.2.3"
 #define _SM_DATE_VERSION "08.2017"
 #define _SM_EXECUTABLE_NAME "smudge"
