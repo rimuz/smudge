@@ -3,14 +3,13 @@ The box `std.system` contains miscellaneous environment
 settings and utilities.
 
 ### Var `VERSION`
-An integer containing the Smudge version using the following rule:
-in **hexadecimal**:
+An integer containing the Smudge version `XXYYZZ` using the following rule:
+in **decimal**:
+- `XX` (major)
+- `YY` (minor)
+- `ZZ` (patch) |
 
-|||
-|:---|:---:|:--|
-| `XX` (major) | `YY` (minor) | `ZZ` (patch) |
-
-For example: version **`7.4.3`** becomes **`070403`**.
+For example: version **`7.4.3`** becomes **`70403`**.
 
 ### Var `STR_VERSION`
 A string containing a **human readable** Smudge version.
