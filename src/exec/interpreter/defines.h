@@ -63,7 +63,7 @@
                 tos1.f = OperatorFloat(tos1.i, tos.f); \
                 return; \
             } else { \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <int> and ") \
                     + runtime::errorString(intp, tos)); \
@@ -76,7 +76,7 @@
                 tos1.f = OperatorFloat(tos1.f, tos.f); \
                 return; \
             } else { \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <float> and ") \
                     + runtime::errorString(intp, tos)); \
@@ -87,11 +87,11 @@
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos1, op, id)){ \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, tos1, op_ptr)){ \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
@@ -108,11 +108,11 @@
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
             if(!runtime::find<ObjectType::BOX>(tos1, op, id)){ \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, self, op_ptr)){ \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
@@ -127,11 +127,11 @@
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
             if(!runtime::find<ObjectType::STRING>(tos1, op, id)){ \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, tos1, op_ptr)){ \
-                intp.rt->sources.printStackTrace(intp, error::ERROR, \
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
@@ -142,7 +142,7 @@
             return; \
         } \
         default: \
-            intp.rt->sources.printStackTrace(intp, error::ERROR, \
+            intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                 std::string("cannot find 'operator" #Operator "' in ") \
                 + runtime::errorString(intp, tos1)); \
     }

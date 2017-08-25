@@ -42,7 +42,7 @@ namespace sm{
                     || tos.type == ObjectType::STRONG_REFERENCE){
                 tos.type = ObjectType::STRONG_REFERENCE;
             } else {
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot get reference from temporary object ")
                     + runtime::errorString(intp, tos));
             }

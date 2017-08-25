@@ -37,7 +37,7 @@ namespace sm{
 
             if(tos1.type != ObjectType::WEAK_REFERENCE
                     && tos1.type != ObjectType::STRONG_REFERENCE){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot perform 'operator=' to "
                     "temporary object \"")
                     + runtime::errorString(intp, tos1) + "\" (rvalue)");

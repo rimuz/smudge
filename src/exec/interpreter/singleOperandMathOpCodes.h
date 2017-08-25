@@ -45,7 +45,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator~' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -63,7 +63,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator~' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -73,7 +73,7 @@ namespace sm{
                 }
 
                 default:
-                    intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                         std::string("'operator~' not applicable for ") +
                         runtime::errorString(intp, tos));
             }
@@ -103,7 +103,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator!' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -121,7 +121,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator!' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -131,7 +131,7 @@ namespace sm{
                 }
 
                 default:
-                    intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                         std::string("'operator!' not applicable for ") +
                         runtime::errorString(intp, tos));
             }
@@ -156,7 +156,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary+' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -174,7 +174,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary+' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -184,7 +184,7 @@ namespace sm{
                 }
 
                 default:
-                    intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                         std::string("'operator unary+' not applicable for ") +
                         runtime::errorString(intp, tos));
             }
@@ -214,7 +214,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary-' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -232,7 +232,7 @@ namespace sm{
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary-' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
@@ -242,7 +242,7 @@ namespace sm{
                 }
 
                 default:
-                    intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                    intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                         std::string("'operator unary-' not applicable for ") +
                         runtime::errorString(intp, tos));
             }
@@ -251,7 +251,7 @@ namespace sm{
         _OcFunc(Inc){
             Object& back = intp.exprStack.back();
             if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
-                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                     "cannot apply 'operator++' to temporary object (non-reference)");
 
             ByteCode_t::const_iterator dummy;
@@ -264,7 +264,7 @@ namespace sm{
         _OcFunc(Dec){
             Object& back = intp.exprStack.back();
             if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
-                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                     "cannot apply 'operator--' to temporary object (non-reference)");
 
             ByteCode_t::const_iterator dummy;
@@ -277,7 +277,7 @@ namespace sm{
         _OcFunc(PostInc){
             Object& back = intp.exprStack.back();
             if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
-                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                     "cannot apply 'operator++' to temporary object (non-reference)");
                     
             Object copy = intp.exprStack.back();
@@ -294,7 +294,7 @@ namespace sm{
         _OcFunc(PostDec){
             Object& back = intp.exprStack.back();
             if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
-                intp.rt->sources.printStackTrace(*intp.rt, error::ERROR,
+                intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                     "cannot apply 'operator--' to temporary object (non-reference)");
 
             Object copy = intp.exprStack.back();
