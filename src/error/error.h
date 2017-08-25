@@ -34,7 +34,7 @@ namespace sm {
         };
 
         enum ErrorType {
-            NOTE, WARNING, ERROR, SYNTAX_ERROR, FATAL_ERROR, BUG
+            ET_NOTE, ET_WARNING, ET_ERROR, ET_SYNTAX_ERROR, ET_FATAL_ERROR, ET_BUG
         };
     }
 
