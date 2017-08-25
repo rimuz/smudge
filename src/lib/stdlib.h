@@ -39,6 +39,14 @@
 #define smLibDecl(LibName) \
     sm::Box_t* import_##LibName(sm::runtime::Runtime_t& rt, unsigned nBox)
 
+#ifdef _SM_OS_WINDOWS
+#   define smLibrary \
+        extern "C" sm::Box_t* __declspec(dllexport) import_library(sm::runtime::Runtime_t& rt, unsigned nBox)
+#else
+#   define smLibrary \
+        extern "C" sm::Box_t* import_library(sm::runtime::Runtime_t& rt, unsigned nBox)
+#endif
+
 #define smLibTuple(LibString, LibName) \
     { LibString, import_##LibName }
 
@@ -113,6 +121,12 @@
 
 namespace sm {
     namespace lib {
+        #ifdef _SM_OS_WINDOWS
+        using DynInitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
+        #else
+        using DynInitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
+        #endif
+
         using InitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
         using LibDict_t = Map_t<string_t, InitFunc_t>;
 
@@ -128,7 +142,7 @@ namespace sm {
         inline Tp*& getData(exec::Interpreter& intp, const Object& obj){
             Tp*& ptrRef = data<Tp>(obj);
             if(!ptrRef){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("native data not initialized before use in "
                     "object ") + runtime::errorString(intp, obj));
             }
@@ -139,7 +153,7 @@ namespace sm {
         inline Tp*& setData(exec::Interpreter& intp, const Object& obj){
             Tp*& ptrRef = data<Tp>(obj);
             if(ptrRef){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("initializing native data twice in "
                     "object ") + runtime::errorString(intp, obj));
             }
