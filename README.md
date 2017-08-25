@@ -67,7 +67,7 @@ To cross-compile for Windows on Linux, Unix or any other environments supported 
 follow these steps:
 
 ```
-./configure --host YOUR_HOST
+./configure --host=YOUR_HOST
 make
 make install
 ```
