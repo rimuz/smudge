@@ -64,7 +64,11 @@
 #       else
 #           define _SM_DL_EXT ".so"
 #       endif
-#endif
+#   endif
+
+#   ifdef _SM_OS_WINDOWS
+#       include <windows.h>
+#   endif
 
 namespace sm{
     using enum_t = unsigned char;
