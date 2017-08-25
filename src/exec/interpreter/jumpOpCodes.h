@@ -117,7 +117,7 @@ namespace sm{
             ObjectVec_t* vec;
 
             if(!hasVector(tos, vec) || vec->size() != 2){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "'next()' must return a list or a tuple of size 2.");
             }
 

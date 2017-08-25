@@ -83,8 +83,8 @@ namespace sm{
 
         delete stream;
 
-        if(errType == error::FATAL_ERROR || errType == error::SYNTAX_ERROR || errType == error::ERROR
-                || errType == error::BUG){
+        if(errType == error::ET_FATAL_ERROR || errType == error::ET_SYNTAX_ERROR || errType == error::ET_ERROR
+                || errType == error::ET_BUG){
             std::exit(1);
         }
     }
@@ -92,8 +92,8 @@ namespace sm{
     void Sources::msg(enum_t errType, const std::string& msg) noexcept{
         std::cerr << errorMessages[errType] << msg << std::endl;
 
-        if(errType == error::FATAL_ERROR || errType == error::SYNTAX_ERROR || errType == error::ERROR
-                || errType == error::BUG){
+        if(errType == error::ET_FATAL_ERROR || errType == error::ET_SYNTAX_ERROR || errType == error::ET_ERROR
+                || errType == error::ET_BUG){
             std::exit(1);
         }
     }
@@ -114,8 +114,8 @@ namespace sm{
             }
         }
 
-        if(errType == error::FATAL_ERROR || errType == error::SYNTAX_ERROR || errType == error::ERROR
-                || errType == error::BUG){
+        if(errType == error::ET_FATAL_ERROR || errType == error::ET_SYNTAX_ERROR || errType == error::ET_ERROR
+                || errType == error::ET_BUG){
             std::exit(1);
         }
     }

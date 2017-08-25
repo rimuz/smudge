@@ -125,7 +125,7 @@ namespace sm{
             if(runtime::callable(obj, self, func_ptr)){
                 intp.makeCall(func_ptr, args, self);
             } else {
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot invoke 'operator()()' in ")
                     + runtime::errorString(intp, obj));
             }
@@ -166,7 +166,7 @@ namespace sm{
                     }
 
                 default:
-                    intp.rt->sources.printStackTrace(intp, error::ERROR,
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot invoke 'operator[]()' in ")
                         + runtime::errorString(intp, tosX));
             }
@@ -174,7 +174,7 @@ namespace sm{
             if(runtime::callable(func, self, func_ptr)){
                 intp.makeCall(func_ptr, args, self);
             } else {
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot invoke 'operator[]()' in ")
                     + runtime::errorString(intp, tosX));
             }
@@ -193,7 +193,7 @@ namespace sm{
             ObjectDict_t::const_iterator it = dict.find(nameId);
 
             if(it != dict.end()){
-                intp.rt->sources.printStackTrace(intp, error::ERROR,
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot import box '") + intp.rt->boxNames[box]
                     + "' because it's redefining variable, function or class named '" + intp.rt->nameFromId(nameId)
                     + "'");
@@ -211,7 +211,7 @@ namespace sm{
                 // call '<init>' function (inlined)
                 if(runtime::find<ObjectType::BOX>(imported, objFunc, runtime::initId)){
                     if(!runtime::callable(objFunc, self, fn)){
-                        intp.rt->sources.printStackTrace(intp, error::BUG,
+                        intp.rt->sources.printStackTrace(intp, error::ET_BUG,
                             std::string("'<init>' is not a function in box '")
                             + intp.rt->boxNames[imported.c_ptr->boxName] + "' (err #4)");
                     }
@@ -223,7 +223,7 @@ namespace sm{
                 // call 'new' function
                 if(runtime::find<ObjectType::BOX>(imported, objFunc, lib::idNew)){
                     if(!runtime::callable(objFunc, self, fn)){
-                        intp.rt->sources.printStackTrace(intp, error::ERROR,
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'new' is not a function in box '")
                             + intp.rt->boxNames[imported.c_ptr->boxName] + "'");
                     }
