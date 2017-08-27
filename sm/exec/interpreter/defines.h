@@ -56,11 +56,11 @@
         case ObjectType::INTEGER: \
             if(tos.type == ObjectType::INTEGER){ \
                 tos1.i = tos1.i Operator tos.i; \
-                return; \
+                break; \
             } else if(tos.type == ObjectType::FLOAT){ \
                 tos1.type = ObjectType::FLOAT; \
                 tos1.f = OperatorFloat(tos1.i, tos.f); \
-                return; \
+                break; \
             } else { \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
@@ -70,10 +70,10 @@
         case ObjectType::FLOAT: \
             if(tos.type == ObjectType::INTEGER){ \
                 tos1.f = OperatorFloat(tos1.f, tos.i); \
-                return; \
+                break; \
             } else if(tos.type == ObjectType::FLOAT){ \
                 tos1.f = OperatorFloat(tos1.f, tos.f); \
-                return; \
+                break; \
             } else { \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
@@ -99,7 +99,7 @@
             intp.exprStack.pop_back(); \
             intp.makeCall(op_ptr, args, instance, Inline); \
             Do; \
-            return; \
+            break; \
         } \
         case ObjectType::BOX: { \
             unsigned id = runtime::operatorId(TokenType); \
@@ -120,7 +120,7 @@
             intp.exprStack.pop_back(); \
             intp.makeCall(op_ptr, args, self, Inline); \
             Do; \
-            return; \
+            break; \
         } \
         case ObjectType::STRING: { \
             unsigned id = runtime::operatorId(TokenType); \
@@ -141,7 +141,7 @@
             intp.exprStack.pop_back(); \
             intp.makeCall(op_ptr, args, str, Inline); \
             Do; \
-            return; \
+            break; \
         } \
         default: \
             intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
