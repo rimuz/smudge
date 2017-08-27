@@ -51,70 +51,118 @@ namespace sm{
         _OcFunc(AssignAdd){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            Add(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignSub){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            Sub(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignMul){
             ByteCode_t::const_iterator dummy;
-            Dup1(intp, addr);
-            Mul(intp, dummy);
+            Dup1(intp, addr);_OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(*, std::multiplies<float_t>(), parse::TT_MULT, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignDiv){
             ByteCode_t::const_iterator dummy;
-            Dup1(intp, addr);
-            Div(intp, dummy);
+            Dup1(intp, addr);_OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(/, std::divides<float_t>(), parse::TT_DIV, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignMod){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            Mod(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(%, std::fmod, parse::TT_MOD, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignOr){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            Or(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(|, _OcFloatError<or_str>(intp), parse::TT_OR, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignAnd){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            And(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(+, _OcFloatError<and_str>(intp), parse::TT_AND, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignXor){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            Xor(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(+, _OcFloatError<xor_str>(intp), parse::TT_XOR, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignLeftShift){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            LeftShift(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(+, _OcFloatError<left_shift_str>(intp), parse::TT_LEFT_SHIFT, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
         _OcFunc(AssignRightShift){
             ByteCode_t::const_iterator dummy;
             Dup1(intp, addr);
-            RightShift(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(+, _OcFloatError<right_shift_str>(intp), parse::TT_RIGHT_SHIFT, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
