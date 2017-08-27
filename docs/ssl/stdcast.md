@@ -68,6 +68,11 @@ If `obj` is an instance, it **has to** have a method named **`to_string()`**.
 ### Function `kin (c1, c2)`
 **Returns** `true` if class `c2` is **derived** from or the **same** as class `c1`. `c1` and `c2` can be also class instances, in that case their base classes will be used instead (see `classof()`).
 
+### Function `desc (obj)`
+**Returns** a string containing a description of `obj` (such as `<null>` for `null`,
+`<integer>` for `integer`, etc.). The description given are equal to them printed by
+Smudge error messages.
+
 ||
 |:---:|
 | [Home](https://smudgelang.github.io/smudge/) |
