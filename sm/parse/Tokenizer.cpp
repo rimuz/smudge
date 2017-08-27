@@ -323,9 +323,14 @@ namespace sm{
                     if(it > tokens.begin()){
                         Token& before = *(it-1);
                         if(((before.type < TT_OPERATORS_START || before.type > TT_OPERATORS_END)
+                                && before.type != TT_CASE_KW
+                                && before.type != TT_CONTINUE_KW
+                                && before.type != TT_BREAK_KW
+                                && before.type != TT_RETURN_KW
+                                && before.type != TT_THROW_KW)
                                     || before.type == TT_ROUND_CLOSE
                                     || before.type == TT_SQUARE_CLOSE
-                                    || before.type == TT_CURLY_CLOSE)){
+                                    || before.type == TT_CURLY_CLOSE){
                             return;
                         }
                     }
