@@ -82,6 +82,12 @@ namespace sm{
             METHOD, BOX, WEAK_REFERENCE, STRONG_REFERENCE, INSTANCE_CREATOR,
             NATIVE_DATA
         };
+
+        constexpr const char* strTypes[] = {
+            "NONE", "INTEGER", "FLOAT", "STRING", "CLASS_INSTANCE", "ENUM", "CLASS", "FUNCTION",
+            "METHOD", "BOX", "WEAK_REFERENCE", "STRONG_REFERENCE", "INSTANCE_CREATOR",
+            "NATIVE_DATA"
+        };
     }
 
     class Object {
