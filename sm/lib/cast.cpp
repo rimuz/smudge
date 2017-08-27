@@ -18,6 +18,7 @@
 */
 
 #include <cstdlib>
+#include <sstream>
 #include "sm/lib/stdlib.h"
 #include "sm/runtime/casts.h"
 #include "sm/utils/unicode/utf8.h"
@@ -316,6 +317,24 @@ namespace sm{
                 }
 
                 return makeFalse();
+            })
+
+            smFunc(desc, smLambda {
+                Object in = args.empty() ? Object() : args[0];
+                if(in.type == ObjectType::STRING){
+                    return makeString("<string>");
+                } if(in.type == ObjectType::INTEGER){
+                    return makeString("<int>");
+                } if(in.type == ObjectType::FLOAT){
+                    return makeString("<float>");
+                } if(in.type == ObjectType::CLASS_INSTANCE){
+                    std::ostringstream oss;
+                    oss << "<instance of "
+                        << intp.rt->boxNames[in.i_ptr->base->boxName] << "::"
+                        << intp.rt->nameFromId(in.i_ptr->base->name) << ">";
+                    return makeString(oss.str().c_str());
+                }
+                return runtime::implicitToString(intp, in);
             })
 
             smReturnBox
