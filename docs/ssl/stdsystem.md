@@ -33,6 +33,11 @@ Executes the **command** contained in the string `cmd`.
 **Aborts** the current program (terminates the process with signal `SIGABRT`).
 **Does not return anything**.
 
+### Function `sterr (str)`
+**Exits** the current program but prints the **stack trace** and the given error message
+`str`. If `str` is not a string, it will be converted to it through [`std.cast::string(x)`](ssl/stdcast.md#function-string-obj).
+**Does not return anything**.
+
 ### Function `get (str)`
 Gets the **environment variable** named `str` (which has to be a string)
 and stores its value to a string.
