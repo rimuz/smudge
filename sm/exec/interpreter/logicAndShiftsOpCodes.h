@@ -54,7 +54,7 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(|, _OcFloatError<or_str>(intp), parse::TT_OR);
+            _OcOp(|, _OcFloatError<or_str>(intp), parse::TT_OR, false,);
         }
 
         _OcFunc(And){
@@ -63,7 +63,7 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(&, _OcFloatError<and_str>(intp), parse::TT_AND);
+            _OcOp(&, _OcFloatError<and_str>(intp), parse::TT_AND, false,);
         }
 
         _OcFunc(Xor){
@@ -72,7 +72,7 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(^, _OcFloatError<xor_str>(intp), parse::TT_XOR);
+            _OcOp(^, _OcFloatError<xor_str>(intp), parse::TT_XOR, false,);
         }
 
         _OcFunc(LeftShift){
@@ -81,7 +81,7 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(<<, _OcFloatError<left_shift_str>(intp), parse::TT_LEFT_SHIFT);
+            _OcOp(<<, _OcFloatError<left_shift_str>(intp), parse::TT_LEFT_SHIFT, false,);
         }
 
         _OcFunc(RightShift){
@@ -90,13 +90,13 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(>>, _OcFloatError<right_shift_str>(intp), parse::TT_RIGHT_SHIFT);
+            _OcOp(>>, _OcFloatError<right_shift_str>(intp), parse::TT_RIGHT_SHIFT, false,);
         }
 
         _OcFunc(LogicAnd){
             Object tos = intp.exprStack.back();
             _OcValue(tos);
-            
+
             if(!runtime::implicitToBool(tos)){
                 addr += (*++addr << 8) | *++addr;
                 return;
