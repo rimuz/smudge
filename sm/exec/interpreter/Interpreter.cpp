@@ -45,7 +45,7 @@ namespace sm{
     }
 
     namespace exec{
-        Object Interpreter::_start(){
+        Object Interpreter::start(){
             while(!funcStack.empty()){
                 if(funcStack.back().inlined){
                     funcStack.pop_back();
@@ -164,7 +164,7 @@ namespace sm{
                 std::exit(1);
             }
             makeCall(fn, args, self, inlined);
-            return _start();
+            return start();
         }
 
         void Interpreter::makeCall(Function* fn, const ObjectVec_t& args,
@@ -241,14 +241,14 @@ namespace sm{
 
                 ObjectDict_t* dict = new ObjectDict_t;
                 funcStack.back().codeBlocks.push_back(dict);
-                
+
                 bool is_vararg = fn->flags & FF_VARARGS;
                 size_t n_args = args.size();
                 size_t n_expected = is_vararg ? fn->arguments.size()-1 : fn->arguments.size();
 
                 if(fn->arguments.empty()){
                     address = fn->address;
-                    
+
                     if(is_vararg){
                         (*dict)[std::get<0>(fn->arguments.back())] = makeList(*this, false);
                     }
