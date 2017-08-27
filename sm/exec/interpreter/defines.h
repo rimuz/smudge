@@ -51,8 +51,7 @@
         RefName.type = ObjectType::WEAK_REFERENCE; \
     }
 
-    // TODO: if second operand is 0 in / or % operators
-#define _OcOp(Operator, OperatorFloat, TokenType) \
+#define _OcOp(Operator, OperatorFloat, TokenType, Inline, Do) \
     switch(tos1.type){ \
         case ObjectType::INTEGER: \
             if(tos.type == ObjectType::INTEGER){ \
@@ -98,7 +97,8 @@
             } \
             Object instance = std::move(tos1); \
             intp.exprStack.pop_back(); \
-            intp.makeCall(op_ptr, args, instance); \
+            intp.makeCall(op_ptr, args, instance, Inline); \
+            Do; \
             return; \
         } \
         case ObjectType::BOX: { \
@@ -118,7 +118,8 @@
                     + runtime::errorString(intp, tos1)); \
             } \
             intp.exprStack.pop_back(); \
-            intp.makeCall(op_ptr, args, self); \
+            intp.makeCall(op_ptr, args, self, Inline); \
+            Do; \
             return; \
         } \
         case ObjectType::STRING: { \
@@ -138,7 +139,8 @@
             } \
             Object str = std::move(tos1); \
             intp.exprStack.pop_back(); \
-            intp.makeCall(op_ptr, args, str); \
+            intp.makeCall(op_ptr, args, str, Inline); \
+            Do; \
             return; \
         } \
         default: \
