@@ -76,6 +76,16 @@ namespace sm {
 
             smFunc(abort, smLambda {
                 std::abort();
+                return Object();
+            })
+
+            smFunc(sterr, smLambda {
+                Object obj = args.empty() ? Object() : args[0];
+                Object str = runtime::implicitToString(intp, obj);
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                    std::string(str.s_ptr->str.begin(), str.s_ptr->str.end())
+                );
+                return Object();
             })
 
             smFunc(get, smLambda {
