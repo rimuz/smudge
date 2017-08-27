@@ -47,8 +47,6 @@ namespace sm{
 
         class Interpreter {
             friend runtime::GarbageCollector;
-        private:
-            Object _start();
         public:
             ObjectVec_t exprStack;
             CallStack_t funcStack;
@@ -62,6 +60,7 @@ namespace sm{
                 const Object& self = Object(), bool inlined = false);
             void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
                 const Object& self = Object(), bool inlined = false);
+            Object start();
         };
     }
 }
