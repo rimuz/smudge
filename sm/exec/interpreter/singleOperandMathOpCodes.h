@@ -257,7 +257,12 @@ namespace sm{
             ByteCode_t::const_iterator dummy;
             Dup(intp, addr);
             PushInt1(intp, dummy);
-            Add(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
@@ -270,7 +275,12 @@ namespace sm{
             ByteCode_t::const_iterator dummy;
             Dup(intp, addr);
             PushInt1(intp, dummy);
-            Sub(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
         }
 
@@ -279,14 +289,19 @@ namespace sm{
             if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE)
                 intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
                     "cannot apply 'operator++' to temporary object (non-reference)");
-                    
+
             Object copy = intp.exprStack.back();
             ByteCode_t::const_iterator dummy;
 
             _OcValue(copy);
             Dup(intp, addr);
             PushInt1(intp, dummy);
-            Add(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
             intp.exprStack.back() = copy;
         }
@@ -303,7 +318,12 @@ namespace sm{
             _OcValue(copy);
             Dup(intp, addr);
             PushInt1(intp, dummy);
-            Sub(intp, dummy);
+            _OcPopStore(tos);
+            _OcStore(tos1);
+            _OcValue(tos1);
+            _OcSimplifyRef(tos);
+            _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, dummy);
             intp.exprStack.back() = copy;
         }
