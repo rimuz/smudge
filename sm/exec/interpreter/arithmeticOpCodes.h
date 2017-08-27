@@ -1,4 +1,4 @@
- /*
+/*
  *      Copyright 2016-2017 Riccardo Musso
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(+, std::plus<float_t>(), parse::TT_PLUS);
+            _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, false,);
         }
 
         _OcFunc(Sub){
@@ -44,7 +44,7 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(-, std::minus<float_t>(), parse::TT_MINUS);
+            _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, false,);
         }
 
         _OcFunc(Mul){
@@ -53,7 +53,7 @@ namespace sm{
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            _OcOp(*, std::multiplies<float_t>(), parse::TT_MULT);
+            _OcOp(*, std::multiplies<float_t>(), parse::TT_MULT, false,);
         }
 
         _OcFunc(Div){
@@ -66,7 +66,7 @@ namespace sm{
                     || (tos.type == ObjectType::FLOAT && tos.f == 0.f))
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "division by zero (by instruction DIV)");
-            _OcOp(/, std::divides<float_t>(), parse::TT_DIV);
+            _OcOp(/, std::divides<float_t>(), parse::TT_DIV, false,);
         }
 
         _OcFunc(Mod){
@@ -79,7 +79,7 @@ namespace sm{
                     || (tos.type == ObjectType::FLOAT && tos.f == 0.f))
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "division by zero (by instruction MOD)");
-            _OcOp(%, std::fmod, parse::TT_MOD);
+            _OcOp(%, std::fmod, parse::TT_MOD, false,);
         }
     }
 }
