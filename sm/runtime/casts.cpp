@@ -27,8 +27,6 @@
 #include "sm/runtime/id.h"
 #include "sm/typedefs.h"
 
-#define _BoxName(Box) (Box.back() == '!' ? Box.substr(0, Box.size()-1) : Box)
-
 namespace sm{
     namespace lib{
         extern Class* cString;
@@ -112,7 +110,7 @@ namespace sm{
 
                     std::ostringstream oss;
                     oss << "<instance of "
-                        << _BoxName(intp.rt->boxNames[in.i_ptr->base->boxName]) << "::"
+                        << intp.rt->boxNames[in.i_ptr->base->boxName] << "::"
                         << intp.rt->nameFromId(in.i_ptr->base->name) << ">";
                     return makeString(oss.str().c_str());
                 }
@@ -120,7 +118,7 @@ namespace sm{
                 case ObjectType::ENUM:{
                     std::ostringstream oss;
                     oss << "<enum "
-                        << _BoxName(intp.rt->boxNames[in.e_ptr->boxName]) << "::"
+                        << intp.rt->boxNames[in.e_ptr->boxName] << "::"
                         << intp.rt->nameFromId(in.e_ptr->name) << ">";
                     return makeString(oss.str().c_str());
                 }
@@ -128,7 +126,7 @@ namespace sm{
                 case ObjectType::CLASS:{
                     std::ostringstream oss;
                     oss << "<class "
-                        << _BoxName(intp.rt->boxNames[in.c_ptr->boxName]) << "::"
+                        << intp.rt->boxNames[in.c_ptr->boxName] << "::"
                         << intp.rt->nameFromId(in.c_ptr->name) << ">";
                     return makeString(oss.str().c_str());
                 }
@@ -136,14 +134,14 @@ namespace sm{
                 case ObjectType::FUNCTION:{
                     std::ostringstream oss;
                     oss << "<function "
-                        << _BoxName(intp.rt->boxNames[in.f_ptr->boxName]) << "::"
+                        << intp.rt->boxNames[in.f_ptr->boxName] << "::"
                         << intp.rt->nameFromId(in.f_ptr->fnName) << "()>";
                     return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::BOX:{
                     std::ostringstream oss;
-                    oss << "<box " << _BoxName(intp.rt->boxNames[in.c_ptr->boxName]) << ">";
+                    oss << "<box " << intp.rt->boxNames[in.c_ptr->boxName] << ">";
                     return makeString(oss.str().c_str());
                 }
 
@@ -153,7 +151,7 @@ namespace sm{
                     if(obj.type == ObjectType::CLASS_INSTANCE){
                         std::ostringstream oss;
                         oss << "<ref to object "
-                            << _BoxName(intp.rt->boxNames[obj.i_ptr->base->boxName]) << "::"
+                            << intp.rt->boxNames[obj.i_ptr->base->boxName] << "::"
                             << intp.rt->nameFromId(obj.i_ptr->base->name) << ">";
                         return makeString(oss.str().c_str());
                     }
@@ -175,7 +173,7 @@ namespace sm{
             } if(in.type == ObjectType::CLASS_INSTANCE){
                 std::ostringstream oss;
                 oss << "<instance of "
-                    << _BoxName(intp.rt->boxNames[in.i_ptr->base->boxName]) << "::"
+                    << intp.rt->boxNames[in.i_ptr->base->boxName] << "::"
                     << intp.rt->nameFromId(in.i_ptr->base->name) << ">";
                 return oss.str();
             }
