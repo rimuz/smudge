@@ -36,6 +36,14 @@ namespace sm {
         constexpr unsigned idsStart = 30;
 
         constexpr unsigned operatorIds[] = {
+            /*
+             * I give an id to each operator
+             * (even though many of them can't
+             * be overloaded), to any future
+             * use.
+             *   ~Riccardo
+            */
+
             // pre operators
             0, 1, 2, 3, 4, 5,
 
