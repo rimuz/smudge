@@ -166,8 +166,9 @@ The above implementation is just **too simply** to be used in real applications,
 because it doesn't support additions like **`WrInt + WrInt`** and `WrInt + not integer`
 will print **meaningless error messages**.
 
-To fix these issue we can use [`std.cast::kin()`](ssl/stdcast.md#function-kin-c1-c2)
-to check the operand type:
+To fix these issues we can use [`std.cast::kin()`](ssl/stdcast.md#function-kin-c1-c2)
+combined with [`std.system::sterr()`](ssl/stdsystem.md#function-sterr-str) and
+[`std.cast::desc()`](ssl/stdcast.md#function-sterr-str) to check the operand type:
 
 ```js
 import std.io, std.cast, std.system;
@@ -180,11 +181,56 @@ import std.io, std.cast, std.system;
             return WrInt(val + x.val);
         else if(cast.kin(123, x)) // if x is an integer
             return WrInt(x + val);
-        // print on stderr and exit with value 1
-        io.e_print("Unsupported operation.");
-        system.exit(1);
+
+        // exits printing the stack trace and the message
+        system.sterr("'operator+' between "
+            + cast.desc(this) + " and "
+            + cast.desc(x) + " is not supported.");
     }
 // ...
+```
+
+### Overloading others operators
+The operator `-` works like the operator `+`, while others operators support only
+a _behavoir_, so they will have **zero or one** parameters.
+
+They're all overloaded with the syntax (like any other normal function):
+
+```js
+func OPERATOR (PARAMETERS) CODE
+```
+
+Here is the list of all overloadable operators (where **rhs** means
+**R**ight **H**and **S**ide and **CODE** is omitted):
+
+```
+// As we've seen
+func + (rhs, is_unary);
+func - (rhs, is_unary);
+
+// Function call & array subscripting
+func () (args...);
+func [] (args...);
+
+// Other operators
+func ~ (rhs);
+func * (rhs);
+func / (rhs);
+func % (rhs);
+
+func << (rhs);
+func >> (rhs);
+
+func > (rhs);
+func >= (rhs);
+func < (rhs);
+func <= (rhs);
+func == (rhs);
+func != (rhs);
+
+func & (rhs);
+func | (rhs);
+func ^ (rhs);
 ```
 
 ### Operators table
@@ -208,7 +254,7 @@ Here's the **priority table** (where **priority 0** is the **highest**):
 | `+` | Pre | 1 | Yes: `+` | Unary plus |
 | `-` | Pre | 1 | Yes: `-` | Unary minus |
 | `~` | Pre | 1 | Yes: `~` | Complement operator |
-| `!` | Pre | 1 | Yes: `!` | NOT operator |
+| `!` | Pre | 1 | No | NOT operator |
 | `*` | Math | 2 | Yes: `*` | Multiply |
 | `/` | Math | 2 | Yes: `/` | Divide |
 | `%` | Math | 2 | Yes: `%` | Modulo |
@@ -225,8 +271,8 @@ Here's the **priority table** (where **priority 0** is the **highest**):
 | `&` | Math | 7 | Yes: `&` | AND operator |
 | `^` | Math | 8 | Yes: `^` | XOR operator |
 | `|` | Math | 9 | Yes: `|` | OR operator |
-| `&&` | Log | 10 | Yes: `&&` | Logical AND operator |
-| `||` | Log | 11 | Yes: `||` | logical OR operator |
+| `&&` | Log | 10 | No | Logical AND operator |
+| `||` | Log | 11 | No | logical OR operator |
 | `?:` | Syn | 12 | No | Elvis operator |
 | `?:` | Syn | 12 | No | Ternal conditional operator |
 | `=` | Assign | 13 | No | Assign |
@@ -242,3 +288,7 @@ Here's the **priority table** (where **priority 0** is the **highest**):
 | `>>=` | Assign | 13 | No | Right bit-shift and assign |
 | `,` | Syn | 14 | No | Comma |
 | `;` | Syn | 15 | No | Semicolon |
+
+|||
+|--:|:---:|:--|
+| [Previous](if-and-loops.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
