@@ -213,7 +213,7 @@ namespace sm{
                         unsigned id = 0;
 
                         switch(it->type){
-                            case TT_COMPL:              case TT_NOT:                case TT_PRE_DEC:
+                            case TT_COMPL:              case TT_PRE_DEC:
                             case TT_PRE_INC:            case TT_PRE_MINUS:          case TT_PRE_PLUS:
                             case TT_LEFT_SHIFT:         case TT_MINUS:              case TT_MULT:
                             case TT_DIV:                case TT_MOD:                case TT_PLUS:
