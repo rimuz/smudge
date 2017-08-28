@@ -42,6 +42,7 @@ While in some cases it's very easy to understand an expression, like in this exa
  * 1) computes 2 * y
  * 2) divides by 5
  * 3) adds x
+ * 4) stores the result in val
 */
 
 val = x + 2 * y / 5;
