@@ -81,60 +81,9 @@ namespace sm{
 
         _OcFunc(Not){
             ++addr;
-            _OcPopStore(tos);
+            _OcStore(tos);
             _OcValue(tos);
-
-            switch(tos.type){
-                case ObjectType::INTEGER:
-                    tos.i = !tos.i;
-                    intp.exprStack.emplace_back(std::move(tos));
-                    return;
-
-                case ObjectType::FLOAT:
-                    tos.f = !tos.f;
-                    intp.exprStack.emplace_back(std::move(tos));
-                    return;
-
-                case ObjectType::CLASS_INSTANCE:{
-                    unsigned id = runtime::operatorId(parse::TT_NOT);
-                    Object op;
-                    Function* op_ptr = nullptr;
-                    ObjectVec_t args;
-
-                    if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
-                            || !runtime::callable(op, tos, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                            std::string("'operator!' not applicable for ")
-                            + runtime::errorString(intp, tos));
-                    }
-
-                    intp.makeCall(op_ptr, args, tos);
-                    return;
-                }
-
-                case ObjectType::BOX: {
-                    unsigned id = runtime::operatorId(parse::TT_NOT);
-                    Object op;
-                    Object self;
-                    Function* op_ptr = nullptr;
-                    ObjectVec_t args;
-
-                    if(!runtime::find<ObjectType::BOX>(tos, op, id)
-                            || !runtime::callable(op, self, op_ptr)){
-                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                            std::string("'operator!' not applicable for ")
-                            + runtime::errorString(intp, tos));
-                    }
-
-                    intp.makeCall(op_ptr, args, self);
-                    return;
-                }
-
-                default:
-                    intp.rt->sources.printStackTrace(*intp.rt, error::ET_ERROR,
-                        std::string("'operator!' not applicable for ") +
-                        runtime::errorString(intp, tos));
-            }
+            tos = makeBool(!runtime::implicitToBool(tos));
         }
 
         _OcFunc(UnaryPlus){
