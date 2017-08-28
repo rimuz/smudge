@@ -148,7 +148,7 @@ for(var iterator = iterable_object.iterate(), tuple = iterator.next();
 ```
 A bit **tricky**, isn't it?
 
-Note: the example uses the method [`std.lang::Tuple::get(idx)`](ssl/stdlang.md#method-get-idx-1),
+Note: the example uses the method [`std.lang::Tuple::get(idx)`](../ssl/stdlang.md#method-get-idx-1),
 while the interpreter could get the values in other ways.
 
 Here is an example of usage (combining `for-each` with a **VARARG**):
@@ -176,7 +176,7 @@ OUPUT:
 [1, 2, 3, 4]
 ```
 
-See also [`std.lang::List::slice()`](ssl/stdio.md#method-slice-start--0-end--size).
+See also [`std.lang::List::slice()`](../ssl/stdio.md#method-slice-start--0-end--size).
 
 ### The `switch` statement (note: not a loop!)
 While in most programming languages `switch` works only with **specific types** (typically **PODs**,
@@ -232,7 +232,7 @@ func main {
 }
 ```
 
-See [`std.io::line()`](ssl/stdio.md#function-line-).
+See [`std.io::line()`](../ssl/stdio.md#function-line-).
 
 This code will print `Hello, world!` if the input is `hello`, while will
 end when `exit` is prompted (if the input is different, it will be ignored).

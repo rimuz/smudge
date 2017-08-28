@@ -88,7 +88,7 @@ So, there are only two different behaviors of `operator +`:
 2. As **unary** operator: `+a`
 
 Case (2) is sometimes used when you need to convert an object to an integer,
-though [`std.cast::int(x)`](ssl/stdcast.md#function-int-x\) is recommended.
+though [`std.cast::int(x)`](../ssl/stdcast.md#function-int-x\) is recommended.
 
 Here's an example of overloading:
 
@@ -151,7 +151,7 @@ obj5 = -100
 ```
 
 Some notes about the println call:
-- `\n` is an [escape sequence](ssl/stdlang.md#escape-sequences).
+- `\n` is an [escape sequence](../ssl/stdlang.md#escape-sequences).
 - the `+` between strings `"\n"` and `"objN = "` is not necessary
     because Smudge tokenizer automatically concatenates near string literals.
 
@@ -166,9 +166,9 @@ The above implementation is just **too simply** to be used in real applications,
 because it doesn't support additions like **`WrInt + WrInt`** and `WrInt + not integer`
 will print **meaningless error messages**.
 
-To fix these issues we can use [`std.cast::kin()`](ssl/stdcast.md#function-kin-c1-c2)
-combined with [`std.system::sterr()`](ssl/stdsystem.md#function-sterr-str) and
-[`std.cast::desc()`](ssl/stdcast.md#function-sterr-str) to check the operand type:
+To fix these issues we can use [`std.cast::kin()`](../ssl/stdcast.md#function-kin-c1-c2)
+combined with [`std.system::sterr()`](../ssl/stdsystem.md#function-sterr-str) and
+[`std.cast::desc()`](../ssl/stdcast.md#function-sterr-str) to check the operand type:
 
 ```js
 import std.io, std.cast, std.system;
