@@ -256,7 +256,7 @@ namespace sm{
 
                             default:
                                 _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                    std::string("expected identifier, new, delete or overloadable operator before")
+                                    std::string("expected identifier, new, delete or overloadable operator before ")
                                     + representation(*it) + ".");
                                 break;
                         }
