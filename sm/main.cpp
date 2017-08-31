@@ -70,6 +70,7 @@ int main(int argc, char** argv){
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
 
+    // no need to lock rt.threads_m: there is no one using it
     rt.threads.emplace_back(&intp);
 
     int firstArg = argc;
