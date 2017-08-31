@@ -28,6 +28,7 @@
 #include "sm/runtime/Object.h"
 #include "sm/error/error.h"
 #include "sm/compile/v1/Compiler.h"
+#include "sm/utils/Thread.h"
 
 namespace sm{
     namespace exec{
@@ -79,6 +80,8 @@ namespace sm{
             BoxVec_t boxes;
             Sources sources;
             ByteCode_t code;
+
+            Mutex threads_m;
             exec::ThreadVec_t threads;
 
             bool showAll = false, noStd = false;
