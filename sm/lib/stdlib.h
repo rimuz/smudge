@@ -113,6 +113,11 @@
 #define smGetData(Type) \
     sm::lib::getData<Type>(intp, self)
 
+#define smDeleteData(Type) \
+    Type* ptr = smGetData(Type); \
+    sm::lib::data<Type>(self) = nullptr; \
+    delete ptr;
+
 #define smHas(Id) \
     (self.i_ptr->objects.find(Id) != self.i_ptr->objects.end())
 
