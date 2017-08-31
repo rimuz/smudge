@@ -42,7 +42,7 @@ func main {
         io.println("You typed something else");
 }
 ```
-`std.io::int()` is a function that returns an int, or`null (see more [here](../ssl/stdio.md#function-int-)).
+`std.io::int()` is a function that returns an int, or `null` (see more [here](../ssl/stdio.md#function-int-)).
 
 This code will check if the input string could be converted to integer or not.
 
