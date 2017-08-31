@@ -39,7 +39,7 @@ Returns a tuple containing the values of `significand` and `exp` that make true 
 Returns the length of the hypotenuse given the catheti (i.e. legs) `a` and `b` (`integer`s or `float`s) or null if the parameters are invalid.
 
 # Other functions
-Each of the next functions accept as parameter one or more `float`s (or `integer`s) and return a `float`, or`null if the parameters are invalid. **Angles are expressed in radians** (both input and output values).
+Each of the next functions accept as parameter one or more `float`s (or `integer`s) and return a `float`, or `null` if the parameters are invalid. **Angles are expressed in radians** (both input and output values).
 Use `deg()` and `rad()` for angle conversions.
 
 - Trigonometric functions:
