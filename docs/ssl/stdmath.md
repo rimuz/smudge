@@ -1,44 +1,44 @@
-## The Smudge Programming Language - box `std.math`
+# The Smudge Programming Language - box `std.math`
 `std.math` is just an interface to the `C++` math library [`<cmath>`](http://www.cplusplus.com/reference/cmath/) plus a
 couple of function to generate random numbers.
 So, see also the original C++ docs on [cplusplus.com](http://www.cplusplus.com/reference/cmath/)).
 
-### Var `NAN`
+## Var `NAN`
 Contains the floating-point **N**ot **A** **N**umber value.
 Note that `NAN == NAN` and `std.cast::same(NAN, NAN)` return **`false`**: use [`is_nan(x)`](stdmath.md#function-is_nan-).
 
-### Var `INF`
+## Var `INF`
 Contains the floating-point **Infinity** value.
 
-### Var `E`
+## Var `E`
 The [Euler's number](https://en.wikipedia.org/wiki/E_(mathematical_constant)) stored in a `float`.
 
-### Var `PI`
+## Var `PI`
 The [PI constant](https://en.wikipedia.org/wiki/Pi) stored in a `float`.
 
-### Function `rand ()`
+## Function `rand ()`
 Generates and **returns** a random `float` between `0` and `1` (`1` excluded).
 
-### Function `rand_int (min, max)`
+## Function `rand_int (min, max)`
 Generates and **returns** a random `integer` between `min` and `max` (`max` excluded),
 or `null` if either `min` or `max` is not an integer.
 
-### Function `deg (r)`
+## Function `deg (r)`
 Converts the angle `r` (`float` or `integer`) expressed in **radians** to **degrees**.
 **Returns** the new `float` or `null`, if `r` is an invalid parameter.
 
-### Function `rad (d)`
+## Function `rad (d)`
 Converts the angle `r` (`float` or `integer`) expressed in **degrees** to **radians**.
 **Returns** the new `float` or `null`, if `r` is an invalid parameter.
 
-### Function `frexp (x)`
+## Function `frexp (x)`
 **Returns** a tuple containing the values of `significand` and `exp` that make true the following equation:<br>
 **x = significand * 2<sup>exp</sup>**
 
-### Function `hypot (a, b)`
+## Function `hypot (a, b)`
 **Returns** the length of the hypotenuse given the catheti (i.e. legs) `a` and `b` (`integer`s or `float`s) or null if the parameters are invalid.
 
-## Other functions
+# Other functions
 Each of the next functions accept as parameter one or more `float`s (or `integer`s) and return a `float` or `null` if the parameters are invalid. **Angles are expressed in radians** (both input and output values).
 Use `deg()` and `rad()` for angle conversions.
 
