@@ -23,19 +23,19 @@ Returns the box object.
 
 ## Function `line ()`
 Inputs a text line from `stdin` and stores it as a string.
-Returns the string or `null` if typed `EOF` (e.g. Ctrl+D on Unix).
+Returns the string, or`null if typed `EOF` (e.g. Ctrl+D on Unix).
 
 ## Function `int ()`
 Inputs an integer from `stdin`.
-Returns the integer or `null` if an error occurs during the conversion.
+Returns the integer, or`null if an error occurs during the conversion.
 
 ## Function `float ()`
 Inputs a floating point number from `stdin`.
-Returns the number or `null` if an error occurs during the conversion.
+Returns the number, or`null if an error occurs during the conversion.
 
 ## Function `get ()`
 Reads a character from `stdin`.
-Returns a string containing its value or `null` if `EOF`
+Returns a string containing its value, or`null if `EOF`
 is entered (e.g. Ctrl+D on Unix).
 
 ## Function `getc ()`
@@ -77,7 +77,7 @@ Note that:
 - if neither **`TRUNC`** nor **`APP`** is set and **`WRITE`** is set,
 the output will start from the beginning of the file.
 
-Returns the instance of **`FileStream`** or `null` if the stream can't be open.
+Returns the instance of **`FileStream`**, or`null if the stream can't be open.
 
 ## Function `remove (fileName)`
 **Deletes** the file named `fileName`.
@@ -106,7 +106,7 @@ Returns `null`.
 
 ## Method `get ()`
 Reads a character from the stream.
-Returns a string containing the character or `null` if `EOF` is reached.
+Returns a string containing the character, or`null if `EOF` is reached.
 
 ## Method `getc ()`
 Reads a character from the stream.
@@ -114,7 +114,7 @@ Returns an integer containing its ASCII value or -1 if `EOF` is reached.
 
 ## Method `line ()`
 Reads a text line from the stream and stores it as a string.
-Returns the string or `null` if the operation fails.
+Returns the string, or`null if the operation fails.
 
 ## Method `peek ()`
 Peeks the next character.
@@ -122,7 +122,7 @@ Returns an integer containing its ASCII value or -1 if `EOF` is reached.
 
 ## Method `read (n)`
 Reads next **`n`** characters from the stream and stores them as a string.
-Returns the string or `null` is **`n`** is an invalid parameter.
+Returns the string, or`null is **`n`** is an invalid parameter.
 
 ## Method `read_all ()`
 Reads all the text from the stream until it finds `EOF` and stores it in a string.
