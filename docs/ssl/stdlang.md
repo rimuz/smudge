@@ -100,24 +100,24 @@ Do nothing.
 ## Method `idx (i)`
 Calculates the index in **bytes** from the given index in **characters** `i`.
 If `i` is negative, the characters will be counted from the end.
-**Returns** the **value** of the index resulting or **null** if it cannot be
+Returns the **value** of the index resulting or **null** if it cannot be
 calculated (e.g. in case of **out of index**).
 
 ## Method `len ()`
-**Returns** the **size** of the sring expressed in **bytes**.
+Returns the **size** of the sring expressed in **bytes**.
 
 ## Method `count ([start = 0[, end = len()]])`
-**Returns** the **length** (expressed in **characters**) of the range of the
+Returns the **length** (expressed in **characters**) of the range of the
 string from index `start` (included) to index `end` (excluded).
 `start` and `end` are expressed in **bytes** and can be negative: in that case
 they will be counted from the end.
 
 ## Method `empty ()`
-**Returns** true if the string is empty, false otherwise.
+Returns true if the string is empty, false otherwise.
 
 ## Method `compare (str[, ignore_case = false])`
 Compares this string to the given string `str`.
-**Returns** an integer which will be:
+Returns an integer which will be:
 - **< 0** if **this < str**
 - **0** if **this == str**
 - **1** if **`str`** is not a string.
@@ -133,11 +133,11 @@ function **`compare()`** does, but supporting all the
 
 ## Method `== (str)`
 Compares this string to the given string `str`.
-**Returns** `true` if they are equal, `false` otherwise.
+Returns `true` if they are equal, `false` otherwise.
 
 ## Method `!= (str)`
 Compares this string to the given string `str`.
-**Returns** `true` if they are different, `false` otherwise.
+Returns `true` if they are different, `false` otherwise.
 
 ## Methods `< (str)`, `<= (str)`, `> (str)`, `>= (str)`
 Compare this string to the given string `str`.
@@ -146,77 +146,77 @@ less than, less or equal to, greater than or greater or equal
 to `str`.
 
 ## Method `+ (str)`
-**Returns** a new string created by concatenating the string with the given
+Returns a new string created by concatenating the string with the given
 string `str`. If `str` is not a string, will be converted by calling its method
 `to_string()`.
 
 ## Method `- (n_chs)`
-**Returns** a new string **without** the **last** *n* **bytes** specified by
+Returns a new string **without** the **last** *n* **bytes** specified by
 the given integer `n_chs` or `null` if `c_chs` is not an integer or is greater
 than `len()`.
 
 ## Method `* (times)`
-**Returns** a new string whose content will be `times` reps of the string or
+Returns a new string whose content will be `times` reps of the string or
 `null` if `times` is not an integer. If `times` is negative, the string will
 be reversed. Thus, to simply reverse a string you need only to multiply for  `-1`.
 
 ## Method `get (idx)`
-**Returns** a **string** containing the ASCII **character**
+Returns a **string** containing the ASCII **character**
 located at the given index `idx` (expressed in **bytes**) or
 **`null`** in case of **out of index** (or id `idx` is not an integer).
 If `idx` is negative, it will be counted from the end of the
 string.
 
 ## Method `u_get (n_ch)`
-**Returns** a **string** containing the UTF-8 **character**
+Returns a **string** containing the UTF-8 **character**
 at the given index `n_ch` (expressed in **characters**) or
 **`null`** in case of **out of index** (or id `n_ch` is not an integer).
 If `n_ch` is negative, it will be counted from the end of the string.
 
 ## Method `getc (idx)`
-**Returns** an **integer** containing the **code** of the ASCII character
+Returns an **integer** containing the **code** of the ASCII character
 located at the given index `idx` (expressed in **bytes**) or
 **`null`** in case of **out of index** (or id `idx` is not an integer).
 If `idx` is negative, it will be counted from the end of the string.
 
 ## Method `u_getc (n_ch)`
-**Returns** an **integer** containing the  **UNICODE codepoint** of the UTF-8
+Returns an **integer** containing the  **UNICODE codepoint** of the UTF-8
 **character** located at the given index `n_ch` (expressed in **bytes**) or
 **`null`** in case of **out of index** (or id `n_ch` is not an integer).
 If `n_ch` is negative, it will be counted from the end of the string.
 
 ## Method `contains (str)`
-**Returns** `true` if `str`'s content is contained into
+Returns `true` if `str`'s content is contained into
 the string, `false` otherwise.
 
 ## Method `bytes ()`
-**Returns** a `List` containing **all** the **numeric** values
+Returns a `List` containing **all** the **numeric** values
 of each byte of the string.
 
 ## Method `chars ()`
-**Returns** a `List` of strings cotaining each an **ASCII/UTF-8 character**
+Returns a `List` of strings cotaining each an **ASCII/UTF-8 character**
 of the origin string.
 
 ## Method `join (list)`
 Concatenates all the string equivalent of `list`'s elements (got via a call to
 elements' `to_string()` method) with the string as separator. `list` can be
 either a `List` or a `Tuple`.
-**Returns** the string or **`null`** if `list` is neither a `List` nor a
+Returns the string or **`null`** if `list` is neither a `List` nor a
 `Tuple`.
 
 ## Method `ends_with (str)`
-**Returns** `true` if the string **ends with** the given string `str`, `false`
+Returns `true` if the string **ends with** the given string `str`, `false`
 otherwise (or `null` if `str` is not a string).
 
 ## Method `starts_with (str)`
-**Returns** `true` if the string **starts with** the given string `str`,
+Returns `true` if the string **starts with** the given string `str`,
 `false` otherwise (or `null` if `str` is not a string).
 
 ## Method `hash ()`
-**Returns** the hash value of the string.
+Returns the hash value of the string.
 
 ## Method `find (str)`
-**Returns** the index location of the given string `str` in the string,
+Returns the index location of the given string `str` in the string,
 returning `len()` if `str` is not found or `null` if `str` is not a string.
 
 ## Method `find_last (str)`
@@ -224,7 +224,7 @@ returning `len()` if `str` is not found or `null` if `str` is not a string.
 account.
 
 ## Method `substr (start[, end = len()])`
-**Returns** a copy of the string from index `start` (included) to index `end`
+Returns a copy of the string from index `start` (included) to index `end`
 (excluded) or `null` if `start` > `end` or if they are not integers.
 Just as previous methods, indexes `start` and `end` can be negative: in that
 case they will be counted from the end of the string.
@@ -234,7 +234,7 @@ Same as `substr()`, but uses indexes expressed in **characters** instead of
 **bytes**.
 
 ## Method `replace ([to_replace = ''[, replacement = '']])`
-**Returns** a new string where all the occurrences of string `to_replace` are
+Returns a new string where all the occurrences of string `to_replace` are
 replaced with string `replacement` or `null` if `replacement` is not a string.
 If `replacement` is an empty string, every occurrences will be simply removed
 from the string, while if `to_replace` is not a string or is an empty string,
@@ -246,39 +246,39 @@ Same as `replace()`, but only the first occurrence is replaced.
 ## Method `split (separators[, skipEmpty = true])`
 Splits the string into tokens separated by **any** of the string
 `separators`'s **bytes**. If `skipEmpty` is set to `false`, are valid tokens
-empty ones, too. **Returns** a `List` containing the created tokens or
+empty ones, too. Returns a `List` containing the created tokens or
 `null` if `separators` is not a string.
 
 ## Method `trim ()`
-**Returns** a copy of the string without **spacing characters** (all
+Returns a copy of the string without **spacing characters** (all
 ASCII characters <= ' ', such as **control characters**, **spaces**, **tabs**,
 **newlines**, etc.) at the begin end at the end of the string.
 
 ## Method `upper ()`
-**Returns** a copy of the string with all the **ASCII characters** in their
+Returns a copy of the string with all the **ASCII characters** in their
 **uppercase** version.
 
 ## Method `lower ()`
-**Returns** a copy of the string with all the **ASCII characters** in their
+Returns a copy of the string with all the **ASCII characters** in their
 **lowercase** version.
 
 ## Method `u_upper ()`
-**Returns** a copy of the string with all the **UTF-8 characters** in their
+Returns a copy of the string with all the **UTF-8 characters** in their
 **uppercase** version.
 
 ## Method `u_lower ()`
-**Returns** a copy of the string with all the **UTF-8 characters** in their
+Returns a copy of the string with all the **UTF-8 characters** in their
 **lowercase** version.
 
 ## Method `clone ()`
-**Returns** an exact copy of the string, stored in a distinct address of the
+Returns an exact copy of the string, stored in a distinct address of the
 memory.
 
 ## Method `to_string ()`
-**Returns** the string.
+Returns the string.
 
 ## Method `iterate ()`
-**Returns** an instance of `StringIterator` pointing to the start of the string.
+Returns an instance of `StringIterator` pointing to the start of the string.
 
 # Class `List`
 This is the class which provides all the Smudge lists' functionalities.
@@ -293,74 +293,74 @@ var my_list = [0, 1, "Hello!", [0, "World!"], xyz];
 Create and destroy the list, shouldn't be called manually. **Return** `null`.
 
 ## Method `[] (idx)`
-**Returns** a **reference** to the element located ad the given index `idx`,
+Returns a **reference** to the element located ad the given index `idx`,
 or `null` if `idx` is not an integer or is **out of index**.
 if `idx` is negative, it will be counted from the end.
 
 ## Method `+ (lst)`
 Concatenates the list with the given list or tuple `lst`.
-**Returns** the new list or `null` if `lst` is neither a list nor a tuple.
+Returns the new list or `null` if `lst` is neither a list nor a tuple.
 
 ## Method `- (n)`
-**Returns** the list without the last `n` elements or `null` if `n` is
+Returns the list without the last `n` elements or `null` if `n` is
 not an integer or negative.
 
 ## Method `* (times)`
-**Returns** a new list whose content will be `times` reps of the list or
+Returns a new list whose content will be `times` reps of the list or
 `null` if `times` is not an integer. If `times` is negative, the list will
 be reversed. Thus, to simply reverse a list you need only to multiply for `-1`.
 
 ## Method `| (lst)`
-**Returns** a new list containing all the elements from this and `lst` lists,
+Returns a new list containing all the elements from this and `lst` lists,
 repeating the objects in common only **once** (works well with lists containing
 **unique** elements) or `null` if `lst` is neither a list nor a tuple.
 
 ## Method `& (lst)`
-**Returns** a list containing **only** the objects **in common** between this
+Returns a list containing **only** the objects **in common** between this
 list and `lst` (works well if each list has only unique elements) or `null`
 if `lst` is neither a list nor a tuple.
 
 ## Method `== (lst)`
-**Returns** `true` if `lst` is a list and its content is equivalent to this
+Returns `true` if `lst` is a list and its content is equivalent to this
 list's, `false` otherwise.
 
 ## Method `!= (lst)`
-**Returns** `false` if `lst` is a list and its content is equivalent to this
+Returns `false` if `lst` is a list and its content is equivalent to this
 list's, `true` otherwise.
 
 ## Method `get (idx)`
-**Returns** the element located at the given index `idx` or `null` if `idx` is
+Returns the element located at the given index `idx` or `null` if `idx` is
 not an integer or if out of range. `idx` can be negative, in that case it will be
 counted from the end.
 
 ## Method `reserve (size)`
 Reserves enough space in memory for the list to contain `size` elements.
 If `size` is not an integer or is negative, it does nothing.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `resize (size)`
 Resizes the list to size `size`, objects eventually added will be `null`s.
 If `size` is not an integer or is negative, it does nothing.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `pop ()`
 Removes the last element to the list or does nothing if the list is empty.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `push (obj)`
 Adds object `obj` to the end of the list.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `pop_front ()`
 Removes the first element to the list or does nothing if the list is empty.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `push_front (obj)`
 Adds object `obj` at the beginning of the list.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `clone ([start = 0[, end = size()]])`
-**Returns** a list containing a copy of the objects from index `start`
+Returns a list containing a copy of the objects from index `start`
 (included) to index `end` (excluded) or null if either `start` or `end`
 is not an integer or an out of range one. As always, indexes can be negative,
 in that case they will be counted from the end of the list.
@@ -371,13 +371,13 @@ Same as `clone()`, but **returns** a `Tuple` instance instead of a list.
 ## Method `append (lst)`
 Added the content of the list `lst` to the end of this list or does nothing
 if `lst` is not a list.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `insert (idx, obj)`
 Inserts the object `obj` at the given index `idx`.
 `idx` can be negative, in that case it will be counted from the end.
 Does nothing if `idx` is not an integer or if it's out of range.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `insert_list (idx, lst)`
 Same as `insert()`, but inserts the whole content of the list or tuple given
@@ -389,7 +389,7 @@ from the list. Since the `end`'s default value is `start`'s plus one,
 when **only `start`** index is specified, **only** the object at that index
 will be removed. `start` and `end` can be negative, in that case they will be
 counted from the end. Does nothing when either `start` or `end` is not an
-integer or the range given is broken (e.g. start < end). '**Returns** `null`.
+integer or the range given is broken (e.g. start < end). 'Returns `null`.
 
 ## Method `copy_list (idx, lst)`
 Copies the content of list or tuple `lst` in the list starting from index idx
@@ -404,40 +404,40 @@ following the table:
 
 ## Method `find (obj)`
 Searches an equivalent object to `obj` (checked via `operator== ()`).
-**Returns** the index of the first occurence or `null` if not found.
+Returns the index of the first occurence or `null` if not found.
 
 ## Method `count (obj)`
 Counts how many equivalent objects to `obj` (checked via `operator== ()`).
-**Returns** integer which value is the number counted.
+Returns integer which value is the number counted.
 
 ## Method `slice ([start = 0[, end = size()]])`
 Alias for `clone()`.
 
 ## Method `reverse ()`
 Reverses the list in place.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `sort ([reversed = false])`
 Sorts the list in place in ascending order if `reversed` is `false` or
 descending order if `reversed` is `true`. The elements of the list are
-compared via the operator `<`, which can be overloaded. **Returns** `null`.
+compared via the operator `<`, which can be overloaded. Returns `null`.
 
 ## Method `unique ()`
 Eliminates all but the first element from every consecutive group of
-equivalent elements from the list. **Returns** `null`.
+equivalent elements from the list. Returns `null`.
 
 ## Method `to_string ()`
-**Returns** a string representation of the list (typically elements'
+Returns a string representation of the list (typically elements'
 `to_string()` values separated by a comma inside a couple of brackets).
 
 ## Method `empty ()`
-**Returns** `true` if the list is empty (has no elements), `false` otherwise.
+Returns `true` if the list is empty (has no elements), `false` otherwise.
 
 ## Method `size ()`
-**Returns** the number of elements contained by the list.
+Returns the number of elements contained by the list.
 
 ## Method `iterate ()`
-**Returns** an instance of `ListIterator` pointing to the start of the list.
+Returns an instance of `ListIterator` pointing to the start of the list.
 
 # Class `Tuple`
 Tuples are immutable lists. You can instance a `Tuple` by enclosing its
@@ -451,44 +451,44 @@ var my_tuple = (1, 2, "Hello", ("World", [0, 1, "!"], ()), []);
 Create and destroy the tuple, shouldn't be called manually. **Return** `null`.
 
 ## Method `+ (lst)`
-**Returns** a new tuple created by concatenating the tuple to list or tuple
+Returns a new tuple created by concatenating the tuple to list or tuple
 `lst` or `null` if `lst` is neither a list nor a tuple.
 
 ## Method `- (n)`
-**Returns** a new tuple without the last `n` elements of the tuple or `null`
+Returns a new tuple without the last `n` elements of the tuple or `null`
 if `n` is not an integer or negative.
 
 ## Method `* (times)`
-**Returns** a new tuple whose content will be `times` reps of the tuple or
+Returns a new tuple whose content will be `times` reps of the tuple or
 `null` if `times` is not an integer. If `times` is negative, the tuple will
 be reversed. Thus, to simply reverse a tuple you need only to multiply for `-1`.
 
 ## Method `| (tup)`
-**Returns** a new tuple containing all the elements from this and `tup` tuples,
+Returns a new tuple containing all the elements from this and `tup` tuples,
 repeating the objects in common only **once** (works well with tuples containing
 **unique** elements) or `null` if `tup` is neither a list nor a tuple.
 
 ## Method `& (tup)`
-**Returns** a tuple containing **only** the objects **in common** between this
+Returns a tuple containing **only** the objects **in common** between this
 tuple and `tup` (works well if each tuple has only unique elements) or `null`
 if `tup` is neither a list nor a tuple.
 
 ## Method `== (lst)`
-**Returns** `true` if `lst` is a tuple and its content is equivalent to this
+Returns `true` if `lst` is a tuple and its content is equivalent to this
 tuple's, `false` otherwise.
 
 ## Method `!= (lst)`
-**Returns** `false` if `lst` is a tuple and its content is equivalent to this
+Returns `false` if `lst` is a tuple and its content is equivalent to this
 tuple's, `true` otherwise.
 
 ## Method `slice ([start = 0[, end = size()]])`
-**Returns** a tuple containing a copy of the objects from index `start`
+Returns a tuple containing a copy of the objects from index `start`
 (included) to index `end` (excluded) or `null` if either `start` or `end`
 is not an integer or an out of range one. As always, indexes can be negative,
 in that case they will be counted from the end of the list.
 
 ## Method `get (idx)`
-**Returns** the element located at the given index `idx` or `null` if `idx` is
+Returns the element located at the given index `idx` or `null` if `idx` is
 not an integer or if out of range. `idx` can be negative, in that case it will be
 counted from the end.
 
@@ -496,38 +496,38 @@ counted from the end.
 Same as `slice()`, but returns a list.
 
 ## Method `hash ()`
-**Returns** the hash value of the tuple.
+Returns the hash value of the tuple.
 
 ## Method `empty ()`
-**Returns** `true` if the tuple is empty (has no elements), `false` otherwise.
+Returns `true` if the tuple is empty (has no elements), `false` otherwise.
 
 ## Method `clone ([start = 0[, end = size()]])`
-**Returns** a tuple containing a copy of the objects from index `start`
+Returns a tuple containing a copy of the objects from index `start`
 (included) to index `end` (excluded) or null if either `start` or `end`
 is not an integer or an out of range one. As always, indexes can be negative,
 in that case they will be counted from the end of the list.
 
 ## Method `to_string ()`
-**Returns** a string representation of the tuple, very similar to tuple's with
+Returns a string representation of the tuple, very similar to tuple's with
 round brackets instead of brackets.
 
 ## Method `iterate ()`
-**Returns** an instance of `ListIterator` pointing to the start of the tuple.
+Returns an instance of `ListIterator` pointing to the start of the tuple.
 
 # Class `StringIterator`
 An Iterator class for `String`.
 
 ## Method `new (str)`
 Initializes a new `StringIterator` starting from the begin of String `str`.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `delete ()`
 Destroy the `StringIterator` instance.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `next ()`
 Advance the iterator.
-**Returns** a tuple containing the current item and an integer (1 if it's a valid item, 0 otherwise).
+Returns a tuple containing the current item and an integer (1 if it's a valid item, 0 otherwise).
 
 # Class `ListIterator`
 Same as `StringIterator`, but for `List`s or `Tuple`s.

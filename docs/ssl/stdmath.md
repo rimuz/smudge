@@ -25,18 +25,18 @@ or `null` if either `min` or `max` is not an integer.
 
 ## Function `deg (r)`
 Converts the angle `r` (`float` or `integer`) expressed in **radians** to **degrees**.
-**Returns** the new `float` or `null`, if `r` is an invalid parameter.
+Returns the new `float` or `null`, if `r` is an invalid parameter.
 
 ## Function `rad (d)`
 Converts the angle `r` (`float` or `integer`) expressed in **degrees** to **radians**.
-**Returns** the new `float` or `null`, if `r` is an invalid parameter.
+Returns the new `float` or `null`, if `r` is an invalid parameter.
 
 ## Function `frexp (x)`
-**Returns** a tuple containing the values of `significand` and `exp` that make true the following equation:<br>
+Returns a tuple containing the values of `significand` and `exp` that make true the following equation:<br>
 **x = significand * 2<sup>exp</sup>**
 
 ## Function `hypot (a, b)`
-**Returns** the length of the hypotenuse given the catheti (i.e. legs) `a` and `b` (`integer`s or `float`s) or null if the parameters are invalid.
+Returns the length of the hypotenuse given the catheti (i.e. legs) `a` and `b` (`integer`s or `float`s) or null if the parameters are invalid.
 
 # Other functions
 Each of the next functions accept as parameter one or more `float`s (or `integer`s) and return a `float` or `null` if the parameters are invalid. **Angles are expressed in radians** (both input and output values).
