@@ -7,53 +7,53 @@ A string containing a newline character (`\n`).
 
 ## Function `print (obj...)`
 Prints a text representation of the objects given to the `stdout`.
-**Returns** the box object.
+Returns the box object.
 
 ## Function `println (obj...)`
 Prints a text representation of the objects given to the `stdout` **and** a newline character (`\n`).
-**Returns** the box object.
+Returns the box object.
 
 ## Function `e_print (obj..)`
 Prints a text representation of the objects given to the `stderr`.
-**Returns** the box object.
+Returns the box object.
 
 ## Function `e_println (obj...)`
 Prints a text representation of the object given to the `stderr` **and** a newline character (`\n`).
-**Returns** the box object.
+Returns the box object.
 
 ## Function `line ()`
 Inputs a text line from `stdin` and stores it as a string.
-**Returns** the string or `null` if typed `EOF` (e.g. Ctrl+D on Unix).
+Returns the string or `null` if typed `EOF` (e.g. Ctrl+D on Unix).
 
 ## Function `int ()`
 Inputs an integer from `stdin`.
-**Returns** the integer or `null` if an error occurs during the conversion.
+Returns the integer or `null` if an error occurs during the conversion.
 
 ## Function `float ()`
 Inputs a floating point number from `stdin`.
-**Returns** the number or `null` if an error occurs during the conversion.
+Returns the number or `null` if an error occurs during the conversion.
 
 ## Function `get ()`
 Reads a character from `stdin`.
-**Returns** a string containing its value or `null` if `EOF`
+Returns a string containing its value or `null` if `EOF`
 is entered (e.g. Ctrl+D on Unix).
 
 ## Function `getc ()`
 Reads a character from `stdin`.
-**Returns** an integer containing its ASCII value or -1 if  
+Returns an integer containing its ASCII value or -1 if  
 `EOF` is entered `EOF` (e.g. Ctrl+D on Unix).
 
 ## Function `next ()`
 Inputs a string from `stdin` ending by **newline** character (`\n`), **tab** character (`\t`) or **spaces**.
-**Returns** the string, and never returns `null`.
+Returns the string, and never returns `null`.
 
 ## Function `<< (obj)`
 Alias for **`print (obj)`**.
-Like **`print (obj)`**, **Returns** the box object.
+Like **`print (obj)`**, Returns the box object.
 
 ## Function `>> (obj)`
 Calls function **`next ()`** and sets **`obj`** to its return value. To make the magic work, **`obj`** should be a reference to a valid variable (got through `ref` keyword), otherwise this function won't do anything.
-**Returns** the box object.
+Returns the box object.
 
 ## Function `open (path[, mode = RW])`
 Opens a file stream and creates a **`FileStream`** instance to handle it.
@@ -77,15 +77,15 @@ Note that:
 - if neither **`TRUNC`** nor **`APP`** is set and **`WRITE`** is set,
 the output will start from the beginning of the file.
 
-**Returns** the instance of **`FileStream`** or `null` if the stream can't be open.
+Returns the instance of **`FileStream`** or `null` if the stream can't be open.
 
 ## Function `remove (fileName)`
 **Deletes** the file named `fileName`.
-**Returns** `false` if the operation failed, `true` otherwise.
+Returns `false` if the operation failed, `true` otherwise.
 
 ## Function `rename (old, new)`
 **Renames** file `old` with the new name `new`.
-**Returns** `false` if the operation failed, `true` otherwise.
+Returns `false` if the operation failed, `true` otherwise.
 
 # Class `FileStream`
 The implementation of the class is native and consist of an object containing
@@ -98,43 +98,43 @@ Implemented natively, will cause errors if called manually.
 ## Method `open (path[, mode = RW])`
 Opens the file given with a certain mode.
 See [`std.io::open()`] for more, which is better to use.
-**Returns** `false` if the stream couldn't be open, `true` otherwise.
+Returns `false` if the stream couldn't be open, `true` otherwise.
 
 ## Method `close ()`
 Closes the stream.
-**Returns** `null`.
+Returns `null`.
 
 ## Method `get ()`
 Reads a character from the stream.
-**Returns** a string containing the character or `null` if `EOF` is reached.
+Returns a string containing the character or `null` if `EOF` is reached.
 
 ## Method `getc ()`
 Reads a character from the stream.
-**Returns** an integer containing its ASCII value or -1 if `EOF` is reached.
+Returns an integer containing its ASCII value or -1 if `EOF` is reached.
 
 ## Method `line ()`
 Reads a text line from the stream and stores it as a string.
-**Returns** the string or `null` if the operation fails.
+Returns the string or `null` if the operation fails.
 
 ## Method `peek ()`
 Peeks the next character.
-**Returns** an integer containing its ASCII value or -1 if `EOF` is reached.
+Returns an integer containing its ASCII value or -1 if `EOF` is reached.
 
 ## Method `read (n)`
 Reads next **`n`** characters from the stream and stores them as a string.
-**Returns** the string or `null` is **`n`** is an invalid parameter.
+Returns the string or `null` is **`n`** is an invalid parameter.
 
 ## Method `read_all ()`
 Reads all the text from the stream until it finds `EOF` and stores it in a string.
-**Returns** the string. **`read_all()`** never returns `null`.
+Returns the string. **`read_all()`** never returns `null`.
 
 ## Method `write (obj)`
 Writes a text representation of the object given to the stream at the current
 position.
-**Returns** the **`FileStream`** instance.
+Returns the **`FileStream`** instance.
 
 ## Method `count ()`
-**Returns** the number of bytes read from the last **input** operation in
+Returns the number of bytes read from the last **input** operation in
 an integer.
 **Note**: if called after **`peek()`**, **`count()`** will always return 0.
 
@@ -150,14 +150,14 @@ relatively to `pos` that can have one of the following values:
 
 Values greater than 2 will be considered as **`END`**.
 
-**Returns** `null`.
+Returns `null`.
 
 ## Method `tell ()`
-**Returns** the number of the current character in an integer.
+Returns the number of the current character in an integer.
 
 ## Method `good ()`
 Checks if the stream can be read.
-**Returns** `true` if neither `EOF` nor errors occured, `false` otherwise.
+Returns `true` if neither `EOF` nor errors occured, `false` otherwise.
 
 ||
 |:---:|
