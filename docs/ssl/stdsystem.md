@@ -47,6 +47,8 @@ Returns the string, or `null` if `str` is not a string.
 Creates a new `Chunk` instance of length equal to `nbytes`.
 Returns the instance, or `null` if `nbytes` is not an integer.
 
+---
+
 # Class `Chunk`
 Class `Chunk` contains an **array** of bytes allocated in the **heap** memory.
 
@@ -77,6 +79,8 @@ Returns `false` if the operation failed, `true` otherwise.
 
 ## Method `iterate ()`
 Returns an instance of `ChunkIterator` pointing to the begin of the array.
+
+---
 
 # Class `ChunkIterator`
 An iterator class form `Chunk`.

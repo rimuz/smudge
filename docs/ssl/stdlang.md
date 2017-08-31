@@ -2,6 +2,8 @@
 The box `std.lang` is imported by default, because it contains all the methods
 of strings, lists and tuples.
 
+---
+
 # Class `String`
 Class `String` provides all the methods invokable from a string object.
 This class is very special, because it's the **only one** of the SSL which
@@ -280,6 +282,8 @@ Returns the string.
 ## Method `iterate ()`
 Returns an instance of `StringIterator` pointing to the start of the string.
 
+---
+
 # Class `List`
 This is the class which provides all the Smudge lists' functionalities.
 A `List` can be instanced simply with **a couple of brackets** containing
@@ -439,6 +443,8 @@ Returns the number of elements contained by the list.
 ## Method `iterate ()`
 Returns an instance of `ListIterator` pointing to the start of the list.
 
+---
+
 # Class `Tuple`
 Tuples are immutable lists. You can instance a `Tuple` by enclosing its
 elements with a couple of round brackets (i.e. `()`).
@@ -514,6 +520,8 @@ round brackets instead of brackets.
 ## Method `iterate ()`
 Returns an instance of `ListIterator` pointing to the start of the tuple.
 
+---
+
 # Class `StringIterator`
 An Iterator class for `String`.
 
@@ -528,6 +536,8 @@ Returns `null`.
 ## Method `next ()`
 Advance the iterator.
 Returns a tuple containing the current item and an integer (1 if it's a valid item, 0 otherwise).
+
+---
 
 # Class `ListIterator`
 Same as `StringIterator`, but for `List`s or `Tuple`s.
