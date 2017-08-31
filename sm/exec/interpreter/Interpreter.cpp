@@ -288,5 +288,11 @@ namespace sm{
                 backInfo.thisObject = self;
             }
         }
+
+        Interpreter::~Interpreter(){
+            for(exec::CallInfo_t& callInfo : funcStack)
+                for(ObjectDict_t* dict : callInfo.codeBlocks)
+                    if(dict) delete dict;
+        }
     }
 }
