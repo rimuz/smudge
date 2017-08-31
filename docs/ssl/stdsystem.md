@@ -1,8 +1,8 @@
-## The Smudge Programming Language - Documentation of box `std.system`
+# The Smudge Programming Language - Documentation of box `std.system`
 The box `std.system` contains miscellaneous environment
 settings and utilities.
 
-### Var `VERSION`
+## Var `VERSION`
 An integer containing the Smudge version `XXYYZZ` using the following rule:
 in **decimal**:
 - `XX` (major)
@@ -11,83 +11,83 @@ in **decimal**:
 
 For example: version **`7.4.3`** becomes **`70403`**.
 
-### Var `STR_VERSION`
+## Var `STR_VERSION`
 A string containing a **human readable** Smudge version.
 
-### Var `DATE_VERSION`
+## Var `DATE_VERSION`
 A string containing the **date** of the current Smudge version expressed in `MM.YYYY`.
 
-### Function `check ()`
+## Function `check ()`
 **Returns** `true` only if the environment is ready to execute commands (via `run (cmd)` or
 `() (cmd)`), `false` otherwise.
 
-### Function `run (cmd)` and `() (cmd)`
+## Function `run (cmd)` and `() (cmd)`
 Executes the **command** contained in the string `cmd`.
 **Returns** `null`.
 
-### Function `exit (i)`
+## Function `exit (i)`
 **Exits** the program with, as **return value**, the integer `i`.
 **Does not return anything**.
 
-### Function `abort ()`
+## Function `abort ()`
 **Aborts** the current program (terminates the process with signal `SIGABRT`).
 **Does not return anything**.
 
-### Function `sterr (str)`
+## Function `sterr (str)`
 **Exits** the current program but prints the **stack trace** and the given error message
 `str`. If `str` is not a string, it will be converted to it through [`std.cast::string(x)`](stdcast.md#function-string-obj).
 **Does not return anything**.
 
-### Function `get (str)`
+## Function `get (str)`
 Gets the **environment variable** named `str` (which has to be a string)
 and stores its value to a string.
 **Returns** the string or `null` if `str` is not a string.
 
-### Function `alloc (nbytes)`
+## Function `alloc (nbytes)`
 Creates a new `Chunk` instance of length equal to `nbytes`.
 **Returns** the instance or `null` if `nbytes` is not an integer.
 
-## Class `Chunk`
+# Class `Chunk`
 Class `Chunk` contains an **array** of bytes allocated in the **heap** memory.
 
-### Method `new (num)`
+## Method `new (num)`
 Allocates the `Chunk` with size `num` (or does nothing if `num` is not an integer).
 **Returns** `null`.
 
-### Method `delete ()`
+## Method `delete ()`
 Frees the allocated memory.
 **Returns** `null`.
 
-### Method `failed ()`
+## Method `failed ()`
 **Returns** `true` if the allocation of the array failed, `false` otherwise.
 
-### Method `get (idx)`
+## Method `get (idx)`
 **Returns** the value of the byte at the offset `idx`.
 `idx` can be negative, in that case it will ve counted from the end.
 
-### Method `set (idx[, val = 1])`
+## Method `set (idx[, val = 1])`
 Sets the byte at the offset `idx` to the value `val`.
 `idx` can be negative, in that case it will ve counted from the end.
 **Returns** `false` if the operation failed, `true` otherwise.
 
-### Method `reset (idx)`
+## Method `reset (idx)`
 Sets the byte at the offset `idx` to `0`.
 `idx` can be negative, in that case it will ve counted from the end.
 **Returns** `false` if the operation failed, `true` otherwise.
 
-### Method `iterate ()`
+## Method `iterate ()`
 **Returns** an instance of `ChunkIterator` pointing to the begin of the array.
 
-## Class `ChunkIterator`
+# Class `ChunkIterator`
 An iterator class form `Chunk`.
 
-### Method `new (chunk)`
+## Method `new (chunk)`
 Constructs a new iterator starting from the given `Chunk` instance `chunk`.
 
-### Method `delete ()`
+## Method `delete ()`
 Destroys the iterator instance.
 
-### Method `next ()`
+## Method `next ()`
 Advances the iterator.
 **Returns** a tuple containing the pointed byte and an `int` (`true` if it's valid,
 `false` otherwise).
