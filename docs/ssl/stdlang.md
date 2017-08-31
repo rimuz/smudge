@@ -152,7 +152,7 @@ string `str`. If `str` is not a string, will be converted by calling its method
 
 ## Method `- (n_chs)`
 Returns a new string **without** the **last** *n* **bytes** specified by
-the given integer `n_chs`, or`null if `c_chs` is not an integer or is greater
+the given integer `n_chs`, or `null` if `c_chs` is not an integer or is greater
 than `len()`.
 
 ## Method `* (times)`
@@ -217,7 +217,7 @@ Returns the hash value of the string.
 
 ## Method `find (str)`
 Returns the index location of the given string `str` in the string,
-returning `len()` if `str` is not found, or`null if `str` is not a string.
+returning `len()` if `str` is not found, or `null` if `str` is not a string.
 
 ## Method `find_last (str)`
 **Same as `find (str)`**, but only the last occurrence of `str` is taken into
@@ -225,7 +225,7 @@ account.
 
 ## Method `substr (start[, end = len()])`
 Returns a copy of the string from index `start` (included) to index `end`
-(excluded), or`null if `start` > `end` or if they are not integers.
+(excluded), or `null` if `start` > `end` or if they are not integers.
 Just as previous methods, indexes `start` and `end` can be negative: in that
 case they will be counted from the end of the string.
 
@@ -235,7 +235,7 @@ Same as `substr()`, but uses indexes expressed in **characters** instead of
 
 ## Method `replace ([to_replace = ''[, replacement = '']])`
 Returns a new string where all the occurrences of string `to_replace` are
-replaced with string `replacement`, or`null if `replacement` is not a string.
+replaced with string `replacement`, or `null` if `replacement` is not a string.
 If `replacement` is an empty string, every occurrences will be simply removed
 from the string, while if `to_replace` is not a string or is an empty string,
 the returned string won't be different to the original.
@@ -299,10 +299,10 @@ if `idx` is negative, it will be counted from the end.
 
 ## Method `+ (lst)`
 Concatenates the list with the given list or tuple `lst`.
-Returns the new list, or`null if `lst` is neither a list nor a tuple.
+Returns the new list, or `null` if `lst` is neither a list nor a tuple.
 
 ## Method `- (n)`
-Returns the list without the last `n` elements, or`null if `n` is
+Returns the list without the last `n` elements, or `null` if `n` is
 not an integer or negative.
 
 ## Method `* (times)`
@@ -313,7 +313,7 @@ be reversed. Thus, to simply reverse a list you need only to multiply for `-1`.
 ## Method `| (lst)`
 Returns a new list containing all the elements from this and `lst` lists,
 repeating the objects in common only **once** (works well with lists containing
-**unique** elements), or`null if `lst` is neither a list nor a tuple.
+**unique** elements), or `null` if `lst` is neither a list nor a tuple.
 
 ## Method `& (lst)`
 Returns a list containing **only** the objects **in common** between this
@@ -329,7 +329,7 @@ Returns `false` if `lst` is a list and its content is equivalent to this
 list's, `true` otherwise.
 
 ## Method `get (idx)`
-Returns the element located at the given index `idx`, or`null if `idx` is
+Returns the element located at the given index `idx`, or `null` if `idx` is
 not an integer or if out of range. `idx` can be negative, in that case it will be
 counted from the end.
 
@@ -404,7 +404,7 @@ following the table:
 
 ## Method `find (obj)`
 Searches an equivalent object to `obj` (checked via `operator== ()`).
-Returns the index of the first occurence, or`null if not found.
+Returns the index of the first occurence, or `null` if not found.
 
 ## Method `count (obj)`
 Counts how many equivalent objects to `obj` (checked via `operator== ()`).
@@ -452,7 +452,7 @@ Create and destroy the tuple, shouldn't be called manually. **Return** `null`.
 
 ## Method `+ (lst)`
 Returns a new tuple created by concatenating the tuple to list or tuple
-`lst`, or`null if `lst` is neither a list nor a tuple.
+`lst`, or `null` if `lst` is neither a list nor a tuple.
 
 ## Method `- (n)`
 Returns a new tuple without the last `n` elements of the tuple, or`null
@@ -466,7 +466,7 @@ be reversed. Thus, to simply reverse a tuple you need only to multiply for `-1`.
 ## Method `| (tup)`
 Returns a new tuple containing all the elements from this and `tup` tuples,
 repeating the objects in common only **once** (works well with tuples containing
-**unique** elements), or`null if `tup` is neither a list nor a tuple.
+**unique** elements), or `null` if `tup` is neither a list nor a tuple.
 
 ## Method `& (tup)`
 Returns a tuple containing **only** the objects **in common** between this
@@ -483,12 +483,12 @@ tuple's, `true` otherwise.
 
 ## Method `slice ([start = 0[, end = size()]])`
 Returns a tuple containing a copy of the objects from index `start`
-(included) to index `end` (excluded), or`null if either `start` or `end`
+(included) to index `end` (excluded), or `null` if either `start` or `end`
 is not an integer or an out of range one. As always, indexes can be negative,
 in that case they will be counted from the end of the list.
 
 ## Method `get (idx)`
-Returns the element located at the given index `idx`, or`null if `idx` is
+Returns the element located at the given index `idx`, or `null` if `idx` is
 not an integer or if out of range. `idx` can be negative, in that case it will be
 counted from the end.
 
