@@ -61,6 +61,8 @@ namespace sm{
             void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
                 const Object& self = Object(), bool inlined = false);
             Object start();
+
+            ~Interpreter();
         };
     }
 }
