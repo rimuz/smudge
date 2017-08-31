@@ -41,11 +41,11 @@ Returns `null`.
 ## Function `get (str)`
 Gets the **environment variable** named `str` (which has to be a string)
 and stores its value to a string.
-Returns the string or `null` if `str` is not a string.
+Returns the string, or`null if `str` is not a string.
 
 ## Function `alloc (nbytes)`
 Creates a new `Chunk` instance of length equal to `nbytes`.
-Returns the instance or `null` if `nbytes` is not an integer.
+Returns the instance, or`null if `nbytes` is not an integer.
 
 # Class `Chunk`
 Class `Chunk` contains an **array** of bytes allocated in the **heap** memory.

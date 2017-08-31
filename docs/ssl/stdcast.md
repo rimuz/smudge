@@ -5,12 +5,12 @@ check object types.
 ## Function `int (x)`
 Casts the object `x` to an `integer`.
 It does work only if `x` is an **`integer`**, **`float`** or a **`string`**.
-Returns the `integer` or `null` if `x` is of an incompatible type.
+Returns the `integer`, or`null if `x` is of an incompatible type.
 
 ## Function `float (x)`
 Casts the object `x` to a `float`.
 It does work only if `x` is an **`integer`**, **`float`** or a **`string`**.
-Returns the `float` or `null` if `x` is of an incompatible type.
+Returns the `float`, or`null if `x` is of an incompatible type.
 
 ## Function `string (obj)`
 Converts object `obj` to a `string`.
@@ -28,10 +28,10 @@ Returns `true` if `x` is a `string`,
 `false` otherwise.
 
 ## Function `uchar (cp)`
-Returns a string containing the character represented by the **Unicode codepoint** `cp` or `null` if `cp` is not a valid codepoint.
+Returns a string containing the character represented by the **Unicode codepoint** `cp`, or`null if `cp` is not a valid codepoint.
 
 ## Function `ucode (str)`
-Returns the **Unicode codepoint** of the first character in the string `str` or `null` if `str` is not a valid string.
+Returns the **Unicode codepoint** of the first character in the string `str`, or`null if `str` is not a valid string.
 
 ## Function `value (x)`
 Returns `x`. If `x` is a **reference**, **returns** the object pointed by `x`.
@@ -57,10 +57,10 @@ Returns a string representing the type of the object `obj` following the rules:
 | Other | `u` |
 
 ## Function `classof (obj)`
-Returns the `class` of the object `obj` or `null` if `obj` is neither a class instance nor a string.
+Returns the `class` of the object `obj`, or`null if `obj` is neither a class instance nor a string.
 
 ## Function `baseof (c[, n = 0])`
-Returns the `n`th super class of the class `c` or `null` if `c` is not a class or has not that super class.
+Returns the `n`th super class of the class `c`, or`null if `c` is not a class or has not that super class.
 
 ## Function `same (a, b)`
 Returns `true` if `a` and `b` are the same object, `false` otherwise.
