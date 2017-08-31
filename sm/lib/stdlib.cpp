@@ -26,6 +26,7 @@ namespace sm {
         smLibDecl(system);
         smLibDecl(cast);
         smLibDecl(math);
+        smLibDecl(thread);
 
         const LibDict_t libs = {
             smLibTuple("std.io!", io),
@@ -33,6 +34,7 @@ namespace sm {
             smLibTuple("std.system!", system),
             smLibTuple("std.cast!", cast),
             smLibTuple("std.math!", math),
+            smLibTuple("std.thread!", thread),
         };
     }
 }
