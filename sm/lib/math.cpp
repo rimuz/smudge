@@ -131,7 +131,7 @@ namespace sm{
                 else
                     return Object();
 
-                return makeList(intp, false, ObjectVec_t {makeFloat(signif), makeInteger(exp)});
+                return makeList(intp, ObjectVec_t {makeFloat(signif), makeInteger(exp)});
             })
 
             smFunc(pow, smLambda {
