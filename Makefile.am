@@ -32,7 +32,6 @@ smudge_SOURCES = \
 			sm/runtime/gc.cpp \
 			sm/runtime/id.cpp \
 			sm/utils/unicode/utf8.cpp \
-			sm/utils/Thread.cpp \
 			sm/main.cpp
 
 man1_MANS = \
