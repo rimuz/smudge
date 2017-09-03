@@ -28,16 +28,15 @@
 
 #define _OcPopStore(Name) \
     sm::Object Name = std::move(intp.exprStack.back()); \
+    runtime::invalidate(Name); \
     intp.exprStack.pop_back();
 
 #define _OcStore(Name) \
     sm::Object& Name = intp.exprStack.back();
 
 #define _OcPopStore2 \
-    sm::Object tos = std::move(intp.exprStack.back()); \
-    intp.exprStack.pop_back(); \
-    sm::Object tos1 = std::move(intp.exprStack.back()); \
-    intp.exprStack.pop_back();
+    _OcPopStore(tos); \
+    _OcPopStore(tos1);
 
 #define _OcValue(ObjName) \
     while(ObjName.type == ObjectType::WEAK_REFERENCE \
@@ -96,6 +95,7 @@
                     + runtime::errorString(intp, tos1)); \
             } \
             Object instance = std::move(tos1); \
+            runtime::invalidate(instance); \
             intp.exprStack.pop_back(); \
             intp.makeCall(op_ptr, args, instance, Inline); \
             Do; \

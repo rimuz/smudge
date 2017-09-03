@@ -41,7 +41,6 @@ namespace sm{
                     unsigned id = runtime::operatorId(parse::TT_COMPL);
                     Object op;
                     Function* op_ptr = nullptr;
-                    ObjectVec_t args;
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
@@ -50,7 +49,7 @@ namespace sm{
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.makeCall(op_ptr, args, tos);
+                    intp.makeCall(op_ptr, {}, tos);
                     return;
                 }
 
@@ -59,7 +58,6 @@ namespace sm{
                     Object op;
                     Object self;
                     Function* op_ptr = nullptr;
-                    ObjectVec_t args;
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
@@ -68,7 +66,7 @@ namespace sm{
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.makeCall(op_ptr, args, self);
+                    intp.makeCall(op_ptr, {}, self);
                     return;
                 }
 
@@ -211,7 +209,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -229,7 +227,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -250,7 +248,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
             intp.exprStack.back() = copy;
         }
@@ -272,7 +270,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
             intp.exprStack.back() = copy;
         }

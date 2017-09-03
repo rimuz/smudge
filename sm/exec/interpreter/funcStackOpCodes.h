@@ -105,9 +105,11 @@ namespace sm{
 
             ObjectVec_t::iterator end = intp.exprStack.end();
             Object func = *(end - (param+1));
+            runtime::invalidate(func);
             Function* func_ptr;
 
             ObjectVec_t args(end - param, end);
+            runtime::invalidate_all(args);
             intp.exprStack.erase(end - (param+1), end);
 
             for(Object& obj : args){
