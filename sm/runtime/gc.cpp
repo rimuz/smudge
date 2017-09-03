@@ -317,18 +317,55 @@ namespace sm{
 
     namespace runtime{
         void validate(Instance* i) noexcept{
-            if(i->temporary){
+            if(i && i->temporary){
                 GarbageCollector& gc = i->intp.rt->gc;
                 std::lock_guard<std::mutex> lock1(gc.instances_m), lock2(gc.tempInstances_m);
                 gc.tempInstances.splice(gc.tempInstances.end(), gc.instances, i->it);
+                i->temporary = false;
             }
         }
 
-        Object& validate(ObjectDict_t& dict, unsigned id, const Object& obj) noexcept{
-            Object& ref = dict[id] = obj;
+        void validate(const Object& obj) noexcept{
             if(obj.type == ObjectType::CLASS_INSTANCE)
                 validate(obj.i_ptr);
-            return ref;
+        }
+
+        void validate_all(const ObjectVec_t& vec) noexcept{
+            for(const Object& obj : vec)
+                if(obj.type == ObjectType::CLASS_INSTANCE)
+                    validate(obj.i_ptr);
+        }
+
+        void validate(ObjectDict_t& dict, unsigned id, Object obj) noexcept{
+            Object& ref = dict[id] = std::move(obj);
+            if(ref.type == ObjectType::CLASS_INSTANCE)
+                validate(ref.i_ptr);
+        }
+
+        void validate(ObjectVec_t& vec, Object obj) noexcept{
+            vec.emplace_back(std::move(obj));
+            Object& back = vec.back();
+            if(back.type == ObjectType::CLASS_INSTANCE)
+                validate(obj.i_ptr);
+        }
+
+        void invalidate(Instance* i) noexcept{
+            if(i && !i->temporary){
+                GarbageCollector& gc = i->intp.rt->gc;
+                std::lock_guard<std::mutex> lock1(gc.instances_m), lock2(gc.tempInstances_m);
+                gc.instances.splice(gc.instances.end(), gc.tempInstances, i->it);
+                i->temporary = true;
+            }
+        }
+
+        void invalidate(const Object& obj) noexcept{
+            if(obj.type == ObjectType::CLASS_INSTANCE)
+                invalidate(obj.i_ptr);
+        }
+
+        void invalidate_all(const ObjectVec_t& vec) noexcept{
+            for(const Object& obj : vec)
+                invalidate(obj);
         }
 
         std::chrono::steady_clock::time_point* Runtime_t::execStart = nullptr;
@@ -340,6 +377,8 @@ namespace sm{
 
         // Instance Pointer's Vector  -> IPVec_t
         using IPVec_t = std::vector<Instance*>;
+        using CPVec_t = std::vector<Class*>;
+        using MPVec_t = std::vector<Method*>;
 
         Object GarbageCollector::makeTempInstance(exec::Interpreter& _intp, Class* _base) noexcept {
             if(++allocs == threshold){
@@ -357,8 +396,8 @@ namespace sm{
             return obj;
         }
 
-        void whiteToGray(IPVec_t& white, IPVec_t& gray, Object& obj){
-            if(obj.type == CLASS_INSTANCE){
+        void whiteToGray(IPVec_t& white, IPVec_t& gray, CPVec_t& classes, MPVec_t& methods, Object& obj){
+            if(obj.type == ObjectType::CLASS_INSTANCE){
                 Instance* ptr = obj.i_ptr;
                 IPVec_t::iterator curr = std::find(white.begin(), white.end(), ptr);
 
@@ -371,9 +410,20 @@ namespace sm{
 
                     for(auto& child : ptr->objects){
                         // recursively search inside all objects pointed by obj
-                        whiteToGray(white, gray, child.second);
+                        whiteToGray(white, gray, classes, methods, child.second);
                     }
                 }
+            } else if(obj.type == ObjectType::CLASS){
+                if(std::find(classes.begin(), classes.end(), obj.c_ptr) == classes.end())
+                    return;
+                classes.emplace_back(obj.c_ptr);
+                for(auto& child : obj.c_ptr->objects)
+                    whiteToGray(white, gray, classes, methods, child.second);
+            } else if(obj.type == ObjectType::METHOD){
+                if(std::find(methods.begin(), methods.end(), obj.m_ptr) == methods.end())
+                    return;
+                methods.emplace_back(obj.m_ptr);
+                whiteToGray(white, gray, classes, methods, obj.m_ptr->self);
             }
         }
 
@@ -386,22 +436,22 @@ namespace sm{
 
         /*
          * Tri-color garbage collection.
-         * 2nd implementation (2017.07.08)
+         * 2nd implementation (2017.09.04)
          *
          * Note: There is no BLACK, because we
-         * can be easily avoid to use it.
+         * can easily avoid to use it.
          *
          * Note 2: It won't erase items from WHITE,
          * It will set them to nullptr
          *
         */
 
-        // TODO Class
-        // TODO Methods
-        // TODO intp.super
         void GarbageCollector::collect(){
-            std::lock_guard<std::mutex> lock1(instances_m), lock2(tempInstances_m);
+            std::lock_guard<std::mutex> lock1(instances_m), lock2(tempInstances_m),
+                lock3(_rt->threads_m);
             IPVec_t white, gray;
+            CPVec_t classes;
+            MPVec_t methods;
             gcWorking = true;
 
             loadVec(instances, white);
@@ -410,20 +460,27 @@ namespace sm{
             // searching in the ROOTs
             for(auto* box : _rt->boxes){
                 for(auto& child : box->objects){
-                    whiteToGray(white, gray, child.second);
+                    whiteToGray(white, gray, classes, methods, child.second);
                 }
             }
 
             for(auto& thread : _rt->threads){
                 exec::Interpreter& intp = thread.data->intp;
-                for(Object& obj : intp.exprStack)
-                    whiteToGray(white, gray, obj);
 
-                for(exec::CallInfo_t& callInfo : intp.funcStack)
+                whiteToGray(white, gray, classes, methods, thread.data->func);
+                for(auto& obj : thread.data->args)
+                    whiteToGray(white, gray, classes, methods, obj);
+
+                for(Object& obj : intp.exprStack)
+                    whiteToGray(white, gray, classes, methods, obj);
+
+                for(exec::CallInfo_t& callInfo : intp.funcStack){
+                    whiteToGray(white, gray, classes, methods, callInfo.thisObject);
                     for(ObjectDict_t* dict : callInfo.codeBlocks)
                         if(dict)
                             for(auto& pair : *dict)
-                                whiteToGray(white, gray, pair.second);
+                                whiteToGray(white, gray, classes, methods, pair.second);
+                }
             }
 
             // now GRAY contains all the root pointers and white the other.
@@ -432,7 +489,7 @@ namespace sm{
                 gray.pop_back();
 
                 for(auto& child : ptr->objects){
-                    whiteToGray(white, gray, child.second);
+                    whiteToGray(white, gray, classes, methods, child.second);
                 }
             }
 
