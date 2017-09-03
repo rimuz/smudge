@@ -69,9 +69,7 @@ int main(int argc, char** argv){
     runtime::Runtime_t rt;
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
-
-    // no need to lock rt.threads_m: there is no one using it
-    rt.threads.emplace_back(&intp);
+    rt.main_intp = &intp;
 
     int firstArg = argc;
     bool printPaths = false;
@@ -201,7 +199,7 @@ int main(int argc, char** argv){
             for(int i = 0; i != n_args; ++i){
                 arguments.push_back(makeString(array[i]));
             }
-            args = makeList(intp, false, std::move(arguments));
+            args = makeList(intp, std::move(arguments));
         }
 
         if(it == rt.boxes[0]->objects.end()){
@@ -222,6 +220,9 @@ int main(int argc, char** argv){
             return ret.i;
         }
     }
+
+    while(!rt.threads.empty())
+        std::this_thread::yield();
     return 0;
 }
 
