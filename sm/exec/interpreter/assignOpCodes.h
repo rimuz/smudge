@@ -56,7 +56,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -68,7 +68,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -79,7 +79,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(*, std::multiplies<float_t>(), parse::TT_MULT, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -90,7 +90,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(/, std::divides<float_t>(), parse::TT_DIV, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -102,7 +102,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(%, std::fmod, parse::TT_MOD, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -114,7 +114,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(|, _OcFloatError<or_str>(intp), parse::TT_OR, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -126,7 +126,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, _OcFloatError<and_str>(intp), parse::TT_AND, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -138,7 +138,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, _OcFloatError<xor_str>(intp), parse::TT_XOR, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -150,7 +150,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, _OcFloatError<left_shift_str>(intp), parse::TT_LEFT_SHIFT, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
@@ -162,7 +162,7 @@ namespace sm{
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, _OcFloatError<right_shift_str>(intp), parse::TT_RIGHT_SHIFT, true,
-                intp.exprStack.emplace_back(intp.start()));
+                runtime::validate(intp.exprStack, intp.start()));
             Assign(intp, dummy);
         }
 
