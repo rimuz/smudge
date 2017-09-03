@@ -27,12 +27,12 @@ namespace sm{
     namespace exec{
         _OcFunc(MakeVoidList){
             ++addr;
-            intp.exprStack.push_back(makeList(intp, false));
+            intp.exprStack.push_back(makeList(intp));
         }
 
         _OcFunc(MakeVoidTuple){
             ++addr;
-            intp.exprStack.push_back(makeTuple(intp, false));
+            intp.exprStack.push_back(makeTuple(intp));
         }
 
         _OcFunc(MakeRef){
@@ -57,7 +57,7 @@ namespace sm{
             ObjectVec_t vec(first, end);
 
             intp.exprStack.erase(first, end);
-            intp.exprStack.emplace_back(makeList(intp, false, std::move(vec)));
+            intp.exprStack.emplace_back(makeList(intp, std::move(vec)));
         }
 
         _OcFunc(MakeTuple){
@@ -67,9 +67,9 @@ namespace sm{
             ObjectVec_t::iterator end = intp.exprStack.end();
             ObjectVec_t::iterator first = end-size;
             ObjectVec_t vec(first, end);
-            
+
             intp.exprStack.erase(first, end);
-            intp.exprStack.emplace_back(makeTuple(intp, false, std::move(vec)));
+            intp.exprStack.emplace_back(makeTuple(intp, std::move(vec)));
         }
 
         _OcFunc(MakeSuper){
