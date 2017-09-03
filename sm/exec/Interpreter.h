@@ -56,6 +56,9 @@ namespace sm{
             Interpreter(const Interpreter&) = delete;
             Interpreter(Interpreter&&) = default;
 
+            Interpreter& operator=(const Interpreter&) = delete;
+            Interpreter& operator=(Interpreter&&) = default;
+
             Object callFunction(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
                 const Object& self = Object(), bool inlined = false);
             void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
@@ -63,6 +66,16 @@ namespace sm{
             Object start();
 
             ~Interpreter();
+        };
+
+        class IntpData {
+        public:
+            exec::Interpreter intp;
+            Object func;
+            ObjectVec_t args;
+
+            IntpData(runtime::Runtime_t& rt, Object _func, ObjectVec_t _args)
+                : intp(rt), func(std::move(_func)), args(std::move(_args)) {}
         };
     }
 }
