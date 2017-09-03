@@ -178,7 +178,7 @@ namespace sm{
             })
 
             smFunc(open, smLambda {
-                Object func, objSelf, inst = newInstance(intp, cFileStream, false);
+                Object func, objSelf, inst = newInstance(intp, cFileStream);
                 Function* f_ptr;
 
                 if(!runtime::find<ObjectType::CLASS_INSTANCE>(inst, func, smId("open")))
