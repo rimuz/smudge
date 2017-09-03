@@ -172,7 +172,7 @@ namespace sm {
         inline void setVar(runtime::Runtime_t& rt, Box_t* box,
                 const string_t& name, Object obj){
             unsigned varName = runtime::genOrdinaryId(rt, name);
-            box->objects[varName] = std::move(obj);
+            runtime::validate(box->objects, varName, std::move(obj));
         }
 
         inline Object genFunc(Box_t* box, oid_t id, NativeFuncPtr_t fn){
