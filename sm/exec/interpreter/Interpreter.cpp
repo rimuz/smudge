@@ -186,7 +186,7 @@ namespace sm{
                 Function* func_ptr;
                 Class* base = clazz.c_ptr;
 
-                Object self = makeInstance(*this, clazz.c_ptr, false);
+                Object self = makeInstance(*this, clazz.c_ptr);
                 do {
                     it = base->objects.find(runtime::initId);
                     if(it != base->objects.end()){
@@ -250,7 +250,7 @@ namespace sm{
                     address = fn->address;
 
                     if(is_vararg){
-                        (*dict)[std::get<0>(fn->arguments.back())] = makeList(*this, false);
+                        (*dict)[std::get<0>(fn->arguments.back())] = makeList(*this);
                     }
                 } else {
                     for(size_t i = 0; i != n_expected; ++i){
@@ -264,10 +264,9 @@ namespace sm{
                     if(is_vararg){
                         Object ls;
                         if(n_args > n_expected){
-                            ls = makeList(*this, false,
-                                ObjectVec_t(args.begin() + n_expected, args.end()));
+                            ls = makeList(*this, ObjectVec_t(args.begin() + n_expected, args.end()));
                         } else {
-                            ls = makeList(*this, false);
+                            ls = makeList(*this);
                         }
                         (*dict)[std::get<0>(fn->arguments.back())] = std::move(ls);
                     }
