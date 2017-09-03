@@ -190,7 +190,7 @@ namespace sm{
                         std::string("'open' is not a function in ")
                         + runtime::errorString(intp, inst));
 
-                Object obj =  intp.callFunction(f_ptr, args, objSelf, true);
+                Object obj = intp.callFunction(f_ptr, args, objSelf, true);
                 return runtime::implicitToBool(obj) ? inst : Object();
             })
 
