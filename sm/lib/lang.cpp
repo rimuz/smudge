@@ -350,7 +350,7 @@ namespace sm{
                 })
 
                 smMethod(bytes, smLambda {
-                    Object list = makeList(intp, false, ObjectVec_t(self.s_ptr->str.size()));
+                    Object list = makeList(intp, ObjectVec_t(self.s_ptr->str.size()));
 
                     String::const_iterator iit = self.s_ptr->str.begin();
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);
@@ -363,7 +363,7 @@ namespace sm{
                 })
 
                 smMethod(chars, smLambda {
-                    Object list = makeList(intp, false);
+                    Object list = makeList(intp);
 
                     String::const_iterator curr = self.s_ptr->str.begin();
                     String::const_iterator end = self.s_ptr->str.end();
@@ -536,7 +536,7 @@ namespace sm{
                     }
 
                     std::vector<String> strings = self.s_ptr->str.split(sep.s_ptr->str, skipEmpty);
-                    Object list = makeList(intp, false, ObjectVec_t(strings.size()));
+                    Object list = makeList(intp, ObjectVec_t(strings.size()));
 
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);
                     ObjectVec_t::iterator beg = out.begin(), end = out.end();
@@ -577,7 +577,7 @@ namespace sm{
                 })
 
                 smMethod(iterate, smLambda {
-                    return newInstance(intp, cStringIterator, false, {self});
+                    return newInstance(intp, cStringIterator, {self});
                 })
             smEnd
 
@@ -643,7 +643,7 @@ namespace sm{
                     if(args.empty() || !hasVector(args[0], vec2))
                         return Object();
 
-                    Object newVec = makeList(intp, false, vec);
+                    Object newVec = makeList(intp, vec);
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     out.insert(out.end(), vec2->cbegin(), vec2->cend());
                     return newVec;
@@ -657,8 +657,8 @@ namespace sm{
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     size_t idx = i;
                     if(idx >= vec.size())
-                        return makeList(intp, false);
-                    return makeList(intp, false, ObjectVec_t(vec.begin(), vec.end() - idx));
+                        return makeList(intp);
+                    return makeList(intp, ObjectVec_t(vec.begin(), vec.end() - idx));
                 })
 
                 smOpMethod(parse::TT_MULT, smLambda {
@@ -666,7 +666,7 @@ namespace sm{
                         return Object();
                     integer_t i = args[0].i;
 
-                    Object list = makeList(intp, false);
+                    Object list = makeList(intp);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t& newVec = *getData<ObjectVec_t>(intp, list);
                     size_t sz = vec.size();
@@ -704,7 +704,7 @@ namespace sm{
                         return Object();
 
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    Object newVec = makeList(intp, false, vec);
+                    Object newVec = makeList(intp, vec);
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
 
                     for(const Object& obj : *vec2){
@@ -720,7 +720,7 @@ namespace sm{
                     if(args.empty() || !hasVector(args[0], vec2))
                         return Object();
 
-                    Object newVec = makeList(intp, false, {});
+                    Object newVec = makeList(intp);
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
 
@@ -838,8 +838,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeList(intp, false,
-                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeList(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(tuple, smLambda {
@@ -871,8 +870,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeTuple(intp, false,
-                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeTuple(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(append, smLambda {
@@ -1009,8 +1007,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeList(intp, false,
-                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeList(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(reverse, smLambda {
@@ -1063,7 +1060,7 @@ namespace sm{
                 })
 
                 smMethod(iterate, smLambda {
-                    return newInstance(intp, cListIterator, false, {self});
+                    return newInstance(intp, cListIterator, {self});
                 })
 
             smEnd
@@ -1104,7 +1101,7 @@ namespace sm{
                     if(args.empty() || !hasVector(args[0], vec2))
                         return Object();
 
-                    Object newVec = makeTuple(intp, false, vec);
+                    Object newVec = makeTuple(intp, vec);
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     out.insert(out.end(), vec2->cbegin(), vec2->cend());
 
@@ -1120,8 +1117,8 @@ namespace sm{
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     size_t idx = i;
                     if(idx >= vec.size())
-                        return makeTuple(intp, false);
-                    return makeTuple(intp, false, ObjectVec_t(vec.begin(), vec.end() - idx));
+                        return makeTuple(intp);
+                    return makeTuple(intp, ObjectVec_t(vec.begin(), vec.end() - idx));
                 })
 
                 smOpMethod(parse::TT_MULT, smLambda {
@@ -1129,7 +1126,7 @@ namespace sm{
                         return Object();
                     integer_t i = args[0].i;
 
-                    Object tuple = makeTuple(intp, false);
+                    Object tuple = makeTuple(intp);
                     ObjectVec_t& newVec = *getData<ObjectVec_t>(intp, tuple);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     size_t sz = vec.size();
@@ -1167,7 +1164,7 @@ namespace sm{
                         return Object();
 
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    Object newVec = makeTuple(intp, false, vec);
+                    Object newVec = makeTuple(intp, vec);
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
 
                     for(const Object& obj : *vec2){
@@ -1183,7 +1180,7 @@ namespace sm{
                     if(args.empty() || !hasVector(args[0], vec2))
                         return Object();
 
-                    Object newVec = makeTuple(intp, false, {});
+                    Object newVec = makeTuple(intp, {});
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
 
@@ -1250,8 +1247,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeTuple(intp, false,
-                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeTuple(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(get, smLambda {
@@ -1296,8 +1292,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeList(intp, false,
-                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeList(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(hash, smLambda {
@@ -1348,8 +1343,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeTuple(intp, false,
-                        ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeTuple(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(to_string, smLambda{
@@ -1370,7 +1364,7 @@ namespace sm{
                 })
 
                 smMethod(iterate, smLambda {
-                    return newInstance(intp, cListIterator, false, {self});
+                    return newInstance(intp, cListIterator, {self});
                 })
 
             smEnd
@@ -1414,7 +1408,7 @@ namespace sm{
                     if(check){
                         obj = ref[ptr->idx++];
                     }
-                    return makeTuple(intp, false, {obj, makeBool(check)});
+                    return makeTuple(intp, {obj, makeBool(check)});
                 })
             smEnd
 
@@ -1458,12 +1452,12 @@ namespace sm{
 
                     if(check && String::uNext(it, ref.end(), ch)){
                         ptr->idx = it - ref.begin();
-                        return makeTuple(intp, false, {
+                        return makeTuple(intp, {
                             makeString(ch), makeTrue()
                         });
                     }
 
-                    return makeTuple(intp, false, {Object(), makeFalse()});
+                    return makeTuple(intp, {Object(), makeFalse()});
                 })
             smEnd
 
@@ -1471,14 +1465,14 @@ namespace sm{
         }
     }
 
-    Object makeList(exec::Interpreter& intp, bool temp, ObjectVec_t vec) noexcept{
-        Object list = newInstance(intp, lib::cList, temp);
+    Object makeList(exec::Interpreter& intp, ObjectVec_t vec) noexcept{
+        Object list = newInstance(intp, lib::cList);
         *lib::getData<ObjectVec_t>(intp, list) = std::move(vec);
         return list;
     }
 
-    Object makeTuple(exec::Interpreter& intp, bool temp, ObjectVec_t vec) noexcept{
-        Object tuple = newInstance(intp, lib::cTuple, temp);
+    Object makeTuple(exec::Interpreter& intp, ObjectVec_t vec) noexcept{
+        Object tuple = newInstance(intp, lib::cTuple);
         *lib::getData<ObjectVec_t>(intp, tuple) = std::move(vec);
         return tuple;
     }
