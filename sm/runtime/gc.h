@@ -21,6 +21,8 @@
 #define _SM__RUNTIME__GC_H
 
 #include <atomic>
+#include <thread>
+#include <mutex>
 #include <chrono>
 #include <list>
 
@@ -28,15 +30,30 @@
 #include "sm/runtime/Object.h"
 #include "sm/error/error.h"
 #include "sm/compile/v1/Compiler.h"
-#include "sm/utils/Thread.h"
 
 namespace sm{
     namespace exec{
         class Interpreter;
-        using ThreadVec_t = std::vector<Interpreter*>;
+        class IntpData;
+
+        struct TWrapper {
+            std::thread th;
+            std::atomic_flag to_delete = ATOMIC_FLAG_INIT;
+        };
+
+        struct ThreadData {
+            TWrapper* wrapper;
+            IntpData* data;
+        };
+
+        using ThreadVec_t = std::vector<ThreadData>;
     }
 
+
     namespace runtime {
+        void validate(Instance* i) noexcept;
+        Object& validate(ObjectDict_t& dict, unsigned id, const Object& obj) noexcept;
+
         class GarbageCollector {
             friend Runtime_t;
             friend Instance;
@@ -52,14 +69,16 @@ namespace sm{
 
         public:
             InstanceList_t instances, tempInstances;
-            unsigned allocs, threshold;
+            std::mutex instances_m, tempInstances_m;
+            std::atomic_uint allocs;
+            unsigned threshold;
             bool gcWorking;
 
             GarbageCollector(Runtime_t* rt) : _rt(rt), allocs(0),
                 threshold(garbageCollectorThreshold), gcWorking(false) {};
 
-            Object instance(exec::Interpreter& _intp,
-                    Class* _base, bool temp) noexcept;
+            Object makeTempInstance(exec::Interpreter& _intp,
+                    Class* _base) noexcept;
 
             GarbageCollector(const GarbageCollector&) = delete;
             GarbageCollector(GarbageCollector&&) = delete;
@@ -69,7 +88,7 @@ namespace sm{
             ~GarbageCollector() = default;
         };
 
-        // one instance per Smudge process.
+        // one per Smudge process.
         class Runtime_t {
         public:
             static std::chrono::steady_clock::time_point* execStart;
@@ -81,10 +100,9 @@ namespace sm{
             Sources sources;
             ByteCode_t code;
 
-            Mutex threads_m;
+            std::mutex threads_m;
             exec::ThreadVec_t threads;
-
-            bool showAll = false, noStd = false;
+            exec::Interpreter* main_intp = nullptr;
 
             std::vector<integer_t>      intConstants;
             std::vector<float_t>        floatConstants;
@@ -92,6 +110,8 @@ namespace sm{
             std::vector<string_t>       boxNames;
             std::vector<String>         stringConstants;
             compile::NamesMap_t         nameIds;
+
+            bool showAll = false, noStd = false;
 
             #ifdef _SM_OS_WINDOWS
             static std::vector<HMODULE>        sharedLibs;
