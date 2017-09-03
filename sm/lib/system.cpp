@@ -97,7 +97,7 @@ namespace sm {
             })
 
             smFunc(alloc, smLambda {
-                Object inst = newInstance(intp, cChunk, false, args);
+                Object inst = newInstance(intp, cChunk, args);
                 return data<ChunkClass::ChunkData>(inst) ? inst : Object();
             })
 
@@ -175,7 +175,7 @@ namespace sm {
                 })
 
                 smMethod(iterate, smLambda {
-                    return newInstance(intp, cChunkIterator, false, {self});
+                    return newInstance(intp, cChunkIterator, {self});
                 })
 
                 smMethod(delete, smLambda {
@@ -221,15 +221,15 @@ namespace sm {
                     CIData* ptr = smGetData(CIData);
                     ChunkData* chunkPtr = data<ChunkData>(ptr->chunk);
                     if(!chunkPtr)
-                        return makeTuple(intp, false, {Object(), makeFalse()});
+                        return makeTuple(intp, {Object(), makeFalse()});
 
                     ChunkData& ref = *chunkPtr;
                     bool check = ptr->idx < ref.size;
 
                     if(check){
-                        return makeTuple(intp, false, {makeInteger(ref.data[ptr->idx++]), makeTrue()});
+                        return makeTuple(intp, {makeInteger(ref.data[ptr->idx++]), makeTrue()});
                     }
-                    return makeTuple(intp, false, {Object(), makeFalse()});
+                    return makeTuple(intp, {Object(), makeFalse()});
                 })
 
             smEnd
