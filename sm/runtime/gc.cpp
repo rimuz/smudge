@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <mutex>
 #include <vector>
 #include <algorithm>
 
@@ -30,9 +31,7 @@
 #include "sm/compile/defs.h"
 #include "sm/exec/Interpreter.h"
 
-#ifdef _SM_OS_WINDOWS
-// TODO
-#else
+#ifndef _SM_OS_WINDOWS
 #include <dlfcn.h>
 #endif
 
@@ -261,13 +260,12 @@ namespace sm{
         return obj;
     }
 
-    Object makeInstance(exec::Interpreter& intp, Class* base, bool temp) noexcept{
-        return intp.rt->gc.instance(intp, base, temp);
+    Object makeInstance(exec::Interpreter& intp, Class* base) noexcept{
+        return intp.rt->gc.makeTempInstance(intp, base);
     }
 
 
-    Object newInstance(exec::Interpreter& intp, Class* base, bool temp,
-            const ObjectVec_t& args) noexcept {
+    Object newInstance(exec::Interpreter& intp, Class* base, const ObjectVec_t& args) noexcept {
         Object self, clazz(ObjectType::CLASS);
         Function* func_ptr;
         clazz.c_ptr = base;
@@ -277,12 +275,23 @@ namespace sm{
     }
 
     void Instance::free(bool isGc) noexcept {
-        if((isGc || !intp.rt->gc.gcWorking) && !deleting)
+        if(deleting)
+            return;
+        destroy();
+        if(isGc && intp.rt->gc.gcWorking){
             (temporary ? intp.rt->gc.tempInstances : intp.rt->gc.instances).erase(it);
+        } else {
+            if(temporary){
+                std::lock_guard<std::mutex> lock(intp.rt->gc.tempInstances_m);
+                intp.rt->gc.tempInstances.erase(it);
+            } else {
+                std::lock_guard<std::mutex> lock(intp.rt->gc.instances_m);
+                intp.rt->gc.instances.erase(it);
+            }
+        }
     }
 
-    Instance::~Instance(){
-        --intp.rt->gc.allocs;
+    void Instance::destroy() noexcept{
         if(!base) return;
         ObjectDict_t::iterator it = base->objects.find(lib::idDelete);
         if(it != base->objects.end()){
@@ -299,9 +308,29 @@ namespace sm{
             // we don't care about the 'delete()' return value.
             intp.callFunction(func_ptr, {}, self, true);
         }
+        objects.clear();
+    }
+
+    Instance::~Instance(){
+        --intp.rt->gc.allocs;
     }
 
     namespace runtime{
+        void validate(Instance* i) noexcept{
+            if(i->temporary){
+                GarbageCollector& gc = i->intp.rt->gc;
+                std::lock_guard<std::mutex> lock1(gc.instances_m), lock2(gc.tempInstances_m);
+                gc.tempInstances.splice(gc.tempInstances.end(), gc.instances, i->it);
+            }
+        }
+
+        Object& validate(ObjectDict_t& dict, unsigned id, const Object& obj) noexcept{
+            Object& ref = dict[id] = obj;
+            if(obj.type == ObjectType::CLASS_INSTANCE)
+                validate(obj.i_ptr);
+            return ref;
+        }
+
         std::chrono::steady_clock::time_point* Runtime_t::execStart = nullptr;
         #ifdef _SM_OS_WINDOWS
         std::vector<HMODULE> Runtime_t::sharedLibs;
@@ -312,17 +341,14 @@ namespace sm{
         // Instance Pointer's Vector  -> IPVec_t
         using IPVec_t = std::vector<Instance*>;
 
-        Object GarbageCollector::instance(exec::Interpreter& _intp,
-                Class* _base, bool temp) noexcept {
+        Object GarbageCollector::makeTempInstance(exec::Interpreter& _intp, Class* _base) noexcept {
             if(++allocs == threshold){
                 allocs = 0;
                 collect();
             }
 
-            InstanceList_t& list = temp ? tempInstances : instances;
-            list.emplace_back(_intp, _base, temp);
-
-            InstanceList_t::iterator it = std::prev(list.end());
+            tempInstances.emplace_back(_intp, _base, true);
+            InstanceList_t::iterator it = std::prev(tempInstances.end());
             it->it = it; // this line made my day :D
 
             Object obj;
@@ -372,7 +398,9 @@ namespace sm{
 
         // TODO Class
         // TODO Methods
+        // TODO intp.super
         void GarbageCollector::collect(){
+            std::lock_guard<std::mutex> lock1(instances_m), lock2(tempInstances_m);
             IPVec_t white, gray;
             gcWorking = true;
 
@@ -386,20 +414,16 @@ namespace sm{
                 }
             }
 
-            for(auto* intp : _rt->threads){
-                for(Object& obj : intp->exprStack){
+            for(auto& thread : _rt->threads){
+                exec::Interpreter& intp = thread.data->intp;
+                for(Object& obj : intp.exprStack)
                     whiteToGray(white, gray, obj);
-                }
 
-                for(exec::CallInfo_t& callInfo : intp->funcStack){
-                    for(ObjectDict_t* dict : callInfo.codeBlocks){
-                        if(dict){
-                            for(auto& pair : *dict){
+                for(exec::CallInfo_t& callInfo : intp.funcStack)
+                    for(ObjectDict_t* dict : callInfo.codeBlocks)
+                        if(dict)
+                            for(auto& pair : *dict)
                                 whiteToGray(white, gray, pair.second);
-                            }
-                        }
-                    }
-                }
             }
 
             // now GRAY contains all the root pointers and white the other.
@@ -463,13 +487,17 @@ namespace sm{
 
         Runtime_t::~Runtime_t() {
             gc.gcWorking = true;
-            for(auto* intp : threads){
-                intp->exprStack.clear();
+            {
+                std::lock_guard<std::mutex> lock(threads_m);
+                for(auto& thread : threads){
+                    exec::Interpreter& intp = thread.data->intp;
+                    intp.exprStack.clear();
 
-                for(exec::CallInfo_t& callInfo : intp->funcStack)
-                    for(ObjectDict_t* dict : callInfo.codeBlocks)
-                        if(dict) delete dict;
-                intp->funcStack.clear();
+                    for(exec::CallInfo_t& callInfo : intp.funcStack)
+                        for(ObjectDict_t* dict : callInfo.codeBlocks)
+                            if(dict) delete dict;
+                    intp.funcStack.clear();
+                }
             }
 
             for(auto* box : boxes)
