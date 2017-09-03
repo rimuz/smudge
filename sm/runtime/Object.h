@@ -213,6 +213,7 @@ namespace sm{
         Instance& operator=(const Instance& rhs) = delete;
 
         void free(bool isGc = false) noexcept;
+        void destroy() noexcept;
 
         Object get(string_t name) const noexcept;
         bool setFirst(string_t name, const Object& obj) noexcept;
@@ -224,14 +225,13 @@ namespace sm{
     size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept;
 
     Object makeFunction(Function*) noexcept;
-    Object makeList(exec::Interpreter& intp, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
-    Object makeTuple(exec::Interpreter& intp, bool temp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    Object makeList(exec::Interpreter& intp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    Object makeTuple(exec::Interpreter& intp, ObjectVec_t vec = ObjectVec_t()) noexcept;
 
     // creates an object
-    Object makeInstance(exec::Interpreter& intp, Class* base, bool temp) noexcept;
+    Object makeInstance(exec::Interpreter& intp, Class* base) noexcept;
     // creates an object AND calls ctor
-    Object newInstance(exec::Interpreter& intp, Class* base, bool temp,
-        const ObjectVec_t& args = {}) noexcept;
+    Object newInstance(exec::Interpreter& intp, Class* base, const ObjectVec_t& args = {}) noexcept;
 
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
