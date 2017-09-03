@@ -153,6 +153,7 @@ namespace sm{
             }
 
             Object obj(std::move(exprStack.back()));
+            runtime::invalidate(obj);
             exprStack.pop_back();
             return obj;
         }
@@ -219,7 +220,7 @@ namespace sm{
                 }
 
                 // pushing the newly created instance on the stack.
-                exprStack.emplace_back(std::move(self));
+                runtime::validate(exprStack, std::move(self));
             } else if(fn->flags & FF_NATIVE){
                 Object ret = (*fn->native_ptr)(*this, fn, self, args);
                 if(ret.type == ObjectType::WEAK_REFERENCE){
@@ -227,7 +228,7 @@ namespace sm{
                 } else if(ret.type == ObjectType::STRONG_REFERENCE){
                     ret.type = ObjectType::WEAK_REFERENCE;
                 }
-                exprStack.emplace_back(std::move(ret));
+                runtime::validate(exprStack, std::move(ret));
             } else {
                 funcStack.emplace_back();
                 funcStack.back().codeBlocks.reserve(5);
@@ -285,6 +286,9 @@ namespace sm{
                 backInfo.addr = rt->code.begin() + address;
                 backInfo.box = rt->boxes[fn->boxName];
                 backInfo.thisObject = self;
+
+                runtime::validate(self);
+                runtime::validate_all(args);
             }
         }
 
