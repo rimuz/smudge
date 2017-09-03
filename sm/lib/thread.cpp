@@ -18,47 +18,45 @@
 */
 
 #include <algorithm>
+#include <functional>
+#include <thread>
+
 #include "sm/typedefs.h"
-#include "sm/utils/Thread.h"
 #include "sm/runtime/casts.h"
 #include "sm/lib/stdlib.h"
 
 namespace sm{
     namespace lib{
         namespace ThreadClass{
-            struct TData {
-                Instance* ptr;
-                runtime::Runtime_t& rt;
-            };
-
-            uint32_t run(TData& data){
-                exec::Interpreter intp(data.rt);
+            void wrapper_func(exec::ThreadData td){
                 Object self;
                 Function* f_ptr;
 
-                {
-                    Lock lock(data.rt.threads_m);
-                    data.rt.threads.emplace_back(&intp);
-                }
-
-                Object func = data.ptr->objects[smId("func")];
-                if(!runtime::callable(func, self, f_ptr)){
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                if(!runtime::callable(td.data->func, self, f_ptr)){
+                    td.data->intp.rt->sources.printStackTrace(td.data->intp, error::ET_ERROR,
                         std::string("given a not callable object to thread (")
-                        + runtime::errorString(intp, func) + ")");
+                        + runtime::errorString(td.data->intp, td.data->func) + ")");
                 }
 
-                Object vecArgs = data.ptr->objects[smId("args")];
-                ObjectVec_t* vec;
-                hasVector(vecArgs, vec);
+                td.data->intp.callFunction(f_ptr, td.data->args, self, false);
 
-                intp.callFunction(f_ptr, *vec, self, false);
-                {
-                    Lock lock(data.rt.threads_m);
-                    exec::ThreadVec_t& vec = data.rt.threads;
-                    vec.erase(std::remove(vec.begin(), vec.end(), &intp), vec.end());
+                runtime::Runtime_t* rt = td.data->intp.rt;
+                exec::TWrapper* wrapper = td.wrapper;
+                delete td.data;
+
+                if(wrapper->to_delete.test_and_set()){
+                    std::lock_guard<std::mutex> lock(rt->threads_m);
+                    exec::ThreadVec_t& vec = rt->threads;
+                    exec::ThreadVec_t::iterator it = std::find_if(vec.begin(), vec.end(),
+                        [wrapper](exec::ThreadData& ref){
+                            return ref.wrapper == wrapper;
+                        }
+                    );
+                    if(wrapper->th.joinable())
+                        wrapper->th.detach();
+                    delete wrapper;
+                    vec.erase(it);
                 }
-                return 0;
             }
         }
 
@@ -67,11 +65,11 @@ namespace sm{
         smLibDecl(thread){
             smInitBox
                 smFunc(launch, smLambda {
-                    return newInstance(intp, cThread, false, args);
+                    return newInstance(intp, cThread, args);
                 })
 
                 smFunc(current, smLambda {
-                    return newInstance(intp, cThread, false);
+                    return newInstance(intp, cThread);
                 })
 
                 smClass(Thread)
@@ -88,48 +86,48 @@ namespace sm{
                      *
                     */
                     smMethod(new, smLambda {
-                        Object& objFunc = smRef(smId("func"));
-                        Object& objArgs = smRef(smId("args"));
-
-                        ObjectVec_t* argsVec;
-                        objArgs = makeList(intp, false);
-                        hasVector(objArgs, argsVec);
                         bool empty = args.empty();
 
-                        if(empty || args.front().type == ObjectType::NONE){
-                            smSetData(Thread<TData>) = new Thread<TData>(Thread<TData>::current());
-                            return Object();
-                        } else {
-                            objFunc = args.front();
-                            *argsVec = ObjectVec_t(args.begin()+1, args.end());
-                        }
+                        std::lock_guard<std::mutex> lock(intp.rt->threads_m);
+                        intp.rt->threads.emplace_back();
 
-                        smSetData(Thread<TData>) = new Thread<TData> (
-                            run, TData{self.i_ptr, *intp.rt}
+                        exec::ThreadData& back = intp.rt->threads.back();
+                        back.wrapper = new exec::TWrapper;
+
+                        back.data = new exec::IntpData (
+                            *intp.rt,
+                            empty ? Object() : Object(args.front()),
+                            empty ? ObjectVec_t() : ObjectVec_t(args.begin() +1, args.end())
                         );
-                        smGetData(Thread<TData>)->start();
+
+                        smSetData(exec::TWrapper) = back.wrapper;
+                        back.wrapper->th = std::thread(wrapper_func, back);
                         return Object();
                     })
 
-                    #define smSimpleBind(Name) \
-                        smMethod(Name, smLambda { \
-                            return makeBool(smGetData(Thread<TData>)->Name()); \
-                        })
-
-                    smSimpleBind(kill)
-                    smSimpleBind(is_running)
-                    #undef smSimpleBind
-
                     smMethod(join, smLambda {
-                        uint32_t ret = 0;
-                        return makeTuple(intp, false, ObjectVec_t {
-                            makeBool(smGetData(Thread<TData>)->join(ret)),
-                            makeInteger(ret)
-                        });
+                        std::thread& th = smGetData(exec::TWrapper)->th;
+                        if(th.joinable() == false || th.get_id() == std::this_thread::get_id())
+                            return makeFalse();
+                        th.join();
+                        return makeTrue();
                     })
 
                     smMethod(delete, smLambda {
-                        smDeleteData(Thread<TData>);
+                        exec::TWrapper* wrapper = smGetData(exec::TWrapper);
+                        if(wrapper->to_delete.test_and_set()){
+                            std::lock_guard<std::mutex> lock(intp.rt->threads_m);
+                            exec::ThreadVec_t& vec = intp.rt->threads;
+                            exec::ThreadVec_t::iterator it = std::find_if(vec.begin(), vec.end(),
+                                [wrapper](exec::ThreadData& ref){
+                                    return ref.wrapper == wrapper;
+                                }
+                            );
+                            if(wrapper->th.joinable())
+                                wrapper->th.detach();
+                            delete wrapper;
+                            vec.erase(it);
+                        }
                         return Object();
                     })
                 smEnd
