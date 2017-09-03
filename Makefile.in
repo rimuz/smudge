@@ -121,7 +121,7 @@ am_smudge_OBJECTS = sm/compile/v1/compiler/smudge-Compiler.$(OBJEXT) \
 	sm/runtime/smudge-casts.$(OBJEXT) \
 	sm/runtime/smudge-gc.$(OBJEXT) sm/runtime/smudge-id.$(OBJEXT) \
 	sm/utils/unicode/smudge-utf8.$(OBJEXT) \
-	sm/utils/smudge-Thread.$(OBJEXT) sm/smudge-main.$(OBJEXT)
+	sm/smudge-main.$(OBJEXT)
 smudge_OBJECTS = $(am_smudge_OBJECTS)
 smudge_DEPENDENCIES =
 smudge_LINK = $(CXXLD) $(smudge_CXXFLAGS) $(CXXFLAGS) \
@@ -358,7 +358,6 @@ smudge_SOURCES = \
 			sm/runtime/gc.cpp \
 			sm/runtime/id.cpp \
 			sm/utils/unicode/utf8.cpp \
-			sm/utils/Thread.cpp \
 			sm/main.cpp
 
 man1_MANS = \
@@ -535,14 +534,6 @@ sm/utils/unicode/$(DEPDIR)/$(am__dirstamp):
 sm/utils/unicode/smudge-utf8.$(OBJEXT):  \
 	sm/utils/unicode/$(am__dirstamp) \
 	sm/utils/unicode/$(DEPDIR)/$(am__dirstamp)
-sm/utils/$(am__dirstamp):
-	@$(MKDIR_P) sm/utils
-	@: > sm/utils/$(am__dirstamp)
-sm/utils/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) sm/utils/$(DEPDIR)
-	@: > sm/utils/$(DEPDIR)/$(am__dirstamp)
-sm/utils/smudge-Thread.$(OBJEXT): sm/utils/$(am__dirstamp) \
-	sm/utils/$(DEPDIR)/$(am__dirstamp)
 sm/$(am__dirstamp):
 	@$(MKDIR_P) sm
 	@: > sm/$(am__dirstamp)
@@ -566,7 +557,6 @@ mostlyclean-compile:
 	-rm -f sm/lib/*.$(OBJEXT)
 	-rm -f sm/parse/*.$(OBJEXT)
 	-rm -f sm/runtime/*.$(OBJEXT)
-	-rm -f sm/utils/*.$(OBJEXT)
 	-rm -f sm/utils/unicode/*.$(OBJEXT)
 
 distclean-compile:
@@ -591,7 +581,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-casts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-gc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-id.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@sm/utils/$(DEPDIR)/smudge-Thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/utils/unicode/$(DEPDIR)/smudge-utf8.Po@am__quote@
 
 .cpp.o:
@@ -875,20 +864,6 @@ sm/utils/unicode/smudge-utf8.obj: sm/utils/unicode/utf8.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/utils/unicode/utf8.cpp' object='sm/utils/unicode/smudge-utf8.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/utils/unicode/smudge-utf8.obj `if test -f 'sm/utils/unicode/utf8.cpp'; then $(CYGPATH_W) 'sm/utils/unicode/utf8.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/utils/unicode/utf8.cpp'; fi`
-
-sm/utils/smudge-Thread.o: sm/utils/Thread.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/utils/smudge-Thread.o -MD -MP -MF sm/utils/$(DEPDIR)/smudge-Thread.Tpo -c -o sm/utils/smudge-Thread.o `test -f 'sm/utils/Thread.cpp' || echo '$(srcdir)/'`sm/utils/Thread.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/utils/$(DEPDIR)/smudge-Thread.Tpo sm/utils/$(DEPDIR)/smudge-Thread.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/utils/Thread.cpp' object='sm/utils/smudge-Thread.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/utils/smudge-Thread.o `test -f 'sm/utils/Thread.cpp' || echo '$(srcdir)/'`sm/utils/Thread.cpp
-
-sm/utils/smudge-Thread.obj: sm/utils/Thread.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/utils/smudge-Thread.obj -MD -MP -MF sm/utils/$(DEPDIR)/smudge-Thread.Tpo -c -o sm/utils/smudge-Thread.obj `if test -f 'sm/utils/Thread.cpp'; then $(CYGPATH_W) 'sm/utils/Thread.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/utils/Thread.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/utils/$(DEPDIR)/smudge-Thread.Tpo sm/utils/$(DEPDIR)/smudge-Thread.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/utils/Thread.cpp' object='sm/utils/smudge-Thread.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/utils/smudge-Thread.obj `if test -f 'sm/utils/Thread.cpp'; then $(CYGPATH_W) 'sm/utils/Thread.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/utils/Thread.cpp'; fi`
 
 sm/smudge-main.o: sm/main.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/smudge-main.o -MD -MP -MF sm/$(DEPDIR)/smudge-main.Tpo -c -o sm/smudge-main.o `test -f 'sm/main.cpp' || echo '$(srcdir)/'`sm/main.cpp
@@ -1216,8 +1191,6 @@ distclean-generic:
 	-rm -f sm/parse/$(am__dirstamp)
 	-rm -f sm/runtime/$(DEPDIR)/$(am__dirstamp)
 	-rm -f sm/runtime/$(am__dirstamp)
-	-rm -f sm/utils/$(DEPDIR)/$(am__dirstamp)
-	-rm -f sm/utils/$(am__dirstamp)
 	-rm -f sm/utils/unicode/$(DEPDIR)/$(am__dirstamp)
 	-rm -f sm/utils/unicode/$(am__dirstamp)
 
@@ -1230,7 +1203,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
+	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1278,7 +1251,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
+	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
