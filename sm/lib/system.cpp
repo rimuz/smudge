@@ -138,6 +138,14 @@ namespace sm {
                     return Object();
                 })
 
+                smMethod(delete, smLambda {
+                    UC* ptr = smGetData(UC);
+                    if(ptr){
+                        std::free(ptr);
+                    }
+                    return Object();
+                })
+
                 smMethod(failed, smLambda {
                     return makeBool(!smGetData(ChunkData));
                 })
@@ -178,14 +186,6 @@ namespace sm {
                     return newInstance(intp, cChunkIterator, {self});
                 })
 
-                smMethod(delete, smLambda {
-                    UC* ptr = smGetData(UC);
-                    if(ptr){
-                        std::free(ptr);
-                    }
-                    return Object();
-                })
-
             smEnd
 
             smClass(ChunkIterator)
@@ -211,7 +211,7 @@ namespace sm {
                 })
 
                 smMethod(delete, smLambda {
-                    delete smGetData(CIData);
+                    smDeleteData(CIData);
                     return Object();
                 })
 
