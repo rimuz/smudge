@@ -60,7 +60,12 @@ namespace sm{
             }
         }
 
+        namespace MutexClass{}
+        namespace LockClass{}
+
         Class* cThread;
+        Class* cMutex;
+        Class* cLock;
 
         smLibDecl(thread){
             smInitBox
@@ -128,6 +133,94 @@ namespace sm{
                             delete wrapper;
                             vec.erase(it);
                         }
+                        return Object();
+                    })
+                smEnd
+
+                smClass(Mutex)
+                    /*
+                     *
+                     *        888b     d888            888
+                     *        8888b   d8888            888
+                     *        88888b.d88888            888
+                     *        888Y88888P888  888  888  888888  .d88b.   888  888
+                     *        888 Y888P 888  888  888  888    d8P  Y8b  `Y8bd8P'
+                     *        888  Y8P  888  888  888  888    88888888    X88K
+                     *        888   "   888  Y88b 888  Y88b.  Y8b.      .d8""8b.
+                     *        888       888   "Y88888   "Y888  "Y8888   888  888
+                     *
+                    */
+
+                    smMethod(new, smLambda {
+                        smSetData(std::mutex) = new std::mutex;
+                        return Object();
+                    })
+
+                    smMethod(delete, smLambda {
+                        smDeleteData(std::mutex);
+                        return Object();
+                    })
+
+                    smMethod(lock, smLambda {
+                        smGetData(std::mutex)->lock();
+                        return Object();
+                    })
+
+                    smMethod(unlock, smLambda {
+                        smGetData(std::mutex)->unlock();
+                        return Object();
+                    })
+
+                    smMethod(try_lock, smLambda {
+                        return makeBool(smGetData(std::mutex)->try_lock());
+                    })
+                smEnd
+
+                smClass(Lock)
+                    /*
+                     *        888                          888
+                     *        888                          888
+                     *        888                          888
+                     *        888       .d88b.    .d8888b  888  888
+                     *        888      d88""88b  d88P"     888 .88P
+                     *        888      888  888  888       888888K
+                     *        888      Y88..88P  Y88b.     888 "88b
+                     *        88888888  "Y88P"    "Y8888P  888  888
+                    */
+
+                    smMethod(new, smLambda {
+                        Object& ref = smRef(smId("object")) = args.empty() ? Object() : args.front();
+                        Object selfObj, func;
+                        Function* ptr;
+
+                        if(!runtime::find_any(ref, func, smId("lock"))){
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                std::string("cannot find 'lock' in ")
+                                + runtime::errorString(intp, ref));
+                        } else if(!runtime::callable(func, selfObj, ptr)){
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                std::string("'lock' is not a function in ")
+                                + runtime::errorString(intp, ref));
+                        }
+                        intp.callFunction(ptr, {}, selfObj, true);
+                        return Object();
+                    })
+
+                    smMethod(delete, smLambda {
+                        Object& ref = smRef(smId("object"));
+                        Object selfObj, func;
+                        Function* ptr;
+
+                        if(!runtime::find_any(ref, func, smId("unlock"))){
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                std::string("cannot find 'unlock' in ")
+                                + runtime::errorString(intp, ref));
+                        } else if(!runtime::callable(func, selfObj, ptr)){
+                            intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                std::string("'unlock' is not a function in ")
+                                + runtime::errorString(intp, ref));
+                        }
+                        intp.callFunction(ptr, {}, selfObj, true);
                         return Object();
                     })
                 smEnd
