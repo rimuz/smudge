@@ -380,7 +380,7 @@ namespace sm{
                     if(args.empty())
                         return makeString();
                     ObjectVec_t* in;
-                    if(!hasVector(args[0], in))
+                    if(!hasVector(intp, args[0], in))
                         return Object();
                     Object out = makeString();
                     ObjectVec_t::const_iterator curr = in->cbegin(), end = in->cend();
@@ -602,9 +602,7 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    ObjectVec_t* ptr = smGetData(ObjectVec_t);
-                    data<ObjectVec_t>(self) = nullptr;
-                    delete ptr;
+                    smDeleteData(ObjectVec_t);
                     return Object();
                 })
 
@@ -640,7 +638,7 @@ namespace sm{
                 smOpMethod(parse::TT_PLUS, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t* vec2;
-                    if(args.empty() || !hasVector(args[0], vec2))
+                    if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
                     Object newVec = makeList(intp, vec);
@@ -700,7 +698,7 @@ namespace sm{
 
                 smOpMethod(parse::TT_OR, smLambda {
                     ObjectVec_t* vec2;
-                    if(args.empty() || !hasVector(args[0], vec2))
+                    if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
@@ -717,7 +715,7 @@ namespace sm{
 
                 smOpMethod(parse::TT_AND, smLambda {
                     ObjectVec_t* vec2;
-                    if(args.empty() || !hasVector(args[0], vec2))
+                    if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
                     Object newVec = makeList(intp);
@@ -876,7 +874,7 @@ namespace sm{
                 smMethod(append, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t* toAppend;
-                    if(args.empty() || !hasVector(args[0], toAppend))
+                    if(args.empty() || !hasVector(intp, args[0], toAppend))
                         return Object();
                     vec.insert(vec.end(), toAppend->begin(), toAppend->end());
                     return Object();
@@ -933,7 +931,7 @@ namespace sm{
                     ObjectVec_t* toInsert;
 
                     if(args.size() < 2 || args[0].type != ObjectType::INTEGER
-                            || !hasVector(args[1], toInsert))
+                            || !hasVector(intp, args[1], toInsert))
                         return Object();
 
                     integer_t idx = args[0].i;
@@ -948,7 +946,7 @@ namespace sm{
                     ObjectVec_t* toCopy;
 
                     if(args.size() < 2 || args[0].type != ObjectType::INTEGER
-                            || !hasVector(args[1], toCopy))
+                            || !hasVector(intp, args[1], toCopy))
                         return  makeFalse();
 
                     integer_t idx = args[0].i;
@@ -1088,9 +1086,7 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    ObjectVec_t* ptr = smGetData(ObjectVec_t);
-                    data<ObjectVec_t>(self) = nullptr;
-                    delete ptr;
+                    smDeleteData(ObjectVec_t);
                     return Object();
                 })
 
@@ -1098,7 +1094,7 @@ namespace sm{
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t* vec2;
 
-                    if(args.empty() || !hasVector(args[0], vec2))
+                    if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
                     Object newVec = makeTuple(intp, vec);
@@ -1160,7 +1156,7 @@ namespace sm{
 
                 smOpMethod(parse::TT_OR, smLambda {
                     ObjectVec_t* vec2;
-                    if(args.empty() || !hasVector(args[0], vec2))
+                    if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
@@ -1177,7 +1173,7 @@ namespace sm{
 
                 smOpMethod(parse::TT_AND, smLambda {
                     ObjectVec_t* vec2;
-                    if(args.empty() || !hasVector(args[0], vec2))
+                    if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
                     Object newVec = makeTuple(intp, {});
@@ -1385,7 +1381,7 @@ namespace sm{
 
                 smMethod(new, smLambda {
                     ObjectVec_t* dummy;
-                    if(args.empty() || !hasVector(args[0], dummy))
+                    if(args.empty() || !hasVector(intp, args[0], dummy))
                         return Object();
 
                     smSetData(LIData) = new LIData { args[0], 0 };
@@ -1393,9 +1389,7 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    LIData* ptr = smGetData(LIData);
-                    data<LIData>(self) = nullptr;
-                    delete ptr;
+                    smDeleteData(LIData);
                     return Object();
                 })
 
@@ -1436,9 +1430,7 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    SIData* ptr = smGetData(SIData);
-                    data<SIData>(self) = nullptr;
-                    delete ptr;
+                    smDeleteData(SIData);
                     return Object();
                 })
 
@@ -1478,9 +1470,9 @@ namespace sm{
     }
 
 
-    bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept{
+    bool hasVector(exec::Interpreter& intp, const Object& obj, ObjectVec_t*& vecPtr) noexcept{
         if(runtime::of_type(obj, lib::cList) || runtime::of_type(obj, lib::cTuple)){
-            vecPtr = lib::getData<ObjectVec_t>(obj.i_ptr->intp, obj);
+            vecPtr = lib::getData<ObjectVec_t>(intp, obj);
             return true;
         }
         return false;
