@@ -116,7 +116,7 @@ namespace sm{
             Object& tos = intp.exprStack.back();
             ObjectVec_t* vec;
 
-            if(!hasVector(tos, vec) || vec->size() != 2){
+            if(!hasVector(intp, tos, vec) || vec->size() != 2){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "'next()' must return a list or a tuple of size 2.");
             }
