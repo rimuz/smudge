@@ -43,6 +43,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <chrono>
+#include <thread>
 
 #include "sm/compile/v1/Compiler.h"
 #include "sm/compile/Statement.h"
@@ -69,7 +70,9 @@ int main(int argc, char** argv){
     runtime::Runtime_t rt;
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
+
     rt.main_intp = &intp;
+    runtime::Runtime_t::main_id = std::this_thread::get_id();
 
     int firstArg = argc;
     bool printPaths = false;
@@ -223,6 +226,8 @@ int main(int argc, char** argv){
 
     while(!rt.threads.empty())
         std::this_thread::yield();
+
+    rt.main_intp = nullptr;
     return 0;
 }
 
