@@ -314,6 +314,7 @@ namespace sm{
 
                 tokens.pop_back(); // removes TT_UNPARSED_OPERATOR token
                 tokens.insert(tokens.end(), operators.rbegin(), operators.rend());
+                return;
             }
 
             if(tokens.size() > 1 && (tok.type < TT_OPERATORS_START || tok.type > TT_OPERATORS_END)){
