@@ -178,7 +178,6 @@ namespace sm{
             case CLASS_INSTANCE: {
                 Object func;
                 Function* f_ptr;
-                exec::Interpreter& intp = hashable.i_ptr->intp;
 
                 if(!runtime::find<CLASS_INSTANCE>(hashable, func, lib::idHash)){
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
@@ -278,21 +277,26 @@ namespace sm{
         if(deleting)
             return;
         destroy();
-        if(isGc && intp.rt->gc.gcWorking){
-            (temporary ? intp.rt->gc.tempInstances : intp.rt->gc.instances).erase(it);
+        if(isGc && rt.gc.gcWorking){
+            (temporary ? rt.gc.tempInstances : rt.gc.instances).erase(it);
         } else {
             if(temporary){
-                std::lock_guard<std::mutex> lock(intp.rt->gc.tempInstances_m);
-                intp.rt->gc.tempInstances.erase(it);
+                std::lock_guard<std::mutex> lock(rt.gc.tempInstances_m);
+                rt.gc.tempInstances.erase(it);
             } else {
-                std::lock_guard<std::mutex> lock(intp.rt->gc.instances_m);
-                intp.rt->gc.instances.erase(it);
+                std::lock_guard<std::mutex> lock(rt.gc.instances_m);
+                rt.gc.instances.erase(it);
             }
         }
     }
 
     void Instance::destroy() noexcept{
-        if(!base) return;
+        if(!base)
+            return;
+        exec::Interpreter* i_ptr = rt.getCurrentThread();
+        if(!i_ptr) // Interpreter was deleted alredy (end of main)
+            return;
+        exec::Interpreter& intp = *i_ptr;
         ObjectDict_t::iterator it = base->objects.find(lib::idDelete);
         if(it != base->objects.end()){
             Object self = Object(ObjectType::CLASS_INSTANCE);
@@ -312,13 +316,13 @@ namespace sm{
     }
 
     Instance::~Instance(){
-        --intp.rt->gc.allocs;
+        --rt.gc.allocs;
     }
 
     namespace runtime{
         void validate(Instance* i) noexcept{
             if(i && i->temporary){
-                GarbageCollector& gc = i->intp.rt->gc;
+                GarbageCollector& gc = i->rt.gc;
                 std::lock_guard<std::mutex> lock1(gc.instances_m), lock2(gc.tempInstances_m);
                 gc.tempInstances.splice(gc.tempInstances.end(), gc.instances, i->it);
                 i->temporary = false;
@@ -351,7 +355,7 @@ namespace sm{
 
         void invalidate(Instance* i) noexcept{
             if(i && !i->temporary){
-                GarbageCollector& gc = i->intp.rt->gc;
+                GarbageCollector& gc = i->rt.gc;
                 std::lock_guard<std::mutex> lock1(gc.instances_m), lock2(gc.tempInstances_m);
                 gc.instances.splice(gc.instances.end(), gc.tempInstances, i->it);
                 i->temporary = true;
@@ -386,7 +390,7 @@ namespace sm{
                 collect();
             }
 
-            tempInstances.emplace_back(_intp, _base, true);
+            tempInstances.emplace_back(*_intp.rt, _base, true);
             InstanceList_t::iterator it = std::prev(tempInstances.end());
             it->it = it; // this line made my day :D
 
@@ -504,6 +508,8 @@ namespace sm{
             gcWorking = false;
         }
 
+        std::thread::id Runtime_t::main_id;
+
         string_t Runtime_t::nameFromId(unsigned id) const{
             if(id < runtime::idsStart){
                 switch(id){
@@ -519,6 +525,21 @@ namespace sm{
             } else {
                 return nameConstants[id - runtime::idsStart];
             }
+        }
+
+        // could be nullptr!! (checked by the caller)
+        exec::Interpreter* Runtime_t::getCurrentThread() noexcept{
+            std::thread::id curr = std::this_thread::get_id();
+            if(curr == Runtime_t::main_id)
+                return main_intp;
+            std::lock_guard<std::mutex> lock(threads_m);
+            for(auto& th : threads){
+                if(th.wrapper->th.get_id() == curr)
+                    return &th.data->intp;
+            }
+
+            sources.msg(error::ET_BUG, "current thread does not have an exec::Interpreter instance in 'Runtime_t::threads' (err #1)");
+            return nullptr;
         }
 
         void Runtime_t::exit() noexcept{
@@ -555,10 +576,11 @@ namespace sm{
                             if(dict) delete dict;
                     intp.funcStack.clear();
                 }
+                for(auto* box : boxes)
+                    delete box;
+                boxes.clear();
             }
 
-            for(auto* box : boxes)
-                delete box;
             freeLibraries();
 
             // keeping gcWorking true
