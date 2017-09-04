@@ -196,14 +196,14 @@ namespace sm{
     public:
         ObjectDict_t objects;
         InstanceList_t::iterator it;
-        exec::Interpreter& intp;
+        runtime::Runtime_t& rt;
         Class* base;
 
         unsigned rcount;
         bool temporary;
 
-        Instance(exec::Interpreter& _intp, Class* _base, bool temp)
-            : intp(_intp), base(_base), rcount(1), temporary(temp) {}
+        Instance(runtime::Runtime_t& _rt, Class* _base, bool temp)
+            : rt(_rt), base(_base), rcount(1), temporary(temp) {}
 
         Instance(Instance&& rhs) = default;
         Instance& operator=(Instance&& rhs) = default;
@@ -238,7 +238,7 @@ namespace sm{
     Object makeBool(bool) noexcept;
 
     /* if obj is tuple or list */
-    bool hasVector(const Object& obj, ObjectVec_t*& vecPtr) noexcept;
+    bool hasVector(exec::Interpreter& intp, const Object& obj, ObjectVec_t*& vecPtr) noexcept;
 
     Object Object::refGet() const noexcept{
         return *o_ptr;
