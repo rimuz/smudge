@@ -111,6 +111,8 @@ namespace sm{
             std::mutex threads_m;
             exec::ThreadVec_t threads;
             exec::Interpreter* main_intp = nullptr;
+            static std::thread::id main_id;
+            exec::Interpreter* getCurrentThread() noexcept;
 
             std::vector<integer_t>      intConstants;
             std::vector<float_t>        floatConstants;
