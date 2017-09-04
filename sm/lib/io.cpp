@@ -230,9 +230,7 @@ namespace sm{
                 })
 
                 smMethod(delete, smLambda {
-                    FSData* ptr = smGetData(FSData);
-                    data<FSData>(self) = nullptr;
-                    delete ptr;
+                    smDeleteData(FSData);
                     return Object();
                 })
 
