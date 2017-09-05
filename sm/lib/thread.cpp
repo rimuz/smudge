@@ -189,8 +189,8 @@ namespace sm{
                     */
 
                     smMethod(new, smLambda {
-                        Object& ref = smRef(smId("object")) = args.empty() ? Object() : args.front();
-                        Object selfObj, func;
+                        Object ref (smRef(smId("object")) = args.empty() ? Object() : args.front());
+                        Object selfObj = ref, func;
                         Function* ptr;
 
                         if(!runtime::find_any(ref, func, smId("lock"))){
@@ -208,7 +208,7 @@ namespace sm{
 
                     smMethod(delete, smLambda {
                         Object& ref = smRef(smId("object"));
-                        Object selfObj, func;
+                        Object selfObj = ref, func;
                         Function* ptr;
 
                         if(!runtime::find_any(ref, func, smId("unlock"))){
