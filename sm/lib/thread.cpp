@@ -42,10 +42,10 @@ namespace sm{
 
                 runtime::Runtime_t* rt = td.data->intp.rt;
                 exec::TWrapper* wrapper = td.wrapper;
+                std::lock_guard<std::mutex> lock(rt->threads_m);
                 delete td.data;
 
                 if(wrapper->to_delete.test_and_set()){
-                    std::lock_guard<std::mutex> lock(rt->threads_m);
                     exec::ThreadVec_t& vec = rt->threads;
                     exec::ThreadVec_t::iterator it = std::find_if(vec.begin(), vec.end(),
                         [wrapper](exec::ThreadData& ref){
@@ -56,6 +56,7 @@ namespace sm{
                         wrapper->th.detach();
                     delete wrapper;
                     vec.erase(it);
+                    --rt->n_threads;
                 }
             }
         }
@@ -93,6 +94,7 @@ namespace sm{
                     smMethod(new, smLambda {
                         bool empty = args.empty();
 
+                        ++intp.rt->n_threads;
                         std::lock_guard<std::mutex> lock(intp.rt->threads_m);
                         intp.rt->threads.emplace_back();
 
@@ -132,6 +134,7 @@ namespace sm{
                                 wrapper->th.detach();
                             delete wrapper;
                             vec.erase(it);
+                            --intp.rt->n_threads;
                         }
                         return Object();
                     })
@@ -189,7 +192,7 @@ namespace sm{
                     */
 
                     smMethod(new, smLambda {
-                        Object ref (smRef(smId("object")) = args.empty() ? Object() : args.front());
+                        Object& ref = (smRef(smId("object")) = args.empty() ? Object() : args.front());
                         Object selfObj = ref, func;
                         Function* ptr;
 
