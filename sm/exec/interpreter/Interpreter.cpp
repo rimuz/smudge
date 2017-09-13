@@ -35,7 +35,7 @@
 
 #define _OcCase(OpCode, FuncName) \
     case compile::OpCode:{ \
-        FuncName(*this, addr); \
+        FuncName(*this, inst); \
         break; \
     }
 
@@ -46,14 +46,9 @@ namespace sm{
 
     namespace exec{
         Object Interpreter::start(){
-            while(!funcStack.empty()){
-                if(funcStack.back().inlined){
-                    funcStack.pop_back();
-                    break;
-                }
-
-                ByteCode_t::const_iterator& addr = funcStack.back().addr;
-                switch(*addr){
+            while(!doReturn){
+                std::array<uint8_t, 5> inst = fetch(pc);
+                switch(inst[0]){
                     _OcCase(NOP, Nop);
                     _OcCase(POP, Pop);
                     _OcCase(IS_NULL, IsNull);
@@ -147,11 +142,13 @@ namespace sm{
                     default: {
                         rt->sources.printStackTrace(*this, error::ET_FATAL_ERROR,
                             std::string("unsupported instruction's opcode (")
-                            + std::to_string(static_cast<unsigned>(*addr)) + ").");
+                            + std::to_string(inst[0]) + ").");
                     }
                 }
             }
 
+            doReturn = false;
+            std::lock_guard<std::mutex> lock(stacks_m);
             Object obj(std::move(exprStack.back()));
             runtime::invalidate(obj);
             exprStack.pop_back();
@@ -170,9 +167,8 @@ namespace sm{
 
         void Interpreter::makeCall(Function* fn, const ObjectVec_t& args,
                 const Object& self, bool inlined){
-            if(inlined){
-                funcStack.emplace_back();
-                funcStack.back().inlined = true;
+            if(!funcStack.empty()){
+                funcStack.back().pc = pc;
             }
 
             if(self.type == ObjectType::INSTANCE_CREATOR){
@@ -221,6 +217,7 @@ namespace sm{
 
                 // pushing the newly created instance on the stack.
                 runtime::validate(exprStack, std::move(self));
+                doReturn = inlined;
             } else if(fn->flags & FF_NATIVE){
                 Object ret = (*fn->native_ptr)(*this, fn, self, args);
                 if(ret.type == ObjectType::WEAK_REFERENCE){
@@ -229,7 +226,9 @@ namespace sm{
                     ret.type = ObjectType::WEAK_REFERENCE;
                 }
                 runtime::validate(exprStack, std::move(ret));
+                doReturn = inlined;
             } else {
+                std::lock_guard<std::mutex> lock(stacks_m);
                 funcStack.emplace_back();
                 funcStack.back().codeBlocks.reserve(5);
                 size_t address = 0;
@@ -283,9 +282,10 @@ namespace sm{
 
                 CallInfo_t& backInfo = funcStack.back();
                 backInfo.function = fn;
-                backInfo.addr = rt->code.begin() + address;
                 backInfo.box = rt->boxes[fn->boxName];
                 backInfo.thisObject = self;
+                backInfo.inlined = inlined;
+                pc = address;
 
                 runtime::validate(self);
                 runtime::validate_all(args);
