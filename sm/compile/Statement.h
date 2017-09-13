@@ -41,7 +41,7 @@ namespace sm{
             // *** STATEMENTS WITH LENGTH = 1 BYTE:
 
             // do nothing
-            NOP,
+            NOP = 0,
 
             // pop the TOS
             POP,
@@ -131,7 +131,7 @@ namespace sm{
              * Push CLASS value on the top of the stack.
             */
             PUSH_CLASS,
-            
+
             /*
              * Set TOS = TOS.iterate().
             */
@@ -169,7 +169,7 @@ namespace sm{
             /*
             * close 'param' blocks.
             */
-            END_BLOCKS,
+            END_BLOCKS = 0x40,
 
             /*
              * push values on the tos.
@@ -359,7 +359,7 @@ namespace sm{
             * imports 'param0' box with name 'param1':
             * if the box is unitialized, '<init>()' and 'new()' are called.
             */
-            IMPORT,
+            IMPORT = 0xC0,
 
             INVALID_OPCODE,
 
@@ -367,6 +367,8 @@ namespace sm{
             OPERATORS_START = ADD,
         };
 
+        static_assert (MAX_OPCODE_1BYTE < 0x40, "too many statements of size 1");
+        static_assert (MAX_OPCODE_3BYTE >= 0x40 && MAX_OPCODE_3BYTE < 0x80, "too many statements of size 3");
         static_assert (INVALID_OPCODE <= 0x100, // not 0xff, because INVALID_OPCODE is equal to max +1
             "statement opcodes mustn't be longer than 1 Byte.");
     }
