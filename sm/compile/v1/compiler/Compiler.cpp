@@ -87,10 +87,13 @@ namespace sm{
                     _rt->sources.msg(error::ET_FATAL_ERROR,
                         std::string("cannot open file '") + filePath + "'.");
                 _rt->sources.newSource(src);
+                _rt->boxes.emplace_back(nullptr);
             }
 
-            void Compiler::source(error::CodeSource* source){
+            void Compiler::source(string_t name, error::CodeSource* source){
                 _rt->sources.newSource(source);
+                _rt->boxNames.emplace_back(std::move(name));
+                _rt->boxes.emplace_back(nullptr);
             }
 
             void Compiler::path(const string_t& path){
@@ -183,10 +186,12 @@ namespace sm{
             }
 
             void Compiler::code(string_t name, string_t* code){
-                _rt->boxNames.emplace_back(name);
                 error::CodeSource* src = new error::CodeSource;
                 src->sourceName = std::move(name);
                 src->code = code;
+
+                _rt->boxNames.emplace_back(name);
+                _rt->boxes.emplace_back(nullptr);
                 _rt->sources.newSource(src);
             }
 
@@ -251,8 +256,8 @@ namespace sm{
                 states.end = tokens.end();
 
                 states.currBox = new Class;
-                states.currBox->boxName = _rt->boxes.size();
-                _rt->boxes.push_back(states.currBox);
+                states.currBox->boxName = _nfile;
+                _rt->boxes[_nfile] = states.currBox;
 
                 it = tokens.begin();
 
