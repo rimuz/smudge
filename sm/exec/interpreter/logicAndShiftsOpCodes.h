@@ -30,9 +30,9 @@ namespace sm{
         template <const char Operator[]>
         class _OcFloatError {
         public:
-            const Interpreter* intp;
+            Interpreter* intp;
 
-            _OcFloatError(const Interpreter& in) : intp(&in) {}
+            _OcFloatError(Interpreter& in) : intp(&in) {}
 
             inline float operator() (float_t a, float_t b){
                 intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
@@ -49,7 +49,7 @@ namespace sm{
         constexpr char right_shift_str[] = ">>";
 
         _OcFunc(Or){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -58,7 +58,7 @@ namespace sm{
         }
 
         _OcFunc(And){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -67,7 +67,7 @@ namespace sm{
         }
 
         _OcFunc(Xor){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -76,7 +76,7 @@ namespace sm{
         }
 
         _OcFunc(LeftShift){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -85,7 +85,7 @@ namespace sm{
         }
 
         _OcFunc(RightShift){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -94,29 +94,27 @@ namespace sm{
         }
 
         _OcFunc(LogicAnd){
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             Object tos = intp.exprStack.back();
             _OcValue(tos);
 
             if(!runtime::implicitToBool(tos)){
-                addr += (*++addr << 8) | *++addr;
+                intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
                 return;
             }
-
-            addr += 3;
             intp.exprStack.pop_back();
         }
 
         _OcFunc(LogicOr){
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             Object tos = intp.exprStack.back();
             _OcValue(tos);
 
             if(!runtime::implicitToBool(tos)){
-                addr += 3;
                 intp.exprStack.pop_back();
                 return;
             }
-
-            addr += (*++addr << 8) | *++addr;
+            intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
         }
     }
 }

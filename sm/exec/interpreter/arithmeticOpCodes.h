@@ -30,7 +30,7 @@
 namespace sm{
     namespace exec{
         _OcFunc(Add){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -39,7 +39,7 @@ namespace sm{
         }
 
         _OcFunc(Sub){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -48,7 +48,7 @@ namespace sm{
         }
 
         _OcFunc(Mul){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -57,7 +57,7 @@ namespace sm{
         }
 
         _OcFunc(Div){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -70,7 +70,7 @@ namespace sm{
         }
 
         _OcFunc(Mod){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);

@@ -13,7 +13,7 @@
  *      See the License for the specific language governing permissions and
  *      limitations under the License.
  *
- *      File exec/interpreter/jumpOpCodes.h
+ *      File exec/interpreter/jumpOintp.pcodes.h
  *
 */
 
@@ -30,93 +30,81 @@ namespace sm{
 
     namespace exec{
         _OcFunc(JumpF){
-            addr += (*++addr << 8) | *++addr;
+            intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
         }
 
         _OcFunc(JumpB){
-            addr -= (*++addr << 8) | *++addr;
+            intp.pc -= ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) +1;
         }
 
         _OcFunc(JumpIfF){
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
-            if(runtime::implicitToBool(tos)){
-                addr += (*++addr << 8) | *++addr;
-                return;
-            }
-
-            addr += 3;
+            if(runtime::implicitToBool(tos))
+                intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
         }
 
         _OcFunc(JumpIfB){
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
-            if(runtime::implicitToBool(tos)){
-                addr -= (*++addr << 8) | *++addr;
-                return;
-            }
-
-            addr += 3;
+            if(runtime::implicitToBool(tos))
+                intp.pc -= ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) +1;
         }
 
         _OcFunc(JumpIfNotF){
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
-            if(!runtime::implicitToBool(tos)){
-                addr += (*++addr << 8) | *++addr;
-                return;
-            }
-
-            addr += 3;
+            if(!runtime::implicitToBool(tos))
+                intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
         }
 
         _OcFunc(JumpIfNotB){
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
-            if(!runtime::implicitToBool(tos)){
-                addr -= (*++addr << 8) | *++addr;
-                return;
-            }
-
-            addr += 3;
+            if(!runtime::implicitToBool(tos))
+                intp.pc -= ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) +1;
         }
 
         _OcFunc(Elvis){
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             const Object& tos = intp.exprStack.back();
 
             if(tos.type == ObjectType::NONE){
                 intp.exprStack.pop_back();
-                addr += 3;
                 return;
             }
-            addr += (*++addr << 8) | *++addr;
+            intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
         }
 
         _OcFunc(SwitchCase){
-            ByteCode_t::const_iterator dummy;
-            Dup1(intp, dummy);
-            Equal(intp, dummy);
+            Dup1(intp, {});
+            Equal(intp, {});
 
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
             if(!runtime::implicitToBool(tos)){
-                addr += (*++addr << 8) | *++addr;
+                intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
                 return;
             }
-
-            addr += 3;
         }
 
         _OcFunc(ForeachCheck){
+            intp.stacks_m.lock();
             Object& tos = intp.exprStack.back();
             ObjectVec_t* vec;
 
             if(!hasVector(intp, tos, vec) || vec->size() != 2){
+                intp.stacks_m.unlock();
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "'next()' must return a list or a tuple of size 2.");
             }
@@ -124,7 +112,8 @@ namespace sm{
             ObjectVec_t::iterator end = intp.exprStack.end();
             if(!runtime::implicitToBool((*vec)[1])){
                 intp.exprStack.erase(end -4, end);
-                addr += (*++addr << 8) | *++addr;
+                intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
+                intp.stacks_m.unlock();
                 return;
             }
 
@@ -137,12 +126,11 @@ namespace sm{
 
             *(end -4)->o_ptr = std::move(obj);
             intp.exprStack.pop_back();
-            addr += 3;
+            intp.stacks_m.unlock();
         }
 
         _OcFunc(ThrowException){
             // TODO
-            ++addr;
         }
     }
 }
