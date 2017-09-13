@@ -30,8 +30,6 @@
 #include "sm/runtime/Object.h"
 #include "sm/typedefs.h"
 
-int main(int argc, char** argv);
-
 namespace sm {
     namespace parse{
         struct Token;
@@ -221,7 +219,7 @@ namespace sm {
                 Compiler& operator=(Compiler&&) = delete;
 
                 void source(string_t filePath);
-                void source(error::CodeSource* source);
+                void source(string_t name, error::CodeSource* source);
                 void code(string_t name, string_t* code);
 
                 void path(const string_t& path);
