@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <tuple>
+#include <limits>
 
 #include "sm/compile/v1/Compiler.h"
 #include "sm/compile/Statement.h"
@@ -70,6 +71,12 @@ namespace sm{
                             states.output->push_back(PUSH_INT_0);
                         } else if(it->i == 1){
                             states.output->push_back(PUSH_INT_1);
+                        } else if(it->i > std::numeric_limits<int16_t>::min()
+                                && it->i < std::numeric_limits<int16_t>::max()){
+                            int16_t val = static_cast<int16_t>(it->i);
+                            states.output->insert(states.output->end(), {
+                                PUSH_INT_VALUE, bc(val >> 8), bc(val & 0xFF)
+                            });
                         } else {
                             IntsMap_t::const_iterator n_it = _ints.find(it->i);
                             unsigned idx;
