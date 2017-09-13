@@ -98,9 +98,10 @@ namespace sm{
         }
     }
 
-    void Sources::printStackTrace(const exec::Interpreter& intp, enum_t errType, const std::string& msg) noexcept{
+    void Sources::printStackTrace(exec::Interpreter& intp, enum_t errType, const std::string& msg) noexcept{
         std::cerr << errorMessages[errType] << msg << std::endl;
 
+        std::lock_guard<std::mutex> lock(intp.stacks_m);
         for(exec::CallStack_t::const_reverse_iterator it = intp.funcStack.rbegin();
                 it != intp.funcStack.rend(); ++it){
             std::cerr << "\tat ";
