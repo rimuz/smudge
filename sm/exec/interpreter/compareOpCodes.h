@@ -30,12 +30,15 @@
             if(tos.type == ObjectType::INTEGER){ \
                 tos1.i = tos1.i Operator tos.i; \
                 intp.exprStack.emplace_back(std::move(tos1)); \
+                intp.stacks_m.unlock(); \
                 return; \
             } else if(tos.type == ObjectType::FLOAT){ \
                 tos1.i = tos1.i Operator tos.f; \
                 intp.exprStack.emplace_back(std::move(tos1)); \
+                intp.stacks_m.unlock(); \
                 return; \
             } else { \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <int> and ") \
@@ -45,13 +48,16 @@
             if(tos.type == ObjectType::INTEGER){ \
                 tos.i = tos1.f Operator tos.i; \
                 intp.exprStack.emplace_back(std::move(tos)); \
+                intp.stacks_m.unlock(); \
                 return; \
             } else if(tos.type == ObjectType::FLOAT){ \
                 tos.type = ObjectType::INTEGER; \
                 tos.i = tos1.f Operator tos.f; \
                 intp.exprStack.emplace_back(std::move(tos)); \
+                intp.stacks_m.unlock(); \
                 return; \
             } else { \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <float> and ") \
@@ -62,6 +68,7 @@
             Object op; \
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
+            intp.stacks_m.unlock(); \
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos1, op, id)){ \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
@@ -80,6 +87,7 @@
             Object op; \
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
+            intp.stacks_m.unlock(); \
             if(!runtime::find<ObjectType::STRING>(tos1, op, id)){ \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
@@ -99,6 +107,7 @@
             Object self; \
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
+            intp.stacks_m.unlock(); \
             if(!runtime::find<ObjectType::BOX>(tos1, op, id)){ \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
@@ -113,6 +122,7 @@
             return; \
         } \
         default: \
+            intp.stacks_m.unlock(); \
             intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                 std::string("cannot find 'operator" #Operator "' in ") \
                 + runtime::errorString(intp, tos1)); \
@@ -121,7 +131,7 @@
 namespace sm{
     namespace exec{
         _OcFunc(IsNull){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcValue(tos);
 
@@ -130,10 +140,11 @@ namespace sm{
             obj.i = tos.type == ObjectType::NONE;
 
             intp.exprStack.emplace_back(std::move(obj));
+            intp.stacks_m.unlock();
         }
 
         _OcFunc(Equal){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore2;
             _OcValue(tos1);
             _OcValue(tos);
@@ -141,7 +152,7 @@ namespace sm{
         }
 
         _OcFunc(NotEqual){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore2;
             _OcValue(tos1);
             _OcValue(tos);
@@ -149,7 +160,7 @@ namespace sm{
         }
 
         _OcFunc(Greater){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore2;
             _OcValue(tos1);
             _OcValue(tos);
@@ -157,7 +168,7 @@ namespace sm{
         }
 
         _OcFunc(GreaterOrEqual){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore2;
             _OcValue(tos1);
             _OcValue(tos);
@@ -165,7 +176,7 @@ namespace sm{
         }
 
         _OcFunc(Less){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore2;
             _OcValue(tos1);
             _OcValue(tos);
@@ -173,7 +184,7 @@ namespace sm{
         }
 
         _OcFunc(LessOrEqual){
-            ++addr;
+            intp.stacks_m.lock();
             _OcPopStore2;
             _OcValue(tos1);
             _OcValue(tos);

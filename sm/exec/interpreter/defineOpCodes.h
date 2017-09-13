@@ -28,8 +28,8 @@
 namespace sm{
     namespace exec{
         _OcFunc(DefineVar){
-            unsigned id = ((*++addr << 8) | *++addr) + runtime::idsStart;
-            ++addr;
+            intp.stacks_m.lock();
+            unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
 
             _OcPopStore(tos);
             _OcSimplifyRef(tos);
@@ -40,6 +40,7 @@ namespace sm{
             ObjectDict_t::const_iterator it = dict->find(id);
 
             if(it != dict->end()){
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + "' in the same scope");
@@ -49,11 +50,12 @@ namespace sm{
             ref.o_ptr = &((*dict)[id] = tos);
             ref.type = ObjectType::WEAK_REFERENCE;
             intp.exprStack.emplace_back(std::move(ref));
+            intp.stacks_m.unlock();
         }
 
         _OcFunc(DefineGlobalVar){
-            unsigned id = ((*++addr << 8) | *++addr) + runtime::idsStart;
-            ++addr;
+            intp.stacks_m.lock();
+            unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
 
             _OcPopStore(tos);
             _OcSimplifyRef(tos);
@@ -64,6 +66,7 @@ namespace sm{
             ObjectDict_t::const_iterator it = dict.find(id);
 
             if(it != dict.end()){
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + (back.thisObject.type == ObjectType::NONE ?
@@ -79,18 +82,20 @@ namespace sm{
             ref.o_ptr = &(dict[id] = tos);
             ref.type = ObjectType::WEAK_REFERENCE;
             intp.exprStack.emplace_back(std::move(ref));
+            intp.stacks_m.unlock();
         }
 
         _OcFunc(DefineNullVar){
-            unsigned id = ((*++addr << 8) | *++addr) + runtime::idsStart;
-            ++addr;
+            unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
 
+            intp.stacks_m.lock();
             ObjectDict_t*& dict = intp.funcStack.back().codeBlocks.back();
             if(!dict)
                 dict = new ObjectDict_t;
             ObjectDict_t::const_iterator it = dict->find(id);
 
             if(it != dict->end()){
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + "' in the same scope");
@@ -101,18 +106,20 @@ namespace sm{
             ref.o_ptr = &((*dict)[id] = Object());
             ref.type = ObjectType::WEAK_REFERENCE;
             intp.exprStack.emplace_back(std::move(ref));
+            intp.stacks_m.unlock();
         }
 
         _OcFunc(DefineGlobalNullVar){
-            unsigned id = ((*++addr << 8) | *++addr) + runtime::idsStart;
-            ++addr;
+            unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
 
+            intp.stacks_m.lock();
             auto& back = intp.funcStack.back();
             ObjectDict_t& dict = back.thisObject.type == ObjectType::NONE ?
                 back.box->objects : back.thisObject.i_ptr->objects;
             ObjectDict_t::const_iterator it = dict.find(id);
 
             if(it != dict.end()){
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + (back.thisObject.type == ObjectType::NONE ?
@@ -128,6 +135,7 @@ namespace sm{
             ref.o_ptr = &(dict[id] = Object());
             ref.type = ObjectType::WEAK_REFERENCE;
             intp.exprStack.emplace_back(std::move(ref));
+            intp.stacks_m.unlock();
         }
     }
 }

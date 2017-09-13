@@ -24,7 +24,7 @@
 #include "sm/runtime/Object.h"
 #include "sm/exec/Interpreter.h"
 
-#define _OcFunc(Name) inline void Name(sm::exec::Interpreter& intp, ByteCode_t::const_iterator& addr) noexcept
+#define _OcFunc(Name) inline void Name(sm::exec::Interpreter& intp, std::array<uint8_t, 5> inst) noexcept
 
 #define _OcPopStore(Name) \
     sm::Object Name = std::move(intp.exprStack.back()); \
@@ -55,12 +55,15 @@
         case ObjectType::INTEGER: \
             if(tos.type == ObjectType::INTEGER){ \
                 tos1.i = tos1.i Operator tos.i; \
+                intp.stacks_m.unlock(); \
                 break; \
             } else if(tos.type == ObjectType::FLOAT){ \
                 tos1.type = ObjectType::FLOAT; \
                 tos1.f = OperatorFloat(tos1.i, tos.f); \
+                intp.stacks_m.unlock(); \
                 break; \
             } else { \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <int> and ") \
@@ -69,11 +72,14 @@
         case ObjectType::FLOAT: \
             if(tos.type == ObjectType::INTEGER){ \
                 tos1.f = OperatorFloat(tos1.f, tos.i); \
+                intp.stacks_m.unlock(); \
                 break; \
             } else if(tos.type == ObjectType::FLOAT){ \
                 tos1.f = OperatorFloat(tos1.f, tos.f); \
+                intp.stacks_m.unlock(); \
                 break; \
             } else { \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <float> and ") \
@@ -85,10 +91,12 @@
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos1, op, id)){ \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, tos1, op_ptr)){ \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
@@ -97,6 +105,7 @@
             Object instance = std::move(tos1); \
             runtime::invalidate(instance); \
             intp.exprStack.pop_back(); \
+            intp.stacks_m.unlock(); \
             intp.makeCall(op_ptr, args, instance, Inline); \
             Do; \
             break; \
@@ -108,16 +117,19 @@
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
             if(!runtime::find<ObjectType::BOX>(tos1, op, id)){ \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, self, op_ptr)){ \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
             } \
             intp.exprStack.pop_back(); \
+            intp.stacks_m.unlock(); \
             intp.makeCall(op_ptr, args, self, Inline); \
             Do; \
             break; \
@@ -128,10 +140,12 @@
             Function* op_ptr = nullptr; \
             ObjectVec_t args = { tos }; \
             if(!runtime::find<ObjectType::STRING>(tos1, op, id)){ \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, tos1, op_ptr)){ \
+                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
@@ -139,11 +153,13 @@
             } \
             Object str = std::move(tos1); \
             intp.exprStack.pop_back(); \
+            intp.stacks_m.unlock(); \
             intp.makeCall(op_ptr, args, str, Inline); \
             Do; \
             break; \
         } \
         default: \
+            intp.stacks_m.unlock(); \
             intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                 std::string("cannot find 'operator" #Operator "' in ") \
                 + runtime::errorString(intp, tos1)); \
