@@ -60,7 +60,7 @@ namespace sm {
         void msg(enum_t errType, unsigned source, unsigned ln, unsigned ch, const std::string& msg) noexcept;
         void msg(enum_t errType, const std::string& msg) noexcept;
 
-        void printStackTrace(const exec::Interpreter& intp, enum_t errType, const std::string& msg) noexcept;
+        void printStackTrace(exec::Interpreter& intp, enum_t errType, const std::string& msg) noexcept;
     };
 
     constexpr const char* errorMessages[]{
