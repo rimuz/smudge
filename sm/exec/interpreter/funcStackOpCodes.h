@@ -27,51 +27,79 @@
 
 namespace sm{
     namespace exec{
-        _OcFunc(Nop){
-            ++addr;
-        }
+        _OcFunc(Nop){}
 
         _OcFunc(StartBlock){
-            ++addr;
+            std::lock_guard<std::mutex> lock(intp.stacks_m);
             intp.funcStack.back().codeBlocks.emplace_back(nullptr);
         }
 
         _OcFunc(EndBlock){
-            ++addr;
+            intp.stacks_m.lock();
             ObjectDict_t* ptr = intp.funcStack.back().codeBlocks.back();
-            if(ptr)
-                delete ptr;
+            if(ptr){
+                intp.stacks_m.unlock();
+                delete ptr; // TODO TODO TODO TODO TODO TODO
+                intp.stacks_m.lock();
+            }
             intp.funcStack.back().codeBlocks.pop_back();
+            intp.stacks_m.unlock();
         }
 
         _OcFunc(Return){
+            intp.stacks_m.lock();
             Object& back = intp.exprStack.back();
+            bool wasInlined = intp.funcStack.back().inlined, empty = intp.funcStack.size() == 1;
+
             if(back.type == ObjectType::WEAK_REFERENCE){
                 back = back.refGet();
             } else if(back.type == ObjectType::STRONG_REFERENCE){
                 back.type = ObjectType::WEAK_REFERENCE;
             }
 
-            ObjectDictVec_t& dictVec = intp.funcStack.back().codeBlocks;
+            // copying TODO TODO TODO TODO TODO TODO TODO
+            ObjectDictVec_t dictVec = intp.funcStack.back().codeBlocks;
+            intp.stacks_m.unlock();
             for(ObjectDictVec_t::iterator it = dictVec.begin(); it != dictVec.end(); ++it){
                 delete *it;
             }
+
+            intp.stacks_m.lock();
             intp.funcStack.pop_back();
+
+            if(!empty){
+                intp.pc = intp.funcStack.back().pc;
+            }
+
+            intp.stacks_m.unlock();
+            intp.doReturn = wasInlined || empty;
         }
 
         _OcFunc(ReturnNull){
-            ObjectDictVec_t& dictVec = intp.funcStack.back().codeBlocks;
+            intp.stacks_m.lock();
+            ObjectDictVec_t dictVec = intp.funcStack.back().codeBlocks;
+            bool wasInlined = intp.funcStack.back().inlined, empty = intp.funcStack.size() == 1;
+            intp.funcStack.pop_back();
+            intp.stacks_m.unlock();
+
             for(ObjectDictVec_t::iterator it = dictVec.begin(); it != dictVec.end(); ++it){
                 delete *it;
             }
-            intp.funcStack.pop_back();
+
+            intp.stacks_m.lock();
             intp.exprStack.emplace_back(Object());
+            intp.stacks_m.unlock();
+
+            intp.doReturn = wasInlined || empty;
+            if(!empty){
+                intp.pc = intp.funcStack.back().pc;
+            }
         }
 
         _OcFunc(EndBlocks){
-            unsigned param = (*++addr << 8) | *++addr;
-            ++addr;
+            unsigned param = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
 
+            intp.stacks_m.lock();
             ObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
             ObjectDictVec_t::iterator end = vec.end();
             ObjectDictVec_t::iterator last = end - param;
@@ -86,23 +114,20 @@ namespace sm{
 
         _OcFunc(Try){
             // TODO
-            addr += 3;
         }
 
         _OcFunc(Catch){
             // TODO
-            addr += 3;
         }
 
         _OcFunc(Finally){
             // TODO
-            addr += 3;
         }
 
         _OcFunc(CallFunction){
-            unsigned param = (*++addr << 8) | *++addr;
-            ++addr;
+            unsigned param = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
 
+            intp.stacks_m.lock();
             ObjectVec_t::iterator end = intp.exprStack.end();
             Object func = *(end - (param+1));
             runtime::invalidate(func);
@@ -123,6 +148,7 @@ namespace sm{
             Object self;
             Object obj = func;
             _OcValue(obj);
+            intp.stacks_m.unlock();
 
             if(runtime::callable(obj, self, func_ptr)){
                 intp.makeCall(func_ptr, args, self);
@@ -134,14 +160,15 @@ namespace sm{
         }
 
         _OcFunc(PerformBracing){
-            unsigned param = (*++addr << 8) | *++addr;
-            ++addr;
+            unsigned param = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
 
+            intp.stacks_m.lock();
             ObjectVec_t::iterator end = intp.exprStack.end();
             Object tosX = *(end - (param+1));
             Function* func_ptr;
 
             ObjectVec_t args(end - param, end);
+            runtime::invalidate_all(args);
             intp.exprStack.erase(end - (param+1), end);
 
             for(Object& obj : args){
@@ -155,25 +182,16 @@ namespace sm{
             Object self;
             Object func;
             _OcValue(tosX);
+            runtime::invalidate(tosX);
+            intp.stacks_m.unlock();
 
-            switch(tosX.type){
-                case ObjectType::BOX:
-                    if(runtime::find<ObjectType::BOX>(tosX, func, runtime::squareId))
-                        break;
-
-                case ObjectType::CLASS_INSTANCE:
-                    if(runtime::find<ObjectType::CLASS_INSTANCE>(tosX, func, runtime::squareId)){
-                        self = tosX;
-                        break;
-                    }
-
-                default:
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                        std::string("cannot invoke 'operator[]()' in ")
-                        + runtime::errorString(intp, tosX));
+            if(!runtime::find_any(tosX, func, runtime::squareId)){
+                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                    std::string("cannot invoke 'operator[]()' in ")
+                    + runtime::errorString(intp, tosX));
             }
 
-            if(runtime::callable(func, self, func_ptr)){
+            if(runtime::callable(func, self = tosX, func_ptr)){
                 intp.makeCall(func_ptr, args, self);
             } else {
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
@@ -183,15 +201,16 @@ namespace sm{
         }
 
         _OcFunc(Import){
-            unsigned box = (*++addr << 8) | *++addr;
-            unsigned nameId = runtime::idsStart + ((*++addr << 8) | *++addr);
-            ++addr;
+            unsigned box = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
+            unsigned nameId = runtime::idsStart + ((static_cast<uint16_t>(inst[3]) << 8) | inst[4]);
 
             Object imported;
             imported.type = ObjectType::BOX;
             imported.c_ptr = intp.rt->boxes[box];
 
+            intp.stacks_m.lock();
             ObjectDict_t& dict = intp.funcStack.back().box->objects;
+            intp.stacks_m.unlock();
             ObjectDict_t::const_iterator it = dict.find(nameId);
 
             if(it != dict.end()){
@@ -200,7 +219,6 @@ namespace sm{
                     + "' because it's redefining variable, function or class named '" + intp.rt->nameFromId(nameId)
                     + "'");
             }
-
             dict.insert({nameId, imported});
 
             if(!imported.c_ptr->isInitialized){
