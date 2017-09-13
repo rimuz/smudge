@@ -794,7 +794,7 @@ namespace sm{
                 smMethod(pop_front, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     if(!vec.empty()){
-                        Object back = std::move(vec.back());
+                        Object back = std::move(vec.front());
                         vec.erase(vec.begin());
                         return back;
                     }
@@ -1017,10 +1017,10 @@ namespace sm{
 
                 smMethod(sort, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    if(!args.empty() || runtime::implicitToBool(args[0]))
-                        std::sort(vec.rbegin(), vec.rend(), runtime::BinaryLess(intp));
-                    else
+                    if(args.empty() || !runtime::implicitToBool(args[0]))
                         std::sort(vec.begin(), vec.end(), runtime::BinaryLess(intp));
+                    else
+                        std::sort(vec.rbegin(), vec.rend(), runtime::BinaryLess(intp));
                     return Object();
                 })
 
