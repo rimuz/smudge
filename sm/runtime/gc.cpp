@@ -274,19 +274,16 @@ namespace sm{
     }
 
     void Instance::free(bool isGc) noexcept {
-        if(deleting)
+        bool cantWork = !isGc && rt.gc.gcWorking;
+        if(deleting || cantWork)
             return;
-        destroy();
-        if(isGc && rt.gc.gcWorking){
-            (temporary ? rt.gc.tempInstances : rt.gc.instances).erase(it);
+        if(isGc){
+            rt.gc.instances.erase(it);
         } else {
-            if(temporary){
-                std::lock_guard<std::mutex> lock(rt.gc.tempInstances_m);
-                rt.gc.tempInstances.erase(it);
-            } else {
-                std::lock_guard<std::mutex> lock(rt.gc.instances_m);
-                rt.gc.instances.erase(it);
-            }
+            if(callDelete)
+                destroy();
+            std::lock_guard<std::mutex> lock(rt.gc.instances_m);
+            rt.gc.instances.erase(it);
         }
     }
 
@@ -321,10 +318,7 @@ namespace sm{
 
     namespace runtime{
         void validate(Instance* i) noexcept{
-            if(i && i->temporary){
-                GarbageCollector& gc = i->rt.gc;
-                std::lock_guard<std::mutex> lock1(gc.instances_m), lock2(gc.tempInstances_m);
-                gc.tempInstances.splice(gc.tempInstances.end(), gc.instances, i->it);
+            if(i){
                 i->temporary = false;
             }
         }
@@ -354,10 +348,7 @@ namespace sm{
         }
 
         void invalidate(Instance* i) noexcept{
-            if(i && !i->temporary){
-                GarbageCollector& gc = i->rt.gc;
-                std::lock_guard<std::mutex> lock1(gc.instances_m), lock2(gc.tempInstances_m);
-                gc.instances.splice(gc.instances.end(), gc.tempInstances, i->it);
+            if(i){
                 i->temporary = true;
             }
         }
@@ -390,9 +381,10 @@ namespace sm{
                 collect();
             }
 
-            tempInstances.emplace_back(*_intp.rt, _base, true);
-            InstanceList_t::iterator it = std::prev(tempInstances.end());
+            instances.emplace_back(*_intp.rt, _base, true);
+            InstanceList_t::iterator it = std::prev(instances.end());
             it->it = it; // this line made my day :D
+            it->temporary = true;
 
             Object obj;
             obj.type = ObjectType::CLASS_INSTANCE;
@@ -431,10 +423,19 @@ namespace sm{
             }
         }
 
-        inline void loadVec(InstanceList_t& list, IPVec_t& vec){
+        inline void loadTemp(InstanceList_t& list, IPVec_t& vec){
             vec.reserve(list.size());
             for(Instance& inst : list){
-                vec.emplace_back(&inst);
+                if(inst.temporary)
+                    vec.emplace_back(&inst);
+            }
+        }
+
+        inline void loadNonTemp(InstanceList_t& list, IPVec_t& vec){
+            vec.reserve(list.size());
+            for(Instance& inst : list){
+                if(!inst.temporary)
+                    vec.emplace_back(&inst);
             }
         }
 
@@ -451,15 +452,14 @@ namespace sm{
         */
 
         void GarbageCollector::collect(){
-            std::lock_guard<std::mutex> lock1(instances_m), lock2(tempInstances_m),
-                lock3(_rt->threads_m);
+            std::lock_guard<std::mutex> lock1(instances_m), lock2(_rt->threads_m);
             IPVec_t white, gray;
             CPVec_t classes;
             MPVec_t methods;
             gcWorking = true;
 
-            loadVec(instances, white);
-            loadVec(tempInstances, gray);
+            loadTemp(instances, white);
+            loadNonTemp(instances, gray);
 
             // searching in the ROOTs
             for(auto* box : _rt->boxes){
@@ -475,6 +475,7 @@ namespace sm{
                 for(auto& obj : thread.data->args)
                     whiteToGray(white, gray, classes, methods, obj);
 
+                std::lock_guard<std::mutex> lock(intp.stacks_m);
                 for(Object& obj : intp.exprStack)
                     whiteToGray(white, gray, classes, methods, obj);
 
@@ -563,26 +564,15 @@ namespace sm{
             sharedLibs.clear();
         }
 
+        void Runtime_t::freeData() {
+            for(auto* box : boxes)
+                delete box;
+            boxes.clear();
+        }
+
         Runtime_t::~Runtime_t() {
-            gc.gcWorking = true;
-            {
-                std::lock_guard<std::mutex> lock(threads_m);
-                for(auto& thread : threads){
-                    exec::Interpreter& intp = thread.data->intp;
-                    intp.exprStack.clear();
-
-                    for(exec::CallInfo_t& callInfo : intp.funcStack)
-                        for(ObjectDict_t* dict : callInfo.codeBlocks)
-                            if(dict) delete dict;
-                    intp.funcStack.clear();
-                }
-                for(auto* box : boxes)
-                    delete box;
-                boxes.clear();
-            }
-
             freeLibraries();
-
+            gc.gcWorking = true;
             // keeping gcWorking true
         }
 
