@@ -155,6 +155,7 @@ namespace sm{
                                             error::CodeSource* src = readf(path + ".sm");
                                             if(src){
                                                 _rt->sources.newSource(src);
+                                                _rt->boxes.push_back(nullptr);
                                                 found = true;
                                                 break;
                                             } else {
@@ -164,12 +165,12 @@ namespace sm{
                                                     if(!box)
                                                         _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                             std::string("dynamic library '") + path + "' is not a Smudge native box.");
-                                                    found = true;
                                                     _rt->boxNames.back().push_back('!');
                                                     _rt->boxes.push_back(box);
                                                     _rt->sources.newSource(nullptr);
+                                                    found = true;
+                                                    break;
                                                 }
-                                                break;
                                             }
                                         }
 
