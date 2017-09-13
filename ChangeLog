@@ -3,7 +3,6 @@ v0.2.4
     - partial std.thread box implementation
     - refactoring of Interpreter/GC with mutex locks
     - bug fixed (3/3 units passed)
-    - added 
 
 v0.2.3
     ???
