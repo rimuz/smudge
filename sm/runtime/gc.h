@@ -51,7 +51,6 @@ namespace sm{
 
 
     namespace runtime {
-        void validate(Instance* i) noexcept;
         void validate(const Object& obj) noexcept;
         void validate_all(const ObjectVec_t& vec) noexcept;
 
@@ -76,8 +75,8 @@ namespace sm{
             void collect();
 
         public:
-            InstanceList_t instances, tempInstances;
-            std::mutex instances_m, tempInstances_m;
+            InstanceList_t instances;
+            std::mutex instances_m;
             std::atomic_uint allocs;
             unsigned threshold;
             bool gcWorking;
@@ -110,8 +109,11 @@ namespace sm{
 
             std::mutex threads_m;
             exec::ThreadVec_t threads;
+
             exec::Interpreter* main_intp = nullptr;
             static std::thread::id main_id;
+            std::atomic_uint n_threads; // main thread is not counted
+
             exec::Interpreter* getCurrentThread() noexcept;
 
             std::vector<integer_t>      intConstants;
@@ -129,7 +131,7 @@ namespace sm{
             static std::vector<void*>          sharedLibs;
             #endif
 
-            Runtime_t() : gc(this) {};
+            Runtime_t() : gc(this), n_threads(0) {};
 
             Runtime_t(const Runtime_t&) = delete;
             Runtime_t(Runtime_t&&) = default;
@@ -138,6 +140,7 @@ namespace sm{
 
             string_t nameFromId(unsigned id) const;
             static void freeLibraries() noexcept;
+            void freeData();
 
             ~Runtime_t();
         };
