@@ -75,7 +75,7 @@ int main(int argc, char** argv){
     runtime::Runtime_t::main_id = std::this_thread::get_id();
 
     int firstArg = argc;
-    bool printPaths = false;
+    bool printPaths = false, callInit = true, callNew = true, callMain = true;
 
     for(int i = 1; i != argc; ++i){
         if(*argv[i] == '-'){
@@ -109,6 +109,12 @@ int main(int argc, char** argv){
             } else if(!std::strcmp(argv[i], "v") || !std::strcmp(argv[i], "-version")){
                 std::cout << sm_version << std::endl;
                 return 0;
+            } else if(!std::strcmp(argv[i], "wi") || !std::strcmp(argv[i], "-without-init")){
+                callInit = false;
+            } else if(!std::strcmp(argv[i], "wn") || !std::strcmp(argv[i], "-without-new")){
+                callNew = false;
+            } else if(!std::strcmp(argv[i], "wm") || !std::strcmp(argv[i], "-without-main")){
+                callMain = false;
             } else { // includes also -h & --help cases!
                 printUsage();
                 return 0;
@@ -159,7 +165,7 @@ int main(int argc, char** argv){
         std::cout << ".. Output:" << std::endl;
     }
 
-    { // call init function of the main box.
+    if(callInit){ // call init function of the main box.
         rt.boxes[0]->isInitialized = true;
 
         ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(runtime::initId);
@@ -175,7 +181,7 @@ int main(int argc, char** argv){
         }
     }
 
-    { // call new function of the main box.
+    if(callNew){ // call new function of the main box.
         ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(lib::idNew);
         if(it != rt.boxes[0]->objects.end()){
             Function* newFn;
@@ -189,7 +195,8 @@ int main(int argc, char** argv){
         }
     }
 
-    { // call main function.
+    int return_value = 0;
+    if(callMain){ // call main function.
         unsigned id = runtime::genOrdinaryId(rt, "main");
         ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(id);
         Object args;
@@ -220,15 +227,16 @@ int main(int argc, char** argv){
         Object ret = intp.callFunction(mainFn, {args}, self);
 
         if(ret.type == ObjectType::INTEGER){
-            return ret.i;
+            return_value = ret.i;
         }
     }
 
-    while(!rt.threads.empty())
+    while(rt.n_threads.load())
         std::this_thread::yield();
-
+    
+    rt.freeData();
     rt.main_intp = nullptr;
-    return 0;
+    return return_value;
 }
 
 constexpr const char* license_str =
@@ -250,6 +258,9 @@ constexpr const char* usage_str =
     "  -S, --show-all           Show all outputs.\n"
     "  -t, --time               Show total execution time before exiting.\n"
     "  -v, --version            Display version.\n\n"
+    "  -wi, --without-init      Do not run <init> function in main box.\n\n"
+    "  -wm, --without-main      Do not run main function in main box.\n\n"
+    "  -wn, --without-new       Do not run new function in main box.\n\n"
 
     "Program '" _SM_EXECUTABLE_NAME "' is part of the Smudge Programming Language which "
     "is distributed under the Apache License 2.0 (type option '-l' to see the full license).\n"
