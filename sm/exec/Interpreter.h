@@ -31,9 +31,9 @@ namespace sm{
             */
             ObjectDictVec_t codeBlocks;
             Object thisObject; // 'this' object
-            ByteCode_t::const_iterator addr;
             Function* function = nullptr; // for Stack Trace
             Class* box = nullptr;
+            unsigned pc;
             /*
              * When you call a native function from Smudge, all works.
              * However, if in that native function you call another Smudge fucntion,
@@ -50,9 +50,13 @@ namespace sm{
         public:
             ObjectVec_t exprStack;
             CallStack_t funcStack;
+            // funcStack is shared between GC and Interpreter
+            std::mutex stacks_m;
             runtime::Runtime_t* rt;
+            unsigned pc;
+            bool doReturn;
 
-            Interpreter(runtime::Runtime_t& _rt) : rt(&_rt) {}
+            explicit Interpreter(runtime::Runtime_t& _rt) : rt(&_rt), pc(0), doReturn(false) {}
             Interpreter(const Interpreter&) = delete;
             Interpreter(Interpreter&&) = default;
 
@@ -64,6 +68,20 @@ namespace sm{
             void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
                 const Object& self = Object(), bool inlined = false);
             Object start();
+
+            inline std::array<uint8_t, 5> fetch(unsigned& addr){
+                std::array<uint8_t, 5> ret {};
+                uint8_t opcode = ret[0] = rt->code[addr++];
+                if(opcode & 0x40){
+                    ret[1] = rt->code[addr++];
+                    ret[2] = rt->code[addr++];
+                    if(opcode & 0x80){
+                        ret[3] = rt->code[addr++];
+                        ret[4] = rt->code[addr++];
+                    }
+                }
+                return ret;
+            }
 
             ~Interpreter();
         };
