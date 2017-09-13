@@ -60,6 +60,15 @@ Useful for benchmarking.
 \fB\-v\fR, \fB\-\-version\fR
 .br
 Show the version of the interpreter.
+\fB\-wi\fR, \fB\-\-without-init\fR
+.br
+Do not run function \fBinit\fR of the main box.
+\fB\-wm\fR, \fB\-\-without-main\fR
+.br
+Do not run function \fBmain\fR of the main box.
+\fB\-wn\fR, \fB\-\-without-new\fR
+.br
+Do not run function \fBnew\fR of the main box.
 
 .SH AUTHOR
 Riccardo Musso \- smudge.language@gmail.com, musso.riccardo2001@gmail.com
