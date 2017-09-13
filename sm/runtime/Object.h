@@ -133,7 +133,27 @@ namespace sm{
         inline Object refGet() const noexcept;
         inline void refSet(Object obj) const noexcept;
 
+        inline void validate() const noexcept;
+        inline void invalidate() const noexcept;
+
         ~Object();
+    };
+
+    class TempObject {
+    private:
+        Object obj;
+    public:
+        inline TempObject(Object _obj) noexcept : obj(std::move(_obj)) {
+            obj.invalidate();
+        }
+
+        inline ~TempObject() noexcept {
+            obj.validate();
+        }
+
+        inline operator Object() const noexcept{
+            return obj;
+        }
     };
 
     struct Class {
@@ -191,15 +211,18 @@ namespace sm{
     };
 
     class Instance {
+        friend runtime::Runtime_t;
+        friend runtime::GarbageCollector;
     private:
         bool deleting = false; // if dtor has been called
+        bool callDelete = true; // whether destroy() has to be called
     public:
         ObjectDict_t objects;
         InstanceList_t::iterator it;
         runtime::Runtime_t& rt;
         Class* base;
 
-        unsigned rcount;
+        std::atomic_uint rcount;
         bool temporary;
 
         Instance(runtime::Runtime_t& _rt, Class* _base, bool temp)
@@ -246,6 +269,16 @@ namespace sm{
 
     void Object::refSet(Object obj) const noexcept{
         *o_ptr = std::move(obj);
+    }
+
+    void Object::validate() const noexcept{
+        if(type == ObjectType::CLASS_INSTANCE)
+            i_ptr->temporary = false;
+    }
+
+    void Object::invalidate() const noexcept{
+        if(type == ObjectType::CLASS_INSTANCE)
+            i_ptr->temporary = true;
     }
 
     inline Object makeInteger(integer_t value) noexcept{
