@@ -27,28 +27,40 @@
 namespace sm{
     namespace compile {
         namespace test{
-            constexpr const char* opCodes[] = {
-                "NOP", "POP", "IS_NULL", "ADD", "SUB", "MUL", "DIV", "MOD",
-                "OR", "AND", "XOR", "LEFT_SHIFT", "RIGHT_SHIFT",
-                "EQUAL", "NOT_EQUAL", "GREATER", "GREATER_OR_EQUAL", "LESS",
-                "LESS_OR_EQUAL", "ASSIGN", "ASSIGN_ADD", "ASSIGN_SUB", "ASSIGN_MUL",
-                "ASSIGN_DIV", "ASSIGN_MOD", "ASSIGN_OR", "ASSIGN_AND", "ASSIGN_XOR",
-                "ASSIGN_LEFT_SHIFT", "ASSIGN_RIGHT_SHIFT", "MAKE_VOID_LIST",
-                "MAKE_VOID_TUPLE", "MAKE_REF", "COMPL", "NOT", "UNARY_PLUS",
-                "UNARY_MINUS", "INC", "DEC", "POST_INC", "POST_DEC", "START_BLOCK",
-                "END_BLOCK", "THROW_EXCEPTION", "RETURN", "RETURN_NULL",
-                "PUSH_INT_0", "PUSH_INT_1", "PUSH_NULL", "PUSH_THIS", "PUSH_BOX",
-                "PUSH_CLASS", "ITERATE", "IT_NEXT", "MAKE_SUPER", "DUP",
-                "DUP1", "END_BLOCKS", "PUSH_INTEGER", "PUSH_FLOAT", "PUSH_STRING",
-                "PUSH_INT_VALUE", "PUSH_REF", "JUMP_F", "JUMP_B", "JUMP_IF_F",
-                "JUMP_IF_B", "JUMP_IF_NOT_F", "JUMP_IF_NOT_B", "LOGIC_AND",
-                "LOGIC_OR", "ELVIS", "TRY", "CATCH", "FINALLY", "CALL_FUNCTION",
-                "PERFORM_BRACING", "DEFINE_VAR", "DEFINE_GLOBAL_VAR", "DEFINE_NULL_VAR",
-                "DEFINE_GLOBAL_NULL_VAR", "ASSIGN_NULL_POP", "FIND", "FIND_SUPER",
-                "MAKE_LIST", "MAKE_TUPLE", "FOREACH_CHECK", "SWITCH_CASE", "IMPORT",
-            };
+            constexpr const char** opCodes[] = {
+                (const char* []) {
+                    "NOP", "POP", "IS_NULL", "ADD", "SUB", "MUL", "DIV", "MOD",
+                    "OR", "AND", "XOR", "LEFT_SHIFT", "RIGHT_SHIFT",
+                    "EQUAL", "NOT_EQUAL", "GREATER", "GREATER_OR_EQUAL", "LESS",
+                    "LESS_OR_EQUAL", "ASSIGN", "ASSIGN_ADD", "ASSIGN_SUB", "ASSIGN_MUL",
+                    "ASSIGN_DIV", "ASSIGN_MOD", "ASSIGN_OR", "ASSIGN_AND", "ASSIGN_XOR",
+                    "ASSIGN_LEFT_SHIFT", "ASSIGN_RIGHT_SHIFT", "MAKE_VOID_LIST",
+                    "MAKE_VOID_TUPLE", "MAKE_REF", "COMPL", "NOT", "UNARY_PLUS",
+                    "UNARY_MINUS", "INC", "DEC", "POST_INC", "POST_DEC", "START_BLOCK",
+                    "END_BLOCK", "THROW_EXCEPTION", "RETURN", "RETURN_NULL",
+                    "PUSH_INT_0", "PUSH_INT_1", "PUSH_NULL", "PUSH_THIS", "PUSH_BOX",
+                    "PUSH_CLASS", "ITERATE", "IT_NEXT", "MAKE_SUPER", "DUP",
+                    "DUP1"
+                },
 
-            static_assert(arraySize(opCodes) == INVALID_OPCODE, "size of opCodes (const char*[]) must be equal to INVALID_OPCODE");
+                nullptr,
+
+                (const char* []) {
+                    "END_BLOCKS", "PUSH_INTEGER", "PUSH_FLOAT", "PUSH_STRING",
+                    "PUSH_INT_VALUE", "PUSH_REF", "JUMP_F", "JUMP_B", "JUMP_IF_F",
+                    "JUMP_IF_B", "JUMP_IF_NOT_F", "JUMP_IF_NOT_B", "LOGIC_AND",
+                    "LOGIC_OR", "ELVIS", "TRY", "CATCH", "FINALLY", "CALL_FUNCTION",
+                    "PERFORM_BRACING", "DEFINE_VAR", "DEFINE_GLOBAL_VAR", "DEFINE_NULL_VAR",
+                    "DEFINE_GLOBAL_NULL_VAR", "ASSIGN_NULL_POP", "FIND", "FIND_SUPER",
+                    "MAKE_LIST", "MAKE_TUPLE", "FOREACH_CHECK", "SWITCH_CASE"
+                },
+
+                nullptr,
+
+                (const char* []) {
+                    "IMPORT"
+                }
+            };
 
             void print(const ByteCode_t& code){
                 byte_t byte;
@@ -64,8 +76,9 @@ namespace sm{
                             std::cout << std::endl;
                         }
                     } else {
-                        std::cout << "  " << opCodes[byte];
-                        if(!(skip = byte > MAX_OPCODE_1BYTE ? (byte == IMPORT ? 4 : 2) : 0)){
+                        skip = byte & 0x40 ? (byte & 0x80 ? 4 : 2) : 0;
+                        std::cout << "  " << opCodes[skip][byte & 0x3F];
+                        if(!skip){
                             std::cout << std::endl;
                         }
                     }
