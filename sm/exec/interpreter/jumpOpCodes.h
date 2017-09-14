@@ -111,9 +111,12 @@ namespace sm{
 
             ObjectVec_t::iterator end = intp.exprStack.end();
             if(!runtime::implicitToBool((*vec)[1])){
+                ObjectVec_t dummies(std::make_move_iterator(end -4),
+                    std::make_move_iterator(end));
                 intp.exprStack.erase(end -4, end);
                 intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
                 intp.stacks_m.unlock();
+                // dummies deleted
                 return;
             }
 
@@ -124,9 +127,12 @@ namespace sm{
                 obj.type = ObjectType::WEAK_REFERENCE;
             }
 
-            *(end -4)->o_ptr = std::move(obj);
+            Object& objRef = *(end -4)->o_ptr;
+            Object dummy1 = objRef, dummy2 = intp.exprStack.back();
+            objRef = std::move(obj);
             intp.exprStack.pop_back();
             intp.stacks_m.unlock();
+            // dummy1 and dummy2 deleted
         }
 
         _OcFunc(ThrowException){
