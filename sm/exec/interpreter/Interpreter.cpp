@@ -228,23 +228,11 @@ namespace sm{
                 runtime::validate(exprStack, std::move(ret));
                 doReturn = inlined;
             } else {
-                std::lock_guard<std::mutex> lock(stacks_m);
-                funcStack.emplace_back();
-                funcStack.back().codeBlocks.reserve(5);
-                size_t address = 0;
-
-                /*
-                 * 'fn->arguments' are the arguments expected by the
-                 * function, 'args' are the arguments actually given by
-                 * the caller.
-                */
-
                 ObjectDict_t* dict = new ObjectDict_t;
-                funcStack.back().codeBlocks.push_back(dict);
-
                 bool is_vararg = fn->flags & FF_VARARGS;
                 size_t n_args = args.size();
                 size_t n_expected = is_vararg ? fn->arguments.size()-1 : fn->arguments.size();
+                size_t address = 0;
 
                 if(fn->arguments.empty()){
                     address = fn->address;
@@ -280,11 +268,16 @@ namespace sm{
                     }
                 }
 
+                stacks_m.lock();
+                funcStack.emplace_back();
                 CallInfo_t& backInfo = funcStack.back();
+                backInfo.codeBlocks.reserve(5);
+                backInfo.codeBlocks.push_back(dict);
                 backInfo.function = fn;
                 backInfo.box = rt->boxes[fn->boxName];
                 backInfo.thisObject = self;
                 backInfo.inlined = inlined;
+                stacks_m.unlock();
                 pc = address;
 
                 runtime::validate(self);
