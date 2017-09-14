@@ -37,7 +37,7 @@ namespace sm{
 
             if(tos1.type != ObjectType::WEAK_REFERENCE
                     && tos1.type != ObjectType::STRONG_REFERENCE){
-                intp.stacks_m.unlock(); \
+                intp.stacks_m.unlock();
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot perform 'operator=' to "
                     "temporary object \"")
@@ -173,7 +173,7 @@ namespace sm{
         }
 
         _OcFunc(AssignNullPop){
-            PushRef(intp, {});
+            PushRef(intp, inst);
             PushNull(intp, {});
             Assign(intp, {});
             {
