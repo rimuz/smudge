@@ -397,7 +397,7 @@ namespace sm{
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("class '")
                     + intp.rt->nameFromId(back.thisObject.i_ptr->base->name)
-                    + "' has not super n." + std::to_string(super));
+                    + "' has not super number " + std::to_string(super));
             }
 
             ObjectDict_t::iterator it;
