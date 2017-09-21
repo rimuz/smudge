@@ -51,16 +51,6 @@ namespace sm{
 
 
     namespace runtime {
-        void validate(const Object& obj) noexcept;
-        void validate_all(const ObjectVec_t& vec) noexcept;
-
-        void validate(ObjectDict_t& dict, unsigned id, Object obj) noexcept;
-        void validate(ObjectVec_t& vec, Object obj) noexcept;
-
-        void invalidate(Instance* i) noexcept;
-        void invalidate(const Object& obj) noexcept;
-        void invalidate_all(const ObjectVec_t& vec) noexcept;
-
         class GarbageCollector {
             friend Runtime_t;
             friend Instance;
