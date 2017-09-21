@@ -38,16 +38,16 @@ namespace sm {
         class Comparator {
         private:
             exec::Interpreter& intp;
-            Object self;
+            RootObject self;
             Function* fn;
             unsigned char mode;
 
         public:
-            Comparator(exec::Interpreter&, Object);
+            Comparator(exec::Interpreter&, RootObject);
             Comparator(const Comparator<TT>&) = default;
             Comparator(Comparator<TT>&&) = default;
 
-            bool operator() (const Object& obj) const noexcept;
+            bool operator() (const RootObject& obj) const noexcept;
 
             Comparator<TT>& operator=(const Comparator<TT>&) = default;
             Comparator<TT>& operator=(Comparator<TT>&&) = default;
@@ -72,7 +72,7 @@ namespace sm {
             BinaryComparator<TT>& operator=(const BinaryComparator<TT>&) = default;
             BinaryComparator<TT>& operator=(BinaryComparator<TT>&&) = default;
 
-            bool operator() (const Object& lhs, const Object& rhs) const noexcept;
+            bool operator() (const RootObject& lhs, const RootObject& rhs) const noexcept;
 
             ~BinaryComparator() = default;
         };
@@ -95,10 +95,10 @@ namespace sm {
         constexpr bool findIndex(SignedInt idx, OutputInt& out, SizeType size) noexcept;
 
         template<enum_t TT>
-        Comparator<TT>::Comparator(exec::Interpreter& _intp, Object _self)
+        Comparator<TT>::Comparator(exec::Interpreter& _intp, RootObject _self)
                 : intp(_intp) {
             _OcValue(_self);
-            switch(_self.type){
+            switch(_self->type){
                 case ObjectType::INTEGER:
                     mode = INT_COMPARE;
                     self = std::move(_self);
@@ -154,14 +154,14 @@ namespace sm {
         }
 
         template <enum_t TT>
-        bool Comparator<TT>::operator() (const Object& obj) const noexcept{
+        bool Comparator<TT>::operator() (const RootObject& obj) const noexcept{
             switch(mode){
                 case INT_COMPARE: {
-                    switch(obj.type){
+                    switch(obj->type){
                         case ObjectType::INTEGER:
-                            return compare<integer_t>(self.i, obj.i);
+                            return compare<integer_t>(self->i, obj->i);
                         case ObjectType::FLOAT:
-                            return compare<float_t>(self.i, obj.f);
+                            return compare<float_t>(self->i, obj->f);
                         default:
                             intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
@@ -171,11 +171,11 @@ namespace sm {
                 }
 
                 case FLOAT_COMPARE: {
-                    switch(obj.type){
+                    switch(obj->type){
                         case ObjectType::INTEGER:
-                            return compare<float_t>(self.f, obj.i);
+                            return compare<float_t>(self->f, obj->i);
                         case ObjectType::FLOAT:
-                            return compare<float_t>(self.f, obj.f);
+                            return compare<float_t>(self->f, obj->f);
                         default:
                             intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
@@ -185,8 +185,8 @@ namespace sm {
                 }
 
                 case STRING_COMPARE: {
-                    if(obj.type == ObjectType::STRING)
-                        return compare<const String&>(self.s_ptr->str, obj.s_ptr->str);
+                    if(obj->type == ObjectType::STRING)
+                        return compare<const String&>(self->s_ptr->str, obj->s_ptr->str);
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("can't perform operator") +
                         parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
@@ -207,14 +207,14 @@ namespace sm {
             : intp(_intp) {}
 
         template <enum_t TT>
-        bool BinaryComparator<TT>::operator() (const Object& lhs, const Object& rhs) const noexcept {
-            switch(lhs.type){
+        bool BinaryComparator<TT>::operator() (const RootObject& lhs, const RootObject& rhs) const noexcept {
+            switch(lhs->type){
                 case ObjectType::INTEGER: {
-                    switch(rhs.type){
+                    switch(rhs->type){
                         case ObjectType::INTEGER:
-                            return Comparator<TT>::template compare<integer_t>(lhs.i, rhs.i);
+                            return Comparator<TT>::template compare<integer_t>(lhs->i, rhs->i);
                         case ObjectType::FLOAT:
-                            return Comparator<TT>::template compare<integer_t>(lhs.i, rhs.f);
+                            return Comparator<TT>::template compare<integer_t>(lhs->i, rhs->f);
                         default:
                             intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
@@ -224,11 +224,11 @@ namespace sm {
                 }
 
                 case ObjectType::FLOAT: {
-                    switch(rhs.type){
+                    switch(rhs->type){
                         case ObjectType::INTEGER:
-                            return Comparator<TT>::template compare<float_t>(lhs.f, rhs.i);
+                            return Comparator<TT>::template compare<float_t>(lhs->f, rhs->i);
                         case ObjectType::FLOAT:
-                            return Comparator<TT>::template compare<float_t>(lhs.f, rhs.f);
+                            return Comparator<TT>::template compare<float_t>(lhs->f, rhs->f);
                         default:
                             intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                 std::string("can't perform operator") +
@@ -238,8 +238,8 @@ namespace sm {
                 }
 
                 case ObjectType::STRING: {
-                    if(rhs.type == ObjectType::STRING)
-                        return Comparator<TT>::template compare<const String&>(lhs.s_ptr->str, rhs.s_ptr->str);
+                    if(rhs->type == ObjectType::STRING)
+                        return Comparator<TT>::template compare<const String&>(lhs->s_ptr->str, rhs->s_ptr->str);
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("can't perform operator") +
                         parse::normalOperatorsPlain[TT - parse::TT_NORMAL_OPERATORS_START]
