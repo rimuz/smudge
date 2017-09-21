@@ -26,68 +26,61 @@
 namespace sm{
     namespace exec{
         _OcFunc(MakeVoidList){
-            Object list = makeList(intp);
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            runtime::validate(intp.exprStack, std::move(list));
+            intp.exprStack.emplace_back(makeList(intp));
         }
 
         _OcFunc(MakeVoidTuple){
-            Object tuple = makeTuple(intp);
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            runtime::validate(intp.exprStack, std::move(tuple));
+            intp.exprStack.emplace_back(makeTuple(intp));
         }
 
         _OcFunc(MakeRef){
-            intp.stacks_m.lock();
-            Object& tos = intp.exprStack.back();
-            if(tos.type == ObjectType::WEAK_REFERENCE
-                    || tos.type == ObjectType::STRONG_REFERENCE){
-                tos.type = ObjectType::STRONG_REFERENCE;
+            RootObject& tos = intp.exprStack.back();
+            if(tos->type == ObjectType::WEAK_REFERENCE
+                    || tos->type == ObjectType::STRONG_REFERENCE){
+                tos->type = ObjectType::STRONG_REFERENCE;
             } else {
-                intp.stacks_m.unlock();
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot get reference from temporary object ")
                     + runtime::errorString(intp, tos));
             }
-            intp.stacks_m.unlock();
         }
 
         _OcFunc(MakeList){
             unsigned size = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]);
 
-            intp.stacks_m.lock();
-            ObjectVec_t::iterator end = intp.exprStack.end();
-            ObjectVec_t::iterator first = end-size;
-            ObjectVec_t vec(first, end);
+            RootObjectVec_t::iterator end = intp.exprStack.end();
+            RootObjectVec_t::iterator first = end-size;
+            RootObjectVec_t vec(
+                std::make_move_iterator(first),
+                std::make_move_iterator(end)
+            );
             intp.exprStack.erase(first, end);
-            intp.stacks_m.unlock();
 
-            Object list = makeList(intp, std::move(vec));
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            runtime::validate(intp.exprStack, std::move(list));
+            RootObject list = makeList(intp, std::move(vec));
+            intp.exprStack.emplace_back(std::move(list));
         }
 
         _OcFunc(MakeTuple){
             unsigned size = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]);
 
-            intp.stacks_m.lock();
-            ObjectVec_t::iterator end = intp.exprStack.end();
-            ObjectVec_t::iterator first = end-size;
-            ObjectVec_t vec(first, end);
+            RootObjectVec_t::iterator end = intp.exprStack.end();
+            RootObjectVec_t::iterator first = end-size;
+            RootObjectVec_t vec(
+                std::make_move_iterator(first),
+                std::make_move_iterator(end)
+            );
             intp.exprStack.erase(first, end);
-            intp.stacks_m.unlock();
 
-            Object tuple = makeTuple(intp, std::move(vec));
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            runtime::validate(intp.exprStack, std::move(tuple));;
+            RootObject tuple = makeTuple(intp, std::move(vec));
+            intp.exprStack.emplace_back(std::move(tuple));;
         }
 
         _OcFunc(MakeSuper){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object& super = intp.exprStack.back();
-            Object& derived = *(intp.exprStack.end() -2);
+            RootObject& super = intp.exprStack.back();
+            RootObject& derived = *(intp.exprStack.end() -2);
             _OcValue(super);
-            derived.o_ptr->c_ptr->bases.emplace_back(super.c_ptr);
+
+            derived->o_ptr->c_ptr->bases.emplace_back(super->c_ptr);
             intp.exprStack.pop_back();
         }
     }
