@@ -30,7 +30,6 @@
 namespace sm{
     namespace exec{
         _OcFunc(Add){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -39,7 +38,6 @@ namespace sm{
         }
 
         _OcFunc(Sub){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -48,7 +46,6 @@ namespace sm{
         }
 
         _OcFunc(Mul){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -57,26 +54,25 @@ namespace sm{
         }
 
         _OcFunc(Div){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            if((tos.type == ObjectType::INTEGER && tos.i == 0)
-                    || (tos.type == ObjectType::FLOAT && tos.f == 0.f))
+            if((tos->type == ObjectType::INTEGER && tos->i == 0)
+                    || (tos->type == ObjectType::FLOAT && tos->f == 0.f))
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "division by zero (by instruction DIV)");
             _OcOp(/, std::divides<float_t>(), parse::TT_DIV, false,);
         }
 
         _OcFunc(Mod){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
-            if((tos.type == ObjectType::INTEGER && tos.i == 0)
-                    || (tos.type == ObjectType::FLOAT && tos.f == 0.f))
+
+            if((tos->type == ObjectType::INTEGER && tos->i == 0)
+                    || (tos->type == ObjectType::FLOAT && tos->f == 0.f))
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "division by zero (by instruction MOD)");
             _OcOp(%, std::fmod, parse::TT_MOD, false,);
