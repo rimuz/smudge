@@ -24,8 +24,8 @@
 #include <vector>
 #include "sm/require_cpp11.h"
 
-#define _SM_INT_VERSION 024
-#define _SM_STR_VERSION "0.2.4"
+#define _SM_INT_VERSION 030
+#define _SM_STR_VERSION "0.3"
 #define _SM_DATE_VERSION "08.2017"
 #define _SM_EXECUTABLE_NAME "smudge"
 
@@ -78,7 +78,7 @@ namespace sm{
     // a type big enough to contain any unicode character
     using unicode_t = uint32_t;
 
-    using integer_t = long;
+    using integer_t = long long;
     using float_t = double;
     using string_t = std::string;
     using oid_t = unsigned; // Object ID
