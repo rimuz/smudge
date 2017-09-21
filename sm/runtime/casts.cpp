@@ -88,13 +88,13 @@ namespace sm{
                     return in;
 
                 case ObjectType::CLASS_INSTANCE:{
-                    Object out;
+                    RootObject out;
                     if(runtime::find<ObjectType::CLASS_INSTANCE>(in, out, lib::idToString)){
                         Function* f_ptr;
-                        Object self = in;
+                        RootObject self = in;
                         if(runtime::callable(out, self, f_ptr)){
-                            Object str = intp.callFunction(f_ptr, ObjectVec_t(), self, true);
-                            if(str.type != ObjectType::STRING){
+                            RootObject str = intp.callFunction(f_ptr, {}, self, true);
+                            if(str->type != ObjectType::STRING){
                                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                                     std::string("method 'to_string()' in ")
                                     + runtime::errorString(intp, self)
@@ -141,18 +141,18 @@ namespace sm{
 
                 case ObjectType::BOX:{
                     std::ostringstream oss;
-                    oss << "<box " << intp.rt->boxNames[in.c_ptr->boxName] << ">";
+                    oss << "<box " << intp.rt->boxNames[in.b_ptr->name] << ">";
                     return makeString(oss.str().c_str());
                 }
 
                 case ObjectType::WEAK_REFERENCE:
                 case ObjectType::STRONG_REFERENCE: {
-                    Object obj = in.refGet();
-                    if(obj.type == ObjectType::CLASS_INSTANCE){
+                    RootObject obj = in.refGet();
+                    if(obj->type == ObjectType::CLASS_INSTANCE){
                         std::ostringstream oss;
                         oss << "<ref to object "
-                            << intp.rt->boxNames[obj.i_ptr->base->boxName] << "::"
-                            << intp.rt->nameFromId(obj.i_ptr->base->name) << ">";
+                            << intp.rt->boxNames[obj->i_ptr->base->boxName] << "::"
+                            << intp.rt->nameFromId(obj->i_ptr->base->name) << ">";
                         return makeString(oss.str().c_str());
                     }
                     return makeString("<reference>");
@@ -197,23 +197,23 @@ namespace sm{
 
         /* self: is an output parameter! */
         bool callable(const Object& in, Object& self, Function*& out){
-            Object obj = in;
+            RootObject obj = in;
             _OcValue(obj);
 
-            while (obj.type == ObjectType::METHOD){
-                self = obj.m_ptr->self;
-                obj = *obj.m_ptr->func_ptr;
+            while (obj->type == ObjectType::METHOD){
+                self = obj->m_ptr->self;
+                obj = *obj->m_ptr->func_ptr;
             }
 
-            switch(obj.type){
+            switch(obj->type){
                 case ObjectType::FUNCTION:
-                    out = obj.f_ptr;
+                    out = obj->f_ptr;
                     return true;
 
                 case ObjectType::BOX:{
                     if(runtime::find<ObjectType::BOX>(obj, obj, runtime::roundId)
-                            && obj.type == ObjectType::FUNCTION){
-                        out = obj.f_ptr;
+                            && obj->type == ObjectType::FUNCTION){
+                        out = obj->f_ptr;
                         return true;
                     }
                     return false;
@@ -222,15 +222,15 @@ namespace sm{
                 case ObjectType::CLASS: {
                     self = nullptr;
                     self.type = ObjectType::INSTANCE_CREATOR;
-                    self.c_ptr = obj.c_ptr;
+                    self.c_ptr = obj->c_ptr;
                     return true;
                 }
 
                 case ObjectType::CLASS_INSTANCE:{
-                    Object func;
+                    RootObject func;
                     if(runtime::find<ObjectType::CLASS_INSTANCE>(obj, func, runtime::roundId)
-                            && func.type == ObjectType::FUNCTION){
-                        out = func.f_ptr;
+                            && func->type == ObjectType::FUNCTION){
+                        out = func->f_ptr;
                         self = std::move(obj);
                         return true;
                     }
