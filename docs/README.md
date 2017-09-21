@@ -24,8 +24,8 @@ classes. Though it's not mandatory, you should also specify its arguments
 (especially for documentation purposes).
 
 Last, an _exclamation mark_ (i.e. the `!`) should be added at the end of the
-names of the boxes which are part of the `SSL` (sometimes the interpreter
-could show box names like `std.lang!`, etc..).
+names of the boxes which are *`native`* (sometimes the interpreter
+could show box names like `std.lang!`, etc..) [note: the `SSL` is all native].
 
 So, a class named `Foo` contained in box named `bar.baz` is called
 `bar.baz::Foo`, while the function named `open` in box `std.io` is called
