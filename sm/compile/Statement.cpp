@@ -86,6 +86,11 @@ namespace sm{
 
                 std::cout << std::dec;
             }
+
+            std::string instRepr(std::array<uint8_t, 5> inst) noexcept{
+                unsigned skip = inst[0] & 0x40 ? (inst[0] & 0x80 ? 4 : 2) : 0;
+                return std::string(opCodes[skip][inst[0] & 0x3F]);
+            }
         }
     }
 }
