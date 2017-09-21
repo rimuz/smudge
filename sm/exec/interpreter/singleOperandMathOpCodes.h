@@ -27,57 +27,50 @@
 namespace sm{
     namespace exec{
         _OcFunc(Compl){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcValue(tos);
 
-            switch(tos.type){
+            switch(tos->type){
                 case ObjectType::INTEGER:
-                    tos.i = ~tos.i;
+                    tos->i = ~tos->i;
                     intp.exprStack.emplace_back(std::move(tos));
-                    intp.stacks_m.unlock();
                     return;
 
                 case ObjectType::CLASS_INSTANCE:{
                     unsigned id = runtime::operatorId(parse::TT_COMPL);
-                    Object op;
+                    RootObject op;
                     Function* op_ptr = nullptr;
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
-                        intp.stacks_m.unlock();
                         intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator~' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    Object self = tos;
-                    intp.stacks_m.unlock();
+                    RootObject self = tos;
                     intp.makeCall(op_ptr, {}, self);
                     return;
                 }
 
                 case ObjectType::BOX: {
                     unsigned id = runtime::operatorId(parse::TT_COMPL);
-                    Object op;
-                    Object self;
+                    RootObject op;
+                    RootObject self;
                     Function* op_ptr = nullptr;
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
-                        intp.stacks_m.unlock();
                         intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator~' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.stacks_m.unlock();
                     intp.makeCall(op_ptr, {}, self);
                     return;
                 }
 
                 default:
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'operator~' not applicable for ") +
                         runtime::errorString(intp, tos));
@@ -85,66 +78,58 @@ namespace sm{
         }
 
         _OcFunc(Not){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcStore(tos);
             _OcValue(tos);
             tos = makeBool(!runtime::implicitToBool(tos));
         }
 
         _OcFunc(UnaryPlus){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcValue(tos);
 
-            switch(tos.type){
+            switch(tos->type){
                 case ObjectType::INTEGER:
                 case ObjectType::FLOAT:
                     intp.exprStack.emplace_back(std::move(tos));
-                    intp.stacks_m.unlock();
                     return;
 
                 case ObjectType::CLASS_INSTANCE:{
                     unsigned id = runtime::operatorId(parse::TT_PRE_PLUS);
-                    Object op;
+                    RootObject op;
                     Function* op_ptr = nullptr;
-                    ObjectVec_t args { Object(), makeTrue() };
+                    RootObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
-                        intp.stacks_m.unlock();
                         intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary+' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    Object self = tos;
-                    intp.stacks_m.unlock();
+                    RootObject self = tos;
                     intp.makeCall(op_ptr, args, self);
                     return;
                 }
 
                 case ObjectType::BOX: {
                     unsigned id = runtime::operatorId(parse::TT_PRE_PLUS);
-                    Object op;
-                    Object self;
+                    RootObject op;
+                    RootObject self;
                     Function* op_ptr = nullptr;
-                    ObjectVec_t args { Object(), makeTrue() };
+                    RootObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
-                        intp.stacks_m.unlock();
                         intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary+' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.stacks_m.unlock();
                     intp.makeCall(op_ptr, args, self);
                     return;
                 }
 
                 default:
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'operator unary+' not applicable for ") +
                         runtime::errorString(intp, tos));
@@ -152,65 +137,57 @@ namespace sm{
         }
 
         _OcFunc(UnaryMinus){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcValue(tos);
 
-            switch(tos.type){
+            switch(tos->type){
                 case ObjectType::INTEGER:
-                    tos.i = -tos.i;
+                    tos->i = -tos->i;
                     intp.exprStack.emplace_back(std::move(tos));
-                    intp.stacks_m.unlock();
                     return;
 
                 case ObjectType::FLOAT:
-                    tos.f = -tos.f;
+                    tos->f = -tos->f;
                     intp.exprStack.emplace_back(std::move(tos));
-                    intp.stacks_m.unlock();
                     return;
 
                 case ObjectType::CLASS_INSTANCE:{
                     unsigned id = runtime::operatorId(parse::TT_PRE_MINUS);
-                    Object op;
+                    RootObject op;
                     Function* op_ptr = nullptr;
-                    ObjectVec_t args { Object(), makeTrue() };
+                    RootObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, op, id)
                             || !runtime::callable(op, tos, op_ptr)){
-                        intp.stacks_m.unlock();
                         intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary-' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    Object self = tos;
-                    intp.stacks_m.unlock();
+                    RootObject self = tos;
                     intp.makeCall(op_ptr, args, tos);
                     return;
                 }
 
                 case ObjectType::BOX: {
                     unsigned id = runtime::operatorId(parse::TT_PRE_MINUS);
-                    Object op;
-                    Object self;
+                    RootObject op;
+                    RootObject self;
                     Function* op_ptr = nullptr;
-                    ObjectVec_t args { Object(), makeTrue() };
+                    RootObjectVec_t args { Object(), makeTrue() };
 
                     if(!runtime::find<ObjectType::BOX>(tos, op, id)
                             || !runtime::callable(op, self, op_ptr)){
-                        intp.stacks_m.unlock();
                         intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'operator unary-' not applicable for ")
                             + runtime::errorString(intp, tos));
                     }
 
-                    intp.stacks_m.unlock();
                     intp.makeCall(op_ptr, args, self);
                     return;
                 }
 
                 default:
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("'operator unary-' not applicable for ") +
                         runtime::errorString(intp, tos));
@@ -218,101 +195,85 @@ namespace sm{
         }
 
         _OcFunc(Inc){
-            intp.stacks_m.lock();
-            Object& back = intp.exprStack.back();
-            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE){
-                intp.stacks_m.unlock();
+            RootObject& back = intp.exprStack.back();
+            if(back->type != ObjectType::WEAK_REFERENCE && back->type != ObjectType::STRONG_REFERENCE){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "cannot apply 'operator++' to temporary object (non-reference)");
             }
-            intp.stacks_m.unlock();
 
             Dup(intp, {});
             PushInt1(intp, {});
 
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
-                runtime::validate(intp.exprStack, intp.start()));
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, {});
         }
 
         _OcFunc(Dec){
-            intp.stacks_m.lock();
-            Object& back = intp.exprStack.back();
-            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE){
-                intp.stacks_m.unlock();
+            RootObject& back = intp.exprStack.back();
+            if(back->type != ObjectType::WEAK_REFERENCE && back->type != ObjectType::STRONG_REFERENCE){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "cannot apply 'operator--' to temporary object (non-reference)");
             }
-            intp.stacks_m.unlock();
 
             Dup(intp, {});
             PushInt1(intp, {});
 
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
-                runtime::validate(intp.exprStack, intp.start()));
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, {});
         }
 
         _OcFunc(PostInc){
-            intp.stacks_m.lock();
-            Object& back = intp.exprStack.back();
-            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE){
-                intp.stacks_m.unlock();
+            RootObject& back = intp.exprStack.back();
+            if(back->type != ObjectType::WEAK_REFERENCE && back->type != ObjectType::STRONG_REFERENCE){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "cannot apply 'operator++' to temporary object (non-reference)");
             }
 
-            Object copy = intp.exprStack.back();
-            intp.stacks_m.unlock();
+            RootObject copy = intp.exprStack.back();
             _OcValue(copy);
 
             Dup(intp, {});
             PushInt1(intp, {});
 
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(+, std::plus<float_t>(), parse::TT_PLUS, true,
-                runtime::validate(intp.exprStack, intp.start()));
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, {});
             intp.exprStack.back() = copy;
         }
 
         _OcFunc(PostDec){
-            intp.stacks_m.lock();
-            Object& back = intp.exprStack.back();
-            if(back.type != ObjectType::WEAK_REFERENCE && back.type != ObjectType::STRONG_REFERENCE){
-                intp.stacks_m.unlock();
+            RootObject& back = intp.exprStack.back();
+            if(back->type != ObjectType::WEAK_REFERENCE && back->type != ObjectType::STRONG_REFERENCE){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "cannot apply 'operator--' to temporary object (non-reference)");
             }
 
-            Object copy = intp.exprStack.back();
-            intp.stacks_m.unlock();
+            RootObject copy = intp.exprStack.back();
             _OcValue(copy);
 
             Dup(intp, {});
             PushInt1(intp, {});
 
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
             _OcSimplifyRef(tos);
             _OcOp(-, std::minus<float_t>(), parse::TT_MINUS, true,
-                runtime::validate(intp.exprStack, intp.start()));
+                intp.exprStack.emplace_back(intp.start()));
             Assign(intp, {});
             intp.exprStack.back() = copy;
         }
