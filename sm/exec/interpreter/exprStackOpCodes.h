@@ -35,232 +35,166 @@ namespace sm{
 
     namespace exec{
         _OcFunc(Pop){
-            intp.stacks_m.lock();
-            Object tos = std::move(intp.exprStack.back());
             intp.exprStack.pop_back();
-            intp.stacks_m.unlock();
         }
 
         _OcFunc(PushInt0){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object obj;
-            obj.type = ObjectType::INTEGER;
-            obj.i = 0;
-            intp.exprStack.emplace_back(obj);
+            intp.exprStack.emplace_back(makeInteger(0));
         }
 
         _OcFunc(PushInt1){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object obj;
-            obj.type = ObjectType::INTEGER;
-            obj.i = 1;
-            intp.exprStack.emplace_back(obj);
+            intp.exprStack.emplace_back(makeInteger(1));
         }
 
         _OcFunc(PushNull){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            intp.exprStack.emplace_back(Object());
+            intp.exprStack.emplace_back(nullptr);
         }
 
         _OcFunc(Dup){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             intp.exprStack.emplace_back(intp.exprStack.back());
         }
 
         _OcFunc(Dup1){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             size_t sz = intp.exprStack.size();
             intp.exprStack.emplace_back(std::move(intp.exprStack[sz-1]));
             intp.exprStack[sz-1] = intp.exprStack[sz-2];
         }
 
         _OcFunc(PushInteger){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object obj;
-            obj.type = ObjectType::INTEGER;
-            obj.i = intp.rt->intConstants[(static_cast<uint16_t>(inst[1]) << 8) | inst[2]];
-            intp.exprStack.emplace_back(obj);
+            intp.exprStack.emplace_back(makeInteger((static_cast<uint16_t>(inst[1]) << 8) | inst[2]));
         }
 
         _OcFunc(PushFloat){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object obj;
-            obj.type = ObjectType::FLOAT;
-            obj.f = intp.rt->floatConstants[(static_cast<uint16_t>(inst[1]) << 8) | inst[2]];
-            intp.exprStack.emplace_back(obj);
+            intp.exprStack.emplace_back(makeFloat((static_cast<uint16_t>(inst[1]) << 8) | inst[2]));
         }
 
         _OcFunc(PushString){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             Object obj = makeString(intp.rt->stringConstants[(static_cast<uint16_t>(inst[1]) << 8) | inst[2]]);
             intp.exprStack.emplace_back(std::move(obj));
         }
 
         _OcFunc(PushIntValue){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            int16_t i16 = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
-            Object obj = makeInteger(i16);
-            intp.exprStack.emplace_back(std::move(obj));
+            int16_t i16 = (static_cast<int16_t>(inst[1]) << 8) | inst[2];
+            intp.exprStack.emplace_back(makeInteger(static_cast<integer_t>(i16)));
         }
 
         _OcFunc(PushRef){
-            intp.stacks_m.lock();
-            ObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
+            RootObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
             unsigned id = runtime::idsStart + ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]);
-            ObjectDict_t::iterator oit;
+            RootObjectDict_t::iterator oit;
+            ObjectDict_t::iterator oit2;
 
-            for(ObjectDictVec_t::reverse_iterator it = vec.rbegin(); it != vec.rend(); ++it){
+            for(RootObjectDictVec_t::reverse_iterator it = vec.rbegin(); it != vec.rend(); ++it){
                 if(*it){
                     oit = (*it)->find(id);
                     if(oit != (*it)->end()){
-                        Object ref;
-                        ref.o_ptr = &oit->second;
-                        ref.type = ObjectType::WEAK_REFERENCE;
-                        intp.exprStack.emplace_back(std::move(ref));
-                        intp.stacks_m.unlock();
+                        intp.exprStack.emplace_back(makeRef(oit->second));
                         return;
                     }
                 }
             }
 
-            Object& in = intp.funcStack.back().thisObject;
-            if(in.type != ObjectType::NONE){
-                oit = in.i_ptr->objects.find(id);
+            RootObject& in = intp.funcStack.back().thisObject;
+            if(in->type != ObjectType::NONE){
+                oit2 = in->i_ptr->objects.find(id);
 
-                if(oit != in.i_ptr->objects.end()){
-                    Object ref;
-                    if(oit->second.type == ObjectType::FUNCTION){
-                        ref = makeMethod(in, &oit->second);
-                    } else {
-                        ref.o_ptr = &oit->second;
-                        ref.type = ObjectType::WEAK_REFERENCE;
-                    }
-                    intp.exprStack.emplace_back(std::move(ref));
-                    intp.stacks_m.unlock();
+                if(oit2 != in->i_ptr->objects.end()){
+                    intp.exprStack.emplace_back(
+                        oit2->second.type == ObjectType::FUNCTION
+                        ? makeMethod(in, &oit2->second)
+                        : makeRef(oit2->second)
+                    );
                     return;
                 }
 
-                std::vector<Class*> to_check {in.i_ptr->base};
+                std::vector<Class*> to_check {in->i_ptr->base};
                 while(!to_check.empty()){
                     Class* base = to_check.back();
                     to_check.pop_back();
 
-                    oit = base->objects.find(id);
-                    if(oit != base->objects.end()){
-                        Object ref;
-                        if(oit->second.type == ObjectType::FUNCTION){
-                            ref = makeMethod(in, &oit->second);
-                        } else {
-                            ref.o_ptr = &oit->second;
-                            ref.type = ObjectType::WEAK_REFERENCE;
-                        }
-                        intp.exprStack.emplace_back(std::move(ref));
-                        intp.stacks_m.unlock();
+                    oit2 = base->objects.find(id);
+                    if(oit2 != base->objects.end()){
+                        intp.exprStack.emplace_back(
+                            oit2->second.type == ObjectType::FUNCTION
+                            ? makeMethod(in, &oit2->second)
+                            : makeRef(oit2->second)
+                        );
                         return;
                     }
                     to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
                 }
             }
 
-            ObjectDict_t& objects = intp.funcStack.back().box->objects;
+            RootObjectDict_t& objects = intp.funcStack.back().box->objects;
             oit = objects.find(id);
 
             if(oit == objects.end()){
-                intp.stacks_m.unlock();
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot find symbol '")
                     + intp.rt->nameFromId(id) + "'");
             }
-
-            Object ref;
-            ref.o_ptr = &oit->second;
-            ref.type = ObjectType::WEAK_REFERENCE;
-            intp.exprStack.emplace_back(std::move(ref));
-            intp.stacks_m.unlock();
+            intp.exprStack.emplace_back(makeRef(oit->second));
         }
 
         _OcFunc(PushThis){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             intp.exprStack.emplace_back(intp.funcStack.back().thisObject);
         }
 
         _OcFunc(PushBox){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object box;
-            box.type = ObjectType::BOX;
-            box.c_ptr = intp.funcStack.back().box;
-            intp.exprStack.emplace_back(std::move(box));
+            intp.exprStack.emplace_back(makeBox(intp.funcStack.back().box));
         }
 
         _OcFunc(PushClass){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            if(intp.funcStack.back().thisObject.type == ObjectType::CLASS_INSTANCE){
-                Object clazz;
-                clazz.type = ObjectType::CLASS;
-                clazz.c_ptr = intp.funcStack.back().thisObject.i_ptr->base;
-                intp.exprStack.emplace_back(std::move(clazz));
+            if(intp.funcStack.back().thisObject->type == ObjectType::CLASS_INSTANCE){
+                intp.exprStack.emplace_back(makeClass(intp.funcStack.back().thisObject->i_ptr->base));
             } else {
-                intp.exprStack.emplace_back(Object());
+                intp.exprStack.emplace_back(nullptr);
             }
         }
 
         _OcFunc(Find){
-            intp.stacks_m.lock();
-            Object& ref = intp.exprStack.back();
-            Object obj = (ref.type == ObjectType::WEAK_REFERENCE
-                    || ref.type == ObjectType::STRONG_REFERENCE) ? ref.refGet() : ref;
+            RootObject& ref = intp.exprStack.back();
+            RootObject obj = (ref->type == ObjectType::WEAK_REFERENCE
+                    || ref->type == ObjectType::STRONG_REFERENCE) ? RootObject(ref->refGet()) : ref;
             unsigned id = runtime::idsStart + ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]);
 
-            switch(obj.type){
+            switch(obj->type){
                 case ObjectType::BOX: {
-                    ObjectDict_t::iterator it = obj.c_ptr->objects.find(id);
-                    if(it != obj.c_ptr->objects.end()){
-                        ref.o_ptr = &it->second;
-                        ref.type = ObjectType::WEAK_REFERENCE;
-                        intp.stacks_m.unlock();
+                    RootObjectDict_t::iterator it = obj->b_ptr->objects.find(id);
+                    if(it != obj->b_ptr->objects.end()){
+                        ref = makeRef(it->second);
                         return;
                     }
 
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
                 }
 
                 case ObjectType::CLASS_INSTANCE: {
-                    ObjectDict_t::iterator it = obj.i_ptr->objects.find(id);
-                    if(it != obj.i_ptr->objects.end()){
-                        if(it->second.type == ObjectType::FUNCTION){
-                            ref = makeMethod(obj, &it->second);
-                        } else {
-                            ref.o_ptr = &it->second;
-                            ref.type = ObjectType::WEAK_REFERENCE;
-                        }
-                        intp.stacks_m.unlock();
+                    ObjectDict_t::iterator it = obj->i_ptr->objects.find(id);
+                    if(it != obj->i_ptr->objects.end()){
+                        ref = it->second.type == ObjectType::FUNCTION
+                            ? makeMethod(obj, &it->second) : makeRef(it->second);
                         return;
                     }
 
-                    std::vector<Class*> to_check {obj.i_ptr->base};
+                    std::vector<Class*> to_check {obj->i_ptr->base};
                     while(!to_check.empty()){
                         Class* base = to_check.back();
                         to_check.pop_back();
 
                         it = base->objects.find(id);
                         if(it != base->objects.end()){
-                            if(it->second.type == ObjectType::FUNCTION){
-                                ref = makeMethod(obj, &it->second);
-                            } else {
-                                ref.o_ptr = &it->second;
-                                ref.type = ObjectType::WEAK_REFERENCE;
-                            }
-                            intp.stacks_m.unlock();
+                            ref = it->second.type == ObjectType::FUNCTION
+                                ? makeMethod(obj, &it->second)
+                                : makeRef(it->second);
                             return;
                         }
 
                         to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
                     }
 
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
@@ -270,33 +204,27 @@ namespace sm{
                     ObjectDict_t::iterator it = lib::cString->objects.find(id);
                     if(it != lib::cString->objects.end()){
                         ref = makeMethod(obj, &it->second);
-                        intp.stacks_m.unlock();
                         return;
                     }
 
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
                 }
 
                 case ObjectType::ENUM:{
-                    ObjectDict_t::iterator it = obj.e_ptr->values.find(id);
-                    if(it != obj.e_ptr->values.end()){
-                        ref.o_ptr = &it->second;
-                        ref.type = ObjectType::WEAK_REFERENCE;
-                        intp.stacks_m.unlock();
+                    ObjectDict_t::iterator it = obj->e_ptr->values.find(id);
+                    if(it != obj->e_ptr->values.end()){
+                        ref = makeRef(it->second);
                         return;
                     }
 
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannot find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
                 }
 
                 default:
-                    intp.stacks_m.unlock();
                     intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                         std::string("cannoted find '") + intp.rt->nameFromId(id)
                         + "' in " + runtime::errorString(intp, obj));
@@ -304,18 +232,16 @@ namespace sm{
         }
 
         _OcFunc(Iterate){
-            intp.stacks_m.lock();
-            Object tos = intp.exprStack.back();
+            RootObject tos = intp.exprStack.back();
             _OcValue(tos);
-            intp.stacks_m.unlock();
 
-            bool isString = tos.type == ObjectType::STRING;
-            if(tos.type != ObjectType::CLASS_INSTANCE && !isString){
+            bool isString = tos->type == ObjectType::STRING;
+            if(tos->type != ObjectType::CLASS_INSTANCE && !isString){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "for-each supported only for objects (no PODs)");
             }
 
-            Object func;
+            RootObject func;
             Function* f_ptr;
 
             if(!isString){
@@ -337,18 +263,17 @@ namespace sm{
         }
 
         _OcFunc(ItNext){
-            intp.stacks_m.lock();
-            Object tos = intp.exprStack.back();
+            RootObject& tos = intp.exprStack.back();
             _OcValue(tos);
-            intp.stacks_m.unlock();
 
-            if(tos.type != ObjectType::CLASS_INSTANCE){
+            if(tos->type != ObjectType::CLASS_INSTANCE){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "'iterate()' did not return a class instance.");
             }
 
-            Object func;
+            RootObject func;
             Function* f_ptr;
+
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos, func, lib::idNext)){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("cannot find 'next' in ")
@@ -365,38 +290,33 @@ namespace sm{
         _OcFunc(FindSuper){
             unsigned id = runtime::idsStart + ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]);
 
-            intp.stacks_m.lock();
-            Object& ref = intp.exprStack.back();
+            RootObject& ref = intp.exprStack.back();
             _OcValue(ref);
 
-            if(ref.type != ObjectType::INTEGER){
-                intp.stacks_m.unlock();
+            if(ref->type != ObjectType::INTEGER){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("expected integer inside super call "
                         "(found ") + runtime::errorString(intp, ref)
                         + " instead)");
-            } else if(ref.i < 0){
-                intp.stacks_m.unlock();
+            } else if(ref->i < 0){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                    "super call's integer must be greater than zero");
+                    "super call's integer must be greater or equal to zero");
             }
-            unsigned super = ref.i;
+            unsigned super = ref->i;
 
             auto& back = intp.funcStack.back();
-            if(back.thisObject.type == ObjectType::NONE){
-                intp.stacks_m.unlock();
+            if(back.thisObject->type == ObjectType::NONE){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("'super' is <null>, unable to find '")
                     + intp.rt->nameFromId(id) + "'");
             }
 
-            std::vector<Class*>& supers = back.thisObject.i_ptr->base->bases;
+            ClassVec_t& supers = back.thisObject->i_ptr->base->bases;
 
             if(supers.size() <= super){
-                intp.stacks_m.unlock();
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("class '")
-                    + intp.rt->nameFromId(back.thisObject.i_ptr->base->name)
+                    + intp.rt->nameFromId(back.thisObject->i_ptr->base->name)
                     + "' has not super number " + std::to_string(super));
             }
 
@@ -411,17 +331,14 @@ namespace sm{
                     if(it->second.type == ObjectType::FUNCTION){
                         ref = makeMethod(back.thisObject, &it->second);
                     } else {
-                        // should never happen
-                        ref.o_ptr = &it->second;
-                        ref.type = ObjectType::WEAK_REFERENCE;
+                        // should never happen normally
+                        ref = makeRef(it->second);
                     }
-                    intp.stacks_m.unlock();
                     return;
                 }
                 to_check.insert(to_check.end(), base->bases.rbegin(), base->bases.rend());
             }
 
-            intp.stacks_m.unlock();
             intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                 std::string("cannot find function '")
                 + intp.rt->nameFromId(id) + "' in <super> of class '"
