@@ -368,7 +368,7 @@ namespace sm{
             return;
 
         exec::Interpreter& intp = *i_ptr;
-        RootObjectDict_t::iterator it;
+        ObjectDict_t::iterator it;
         Function* func_ptr;
 
         Object self = Object(ObjectType::CLASS_INSTANCE);
@@ -460,6 +460,22 @@ namespace sm{
                         whiteToGray(data, child.second);
                     }
                 }
+
+                ObjectDict_t::iterator it = obj.i_ptr->base->objects.find(runtime::gcSearchId);
+                if(it != obj.i_ptr->base->objects.end()){
+                    ObjectVec_t out;
+                    it->second.gcs_ptr(obj, out);
+
+                    for(auto& child : out){
+                        /*
+                         * recursively search inside all objects
+                         * natively linked to obj, such as for
+                         * List or Tuple.
+                        */
+                        whiteToGray(data, child);
+                    }
+                }
+
             } else if(obj.type == ObjectType::CLASS){
                 if(std::find(data.classes.begin(), data.classes.end(), obj.c_ptr) == data.classes.end())
                     return;
@@ -512,7 +528,7 @@ namespace sm{
 
             // now WHITE contains garbage.
             for(Instance* ptr : data.white){
-                if(ptr){ // ignore 'erased' elements
+                if(!ptr->roots){
                     ptr->free(true);
                 }
             }
