@@ -36,17 +36,12 @@ namespace sm {
             };
         }
 
-        namespace ChunkIteratorClass {
-            struct CIData {
-                Object chunk;
-                unsigned idx;
-            };
-        }
+        namespace ChunkIteratorClass {}
 
         smNativeFunc(system){
-            if(args.empty() || args[0].type != ObjectType::STRING)
+            if(args.empty() || args[0]->type != ObjectType::STRING)
                 return Object();
-            std::string cmd(args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+            std::string cmd(args[0]->s_ptr->str.begin(), args[0]->s_ptr->str.end());
             return makeInteger(std::system(cmd.c_str()));
         }
 
@@ -67,8 +62,8 @@ namespace sm {
             smFunc(exit, smLambda {
                 if(args.empty())
                     std::exit(0);
-                else if(args[0].type == ObjectType::INTEGER)
-                    std::exit(args[0].i);
+                else if(args[0]->type == ObjectType::INTEGER)
+                    std::exit(args[0]->i);
                 else
                     std::exit(runtime::implicitToBool(args[0]));
                 return Object();
@@ -80,7 +75,7 @@ namespace sm {
             })
 
             smFunc(sterr, smLambda {
-                Object obj = args.empty() ? Object() : args[0];
+                RootObject obj = args.empty() ? RootObject() : args[0];
                 Object str = runtime::implicitToString(intp, obj);
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string(str.s_ptr->str.begin(), str.s_ptr->str.end())
@@ -89,16 +84,16 @@ namespace sm {
             })
 
             smFunc(get, smLambda {
-                if(args.empty() || args[0].type != ObjectType::STRING)
+                if(args.empty() || args[0]->type != ObjectType::STRING)
                     return Object();
-                std::string name(args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+                std::string name(args[0]->s_ptr->str.begin(), args[0]->s_ptr->str.end());
                 char* str = std::getenv(name.c_str());
                 return str ? makeString(str) : Object();
             })
 
             smFunc(alloc, smLambda {
-                Object inst = newInstance(intp, cChunk, args);
-                return data<ChunkClass::ChunkData>(inst) ? inst : Object();
+                RootObject inst = newInstance(intp, cChunk, args);
+                return data<ChunkClass::ChunkData>(inst) ? inst : RootObject();
             })
 
             smClass(Chunk)
@@ -117,10 +112,10 @@ namespace sm {
                 */
 
                 smMethod(new, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
 
-                    size_t size = args[0].i;
+                    size_t size = args[0]->i;
                     bool zero = true;
 
                     if(args.size() >= 2)
@@ -146,14 +141,22 @@ namespace sm {
                     return Object();
                 })
 
+                smIdMethod(runtime::gcCollectId, smLambda {
+                    UC* ptr = smGetData(UC);
+                    if(ptr){
+                        std::free(ptr);
+                    }
+                    return Object();
+                })
+
                 smMethod(failed, smLambda {
                     return makeBool(!smGetData(ChunkData));
                 })
 
                 smMethod(get, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t idx = args[0].i;
+                    integer_t idx = args[0]->i;
                     ChunkData* data = smGetData(ChunkData);
                     if(!data || !runtime::findIndex(idx, idx, data->size))
                         return Object();
@@ -161,20 +164,20 @@ namespace sm {
                 })
 
                 smMethod(set, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t idx = args[0].i;
+                    integer_t idx = args[0]->i;
                     ChunkData* data = smGetData(ChunkData);
                     if(!data || !runtime::findIndex(idx, idx, data->size))
                         return makeFalse();
-                    data->data[idx] = args.size() == 1 ? 1 : args[1].i;
+                    data->data[idx] = args.size() == 1 ? 1 : args[1]->i;
                     return makeTrue();
                 })
 
                 smMethod(reset, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t idx = args[0].i;
+                    integer_t idx = args[0]->i;
                     ChunkData* data = smGetData(ChunkData);
                     if(!data || !runtime::findIndex(idx, idx, data->size))
                         return makeFalse();
@@ -206,28 +209,40 @@ namespace sm {
                     if(args.empty() || !runtime::of_type(args[0], cChunkIterator))
                         return Object();
 
-                    smSetData(CIData) = new CIData { args[0], 0 };
+                    smRef(smId("chunk")) = args[0];
+                    smRef(smId("idx")) = makeInteger(0);
                     return Object();
                 })
 
                 smMethod(delete, smLambda {
-                    smDeleteData(CIData);
                     return Object();
                 })
 
                 smMethod(next, smLambda {
                     using namespace ChunkClass;
 
-                    CIData* ptr = smGetData(CIData);
-                    ChunkData* chunkPtr = data<ChunkData>(ptr->chunk);
-                    if(!chunkPtr)
+                    Object& chunk = smRef(smId("chunk"));
+                    Object& idx = smRef(smId("idx"));
+
+                    if(!runtime::of_type(idx, cChunk)){
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                            "'chunk' is not an instance of Chunk in ChunkIterator");
+                    }
+
+                    if(idx.type != ObjectType::INTEGER){
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                            "'idx' is not an integer in ChunkInteger");
+                    }
+
+                    ChunkData* ptr = data<ChunkData>(chunk);
+                    if(!ptr)
                         return makeTuple(intp, {Object(), makeFalse()});
 
-                    ChunkData& ref = *chunkPtr;
-                    bool check = ptr->idx < ref.size;
+                    integer_t i = idx.i;
+                    bool check = i < static_cast<integer_t>(ptr->size);
 
                     if(check){
-                        return makeTuple(intp, {makeInteger(ref.data[ptr->idx++]), makeTrue()});
+                        return makeTuple(intp, {makeInteger(ptr->data[i++]), makeTrue()});
                     }
                     return makeTuple(intp, {Object(), makeFalse()});
                 })
