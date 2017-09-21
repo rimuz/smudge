@@ -204,7 +204,7 @@ namespace sm{
                     }
                     tok.type = TT_INTEGER;
                     try {
-                        tok.i = std::stol(tok.content, nullptr, base);
+                        tok.i = std::stoll(tok.content, nullptr, base);
                     } catch(std::out_of_range){
                         states.rt->sources.msg(error::ET_ERROR, tok.source, tok.ln, tok.ch,
                             "integer unsupported by Smudge (too big)");
