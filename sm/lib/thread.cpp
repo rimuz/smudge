@@ -29,7 +29,7 @@ namespace sm{
     namespace lib{
         namespace ThreadClass{
             void wrapper_func(exec::ThreadData td){
-                Object self;
+                RootObject self;
                 Function* f_ptr;
 
                 if(!runtime::callable(td.data->func, self, f_ptr)){
@@ -103,8 +103,8 @@ namespace sm{
 
                         back.data = new exec::IntpData (
                             *intp.rt,
-                            empty ? Object() : Object(args.front()),
-                            empty ? ObjectVec_t() : ObjectVec_t(args.begin() +1, args.end())
+                            empty ? Object() : Object(args.front().get()),
+                            empty ? RootObjectVec_t() : RootObjectVec_t(args.begin() +1, args.end())
                         );
 
                         smSetData(exec::TWrapper) = back.wrapper;
@@ -120,24 +120,34 @@ namespace sm{
                         return makeTrue();
                     })
 
+                    #define __DESTROY \
+                        exec::TWrapper* wrapper = smGetData(exec::TWrapper); \
+                        if(wrapper->to_delete.test_and_set()){ \
+                            std::lock_guard<std::mutex> lock(intp.rt->threads_m); \
+                            exec::ThreadVec_t& vec = intp.rt->threads; \
+                            exec::ThreadVec_t::iterator it = std::find_if(vec.begin(), vec.end(), \
+                                [wrapper](exec::ThreadData& ref){ \
+                                    return ref.wrapper == wrapper; \
+                                } \
+                            ); \
+                            if(wrapper->th.joinable()) \
+                                wrapper->th.detach(); \
+                            delete wrapper; \
+                            vec.erase(it); \
+                            --intp.rt->n_threads; \
+                        } \
+
                     smMethod(delete, smLambda {
-                        exec::TWrapper* wrapper = smGetData(exec::TWrapper);
-                        if(wrapper->to_delete.test_and_set()){
-                            std::lock_guard<std::mutex> lock(intp.rt->threads_m);
-                            exec::ThreadVec_t& vec = intp.rt->threads;
-                            exec::ThreadVec_t::iterator it = std::find_if(vec.begin(), vec.end(),
-                                [wrapper](exec::ThreadData& ref){
-                                    return ref.wrapper == wrapper;
-                                }
-                            );
-                            if(wrapper->th.joinable())
-                                wrapper->th.detach();
-                            delete wrapper;
-                            vec.erase(it);
-                            --intp.rt->n_threads;
-                        }
+                        __DESTROY
                         return Object();
                     })
+
+                    smIdMethod(runtime::gcCollectId, smLambda {
+                        __DESTROY
+                        return Object();
+                    })
+
+                    #undef __DESTROY
                 smEnd
 
                 smClass(Mutex)
@@ -192,8 +202,8 @@ namespace sm{
                     */
 
                     smMethod(new, smLambda {
-                        Object& ref = (smRef(smId("object")) = args.empty() ? Object() : args.front());
-                        Object selfObj = ref, func;
+                        Object& ref = (smRef(smId("object")) = args.empty() ? Object() : args.front().get());
+                        RootObject selfObj = ref, func;
                         Function* ptr;
 
                         if(!runtime::find_any(ref, func, smId("lock"))){
@@ -211,7 +221,7 @@ namespace sm{
 
                     smMethod(delete, smLambda {
                         Object& ref = smRef(smId("object"));
-                        Object selfObj = ref, func;
+                        RootObject selfObj = ref, func;
                         Function* ptr;
 
                         if(!runtime::find_any(ref, func, smId("unlock"))){
