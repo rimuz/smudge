@@ -32,6 +32,8 @@ namespace sm {
         constexpr unsigned roundId = 23; // operator ()
         constexpr unsigned squareId = 24; // operator []
         constexpr unsigned dataId = 25;
+        constexpr unsigned gcSearchId = 26;
+        constexpr unsigned gcCollectId = 27;
         // ... all data ids ...
         constexpr unsigned idsStart = 30;
 
