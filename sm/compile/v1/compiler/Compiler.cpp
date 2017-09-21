@@ -255,8 +255,8 @@ namespace sm{
                 states.begin = tokens.begin();
                 states.end = tokens.end();
 
-                states.currBox = new Class;
-                states.currBox->boxName = _nfile;
+                states.currBox = new Box;
+                states.currBox->name = _nfile;
                 _rt->boxes[_nfile] = states.currBox;
 
                 it = tokens.begin();
@@ -284,8 +284,8 @@ namespace sm{
                     Function* fn = new Function;
                     fn->address = _rt->code.size();
                     fn->fnName = runtime::initId;
-                    fn->boxName = states.currBox->boxName;
-                    states.currBox->objects.insert(std::make_pair(runtime::initId, makeFunction(fn)));
+                    fn->boxName = states.currBox->name;
+                    states.currBox->objects.insert({runtime::initId, makeFunction(fn)});
 
                     for(ImportsVec_t::const_iterator cit = states.toImport->begin();
                             cit != states.toImport->end(); ++cit){
@@ -349,7 +349,7 @@ namespace sm{
                 }
             }
 
-            bool Compiler::load_native(const char* path, unsigned id, Box_t*& box) noexcept{
+            bool Compiler::load_native(const char* path, unsigned id, Box*& box) noexcept{
                 #ifdef _SM_OS_WINDOWS
                     HMODULE library = LoadLibrary(path);
                     if(!library)
