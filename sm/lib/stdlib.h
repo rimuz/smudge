@@ -37,27 +37,27 @@
     runtime::operatorId(X)
 
 #define smLibDecl(LibName) \
-    sm::Box_t* import_##LibName(sm::runtime::Runtime_t& rt, unsigned nBox)
+    sm::Box* import_##LibName(sm::runtime::Runtime_t& rt, unsigned nBox)
 
 #ifdef _SM_OS_WINDOWS
 #   define smLibrary \
-        extern "C" sm::Box_t* __declspec(dllexport) import_library(sm::runtime::Runtime_t& rt, unsigned nBox)
+        extern "C" sm::Box* __declspec(dllexport) import_library(sm::runtime::Runtime_t& rt, unsigned nBox)
 #else
 #   define smLibrary \
-        extern "C" sm::Box_t* import_library(sm::runtime::Runtime_t& rt, unsigned nBox)
+        extern "C" sm::Box* import_library(sm::runtime::Runtime_t& rt, unsigned nBox)
 #endif
 
 #define smLibTuple(LibString, LibName) \
     { LibString, import_##LibName }
 
 #define smNativeFunc(FuncName) \
-    Object FuncName(sm::exec::Interpreter& intp, \
-        sm::Function* thisFn, const sm::Object& self, \
-        const sm::ObjectVec_t& args)
+    sm::RootObject FuncName(sm::exec::Interpreter& intp, \
+        sm::Function* thisFn, const sm::RootObject& self, \
+        const sm::RootObjectVec_t& args)
 
 #define smInitBox \
-    sm::Box_t* thisBox = new sm::Box_t(); \
-    thisBox->boxName = nBox;
+    sm::Box* thisBox = new sm::Box(); \
+    thisBox->name = nBox;
 
 #define smReturnBox \
     return thisBox;
@@ -67,7 +67,7 @@
     sm::Class*& thisClass = c##Name;\
     unsigned thisClassName = sm::runtime::genOrdinaryId(rt, #Name); \
     thisClass = new sm::Class; \
-    thisClass->boxName = thisBox->boxName; \
+    thisClass->boxName = thisBox->name; \
     thisClass->name = thisClassName; \
     thisClass->objects = {
 
@@ -79,10 +79,10 @@
         thisBox->objects[thisClassName] = std::move(clazz); \
     }
 
-
-#define smLambda [] (sm::exec::Interpreter& intp, \
-    sm::Function* thisFn, const sm::Object& self, \
-    const sm::ObjectVec_t& args) -> sm::Object
+#define smLambda \
+    [] (sm::exec::Interpreter& intp, \
+    sm::Function* thisFn, const sm::RootObject& self, \
+    const sm::RootObjectVec_t& args) -> sm::RootObject
 
 #define smVar(Name, ...) \
     sm::lib::setVar(rt, thisBox, #Name, (__VA_ARGS__));
@@ -96,9 +96,11 @@
 #define smIdFunc(Id, ...) \
     sm::lib::setNativeFunc(thisBox, Id, (__VA_ARGS__));
 
-#define smMethod(MethodName, ...) \
-    { sm::runtime::genOrdinaryId(rt, #MethodName), \
-        sm::lib::genFunc(thisBox, sm::runtime::genOrdinaryId(rt, #MethodName), (__VA_ARGS__)) },
+#define smGCSearch(...) \
+    { sm::runtime::gcSearchId, sm::lib::genGCSearch(__VA_ARGS__) },
+
+#define smSearchLambda \
+    [] (const Object& self, ObjectVec_t& out) -> void
 
 #define smOpMethod(Operator, ...) \
     { sm::runtime::operatorId(Operator), \
@@ -106,6 +108,10 @@
 
 #define smIdMethod(Id, ...) \
     { Id, sm::lib::genFunc(thisBox, Id, (__VA_ARGS__)) },
+
+#define smMethod(Id, ...) \
+    { sm::runtime::genOrdinaryId(rt, #Id), sm::lib::genFunc(thisBox, \
+        sm::runtime::genOrdinaryId(rt, #Id), (__VA_ARGS__)) },
 
 #define smSetData(Type) \
     sm::lib::setData<Type>(intp, self)
@@ -119,20 +125,20 @@
     delete ptr;
 
 #define smHas(Id) \
-    (self.i_ptr->objects.find(Id) != self.i_ptr->objects.end())
+    (self->i_ptr->objects.find(Id) != self->i_ptr->objects.end())
 
 #define smRef(Id) \
-    (self.i_ptr->objects[Id])
+    (static_cast<Object&>(self->i_ptr->objects[Id]))
 
 namespace sm {
     namespace lib {
         #ifdef _SM_OS_WINDOWS
-        using DynInitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
+        using DynInitFunc_t = Box* (*) (runtime::Runtime_t&, unsigned);
         #else
-        using DynInitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
+        using DynInitFunc_t = Box* (*) (runtime::Runtime_t&, unsigned);
         #endif
 
-        using InitFunc_t = Box_t* (*) (runtime::Runtime_t&, unsigned);
+        using InitFunc_t = Box* (*) (runtime::Runtime_t&, unsigned);
         using LibDict_t = Map_t<string_t, InitFunc_t>;
 
         smLibDecl(lang);
@@ -165,18 +171,24 @@ namespace sm {
             return ptrRef;
         }
 
-        inline void setNativeFunc(Box_t* box, oid_t id, NativeFuncPtr_t fn){
-            box->objects[id] = makeNativeFunction(id, box->boxName, fn);
+        inline void setNativeFunc(Box* box, oid_t id, NativeFuncPtr_t fn){
+            box->objects[id] = makeNativeFunction(id, box->name, fn);
         }
 
-        inline void setVar(runtime::Runtime_t& rt, Box_t* box,
+        inline void setVar(runtime::Runtime_t& rt, Box* box,
                 const string_t& name, Object obj){
             unsigned varName = runtime::genOrdinaryId(rt, name);
-            runtime::validate(box->objects, varName, std::move(obj));
+            box->objects[varName] = std::move(obj);
         }
 
-        inline Object genFunc(Box_t* box, oid_t id, NativeFuncPtr_t fn){
-            return makeNativeFunction(id, box->boxName, fn);
+        inline RootObject genFunc(Box* box, oid_t id, NativeFuncPtr_t fn){
+            return makeNativeFunction(id, box->name, fn);
+        }
+
+        inline RootObject genGCSearch(GCSearchFunc_t ptr){
+            Object obj(ObjectType::NATIVE_DATA);
+            obj.gcs_ptr = ptr;
+            return obj;
         }
     }
 }
