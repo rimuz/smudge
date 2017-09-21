@@ -18,8 +18,8 @@
 */
 
 #include <random>
+#include <limits>
 #include "sm/lib/stdlib.h"
-
 
 namespace sm{
     constexpr float_t PI = 3.141592653589793;
@@ -42,16 +42,18 @@ namespace sm{
             smVar(E, makeFloat(E));
             smVar(NAN, makeFloat(NAN));
             smVar(INF, makeFloat(INFINITY))
+            smVar(MAX_INT, makeInteger(std::numeric_limits<integer_t>::max()));
+            smVar(MIN_INT, makeInteger(std::numeric_limits<integer_t>::min()));
 
             smFunc(rand, smLambda {
                 return makeFloat(random::urd(random::mt));
             })
 
             smFunc(rand_int, smLambda {
-                if(args.size() < 2 || args[0].type != ObjectType::INTEGER
-                        || args[1].type != ObjectType::INTEGER)
+                if(args.size() < 2 || args[0]->type != ObjectType::INTEGER
+                        || args[1]->type != ObjectType::INTEGER)
                     return Object();
-                integer_t min = args[0].i, max = args[1].i;
+                integer_t min = args[0]->i, max = args[1]->i;
                 if(max < min)
                     return Object();
                 else if(max == min)
@@ -64,10 +66,10 @@ namespace sm{
                 smFunc(fnName, smLambda { \
                     if(args.empty()) \
                         return Object(); \
-                    else if(args[0].type == ObjectType::INTEGER) \
-                        return makeFloat(std::realName(static_cast<float_t>(args[0].i))); \
-                    else if(args[0].type == ObjectType::FLOAT) \
-                        return makeFloat(std::realName(args[0].f)); \
+                    else if(args[0]->type == ObjectType::INTEGER) \
+                        return makeFloat(std::realName(static_cast<float_t>(args[0]->i))); \
+                    else if(args[0]->type == ObjectType::FLOAT) \
+                        return makeFloat(std::realName(args[0]->f)); \
                     return Object(); \
                 })
             #define __SmSnBind(fnName) __SmBind(fnName, fnName)
@@ -102,16 +104,16 @@ namespace sm{
                     return Object();
                 float_t x, y;
 
-                if(args[0].type == ObjectType::INTEGER)
-                    x = args[0].i;
-                else if(args[0].type == ObjectType::FLOAT)
-                    x = args[0].f;
+                if(args[0]->type == ObjectType::INTEGER)
+                    x = args[0]->i;
+                else if(args[0]->type == ObjectType::FLOAT)
+                    x = args[0]->f;
                 else return Object();
 
-                if(args[1].type == ObjectType::INTEGER)
-                    y = args[1].i;
-                else if(args[1].type == ObjectType::FLOAT)
-                    y = args[1].f;
+                if(args[1]->type == ObjectType::INTEGER)
+                    y = args[1]->i;
+                else if(args[1]->type == ObjectType::FLOAT)
+                    y = args[1]->f;
                 else return Object();
 
                 return makeFloat(std::atan2(x, y));
@@ -124,14 +126,14 @@ namespace sm{
                 float_t signif;
                 int exp;
 
-                if(args[0].type == ObjectType::INTEGER)
-                    signif = std::frexp(static_cast<float_t>(args[0].i), &exp);
-                else if(args[0].type == ObjectType::FLOAT)
-                    signif = std::frexp(args[0].f, &exp);
+                if(args[0]->type == ObjectType::INTEGER)
+                    signif = std::frexp(static_cast<float_t>(args[0]->i), &exp);
+                else if(args[0]->type == ObjectType::FLOAT)
+                    signif = std::frexp(args[0]->f, &exp);
                 else
                     return Object();
 
-                return makeList(intp, ObjectVec_t {makeFloat(signif), makeInteger(exp)});
+                return makeList(intp, RootObjectVec_t {makeFloat(signif), makeInteger(exp)});
             })
 
             smFunc(pow, smLambda {
@@ -139,16 +141,16 @@ namespace sm{
                     return Object();
                 float_t x, y;
 
-                if(args[0].type == ObjectType::INTEGER)
-                    x = args[0].i;
-                else if(args[0].type == ObjectType::FLOAT)
-                    x = args[0].f;
+                if(args[0]->type == ObjectType::INTEGER)
+                    x = args[0]->i;
+                else if(args[0]->type == ObjectType::FLOAT)
+                    x = args[0]->f;
                 else return Object();
 
-                if(args[1].type == ObjectType::INTEGER)
-                    y = args[1].i;
-                else if(args[1].type == ObjectType::FLOAT)
-                    y = args[1].f;
+                if(args[1]->type == ObjectType::INTEGER)
+                    y = args[1]->i;
+                else if(args[1]->type == ObjectType::FLOAT)
+                    y = args[1]->f;
                 else return Object();
 
                 return makeFloat(std::pow(x, y));
@@ -159,16 +161,16 @@ namespace sm{
                     return Object();
                 float_t x, y;
 
-                if(args[0].type == ObjectType::INTEGER)
-                    x = args[0].i;
-                else if(args[0].type == ObjectType::FLOAT)
-                    x = args[0].f;
+                if(args[0]->type == ObjectType::INTEGER)
+                    x = args[0]->i;
+                else if(args[0]->type == ObjectType::FLOAT)
+                    x = args[0]->f;
                 else return Object();
 
-                if(args[1].type == ObjectType::INTEGER)
-                    y = args[1].i;
-                else if(args[1].type == ObjectType::FLOAT)
-                    y = args[1].f;
+                if(args[1]->type == ObjectType::INTEGER)
+                    y = args[1]->i;
+                else if(args[1]->type == ObjectType::FLOAT)
+                    y = args[1]->f;
                 else return Object();
 
                 return makeFloat(std::hypot(x, y));
@@ -177,38 +179,38 @@ namespace sm{
             smFunc(round_int, smLambda {
                 if(args.empty())
                     return Object();
-                else if(args[0].type == ObjectType::INTEGER)
-                    return makeInteger(std::lround(static_cast<float_t>(args[0].i)));
-                else if(args[0].type == ObjectType::FLOAT)
-                    return makeInteger(std::lround(args[0].f));
+                else if(args[0]->type == ObjectType::INTEGER)
+                    return makeInteger(std::lround(static_cast<float_t>(args[0]->i)));
+                else if(args[0]->type == ObjectType::FLOAT)
+                    return makeInteger(std::lround(args[0]->f));
                 return Object();
             })
 
             smFunc(is_nan, smLambda {
-                if(args.empty() || args[0].type != ObjectType::FLOAT)
+                if(args.empty() || args[0]->type != ObjectType::FLOAT)
                     return makeFalse();
-                return makeBool(std::isnan(args[0].f));
+                return makeBool(std::isnan(args[0]->f));
             })
 
             smFunc(is_inf, smLambda {
-                if(args.empty() || args[0].type != ObjectType::FLOAT)
+                if(args.empty() || args[0]->type != ObjectType::FLOAT)
                     return makeFalse();
-                return makeBool(std::isinf(args[0].f));
+                return makeBool(std::isinf(args[0]->f));
             })
 
             smFunc(deg, smLambda {
-                if(args[0].type == ObjectType::FLOAT)
-                    return makeFloat(args[0].f / DOUBLE_PI * 360.f);
-                else if(args[0].type == ObjectType::INTEGER)
-                    return makeFloat(args[0].i / DOUBLE_PI * 360.f);
+                if(args[0]->type == ObjectType::FLOAT)
+                    return makeFloat(args[0]->f / DOUBLE_PI * 360.f);
+                else if(args[0]->type == ObjectType::INTEGER)
+                    return makeFloat(args[0]->i / DOUBLE_PI * 360.f);
                 return Object();
             })
 
             smFunc(rad, smLambda {
-                if(args[0].type == ObjectType::FLOAT)
-                    return makeFloat(args[0].f / 360.f * DOUBLE_PI);
-                else if(args[0].type == ObjectType::INTEGER)
-                    return makeFloat(args[0].i / 360.f * DOUBLE_PI);
+                if(args[0]->type == ObjectType::FLOAT)
+                    return makeFloat(args[0]->f / 360.f * DOUBLE_PI);
+                else if(args[0]->type == ObjectType::INTEGER)
+                    return makeFloat(args[0]->i / 360.f * DOUBLE_PI);
                 return Object();
             })
 
