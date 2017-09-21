@@ -168,40 +168,40 @@ int main(int argc, char** argv){
     if(callInit){ // call init function of the main box.
         rt.boxes[0]->isInitialized = true;
 
-        ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(runtime::initId);
+        RootObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(runtime::initId);
         if(it != rt.boxes[0]->objects.end()){
             Function* initFn;
-            Object self;
+            RootObject self;
             if(!runtime::callable(it->second, self, initFn)){
                 rt.sources.msg(error::ET_ERROR, std::string("'<init>' is not a function in box '")
                     + rt.boxNames[0] + "'.");
             }
 
-            intp.callFunction(initFn, ObjectVec_t(), self);
+            intp.callFunction(initFn, RootObjectVec_t(), self);
         }
     }
 
     if(callNew){ // call new function of the main box.
-        ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(lib::idNew);
+        RootObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(lib::idNew);
         if(it != rt.boxes[0]->objects.end()){
             Function* newFn;
-            Object self;
+            RootObject self;
             if(!runtime::callable(it->second, self, newFn)){
                 rt.sources.msg(error::ET_ERROR, std::string("'new' is not a function in box '")
                     + rt.boxNames[0] + "'.");
             }
 
-            intp.callFunction(newFn, ObjectVec_t(), self);
+            intp.callFunction(newFn, {}, self);
         }
     }
 
     int return_value = 0;
     if(callMain){ // call main function.
         unsigned id = runtime::genOrdinaryId(rt, "main");
-        ObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(id);
-        Object args;
+        RootObjectDict_t::const_iterator it = rt.boxes[0]->objects.find(id);
+        RootObject args;
         {
-            ObjectVec_t arguments;
+            RootObjectVec_t arguments;
             char** array = argv + firstArg;
             int n_args = argc - firstArg;
 
@@ -218,22 +218,21 @@ int main(int argc, char** argv){
         }
 
         Function* mainFn;
-        Object self;
+        RootObject self;
         if(!runtime::callable(it->second, self, mainFn)){
             rt.sources.msg(error::ET_ERROR, std::string("'main' is not a function in box '")
                 + rt.boxNames[0] + "'.");
         }
 
-        Object ret = intp.callFunction(mainFn, {args}, self);
-
-        if(ret.type == ObjectType::INTEGER){
-            return_value = ret.i;
+        RootObject ret = intp.callFunction(mainFn, {args}, self);
+        if(ret->type == ObjectType::INTEGER){
+            return_value = ret->i;
         }
     }
 
     while(rt.n_threads.load())
         std::this_thread::yield();
-    
+
     rt.freeData();
     rt.main_intp = nullptr;
     return return_value;
