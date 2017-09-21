@@ -52,7 +52,7 @@ namespace sm{
 
         template <>
         bool find<ObjectType::CLASS_INSTANCE>(const Object& in, Object& out, unsigned id){
-            ObjectDict_t::const_iterator it = in.i_ptr->objects.find(id);
+            ObjectDict_t::iterator it = in.i_ptr->objects.find(id);
             if(it != in.i_ptr->objects.end()){
                 out = it->second;
                 return true;
@@ -105,8 +105,8 @@ namespace sm{
 
         template <>
         bool find<ObjectType::BOX>(const Object& in, Object& out, unsigned id){
-            ObjectDict_t::const_iterator it = in.c_ptr->objects.find(id);
-            if(it == in.c_ptr->objects.end()){
+            RootObjectDict_t::const_iterator it = in.b_ptr->objects.find(id);
+            if(it == in.b_ptr->objects.end()){
                 return false;
             }
 
