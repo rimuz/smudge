@@ -77,11 +77,10 @@ namespace sm{
     using RootObjectDictVec_t = std::vector<RootObjectDict_t*>;
 
     using NativeFuncPtr_t = RootObject (*) (exec::Interpreter&, Function*, const RootObject&, const RootObjectVec_t&);
-    using Box_t = Class;
-    using BoxVec_t = std::vector<Box_t*>;
-    using ClassVec_t = BoxVec_t;
+    using BoxVec_t = std::vector<Box*>;
+    using ClassVec_t = std::vector<Class*>;
     using InstanceList_t = std::list<Instance>;
-    using GCSearchFunc_t = void (*) (exec::Interpreter&, const Object&, ObjectVec_t&);
+    using GCSearchFunc_t = void (*) (const Object&, ObjectVec_t&);
 
     constexpr std::nullptr_t nullobj = nullptr;
 
@@ -108,6 +107,7 @@ namespace sm{
             float_t f;
 
             // structures
+            Box* b_ptr;
             Class* c_ptr;
             Enum* e_ptr;
             Function* f_ptr;
@@ -180,14 +180,16 @@ namespace sm{
         ~RootObject() noexcept;
     };
 
-    struct Class {
+    struct Box {
         RootObjectDict_t objects;
+        unsigned name = 0;
+        bool isInitialized = false;
+    };
+
+    struct Class {
+        ObjectDict_t objects;
         ClassVec_t bases;
-        unsigned boxName = 0;  // if this is a box
-        union {
-            unsigned name = 0; // (Only classes)
-            bool isInitialized; // (Only boxes)
-        };
+        unsigned boxName = 0, name = 0;
     };
 
     struct Enum {
@@ -279,7 +281,7 @@ namespace sm{
     template <typename... Tp>
     inline Object makeString(Tp&&... args) noexcept;
     inline Object makeInteger(integer_t value) noexcept;
-    inline Object makeBox(Box_t* ptr) noexcept;
+    inline Object makeBox(Box* ptr) noexcept;
     inline Object makeClass(Class* ptr) noexcept;
 
     inline Object makeMethod(Object self, Object* func_ptr) noexcept;
@@ -338,10 +340,10 @@ namespace sm{
         return obj;
     }
 
-    inline Object makeBox(Box_t* ptr) noexcept{
+    inline Object makeBox(Box* ptr) noexcept{
         Object obj;
         obj.type = ObjectType::BOX;
-        obj.c_ptr = ptr;
+        obj.b_ptr = ptr;
         return obj;
     }
 
