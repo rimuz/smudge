@@ -52,7 +52,7 @@ namespace sm{
         Class* cFileStream;
 
         smNativeFunc(print){
-            for(const Object& obj : args){
+            for(const RootObject& obj : args){
                 Object str = runtime::implicitToString(intp, obj);
                 std::cout << str.s_ptr->str;
             }
@@ -77,7 +77,7 @@ namespace sm{
             smOperator(parse::TT_LEFT_SHIFT, print);
 
             smFunc(println, smLambda {
-                for(const Object& obj : args){
+                for(const RootObject& obj : args){
                     Object str = runtime::implicitToString(intp, obj);
                     std::cout << str.s_ptr->str;
                 }
@@ -86,7 +86,7 @@ namespace sm{
             })
 
             smFunc(e_print, smLambda {
-                for(const Object& obj : args){
+                for(const RootObject& obj : args){
                     Object str = runtime::implicitToString(intp, obj);
                     std::cerr << str.s_ptr->str;
                 }
@@ -94,7 +94,7 @@ namespace sm{
             })
 
             smFunc(e_println, smLambda {
-                for(const Object& obj : args){
+                for(const RootObject& obj : args){
                     Object str = runtime::implicitToString(intp, obj);
                     std::cerr << str.s_ptr->str;
                 }
@@ -123,10 +123,7 @@ namespace sm{
                 std::string input;
                 std::getline(std::cin, input);
                 try {
-                    Object obj;
-                    obj.type = ObjectType::INTEGER;
-                    obj.i = std::stol(input);
-                    return obj;
+                    return makeInteger(std::stoll(input));
                 } catch(...){
                     return Object();
                 }
@@ -136,10 +133,7 @@ namespace sm{
                 std::string input;
                 std::getline(std::cin, input);
                 try {
-                    Object obj;
-                    obj.type = ObjectType::FLOAT;
-                    obj.f = std::stod(input);
-                    return obj;
+                    return makeFloat(std::stod(input));
                 } catch(...){
                     return Object();
                 }
@@ -169,16 +163,16 @@ namespace sm{
             smOperator(parse::TT_RIGHT_SHIFT, smLambda {
                 std::string str;
                 std::cin >> str;
-                const Object& obj = args[0];
+                const RootObject& obj = args[0];
 
-                if(obj.type == ObjectType::WEAK_REFERENCE){
-                    obj.refSet(makeString(str.c_str()));
+                if(obj->type == ObjectType::WEAK_REFERENCE){
+                    obj->refSet(makeString(str.c_str()));
                 }
                 return makeBox(intp.rt->boxes[thisFn->boxName]);
             })
 
             smFunc(open, smLambda {
-                Object func, objSelf, inst = newInstance(intp, cFileStream);
+                RootObject func, objSelf, inst = newInstance(intp, cFileStream);
                 Function* f_ptr;
 
                 if(!runtime::find<ObjectType::CLASS_INSTANCE>(inst, func, smId("open")))
@@ -190,23 +184,23 @@ namespace sm{
                         std::string("'open' is not a function in ")
                         + runtime::errorString(intp, inst));
 
-                Object obj = intp.callFunction(f_ptr, args, objSelf, true);
-                return runtime::implicitToBool(obj) ? inst : Object();
+                RootObject obj = intp.callFunction(f_ptr, args, objSelf, true);
+                return runtime::implicitToBool(obj) ? inst : RootObject();
             })
 
             smFunc(remove, smLambda {
-                if(args.empty() || args[0].type != ObjectType::STRING)
+                if(args.empty() || args[0]->type != ObjectType::STRING)
                     return Object();
-                std::string filepath(args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+                std::string filepath(args[0]->s_ptr->str.begin(), args[0]->s_ptr->str.end());
                 return makeBool(!std::remove(filepath.c_str()));
             })
 
             smFunc(rename, smLambda {
-                if(args.size() < 2 || args[0].type != ObjectType::STRING
-                        || args[1].type != ObjectType::STRING)
+                if(args.size() < 2 || args[0]->type != ObjectType::STRING
+                        || args[1]->type != ObjectType::STRING)
                     return Object();
-                std::string oldName (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
-                std::string newName (args[1].s_ptr->str.begin(), args[1].s_ptr->str.end());
+                std::string oldName (args[0]->s_ptr->str.begin(), args[0]->s_ptr->str.end());
+                std::string newName (args[1]->s_ptr->str.begin(), args[1]->s_ptr->str.end());
                 return makeBool(!std::rename(oldName.c_str(), newName.c_str()));
             })
 
@@ -234,21 +228,26 @@ namespace sm{
                     return Object();
                 })
 
+                smIdMethod(runtime::gcCollectId, smLambda{
+                    smDeleteData(FSData);
+                    return Object();
+                })
+
                 smMethod(open, smLambda {
                     unsigned flags = READ | WRITE;
 
                     if(args.empty())
                         return makeFalse();
                     else if(args.size() > 1) {
-                        if(args[1].type != ObjectType::INTEGER)
+                        if(args[1]->type != ObjectType::INTEGER)
                             return makeFalse();
-                        flags = args[1].i;
+                        flags = args[1]->i;
                     }
 
-                    if(args[0].type != ObjectType::STRING)
+                    if(args[0]->type != ObjectType::STRING)
                         return makeFalse();
 
-                    std::string filepath (args[0].s_ptr->str.begin(), args[0].s_ptr->str.end());
+                    std::string filepath (args[0]->s_ptr->str.begin(), args[0]->s_ptr->str.end());
                     #if fileSeparator != '/'
                     std::replace(filepath.begin(), filepath.end(), '/', fileSeparator);
                     #endif
@@ -331,9 +330,9 @@ namespace sm{
                 })
 
                 smMethod(read, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER || args[0].i < 0)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER || args[0]->i < 0)
                         return Object();
-                    unsigned long sz = args[0].i;
+                    unsigned long sz = args[0]->i;
                     Object str = makeString();
                     str.s_ptr->str.resize(sz);
                     smGetData(FSData)->stream.read(str.s_ptr->str.data(), sz);
@@ -355,7 +354,7 @@ namespace sm{
                 })
 
                 smMethod(write, smLambda {
-                    Object obj = args.empty() ? Object() : args[0];
+                    RootObject obj = args.empty() ? RootObject() : args[0];
                     Object str = runtime::implicitToString(intp, obj);
                     smGetData(FSData)->stream.write(str.s_ptr->str.data(), str.s_ptr->str.size());
                     return self;
@@ -367,12 +366,12 @@ namespace sm{
 
                 smMethod(seek, smLambda {
                     FSData* ptr = smGetData(FSData);
-                    if(!args.empty() && args[0].type == ObjectType::INTEGER){
-                        if(args.size() == 1 || args[1].type != ObjectType::INTEGER)
-                            ptr->stream.seekg(args[0].i, ptr->stream.beg);
+                    if(!args.empty() && args[0]->type == ObjectType::INTEGER){
+                        if(args.size() == 1 || args[1]->type != ObjectType::INTEGER)
+                            ptr->stream.seekg(args[0]->i, ptr->stream.beg);
                         else
-                            ptr->stream.seekg(args[0].i, args[1].i == BEG
-                                ? ptr->stream.beg : (args[1].i == CURR ?
+                            ptr->stream.seekg(args[0]->i, args[1]->i == BEG
+                                ? ptr->stream.beg : (args[1]->i == CURR ?
                                 ptr->stream.cur : ptr->stream.end));
                     }
                     return Object();
