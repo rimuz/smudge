@@ -34,14 +34,14 @@ namespace sm{
             smFunc(int, smLambda {
                 if(args.empty())
                     return Object();
-                const Object& obj = args[0];
-                switch(obj.type){
+                const RootObject& obj = args[0];
+                switch(obj->type){
                     case ObjectType::INTEGER:
                         return obj;
                     case ObjectType::FLOAT:
-                        return makeInteger(obj.f);
+                        return makeInteger(obj->f);
                     case ObjectType::STRING: {
-                        std::string str (obj.s_ptr->str.begin(), obj.s_ptr->str.end());
+                        std::string str (obj->s_ptr->str.begin(), obj->s_ptr->str.end());
                         return makeInteger(std::atol(str.c_str()));
                     }
                 }
@@ -51,14 +51,14 @@ namespace sm{
             smFunc(float, smLambda {
                 if(args.empty())
                     return Object();
-                const Object& obj = args[0];
-                switch(obj.type){
+                const RootObject& obj = args[0];
+                switch(obj->type){
                     case ObjectType::INTEGER:
-                        return makeFloat(obj.i);
+                        return makeFloat(obj->i);
                     case ObjectType::FLOAT:
                         return obj;
                     case ObjectType::STRING: {
-                        std::string str (obj.s_ptr->str.begin(), obj.s_ptr->str.end());
+                        std::string str (obj->s_ptr->str.begin(), obj->s_ptr->str.end());
                         return makeFloat(std::atof(str.c_str()));
                     }
                 }
@@ -72,9 +72,9 @@ namespace sm{
             })
 
             smFunc(uchar, smLambda {
-                if(args.empty() || args[0].type != ObjectType::INTEGER)
+                if(args.empty() || args[0]->type != ObjectType::INTEGER)
                     return Object();
-                unicode_t cp = args[0].i;
+                unicode_t cp = args[0]->i;
                 unicode_t ch = uByCodepoint(cp);
                 if(ch == UTF8_ERROR)
                     return Object();
@@ -82,9 +82,9 @@ namespace sm{
             })
 
             smFunc(ucode, smLambda {
-                if(args.empty() || args[0].type != ObjectType::STRING)
+                if(args.empty() || args[0]->type != ObjectType::STRING)
                     return Object();
-                String& str = args[0].s_ptr->str;
+                String& str = args[0]->s_ptr->str;
                 if(str.empty())
                     return Object();
                 unicode_t ch = str.uCharAt(0);
@@ -95,19 +95,19 @@ namespace sm{
             })
 
             smFunc(value, smLambda {
-                return args.empty() ? Object() : args[0];
+                return args.empty() ? RootObject() : args[0];
             })
 
             smFunc(is_int, smLambda {
-                return makeBool(!args.empty() && args[0].type == ObjectType::INTEGER);
+                return makeBool(!args.empty() && args[0]->type == ObjectType::INTEGER);
             })
 
             smFunc(is_float, smLambda {
-                return makeBool(!args.empty() && args[0].type == ObjectType::FLOAT);
+                return makeBool(!args.empty() && args[0]->type == ObjectType::FLOAT);
             })
 
             smFunc(is_string, smLambda {
-                return makeBool(!args.empty() && args[0].type == ObjectType::STRING);
+                return makeBool(!args.empty() && args[0]->type == ObjectType::STRING);
             })
 
             smFunc(typeof, smLambda {
@@ -115,7 +115,8 @@ namespace sm{
                     return makeString("n");
 
                 std::string str;
-                const Object* obj = &args[0];
+                Object copy = args[0];
+                const Object* obj = &copy;
 
                 Repeat:
                 switch(obj->type){
@@ -169,76 +170,76 @@ namespace sm{
             smFunc(classof, smLambda {
                 if(args.empty())
                     return Object();
-                else if(args[0].type == ObjectType::CLASS)
+                else if(args[0]->type == ObjectType::CLASS)
                     return args[0];
-                else if(args[0].type == ObjectType::STRING){
-                    Object ret(ObjectType::CLASS);
-                    ret.c_ptr = cString;
+                else if(args[0]->type == ObjectType::STRING){
+                    RootObject ret(ObjectType::CLASS);
+                    ret->c_ptr = cString;
                     return ret;
-                } else if(args[0].type == ObjectType::CLASS_INSTANCE){
-                    Object ret(ObjectType::CLASS);
-                    ret.c_ptr = args[0].i_ptr->base;
+                } else if(args[0]->type == ObjectType::CLASS_INSTANCE){
+                    RootObject ret(ObjectType::CLASS);
+                    ret->c_ptr = args[0]->i_ptr->base;
                     return ret;
                 }
                 return Object();
             })
 
             smFunc(baseof, smLambda {
-                if(args.empty() || args[0].type != ObjectType::CLASS)
+                if(args.empty() || args[0]->type != ObjectType::CLASS)
                     return Object();
 
                 size_t idx = 0;
                 if(args.size() > 1){
-                    if(args[0].type != ObjectType::INTEGER)
+                    if(args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    idx = args[0].i;
+                    idx = args[0]->i;
                 }
 
-                if(args[0].c_ptr->bases.size() <= idx)
+                if(args[0]->c_ptr->bases.size() <= idx)
                     return Object();
-                Object ret(ObjectType::CLASS);
-                ret.c_ptr = args[0].c_ptr->bases[idx];
+                RootObject ret(ObjectType::CLASS);
+                ret->c_ptr = args[0]->c_ptr->bases[idx];
                 return ret;
             })
 
             smFunc(same, smLambda {
-                Object a, b;
+                RootObject a, b;
                 if(!args.empty()){
                     a = args[0];
                     if(args.size() != 1)
                         b = args[1];
-                    if(a.type == ObjectType::WEAK_REFERENCE)
-                        a = *a.o_ptr;
-                    if(b.type == ObjectType::WEAK_REFERENCE)
-                        b = *b.o_ptr;
+                    if(a->type == ObjectType::WEAK_REFERENCE)
+                        a = *a->o_ptr;
+                    if(b->type == ObjectType::WEAK_REFERENCE)
+                        b = *b->o_ptr;
 
                 }
 
-                switch(a.type){
+                switch(a->type){
                     case ObjectType::NONE:
-                        return makeBool(b.type == ObjectType::NONE);
+                        return makeBool(b->type == ObjectType::NONE);
                     case ObjectType::INTEGER:
-                        return makeBool(b.type == ObjectType::INTEGER && a.i == b.i);
+                        return makeBool(b->type == ObjectType::INTEGER && a->i == b->i);
                     case ObjectType::FLOAT:
-                        return makeBool(b.type == ObjectType::FLOAT && a.f == b.f);
+                        return makeBool(b->type == ObjectType::FLOAT && a->f == b->f);
                     case ObjectType::STRING:
-                        return makeBool(b.type == ObjectType::STRING && a.s_ptr == b.s_ptr);
+                        return makeBool(b->type == ObjectType::STRING && a->s_ptr == b->s_ptr);
                     case ObjectType::CLASS_INSTANCE:
-                        return makeBool(b.type == ObjectType::CLASS_INSTANCE && a.o_ptr == b.o_ptr);
+                        return makeBool(b->type == ObjectType::CLASS_INSTANCE && a->o_ptr == b->o_ptr);
                     case ObjectType::ENUM:
-                        return makeBool(b.type == ObjectType::ENUM && a.e_ptr == b.e_ptr);
+                        return makeBool(b->type == ObjectType::ENUM && a->e_ptr == b->e_ptr);
                     case ObjectType::CLASS:
-                        return makeBool(b.type == ObjectType::CLASS && a.c_ptr == b.c_ptr);
+                        return makeBool(b->type == ObjectType::CLASS && a->c_ptr == b->c_ptr);
                     case ObjectType::FUNCTION:
-                        return makeBool(b.type == ObjectType::FUNCTION && a.f_ptr == b.f_ptr);
+                        return makeBool(b->type == ObjectType::FUNCTION && a->f_ptr == b->f_ptr);
                     case ObjectType::METHOD:
-                        return makeBool(b.type == ObjectType::METHOD && a.m_ptr == b.m_ptr);
+                        return makeBool(b->type == ObjectType::METHOD && a->m_ptr == b->m_ptr);
                     case ObjectType::BOX:
-                        return makeBool(b.type == ObjectType::BOX && a.c_ptr == b.c_ptr);
+                        return makeBool(b->type == ObjectType::BOX && a->b_ptr == b->b_ptr);
                     case ObjectType::INSTANCE_CREATOR:
-                        return makeBool(b.type == ObjectType::INSTANCE_CREATOR && a.c_ptr == b.c_ptr);
+                        return makeBool(b->type == ObjectType::INSTANCE_CREATOR && a->c_ptr == b->c_ptr);
                     case ObjectType::NATIVE_DATA:
-                        return makeBool(b.type == ObjectType::NATIVE_DATA && a.ptr == b.ptr);
+                        return makeBool(b->type == ObjectType::NATIVE_DATA && a->ptr == b->ptr);
                 }
                 return Object();
             })
@@ -248,57 +249,57 @@ namespace sm{
                     return makeTrue();
 
                 if(args.size() == 1)
-                    return args[0].type == ObjectType::NONE ? makeTrue() : makeFalse();
+                    return args[0]->type == ObjectType::NONE ? makeTrue() : makeFalse();
 
                 Class* cl;
 
-                Object a = args[0], b = args[1];
+                RootObject a = args[0], b = args[1];
 
-                if(a.type == ObjectType::WEAK_REFERENCE)
-                    a = *a.o_ptr;
-                if(b.type == ObjectType::WEAK_REFERENCE)
-                    b = *b.o_ptr;
+                if(a->type == ObjectType::WEAK_REFERENCE)
+                    a = *a->o_ptr;
+                if(b->type == ObjectType::WEAK_REFERENCE)
+                    b = *b->o_ptr;
 
-                switch(a.type){
+                switch(a->type){
                     case ObjectType::NONE:
-                        return makeBool(b.type == ObjectType::NONE);
+                        return makeBool(b->type == ObjectType::NONE);
                     case ObjectType::INTEGER:
-                        return makeBool(b.type == ObjectType::INTEGER);
+                        return makeBool(b->type == ObjectType::INTEGER);
                     case ObjectType::FLOAT:
-                        return makeBool(b.type == ObjectType::FLOAT);
+                        return makeBool(b->type == ObjectType::FLOAT);
                     case ObjectType::STRING:
                         cl = cString;
                         break;
                     case ObjectType::CLASS_INSTANCE:
-                        cl = a.i_ptr->base;
+                        cl = a->i_ptr->base;
                         break;
                     case ObjectType::ENUM:
-                        return makeBool(b.type == ObjectType::ENUM);
+                        return makeBool(b->type == ObjectType::ENUM);
                     case ObjectType::CLASS:
-                        cl = a.c_ptr;
+                        cl = a->c_ptr;
                         break;
                     case ObjectType::FUNCTION:
-                        return makeBool(b.type == ObjectType::FUNCTION);
+                        return makeBool(b->type == ObjectType::FUNCTION);
                     case ObjectType::METHOD:
-                        return makeBool(b.type == ObjectType::METHOD);
+                        return makeBool(b->type == ObjectType::METHOD);
                     case ObjectType::BOX:
-                        return makeBool(b.type == ObjectType::BOX);
+                        return makeBool(b->type == ObjectType::BOX);
                     case ObjectType::INSTANCE_CREATOR:
-                        return makeBool(b.type == ObjectType::INSTANCE_CREATOR);
+                        return makeBool(b->type == ObjectType::INSTANCE_CREATOR);
                     case ObjectType::NATIVE_DATA:
-                        return makeBool(b.type == ObjectType::NATIVE_DATA);
+                        return makeBool(b->type == ObjectType::NATIVE_DATA);
                     default:
                         return Object();
                 }
 
                 Class* cl2;
 
-                switch(b.type){
+                switch(b->type){
                     case ObjectType::CLASS_INSTANCE:
-                        cl2 = b.i_ptr->base;
+                        cl2 = b->i_ptr->base;
                         break;
                     case ObjectType::CLASS:
-                        cl2 = b.c_ptr;
+                        cl2 = b->c_ptr;
                         break;
                     case ObjectType::STRING:
                         cl2 = cString;
@@ -320,18 +321,18 @@ namespace sm{
             })
 
             smFunc(desc, smLambda {
-                Object in = args.empty() ? Object() : args[0];
-                if(in.type == ObjectType::STRING){
+                RootObject in = args.empty() ? RootObject() : args[0];
+                if(in->type == ObjectType::STRING){
                     return makeString("<string>");
-                } if(in.type == ObjectType::INTEGER){
+                } if(in->type == ObjectType::INTEGER){
                     return makeString("<int>");
-                } if(in.type == ObjectType::FLOAT){
+                } if(in->type == ObjectType::FLOAT){
                     return makeString("<float>");
-                } if(in.type == ObjectType::CLASS_INSTANCE){
+                } if(in->type == ObjectType::CLASS_INSTANCE){
                     std::ostringstream oss;
                     oss << "<instance of "
-                        << intp.rt->boxNames[in.i_ptr->base->boxName] << "::"
-                        << intp.rt->nameFromId(in.i_ptr->base->name) << ">";
+                        << intp.rt->boxNames[in->i_ptr->base->boxName] << "::"
+                        << intp.rt->nameFromId(in->i_ptr->base->name) << ">";
                     return makeString(oss.str().c_str());
                 }
                 return runtime::implicitToString(intp, in);
