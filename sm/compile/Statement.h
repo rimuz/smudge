@@ -30,6 +30,7 @@ namespace sm{
     namespace compile{
         namespace test{
             void print(const ByteCode_t& code);
+            std::string instRepr(std::array<uint8_t, 5> inst) noexcept;
         }
 
         enum OpCode{
