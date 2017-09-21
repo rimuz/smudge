@@ -168,7 +168,8 @@ namespace sm {
 
                 ByteCode_t* output;
                 ImportsVec_t* toImport;
-                Class* currBox, *currClass = nullptr;
+                Box* currBox = nullptr;
+                Class* currClass = nullptr;
                 parse::TokenVec_t::const_iterator it, begin, end;
 
                 bool isLastOperand = false,      isLastDot = false,
@@ -239,7 +240,7 @@ namespace sm {
                  * library doesn't contain the smLibDecl
                  * box will be set to nullptr
                 */
-                bool load_native(const char* path, unsigned id, Box_t*& box) noexcept;
+                bool load_native(const char* path, unsigned id, Box*& box) noexcept;
                 static error::CodeSource* readf(const string_t& filePath);
             };
         }
