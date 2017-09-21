@@ -27,59 +27,52 @@
 #define _OcFunc(Name) inline void Name(sm::exec::Interpreter& intp, std::array<uint8_t, 5> inst) noexcept
 
 #define _OcPopStore(Name) \
-    sm::Object Name = std::move(intp.exprStack.back()); \
-    runtime::invalidate(Name); \
+    sm::RootObject Name = std::move(intp.exprStack.back()); \
     intp.exprStack.pop_back();
 
 #define _OcStore(Name) \
-    sm::Object& Name = intp.exprStack.back();
+    sm::RootObject& Name = intp.exprStack.back();
 
 #define _OcPopStore2 \
     _OcPopStore(tos); \
     _OcPopStore(tos1);
 
 #define _OcValue(ObjName) \
-    while(ObjName.type == ObjectType::WEAK_REFERENCE \
-            || ObjName.type == ObjectType::STRONG_REFERENCE) \
-        ObjName = ObjName.refGet();
+    while(ObjName->type == ObjectType::WEAK_REFERENCE \
+            || ObjName->type == ObjectType::STRONG_REFERENCE) \
+        ObjName = ObjName->refGet();
 
 #define _OcSimplifyRef(RefName) \
-    if(RefName.type == ObjectType::WEAK_REFERENCE){ \
-        RefName = RefName.refGet(); \
-    } else if(RefName.type == ObjectType::STRONG_REFERENCE){ \
-        RefName.type = ObjectType::WEAK_REFERENCE; \
+    if(RefName->type == ObjectType::WEAK_REFERENCE){ \
+        RefName = RefName->refGet(); \
+    } else if(RefName->type == ObjectType::STRONG_REFERENCE){ \
+        RefName->type = ObjectType::WEAK_REFERENCE; \
     }
 
 #define _OcOp(Operator, OperatorFloat, TokenType, Inline, Do) \
-    switch(tos1.type){ \
+    switch(tos1->type){ \
         case ObjectType::INTEGER: \
-            if(tos.type == ObjectType::INTEGER){ \
-                tos1.i = tos1.i Operator tos.i; \
-                intp.stacks_m.unlock(); \
+            if(tos->type == ObjectType::INTEGER){ \
+                tos1->i = tos1->i Operator tos->i; \
                 break; \
-            } else if(tos.type == ObjectType::FLOAT){ \
-                tos1.type = ObjectType::FLOAT; \
-                tos1.f = OperatorFloat(tos1.i, tos.f); \
-                intp.stacks_m.unlock(); \
+            } else if(tos->type == ObjectType::FLOAT){ \
+                tos1->type = ObjectType::FLOAT; \
+                tos1->f = OperatorFloat(tos1->i, tos->f); \
                 break; \
             } else { \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <int> and ") \
                     + runtime::errorString(intp, tos)); \
             } \
         case ObjectType::FLOAT: \
-            if(tos.type == ObjectType::INTEGER){ \
-                tos1.f = OperatorFloat(tos1.f, tos.i); \
-                intp.stacks_m.unlock(); \
+            if(tos->type == ObjectType::INTEGER){ \
+                tos1->f = OperatorFloat(tos1->f, tos->i); \
                 break; \
-            } else if(tos.type == ObjectType::FLOAT){ \
-                tos1.f = OperatorFloat(tos1.f, tos.f); \
-                intp.stacks_m.unlock(); \
+            } else if(tos->type == ObjectType::FLOAT){ \
+                tos1->f = OperatorFloat(tos1->f, tos->f); \
                 break; \
             } else { \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot perform 'operator" #Operator \
                     "' between <float> and ") \
@@ -87,79 +80,74 @@
             } \
         case ObjectType::CLASS_INSTANCE: { \
             unsigned id = runtime::operatorId(TokenType); \
-            Object op; \
+            RootObject op; \
             Function* op_ptr = nullptr; \
-            ObjectVec_t args = { tos }; \
+            RootObjectVec_t args = { tos }; \
+            \
             if(!runtime::find<ObjectType::CLASS_INSTANCE>(tos1, op, id)){ \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, tos1, op_ptr)){ \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
             } \
-            Object instance = std::move(tos1); \
-            runtime::invalidate(instance); \
+            \
+            RootObject instance = std::move(tos1); \
             intp.exprStack.pop_back(); \
-            intp.stacks_m.unlock(); \
             intp.makeCall(op_ptr, args, instance, Inline); \
             Do; \
             break; \
         } \
         case ObjectType::BOX: { \
             unsigned id = runtime::operatorId(TokenType); \
-            Object op; \
-            Object self; \
+            RootObject op; \
+            RootObject self; \
             Function* op_ptr = nullptr; \
-            ObjectVec_t args = { tos }; \
+            RootObjectVec_t args = { tos }; \
+            \
             if(!runtime::find<ObjectType::BOX>(tos1, op, id)){ \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, self, op_ptr)){ \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
             } \
+            \
             intp.exprStack.pop_back(); \
-            intp.stacks_m.unlock(); \
             intp.makeCall(op_ptr, args, self, Inline); \
             Do; \
             break; \
         } \
         case ObjectType::STRING: { \
             unsigned id = runtime::operatorId(TokenType); \
-            Object op; \
+            RootObject op; \
             Function* op_ptr = nullptr; \
-            ObjectVec_t args = { tos }; \
+            RootObjectVec_t args = { tos }; \
+            RootObject self = tos1; \
+            \
             if(!runtime::find<ObjectType::STRING>(tos1, op, id)){ \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("cannot find 'operator" #Operator "' in ") \
                     + runtime::errorString(intp, tos1)); \
             } else if(!runtime::callable(op, tos1, op_ptr)){ \
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                     std::string("'operator" #Operator \
                     "' is not a function in ") \
                     + runtime::errorString(intp, tos1)); \
             } \
-            Object str = std::move(tos1); \
+            \
             intp.exprStack.pop_back(); \
-            intp.stacks_m.unlock(); \
-            intp.makeCall(op_ptr, args, str, Inline); \
+            intp.makeCall(op_ptr, args, self, Inline); \
             Do; \
             break; \
         } \
         default: \
-            intp.stacks_m.unlock(); \
             intp.rt->sources.printStackTrace(intp, error::ET_ERROR, \
                 std::string("cannot find 'operator" #Operator "' in ") \
                 + runtime::errorString(intp, tos1)); \
