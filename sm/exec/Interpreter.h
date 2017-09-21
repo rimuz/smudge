@@ -29,10 +29,10 @@ namespace sm{
             /*
             * note: for each change in CallInfo_t, GC must be updated.
             */
-            ObjectDictVec_t codeBlocks;
-            Object thisObject; // 'this' object
+            RootObjectDictVec_t codeBlocks;
+            RootObject thisObject; // 'this' object
             Function* function = nullptr; // for Stack Trace
-            Class* box = nullptr;
+            Box* box = nullptr;
             unsigned pc;
             /*
              * When you call a native function from Smudge, all works.
@@ -48,10 +48,9 @@ namespace sm{
         class Interpreter {
             friend runtime::GarbageCollector;
         public:
-            ObjectVec_t exprStack;
+            RootObjectVec_t exprStack;
             CallStack_t funcStack;
             // funcStack is shared between GC and Interpreter
-            std::mutex stacks_m;
             runtime::Runtime_t* rt;
             unsigned pc;
             bool doReturn;
@@ -63,11 +62,12 @@ namespace sm{
             Interpreter& operator=(const Interpreter&) = delete;
             Interpreter& operator=(Interpreter&&) = default;
 
-            Object callFunction(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
-                const Object& self = Object(), bool inlined = false);
-            void makeCall(Function* fn, const ObjectVec_t& args = ObjectVec_t(),
-                const Object& self = Object(), bool inlined = false);
-            Object start();
+            RootObject callFunction(Function* fn, const RootObjectVec_t& args = RootObjectVec_t(),
+                const RootObject& self = RootObject(), bool inlined = false);
+            void makeCall(Function* fn, const RootObjectVec_t& args = RootObjectVec_t(),
+                const RootObject& self = RootObject(), bool inlined = false);
+            RootObject start();
+            void printStackContent();
 
             inline std::array<uint8_t, 5> fetch(unsigned& addr){
                 std::array<uint8_t, 5> ret {};
@@ -89,10 +89,10 @@ namespace sm{
         class IntpData {
         public:
             exec::Interpreter intp;
-            Object func;
-            ObjectVec_t args;
+            RootObject func;
+            RootObjectVec_t args;
 
-            IntpData(runtime::Runtime_t& rt, Object _func, ObjectVec_t _args)
+            IntpData(runtime::Runtime_t& rt, RootObject _func, RootObjectVec_t _args)
                 : intp(rt), func(std::move(_func)), args(std::move(_args)) {}
         };
     }
