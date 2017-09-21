@@ -49,7 +49,6 @@ namespace sm{
         constexpr char right_shift_str[] = ">>";
 
         _OcFunc(Or){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -58,7 +57,6 @@ namespace sm{
         }
 
         _OcFunc(And){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -67,7 +65,6 @@ namespace sm{
         }
 
         _OcFunc(Xor){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -76,7 +73,6 @@ namespace sm{
         }
 
         _OcFunc(LeftShift){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -85,7 +81,6 @@ namespace sm{
         }
 
         _OcFunc(RightShift){
-            intp.stacks_m.lock();
             _OcPopStore(tos);
             _OcStore(tos1);
             _OcValue(tos1);
@@ -94,8 +89,7 @@ namespace sm{
         }
 
         _OcFunc(LogicAnd){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object tos = intp.exprStack.back();
+            RootObject tos = intp.exprStack.back();
             _OcValue(tos);
 
             if(!runtime::implicitToBool(tos)){
@@ -106,8 +100,7 @@ namespace sm{
         }
 
         _OcFunc(LogicOr){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            Object tos = intp.exprStack.back();
+            RootObject tos = intp.exprStack.back();
             _OcValue(tos);
 
             if(!runtime::implicitToBool(tos)){
