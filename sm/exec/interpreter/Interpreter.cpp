@@ -45,7 +45,7 @@ namespace sm{
     }
 
     namespace exec{
-        Object Interpreter::start(){
+        RootObject Interpreter::start(){
             while(!doReturn){
                 std::array<uint8_t, 5> inst = fetch(pc);
                 switch(inst[0]){
@@ -148,15 +148,13 @@ namespace sm{
             }
 
             doReturn = false;
-            std::lock_guard<std::mutex> lock(stacks_m);
-            Object obj(std::move(exprStack.back()));
-            runtime::invalidate(obj);
+            RootObject obj(std::move(exprStack.back()));
             exprStack.pop_back();
             return obj;
         }
 
-        Object Interpreter::callFunction(Function* fn, const ObjectVec_t& args,
-                const Object& self, bool inlined){
+        RootObject Interpreter::callFunction(Function* fn, const RootObjectVec_t& args,
+                const RootObject& self, bool inlined){
             if(!funcStack.empty() && !inlined){
                 std::cerr << "error: alredy calling function." << std::endl;
                 std::exit(1);
@@ -165,25 +163,25 @@ namespace sm{
             return start();
         }
 
-        void Interpreter::makeCall(Function* fn, const ObjectVec_t& args,
-                const Object& self, bool inlined){
+        void Interpreter::makeCall(Function* fn, const RootObjectVec_t& args,
+                const RootObject& self, bool inlined){
             if(!funcStack.empty()){
                 funcStack.back().pc = pc;
             }
 
-            if(self.type == ObjectType::INSTANCE_CREATOR){
-                if(self.c_ptr == lib::cString){
+            if(self->type == ObjectType::INSTANCE_CREATOR){
+                if(self->c_ptr == lib::cString){
                     exprStack.emplace_back(makeString());
                     return;
                 }
 
                 std::vector <std::tuple<Object, Function*>> inits;
-                Object clazz = self;
+                RootObject clazz(self);
                 ObjectDict_t::iterator it;
                 Function* func_ptr;
-                Class* base = clazz.c_ptr;
+                Class* base = clazz->c_ptr;
 
-                Object self = makeInstance(*this, clazz.c_ptr);
+                RootObject self = makeInstance(*this, clazz->c_ptr);
                 do {
                     it = base->objects.find(runtime::initId);
                     if(it != base->objects.end()){
@@ -202,11 +200,11 @@ namespace sm{
                     callFunction(std::get<1>(*rit), {}, std::get<0>(*rit), true);
                 }
 
-                base = clazz.c_ptr;
+                base = clazz->c_ptr;
                 it = base->objects.find(lib::idNew);
 
                 if(it != base->objects.end()){
-                    Object newFunc = it->second;
+                    RootObject newFunc = it->second;
                     if(!runtime::callable(newFunc, self, func_ptr))
                         rt->sources.printStackTrace(*this, error::ET_ERROR,
                             std::string("'new' is not a function in ")
@@ -215,20 +213,19 @@ namespace sm{
                     callFunction(func_ptr, args, self, true);
                 }
 
-                // pushing the newly created instance on the stack.
-                runtime::validate(exprStack, std::move(self));
+                exprStack.emplace_back(std::move(self));
                 doReturn = inlined;
             } else if(fn->flags & FF_NATIVE){
-                Object ret = (*fn->native_ptr)(*this, fn, self, args);
-                if(ret.type == ObjectType::WEAK_REFERENCE){
-                    ret = ret.refGet();
-                } else if(ret.type == ObjectType::STRONG_REFERENCE){
-                    ret.type = ObjectType::WEAK_REFERENCE;
+                RootObject ret = (*fn->native_ptr)(*this, fn, self, args);
+                if(ret->type == ObjectType::WEAK_REFERENCE){
+                    ret = ret->refGet();
+                } else if(ret->type == ObjectType::STRONG_REFERENCE){
+                    ret->type = ObjectType::WEAK_REFERENCE;
                 }
-                runtime::validate(exprStack, std::move(ret));
+                exprStack.emplace_back(std::move(ret));
                 doReturn = inlined;
             } else {
-                ObjectDict_t* dict = new ObjectDict_t;
+                RootObjectDict_t* dict = new RootObjectDict_t;
                 bool is_vararg = fn->flags & FF_VARARGS;
                 size_t n_args = args.size();
                 size_t n_expected = is_vararg ? fn->arguments.size()-1 : fn->arguments.size();
@@ -242,7 +239,7 @@ namespace sm{
                     }
                 } else {
                     for(size_t i = 0; i != n_expected; ++i){
-                        Object obj;
+                        RootObject obj;
                         if(i < n_args){
                             obj = args[i];
                         }
@@ -250,9 +247,9 @@ namespace sm{
                     }
 
                     if(is_vararg){
-                        Object ls;
+                        RootObject ls;
                         if(n_args > n_expected){
-                            ls = makeList(*this, ObjectVec_t(args.begin() + n_expected, args.end()));
+                            ls = makeList(*this, RootObjectVec_t(args.begin() + n_expected, args.end()));
                         } else {
                             ls = makeList(*this);
                         }
@@ -268,7 +265,6 @@ namespace sm{
                     }
                 }
 
-                stacks_m.lock();
                 funcStack.emplace_back();
                 CallInfo_t& backInfo = funcStack.back();
                 backInfo.codeBlocks.reserve(5);
@@ -277,17 +273,19 @@ namespace sm{
                 backInfo.box = rt->boxes[fn->boxName];
                 backInfo.thisObject = self;
                 backInfo.inlined = inlined;
-                stacks_m.unlock();
                 pc = address;
-
-                runtime::validate(self);
-                runtime::validate_all(args);
             }
+        }
+
+        void Interpreter::printStackContent(){
+            std::cout << "Content of stack:" << std::endl;
+            for(auto& obj : exprStack)
+                std::cout << "\t" << runtime::errorString(*this, obj) << std::endl;
         }
 
         Interpreter::~Interpreter(){
             for(exec::CallInfo_t& callInfo : funcStack)
-                for(ObjectDict_t* dict : callInfo.codeBlocks)
+                for(RootObjectDict_t* dict : callInfo.codeBlocks)
                     if(dict) delete dict;
         }
     }
