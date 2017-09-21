@@ -40,6 +40,7 @@ namespace sm{
     struct Box;
     struct RCString;
 
+    class RootObject;
     class Object;
     class Instance;
 
@@ -69,11 +70,20 @@ namespace sm{
     using ObjectDict_t = Dict_t<Object>;
     using ObjectDictVec_t = std::vector<ObjectDict_t*>;
 
-    using NativeFuncPtr_t = Object (*) (exec::Interpreter&, Function*, const Object&, const ObjectVec_t&);
+    template <size_t Size>
+    using RootObjectArray_t = std::array<RootObject, Size>;
+    using RootObjectVec_t = std::vector<RootObject>;
+    using RootObjectDict_t = Dict_t<RootObject>;
+    using RootObjectDictVec_t = std::vector<RootObjectDict_t*>;
+
+    using NativeFuncPtr_t = RootObject (*) (exec::Interpreter&, Function*, const RootObject&, const RootObjectVec_t&);
     using Box_t = Class;
     using BoxVec_t = std::vector<Box_t*>;
     using ClassVec_t = BoxVec_t;
     using InstanceList_t = std::list<Instance>;
+    using GCSearchFunc_t = void (*) (exec::Interpreter&, const Object&, ObjectVec_t&);
+
+    constexpr std::nullptr_t nullobj = nullptr;
 
     namespace ObjectType {
         enum {
@@ -112,52 +122,66 @@ namespace sm{
             // used to store method data
             Method* m_ptr;
 
+            GCSearchFunc_t gcs_ptr;
+
             void* ptr;
         };
 
         enum_t type;
 
-        Object();
-        Object(enum_t tp) : type(tp) {}
+        Object() noexcept;
+        Object(enum_t tp) noexcept : type(tp) {}
+        Object(std::nullptr_t) noexcept : type(ObjectType::NONE){}
 
-        Object(const Object& rhs);
-        Object(Object&& rhs);
+        Object(const Object& rhs) noexcept;
+        Object(Object&& rhs) noexcept;
 
-        Object& operator=(const Object& rhs);
-        Object& operator=(Object&& rhs);
-        Object& operator=(std::nullptr_t); // manual reset
+        Object& operator=(const Object& rhs) noexcept;
+        Object& operator=(Object&& rhs) noexcept;
+        Object& operator=(const RootObject& rhs) noexcept;
+        Object& operator=(RootObject&& rhs) noexcept;
+
+        Object& operator=(std::nullptr_t) noexcept; // manual reset
 
         /*
         * Only if Object is a reference!!
         */
         inline Object refGet() const noexcept;
         inline void refSet(Object obj) const noexcept;
-
-        inline void validate() const noexcept;
-        inline void invalidate() const noexcept;
-
         ~Object();
     };
 
-    class TempObject {
+    class RootObject {
     private:
         Object obj;
     public:
-        inline TempObject(Object _obj) noexcept : obj(std::move(_obj)) {
-            obj.invalidate();
-        }
+        RootObject() noexcept = default;
+        RootObject(const Object&) noexcept;
+        RootObject(Object&&) noexcept;
 
-        inline ~TempObject() noexcept {
-            obj.validate();
-        }
+        RootObject(const RootObject&) noexcept;
+        RootObject(RootObject&&) noexcept;
 
-        inline operator Object() const noexcept{
-            return obj;
-        }
+        RootObject& operator=(const Object&) noexcept;
+        RootObject& operator=(Object&&) noexcept;
+
+        RootObject& operator=(const RootObject&) noexcept;
+        RootObject& operator=(RootObject&&) noexcept;
+
+        inline Object& get() noexcept;
+        inline const Object& get() const noexcept;
+
+        inline const Object* operator->() const noexcept;
+        inline Object* operator->() noexcept;
+
+        inline operator const Object&() const noexcept;
+        inline operator Object&() noexcept;
+
+        ~RootObject() noexcept;
     };
 
     struct Class {
-        ObjectDict_t objects;
+        RootObjectDict_t objects;
         ClassVec_t bases;
         unsigned boxName = 0;  // if this is a box
         union {
@@ -222,11 +246,11 @@ namespace sm{
         runtime::Runtime_t& rt;
         Class* base;
 
-        std::atomic_uint rcount;
+        std::atomic_uint rcount, roots;
         bool temporary;
 
         Instance(runtime::Runtime_t& _rt, Class* _base, bool temp)
-            : rt(_rt), base(_base), rcount(1), temporary(temp) {}
+            : rt(_rt), base(_base), rcount(1), roots(0), temporary(temp) {}
 
         Instance(Instance&& rhs) = default;
         Instance& operator=(Instance&& rhs) = default;
@@ -236,7 +260,7 @@ namespace sm{
         Instance& operator=(const Instance& rhs) = delete;
 
         void free(bool isGc = false) noexcept;
-        void destroy() noexcept;
+        void destroy(bool invokeDeleteFn) noexcept;
 
         Object get(string_t name) const noexcept;
         bool setFirst(string_t name, const Object& obj) noexcept;
@@ -248,13 +272,23 @@ namespace sm{
     size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept;
 
     Object makeFunction(Function*) noexcept;
-    Object makeList(exec::Interpreter& intp, ObjectVec_t vec = ObjectVec_t()) noexcept;
-    Object makeTuple(exec::Interpreter& intp, ObjectVec_t vec = ObjectVec_t()) noexcept;
+    RootObject makeList(exec::Interpreter& intp, RootObjectVec_t vec = RootObjectVec_t()) noexcept;
+    RootObject makeTuple(exec::Interpreter& intp, RootObjectVec_t vec = RootObjectVec_t()) noexcept;
+
+    inline Object makeFloat(float_t value) noexcept;
+    template <typename... Tp>
+    inline Object makeString(Tp&&... args) noexcept;
+    inline Object makeInteger(integer_t value) noexcept;
+    inline Object makeBox(Box_t* ptr) noexcept;
+    inline Object makeClass(Class* ptr) noexcept;
+
+    inline Object makeMethod(Object self, Object* func_ptr) noexcept;
+    inline Object makeNativeFunction (unsigned fnName, unsigned boxName, NativeFuncPtr_t fn) noexcept;
 
     // creates an object
-    Object makeInstance(exec::Interpreter& intp, Class* base) noexcept;
+    RootObject makeInstance(exec::Interpreter& intp, Class* base) noexcept;
     // creates an object AND calls ctor
-    Object newInstance(exec::Interpreter& intp, Class* base, const ObjectVec_t& args = {}) noexcept;
+    RootObject newInstance(exec::Interpreter& intp, Class* base, const RootObjectVec_t& args = {}) noexcept;
 
     Object makeTrue() noexcept;
     Object makeFalse() noexcept;
@@ -269,16 +303,6 @@ namespace sm{
 
     void Object::refSet(Object obj) const noexcept{
         *o_ptr = std::move(obj);
-    }
-
-    void Object::validate() const noexcept{
-        if(type == ObjectType::CLASS_INSTANCE)
-            i_ptr->temporary = false;
-    }
-
-    void Object::invalidate() const noexcept{
-        if(type == ObjectType::CLASS_INSTANCE)
-            i_ptr->temporary = true;
     }
 
     inline Object makeInteger(integer_t value) noexcept{
@@ -334,6 +358,63 @@ namespace sm{
         obj.m_ptr = new Method;
         obj.m_ptr->self = std::move(self);
         obj.m_ptr->func_ptr = func_ptr;
+        return obj;
+    }
+
+    template <bool Strong = false>
+    inline Object makeRef(Object& ref) noexcept = delete;
+    template <bool Strong = false>
+    inline Object makeRef(RootObject& ref) noexcept = delete;
+
+    template <>
+    inline Object makeRef<false>(Object& ref) noexcept{
+        Object obj(ObjectType::WEAK_REFERENCE);
+        obj.o_ptr = &ref;
+        return obj;
+    }
+
+    template <>
+    inline Object makeRef<true>(Object& ref) noexcept{
+        Object obj(ObjectType::STRONG_REFERENCE);
+        obj.o_ptr = &ref;
+        return obj;
+    }
+
+    template <>
+    inline Object makeRef<false>(RootObject& ref) noexcept{
+        Object obj(ObjectType::WEAK_REFERENCE);
+        obj.o_ptr = &ref.get();
+        return obj;
+    }
+
+    template <>
+    inline Object makeRef<true>(RootObject& ref) noexcept{
+        Object obj(ObjectType::STRONG_REFERENCE);
+        obj.o_ptr = &ref.get();
+        return obj;
+    }
+
+    inline Object& RootObject::get() noexcept{
+        return obj;
+    }
+
+    inline const Object& RootObject::get() const noexcept{
+        return obj;
+    }
+
+    inline const Object* RootObject::operator->() const noexcept{
+        return &obj;
+    }
+
+    inline Object* RootObject::operator->() noexcept{
+        return &obj;
+    }
+
+    inline RootObject::operator const Object&() const noexcept{
+        return obj;
+    }
+
+    inline RootObject::operator Object&() noexcept{
         return obj;
     }
 }
