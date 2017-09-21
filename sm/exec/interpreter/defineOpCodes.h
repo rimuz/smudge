@@ -28,114 +28,100 @@
 namespace sm{
     namespace exec{
         _OcFunc(DefineVar){
-            intp.stacks_m.lock();
             unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
-
             _OcPopStore(tos);
             _OcSimplifyRef(tos);
 
-            ObjectDict_t*& dict = intp.funcStack.back().codeBlocks.back();
+            RootObjectDict_t*& dict = intp.funcStack.back().codeBlocks.back();
             if(!dict)
-                dict = new ObjectDict_t;
-            ObjectDict_t::const_iterator it = dict->find(id);
+                dict = new RootObjectDict_t;
+            RootObjectDict_t::const_iterator it = dict->find(id);
 
             if(it != dict->end()){
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + "' in the same scope");
             }
 
-            Object ref;
-            ref.o_ptr = &((*dict)[id] = tos);
-            ref.type = ObjectType::WEAK_REFERENCE;
-            intp.exprStack.emplace_back(std::move(ref));
-            intp.stacks_m.unlock();
+            intp.exprStack.emplace_back(makeRef((*dict)[id] = tos));
         }
 
         _OcFunc(DefineGlobalVar){
-            intp.stacks_m.lock();
             unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
 
             _OcPopStore(tos);
             _OcSimplifyRef(tos);
 
             auto& back = intp.funcStack.back();
-            ObjectDict_t& dict = back.thisObject.type == ObjectType::NONE ?
-                back.box->objects : back.thisObject.i_ptr->objects;
-            ObjectDict_t::const_iterator it = dict.find(id);
+            if(back.thisObject->type == ObjectType::NONE){
+                RootObjectDict_t& dict = back.box->objects;
+                RootObjectDict_t::const_iterator it = dict.find(id);
 
-            if(it != dict.end()){
-                intp.stacks_m.unlock(); \
-                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                    std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
-                    + (back.thisObject.type == ObjectType::NONE ?
-                        (std::string("' in the class ")
-                        + intp.rt->boxNames[intp.funcStack.back().box->boxName]
-                        + "::" + intp.rt->nameFromId(back.thisObject.i_ptr->base->name))
-                      : (std::string("' in the box ")
-                        + intp.rt->boxNames[intp.funcStack.back().box->boxName])
-                    ));
+                if(it != dict.end())
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                        std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
+                        + "' in the class " + intp.rt->boxNames[intp.funcStack.back().box->name]
+                        + "::" + intp.rt->nameFromId(back.thisObject->i_ptr->base->name)
+                    );
+
+                intp.exprStack.emplace_back(makeRef(dict[id] = tos));
+            } else {
+                ObjectDict_t& dict = back.thisObject->i_ptr->objects;
+                ObjectDict_t::const_iterator it = dict.find(id);
+
+                if(it != dict.end())
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                        std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
+                        + "' in the box " + intp.rt->boxNames[intp.funcStack.back().box->name]
+                    );
+
+                intp.exprStack.emplace_back(makeRef(dict[id] = tos));
             }
-
-            Object ref;
-            ref.o_ptr = &(dict[id] = tos);
-            ref.type = ObjectType::WEAK_REFERENCE;
-            intp.exprStack.emplace_back(std::move(ref));
-            intp.stacks_m.unlock();
         }
 
         _OcFunc(DefineNullVar){
             unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
 
-            intp.stacks_m.lock();
-            ObjectDict_t*& dict = intp.funcStack.back().codeBlocks.back();
+            RootObjectDict_t*& dict = intp.funcStack.back().codeBlocks.back();
             if(!dict)
-                dict = new ObjectDict_t;
-            ObjectDict_t::const_iterator it = dict->find(id);
+                dict = new RootObjectDict_t;
+            RootObjectDict_t::const_iterator it = dict->find(id);
 
             if(it != dict->end()){
-                intp.stacks_m.unlock(); \
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
                     + "' in the same scope");
             }
 
-
-            Object ref;
-            ref.o_ptr = &((*dict)[id] = Object());
-            ref.type = ObjectType::WEAK_REFERENCE;
-            intp.exprStack.emplace_back(std::move(ref));
-            intp.stacks_m.unlock();
+            intp.exprStack.emplace_back(makeRef((*dict)[id] = nullptr));
         }
 
         _OcFunc(DefineGlobalNullVar){
             unsigned id = ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) + runtime::idsStart;
 
-            intp.stacks_m.lock();
             auto& back = intp.funcStack.back();
-            ObjectDict_t& dict = back.thisObject.type == ObjectType::NONE ?
-                back.box->objects : back.thisObject.i_ptr->objects;
-            ObjectDict_t::const_iterator it = dict.find(id);
+            if(back.thisObject->type == ObjectType::NONE){
+                RootObjectDict_t& dict = back.box->objects;
+                RootObjectDict_t::const_iterator it = dict.find(id);
 
-            if(it != dict.end()){
-                intp.stacks_m.unlock(); \
-                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                    std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
-                    + (back.thisObject.type == ObjectType::NONE ?
-                        (std::string("' in the class ")
-                        + intp.rt->boxNames[intp.funcStack.back().box->boxName]
-                        + "::" + intp.rt->nameFromId(back.thisObject.i_ptr->base->name))
-                      : (std::string("' in the box ")
-                        + intp.rt->boxNames[intp.funcStack.back().box->boxName])
-                    ));
+                if(it != dict.end())
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                        std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
+                        + "' in the class " + intp.rt->boxNames[intp.funcStack.back().box->name]
+                        + "::" + intp.rt->nameFromId(back.thisObject->i_ptr->base->name)
+                    );
+                intp.exprStack.emplace_back(makeRef(dict[id] = nullptr));
+            } else {
+                ObjectDict_t& dict = back.thisObject->i_ptr->objects;
+                ObjectDict_t::const_iterator it = dict.find(id);
+
+                if(it != dict.end())
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                        std::string("redeclaration of variable named '") + intp.rt->nameFromId(id)
+                        + "' in the box " + intp.rt->boxNames[intp.funcStack.back().box->name]
+                    );
+                intp.exprStack.emplace_back(makeRef(dict[id] = nullptr));
             }
-
-            Object ref;
-            ref.o_ptr = &(dict[id] = Object());
-            ref.type = ObjectType::WEAK_REFERENCE;
-            intp.exprStack.emplace_back(std::move(ref));
-            intp.stacks_m.unlock();
         }
     }
 }
