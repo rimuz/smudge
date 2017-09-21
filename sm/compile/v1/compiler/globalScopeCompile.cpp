@@ -159,7 +159,7 @@ namespace sm{
                                                 found = true;
                                                 break;
                                             } else {
-                                                Box_t* box;
+                                                Box* box;
                                                 path += _SM_DL_EXT;
                                                 if(load_native(path.c_str(), id, box)){
                                                     if(!box)
@@ -181,7 +181,7 @@ namespace sm{
                                                 _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                     std::string("can't import '") + imported + "'. Make sure the file exists.");
                                             } else {
-                                                Class* box = cit->second(*_rt, id);
+                                                Box* box = cit->second(*_rt, id);
                                                 _rt->boxes.push_back(box);
                                                 _rt->sources.newSource(nullptr);
                                             }
@@ -264,11 +264,13 @@ namespace sm{
 
                         Function* fn = new Function;
                         fn->address = states.output->size();
-                        fn->boxName = states.currBox->boxName;
+                        fn->boxName = states.currBox->name;
                         fn->fnName = id;
 
-                        Class* out = states.currClass ? states.currClass : states.currBox;
-                        out->objects.insert({id, makeFunction(fn)});
+                        if(states.currClass)
+                            states.currClass->objects.insert({id, RootObject(makeFunction(fn))});
+                        else
+                            states.currBox->objects.insert({id, makeFunction(fn)});
 
                         if(++it == states.end){
                             --it;
@@ -400,7 +402,7 @@ namespace sm{
 
                         Class* cl = new Class;
                         cl->name = id;
-                        cl->boxName = states.currBox->boxName;
+                        cl->boxName = states.currBox->name;
                         states.currBox->objects.insert({id, makeClass(cl)});
                         states.isClassStatement = false;
 
@@ -483,10 +485,10 @@ namespace sm{
                                 Function* fn = new Function;
                                 fn->address = _rt->code.size();
                                 fn->fnName = runtime::initId;
-                                fn->boxName = states.currBox->boxName;
+                                fn->boxName = states.currBox->name;
 
                                 // inserting init code into bytecode and linking it to the class
-                                states.currClass->objects.insert({runtime::initId, makeFunction(fn)});
+                                states.currClass->objects.insert({runtime::initId, RootObject(makeFunction(fn))});
                                 _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
                                 _rt->code.push_back(RETURN_NULL);
                                 _classTemp.clear();
