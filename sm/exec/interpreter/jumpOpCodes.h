@@ -38,7 +38,6 @@ namespace sm{
         }
 
         _OcFunc(JumpIfF){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
@@ -47,7 +46,6 @@ namespace sm{
         }
 
         _OcFunc(JumpIfB){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
@@ -56,7 +54,6 @@ namespace sm{
         }
 
         _OcFunc(JumpIfNotF){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
@@ -65,7 +62,6 @@ namespace sm{
         }
 
         _OcFunc(JumpIfNotB){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
@@ -74,10 +70,7 @@ namespace sm{
         }
 
         _OcFunc(Elvis){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
-            const Object& tos = intp.exprStack.back();
-
-            if(tos.type == ObjectType::NONE){
+            if(intp.exprStack.back()->type == ObjectType::NONE){
                 intp.exprStack.pop_back();
                 return;
             }
@@ -88,51 +81,38 @@ namespace sm{
             Dup1(intp, {});
             Equal(intp, {});
 
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             _OcPopStore(tos);
             _OcValue(tos);
 
-            if(!runtime::implicitToBool(tos)){
+            if(!runtime::implicitToBool(tos))
                 intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
-                return;
-            }
         }
 
         _OcFunc(ForeachCheck){
-            intp.stacks_m.lock();
-            Object& tos = intp.exprStack.back();
+            RootObject& tos = intp.exprStack.back();
             ObjectVec_t* vec;
 
             if(!hasVector(intp, tos, vec) || vec->size() != 2){
-                intp.stacks_m.unlock();
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                     "'next()' must return a list or a tuple of size 2.");
             }
 
-            ObjectVec_t::iterator end = intp.exprStack.end();
+            RootObjectVec_t::iterator end = intp.exprStack.end();
             if(!runtime::implicitToBool((*vec)[1])){
-                ObjectVec_t dummies(std::make_move_iterator(end -4),
-                    std::make_move_iterator(end));
                 intp.exprStack.erase(end -4, end);
                 intp.pc += ((static_cast<uint16_t>(inst[1]) << 8) | inst[2]) -1;
-                intp.stacks_m.unlock();
-                // dummies deleted
                 return;
             }
 
-            Object obj = (*vec)[0];
-            if(obj.type == ObjectType::WEAK_REFERENCE){
-                obj = obj.refGet();
-            } else if(obj.type == ObjectType::STRONG_REFERENCE){
-                obj.type = ObjectType::WEAK_REFERENCE;
+            RootObject obj = (*vec)[0];
+            if(obj->type == ObjectType::WEAK_REFERENCE){
+                obj = obj->refGet();
+            } else if(obj->type == ObjectType::STRONG_REFERENCE){
+                obj->type = ObjectType::WEAK_REFERENCE;
             }
 
-            Object& objRef = *(end -4)->o_ptr;
-            Object dummy1 = objRef, dummy2 = intp.exprStack.back();
-            objRef = std::move(obj);
+            *(*(end -4))->o_ptr = std::move(obj);
             intp.exprStack.pop_back();
-            intp.stacks_m.unlock();
-            // dummy1 and dummy2 deleted
         }
 
         _OcFunc(ThrowException){
