@@ -30,85 +30,67 @@ namespace sm{
         _OcFunc(Nop){}
 
         _OcFunc(StartBlock){
-            std::lock_guard<std::mutex> lock(intp.stacks_m);
             intp.funcStack.back().codeBlocks.emplace_back(nullptr);
         }
 
         _OcFunc(EndBlock){
-            intp.stacks_m.lock();
-            ObjectDict_t* ptr = intp.funcStack.back().codeBlocks.back();
-            if(ptr){
-                intp.stacks_m.unlock();
-                delete ptr; // TODO TODO TODO TODO TODO TODO
-                intp.stacks_m.lock();
-            }
+            RootObjectDict_t* ptr = intp.funcStack.back().codeBlocks.back();
             intp.funcStack.back().codeBlocks.pop_back();
-            intp.stacks_m.unlock();
+            if(ptr)
+                delete ptr;
         }
 
         _OcFunc(Return){
-            intp.stacks_m.lock();
-            Object& back = intp.exprStack.back();
+            RootObject& back = intp.exprStack.back();
             bool wasInlined = intp.funcStack.back().inlined, empty = intp.funcStack.size() == 1;
 
-            if(back.type == ObjectType::WEAK_REFERENCE){
-                back = back.refGet();
-            } else if(back.type == ObjectType::STRONG_REFERENCE){
-                back.type = ObjectType::WEAK_REFERENCE;
+            if(back->type == ObjectType::WEAK_REFERENCE){
+                back = back->refGet();
+            } else if(back->type == ObjectType::STRONG_REFERENCE){
+                back->type = ObjectType::WEAK_REFERENCE;
             }
 
-            // copying TODO TODO TODO TODO TODO TODO TODO
-            ObjectDictVec_t dictVec = intp.funcStack.back().codeBlocks;
-            intp.stacks_m.unlock();
-            for(ObjectDictVec_t::iterator it = dictVec.begin(); it != dictVec.end(); ++it){
+            RootObjectDictVec_t dictVec = std::move(intp.funcStack.back().codeBlocks);
+            for(RootObjectDictVec_t::iterator it = dictVec.begin(); it != dictVec.end(); ++it)
                 delete *it;
-            }
 
-            intp.stacks_m.lock();
             intp.funcStack.pop_back();
-
-            if(!empty){
-                intp.pc = intp.funcStack.back().pc;
-            }
-
-            intp.stacks_m.unlock();
             intp.doReturn = wasInlined || empty;
+
+            if(!empty)
+                intp.pc = intp.funcStack.back().pc;
         }
 
         _OcFunc(ReturnNull){
-            intp.stacks_m.lock();
-            ObjectDictVec_t dictVec = intp.funcStack.back().codeBlocks;
-            bool wasInlined = intp.funcStack.back().inlined, empty = intp.funcStack.size() == 1;
+            RootObjectDictVec_t dictVec = std::move(intp.funcStack.back().codeBlocks);
+            bool wasInlined = intp.funcStack.back().inlined,
+                empty = intp.funcStack.size() == 1;
             intp.funcStack.pop_back();
-            intp.stacks_m.unlock();
 
-            for(ObjectDictVec_t::iterator it = dictVec.begin(); it != dictVec.end(); ++it){
+            for(RootObjectDictVec_t::iterator it = dictVec.begin(); it != dictVec.end(); ++it){
                 delete *it;
             }
 
-            intp.stacks_m.lock();
-            intp.exprStack.emplace_back(Object());
-            intp.stacks_m.unlock();
-
+            intp.exprStack.emplace_back(nullptr);
             intp.doReturn = wasInlined || empty;
-            if(!empty){
+
+            if(!empty)
                 intp.pc = intp.funcStack.back().pc;
-            }
         }
 
         _OcFunc(EndBlocks){
             unsigned param = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
 
-            intp.stacks_m.lock();
-            ObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
-            ObjectDictVec_t::iterator end = vec.end();
-            ObjectDictVec_t::iterator last = end - param;
-            ObjectDict_t* ptr;
+            RootObjectDictVec_t& vec = intp.funcStack.back().codeBlocks;
+            RootObjectDictVec_t::iterator end = vec.end();
+            RootObjectDictVec_t::iterator last = end - param;
+            RootObjectDict_t* ptr;
 
             while(end != last){
-                if((ptr = *(--end)))
-                    delete ptr;
+                ptr = *(--end);
                 vec.pop_back();
+                if(ptr)
+                    delete ptr;
             }
         }
 
@@ -127,15 +109,15 @@ namespace sm{
         _OcFunc(CallFunction){
             unsigned param = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
 
-            intp.stacks_m.lock();
-            ObjectVec_t::iterator end = intp.exprStack.end();
-            Object func = *(end - (param+1));
-            runtime::invalidate(func);
+            RootObjectVec_t::iterator end = intp.exprStack.end();
+            RootObject func = *(end -param -1);
             Function* func_ptr;
 
-            ObjectVec_t args(end - param, end);
-            runtime::invalidate_all(args);
-            intp.exprStack.erase(end - (param+1), end);
+            RootObjectVec_t args(
+                    std::make_move_iterator(end - param),
+                    std::make_move_iterator(end)
+            );
+            intp.exprStack.erase(end -param -1, end);
 
             for(Object& obj : args){
                 if(obj.type == ObjectType::WEAK_REFERENCE){
@@ -145,10 +127,9 @@ namespace sm{
                 }
             }
 
-            Object self;
-            Object obj = func;
+            RootObject self;
+            RootObject obj = func;
             _OcValue(obj);
-            intp.stacks_m.unlock();
 
             if(runtime::callable(obj, self, func_ptr)){
                 intp.makeCall(func_ptr, args, self);
@@ -162,13 +143,14 @@ namespace sm{
         _OcFunc(PerformBracing){
             unsigned param = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
 
-            intp.stacks_m.lock();
-            ObjectVec_t::iterator end = intp.exprStack.end();
-            Object tosX = *(end - (param+1));
+            RootObjectVec_t::iterator end = intp.exprStack.end();
+            RootObject tosX = *(end - (param+1));
             Function* func_ptr;
 
-            ObjectVec_t args(end - param, end);
-            runtime::invalidate_all(args);
+            RootObjectVec_t args(
+                std::make_move_iterator(end - param),
+                std::make_move_iterator(end)
+            );
             intp.exprStack.erase(end - (param+1), end);
 
             for(Object& obj : args){
@@ -179,11 +161,9 @@ namespace sm{
                 }
             }
 
-            Object self;
-            Object func;
+            RootObject self;
+            RootObject func;
             _OcValue(tosX);
-            runtime::invalidate(tosX);
-            intp.stacks_m.unlock();
 
             if(!runtime::find_any(tosX, func, runtime::squareId)){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
@@ -195,7 +175,7 @@ namespace sm{
                 intp.makeCall(func_ptr, args, self);
             } else {
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                    std::string("cannot invoke 'operator[]()' in ")
+                    std::string("'operator[]()' is not a function in ")
                     + runtime::errorString(intp, tosX));
             }
         }
@@ -203,15 +183,10 @@ namespace sm{
         _OcFunc(Import){
             unsigned box = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
             unsigned nameId = runtime::idsStart + ((static_cast<uint16_t>(inst[3]) << 8) | inst[4]);
+            Object imported = makeBox(intp.rt->boxes[box]);
 
-            Object imported;
-            imported.type = ObjectType::BOX;
-            imported.c_ptr = intp.rt->boxes[box];
-
-            intp.stacks_m.lock();
-            ObjectDict_t& dict = intp.funcStack.back().box->objects;
-            intp.stacks_m.unlock();
-            ObjectDict_t::const_iterator it = dict.find(nameId);
+            RootObjectDict_t& dict = intp.funcStack.back().box->objects;
+            RootObjectDict_t::const_iterator it = dict.find(nameId);
 
             if(it != dict.end()){
                 intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
@@ -219,13 +194,13 @@ namespace sm{
                     + "' because it's redefining variable, function or class named '" + intp.rt->nameFromId(nameId)
                     + "'");
             }
-            dict.insert({nameId, imported});
+            dict.insert({nameId, RootObject(imported)});
 
-            if(!imported.c_ptr->isInitialized){
-                imported.c_ptr->isInitialized = true;
+            if(!imported.b_ptr->isInitialized){
+                imported.b_ptr->isInitialized = true;
 
-                Object objFunc;
-                Object self;
+                RootObject objFunc;
+                RootObject self;
                 Function* fn;
 
                 // call '<init>' function (inlined)
@@ -233,7 +208,7 @@ namespace sm{
                     if(!runtime::callable(objFunc, self, fn)){
                         intp.rt->sources.printStackTrace(intp, error::ET_BUG,
                             std::string("'<init>' is not a function in box '")
-                            + intp.rt->boxNames[imported.c_ptr->boxName] + "' (err #4)");
+                            + intp.rt->boxNames[imported.b_ptr->name] + "' (err #4)");
                     }
                     intp.callFunction(fn, {}, self, true);
                 }
@@ -245,7 +220,7 @@ namespace sm{
                     if(!runtime::callable(objFunc, self, fn)){
                         intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
                             std::string("'new' is not a function in box '")
-                            + intp.rt->boxNames[imported.c_ptr->boxName] + "'");
+                            + intp.rt->boxNames[imported.b_ptr->name] + "'");
                     }
                     intp.makeCall(fn, {}, self, false);
                 }
