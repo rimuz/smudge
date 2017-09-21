@@ -38,10 +38,10 @@
 namespace sm{
     using namespace ObjectType;
 
-    Object::Object()
+    Object::Object() noexcept
             : i(0), type(NONE) {}
 
-    Object::Object(const Object& rhs)
+    Object::Object(const Object& rhs) noexcept
             : i(rhs.i), type(rhs.type) {
         if(i_ptr){
             if(type == CLASS_INSTANCE){
@@ -54,13 +54,13 @@ namespace sm{
         }
     }
 
-    Object::Object(Object&& rhs)
+    Object::Object(Object&& rhs) noexcept
             : i(rhs.i), type(rhs.type) {
         rhs.type = NONE;
         rhs.i = 0;
     }
 
-    Object& Object::operator=(const Object& rhs){
+    Object& Object::operator=(const Object& rhs) noexcept{
         if(i_ptr){
             if(type == CLASS_INSTANCE){
                 if(!--i_ptr->rcount){
@@ -93,7 +93,7 @@ namespace sm{
         return *this;
     }
 
-    Object& Object::operator=(Object&& rhs){
+    Object& Object::operator=(Object&& rhs) noexcept{
         if(i_ptr){
             if(type == CLASS_INSTANCE){
                 if(!--i_ptr->rcount){
@@ -119,7 +119,7 @@ namespace sm{
         return *this;
     }
 
-    Object& Object::operator=(std::nullptr_t){
+    Object& Object::operator=(std::nullptr_t) noexcept{
         if(i_ptr){
             if(type == CLASS_INSTANCE){
                 if(!--i_ptr->rcount){
@@ -142,6 +142,14 @@ namespace sm{
         return *this;
     }
 
+    Object& Object::operator=(const RootObject& rhs) noexcept {
+        return this->operator=(rhs.get());
+    }
+
+    Object& Object::operator=(RootObject&& rhs) noexcept{
+        return this->operator=(rhs.get());
+    }
+
     Object::~Object(){
         if(i_ptr){
             if(type == CLASS_INSTANCE){
@@ -158,6 +166,69 @@ namespace sm{
                 }
             }
         }
+    }
+
+    RootObject::RootObject(const Object& rhs) noexcept{
+        if(rhs.type == ObjectType::CLASS_INSTANCE && rhs.i_ptr)
+            ++rhs.i_ptr->roots;
+        obj = rhs;
+    }
+
+    RootObject::RootObject(Object&& rhs) noexcept{
+        if(rhs.type == ObjectType::CLASS_INSTANCE && rhs.i_ptr)
+            ++rhs.i_ptr->roots;
+        obj = std::move(rhs);
+    }
+
+    RootObject::RootObject(const RootObject& rhs) noexcept{
+        obj = rhs.obj;
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            ++obj.i_ptr->roots;
+    }
+
+    RootObject::RootObject(RootObject&& rhs) noexcept{
+        obj = rhs.obj;
+        rhs.obj = nullptr;
+    }
+
+    RootObject& RootObject::operator=(const Object& rhs) noexcept{
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            --obj.i_ptr->roots;
+        obj = rhs;
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            ++obj.i_ptr->roots;
+        return *this;
+    }
+
+    RootObject& RootObject::operator=(Object&& rhs) noexcept{
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            --obj.i_ptr->roots;
+        obj = std::move(rhs);
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            ++obj.i_ptr->roots;
+        return *this;
+    }
+
+    RootObject& RootObject::operator=(const RootObject& rhs) noexcept{
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            --obj.i_ptr->roots;
+        obj = rhs.obj;
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            ++obj.i_ptr->roots;
+        return *this;
+    }
+
+    RootObject& RootObject::operator=(RootObject&& rhs) noexcept {
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            --obj.i_ptr->roots;
+        obj = std::move(rhs.obj);
+        rhs.obj = nullptr;
+        return *this;
+    }
+
+    RootObject::~RootObject() noexcept{
+        if(obj.type == ObjectType::CLASS_INSTANCE && obj.i_ptr)
+            --obj.i_ptr->roots;
     }
 
     size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept{
@@ -259,15 +330,15 @@ namespace sm{
         return obj;
     }
 
-    Object makeInstance(exec::Interpreter& intp, Class* base) noexcept{
+    RootObject makeInstance(exec::Interpreter& intp, Class* base) noexcept{
         return intp.rt->gc.makeTempInstance(intp, base);
     }
 
 
-    Object newInstance(exec::Interpreter& intp, Class* base, const ObjectVec_t& args) noexcept {
-        Object self, clazz(ObjectType::CLASS);
+    RootObject newInstance(exec::Interpreter& intp, Class* base, const RootObjectVec_t& args) noexcept {
+        RootObject self, clazz(ObjectType::CLASS);
         Function* func_ptr;
-        clazz.c_ptr = base;
+        clazz->c_ptr = base;
 
         runtime::callable(clazz, self, func_ptr);
         return intp.callFunction(func_ptr, args, self, true);
@@ -278,38 +349,53 @@ namespace sm{
         if(deleting || cantWork)
             return;
         if(isGc){
+            destroy(false);
+            std::lock_guard<std::mutex> lock(rt.gc.instances_m);
             rt.gc.instances.erase(it);
         } else {
-            if(callDelete)
-                destroy();
+            destroy(callDelete);
             std::lock_guard<std::mutex> lock(rt.gc.instances_m);
             rt.gc.instances.erase(it);
         }
     }
 
-    void Instance::destroy() noexcept{
+    void Instance::destroy(bool invokeDeleteFn) noexcept{
         if(!base)
             return;
         exec::Interpreter* i_ptr = rt.getCurrentThread();
+
         if(!i_ptr) // Interpreter was deleted alredy (end of main)
             return;
+
         exec::Interpreter& intp = *i_ptr;
-        ObjectDict_t::iterator it = base->objects.find(lib::idDelete);
-        if(it != base->objects.end()){
-            Object self = Object(ObjectType::CLASS_INSTANCE);
-            Function* func_ptr;
+        RootObjectDict_t::iterator it;
+        Function* func_ptr;
 
-            self.i_ptr = this;
-            deleting = true;
+        Object self = Object(ObjectType::CLASS_INSTANCE);
+        self.i_ptr = this;
+        deleting = true;
 
-            if(!runtime::callable(it->second, self, func_ptr))
-                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                    std::string("'delete' is not a function in ")
-                    + runtime::errorString(intp, self));
-            // we don't care about the 'delete()' return value.
-            intp.callFunction(func_ptr, {}, self, true);
+        if(invokeDeleteFn){
+            it = base->objects.find(lib::idDelete);
+            if(it != base->objects.end()){
+                if(!runtime::callable(it->second, self, func_ptr))
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                        std::string("'delete' is not a function in ")
+                        + runtime::errorString(intp, self));
+                // we don't care about the 'delete()' return value.
+                intp.callFunction(func_ptr, {}, self, true);
+            }
+        } else {
+            it = base->objects.find(runtime::gcCollectId);
+            if(it != base->objects.end()){
+                if(!runtime::callable(it->second, self, func_ptr))
+                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                        std::string("'<gc_collect>' is not a function in ")
+                        + runtime::errorString(intp, self));
+                // we don't care about the '<gc_collect>()' return value.
+                intp.callFunction(func_ptr, {}, self, true);
+            }
         }
-        objects.clear();
     }
 
     Instance::~Instance(){
@@ -317,52 +403,6 @@ namespace sm{
     }
 
     namespace runtime{
-        void validate(Instance* i) noexcept{
-            if(i){
-                i->temporary = false;
-            }
-        }
-
-        void validate(const Object& obj) noexcept{
-            if(obj.type == ObjectType::CLASS_INSTANCE)
-                validate(obj.i_ptr);
-        }
-
-        void validate_all(const ObjectVec_t& vec) noexcept{
-            for(const Object& obj : vec)
-                if(obj.type == ObjectType::CLASS_INSTANCE)
-                    validate(obj.i_ptr);
-        }
-
-        void validate(ObjectDict_t& dict, unsigned id, Object obj) noexcept{
-            Object& ref = dict[id] = std::move(obj);
-            if(ref.type == ObjectType::CLASS_INSTANCE)
-                validate(ref.i_ptr);
-        }
-
-        void validate(ObjectVec_t& vec, Object obj) noexcept{
-            vec.emplace_back(std::move(obj));
-            Object& back = vec.back();
-            if(back.type == ObjectType::CLASS_INSTANCE)
-                validate(obj.i_ptr);
-        }
-
-        void invalidate(Instance* i) noexcept{
-            if(i){
-                i->temporary = true;
-            }
-        }
-
-        void invalidate(const Object& obj) noexcept{
-            if(obj.type == ObjectType::CLASS_INSTANCE)
-                invalidate(obj.i_ptr);
-        }
-
-        void invalidate_all(const ObjectVec_t& vec) noexcept{
-            for(const Object& obj : vec)
-                invalidate(obj);
-        }
-
         std::chrono::steady_clock::time_point* Runtime_t::execStart = nullptr;
         #ifdef _SM_OS_WINDOWS
         std::vector<HMODULE> Runtime_t::sharedLibs;
@@ -392,114 +432,86 @@ namespace sm{
             return obj;
         }
 
-        void whiteToGray(IPVec_t& white, IPVec_t& gray, CPVec_t& classes, MPVec_t& methods, Object& obj){
+        struct GCData{
+            exec::Interpreter intp;
+            IPVec_t white, gray;
+            CPVec_t classes;
+            MPVec_t methods;
+
+            GCData(Runtime_t& rt) noexcept : intp(rt) {}
+        };
+
+        void whiteToGray(GCData& data, Object& obj){
             if(obj.type == ObjectType::CLASS_INSTANCE){
                 Instance* ptr = obj.i_ptr;
-                IPVec_t::iterator curr = std::find(white.begin(), white.end(), ptr);
+                IPVec_t::iterator curr = std::find(data.white.begin(), data.white.end(), ptr);
 
                 /*
                  * If curr is in WHITE, it's neither in the GRAY nor in the BLACK
                 */
-                if(curr != white.end()) {
-                    *curr = nullptr; // no erases in the vector
-                    gray.emplace_back(ptr);
+                if(curr != data.white.end()) {
+                    // moving curr (WHITE) in GRAY
+                    std::swap(*curr, data.white.back());
+                    data.white.pop_back();
+                    data.gray.emplace_back(ptr);
 
                     for(auto& child : ptr->objects){
                         // recursively search inside all objects pointed by obj
-                        whiteToGray(white, gray, classes, methods, child.second);
+                        whiteToGray(data, child.second);
                     }
                 }
             } else if(obj.type == ObjectType::CLASS){
-                if(std::find(classes.begin(), classes.end(), obj.c_ptr) == classes.end())
+                if(std::find(data.classes.begin(), data.classes.end(), obj.c_ptr) == data.classes.end())
                     return;
-                classes.emplace_back(obj.c_ptr);
+
+                data.classes.emplace_back(obj.c_ptr);
                 for(auto& child : obj.c_ptr->objects)
-                    whiteToGray(white, gray, classes, methods, child.second);
+                    whiteToGray(data, child.second);
             } else if(obj.type == ObjectType::METHOD){
-                if(std::find(methods.begin(), methods.end(), obj.m_ptr) == methods.end())
+                if(std::find(data.methods.begin(), data.methods.end(), obj.m_ptr) == data.methods.end())
                     return;
-                methods.emplace_back(obj.m_ptr);
-                whiteToGray(white, gray, classes, methods, obj.m_ptr->self);
-            }
-        }
 
-        inline void loadTemp(InstanceList_t& list, IPVec_t& vec){
-            vec.reserve(list.size());
-            for(Instance& inst : list){
-                if(inst.temporary)
-                    vec.emplace_back(&inst);
-            }
-        }
-
-        inline void loadNonTemp(InstanceList_t& list, IPVec_t& vec){
-            vec.reserve(list.size());
-            for(Instance& inst : list){
-                if(!inst.temporary)
-                    vec.emplace_back(&inst);
+                data.methods.emplace_back(obj.m_ptr);
+                whiteToGray(data, obj.m_ptr->self);
             }
         }
 
         /*
          * Tri-color garbage collection.
-         * 2nd implementation (2017.09.04)
+         * 3rd implementation (2017.09.17)
          *
          * Note: There is no BLACK, because we
          * can easily avoid to use it.
-         *
-         * Note 2: It won't erase items from WHITE,
-         * It will set them to nullptr
          *
         */
 
         void GarbageCollector::collect(){
             std::lock_guard<std::mutex> lock1(instances_m), lock2(_rt->threads_m);
-            IPVec_t white, gray;
-            CPVec_t classes;
-            MPVec_t methods;
+            GCData data(*_rt);
             gcWorking = true;
 
-            loadTemp(instances, white);
-            loadNonTemp(instances, gray);
-
-            // searching in the ROOTs
-            for(auto* box : _rt->boxes){
-                for(auto& child : box->objects){
-                    whiteToGray(white, gray, classes, methods, child.second);
-                }
+            /*
+             * GRAY = roots
+             * WHITE = other objects
+            */
+            for(Instance& inst : instances){
+                if(inst.roots)
+                    data.gray.emplace_back(&inst);
+                else
+                    data.white.emplace_back(&inst);
             }
 
-            for(auto& thread : _rt->threads){
-                exec::Interpreter& intp = thread.data->intp;
-
-                whiteToGray(white, gray, classes, methods, thread.data->func);
-                for(auto& obj : thread.data->args)
-                    whiteToGray(white, gray, classes, methods, obj);
-
-                std::lock_guard<std::mutex> lock(intp.stacks_m);
-                for(Object& obj : intp.exprStack)
-                    whiteToGray(white, gray, classes, methods, obj);
-
-                for(exec::CallInfo_t& callInfo : intp.funcStack){
-                    whiteToGray(white, gray, classes, methods, callInfo.thisObject);
-                    for(ObjectDict_t* dict : callInfo.codeBlocks)
-                        if(dict)
-                            for(auto& pair : *dict)
-                                whiteToGray(white, gray, classes, methods, pair.second);
-                }
-            }
-
-            // now GRAY contains all the root pointers and white the other.
-            while(!gray.empty()){
-                Instance* ptr = gray.back();
-                gray.pop_back();
+            while(!data.gray.empty()){
+                Instance* ptr = data.gray.back();
+                data.gray.pop_back();
 
                 for(auto& child : ptr->objects){
-                    whiteToGray(white, gray, classes, methods, child.second);
+                    whiteToGray(data, child.second);
                 }
             }
 
             // now WHITE contains garbage.
-            for(Instance* ptr : white){
+            for(Instance* ptr : data.white){
                 if(ptr){ // ignore 'erased' elements
                     ptr->free(true);
                 }
