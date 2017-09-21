@@ -37,20 +37,8 @@ namespace sm{
         namespace StringClass {}
         namespace ListClass {}
         namespace TupleClass {}
-
-        namespace ListIteratorClass {
-            struct LIData {
-                Object list;
-                unsigned idx;
-            };
-        }
-
-        namespace StringIteratorClass {
-            struct SIData {
-                Object str;
-                unsigned idx;
-            };
-        }
+        namespace ListIteratorClass {}
+        namespace StringIteratorClass {}
 
         smLibDecl(lang){
             smInitBox
@@ -80,45 +68,45 @@ namespace sm{
                 })
 
                 smOpMethod(parse::TT_EQUAL, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return makeInteger(0);
-                    return makeInteger(self.s_ptr->str == args[0].s_ptr->str);
+                    return makeInteger(self->s_ptr->str == args[0]->s_ptr->str);
                 })
 
                 smOpMethod(parse::TT_NOT_EQUAL, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return makeInteger(0);
-                    return makeInteger(self.s_ptr->str != args[0].s_ptr->str);
+                    return makeInteger(self->s_ptr->str != args[0]->s_ptr->str);
                 })
 
                 smOpMethod(parse::TT_LESS, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return makeInteger(0);
-                    return makeInteger(self.s_ptr->str < args[0].s_ptr->str);
+                    return makeInteger(self->s_ptr->str < args[0]->s_ptr->str);
                 })
 
                 smOpMethod(parse::TT_GREATER, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return makeInteger(0);
-                    return makeInteger(self.s_ptr->str > args[0].s_ptr->str);
+                    return makeInteger(self->s_ptr->str > args[0]->s_ptr->str);
                 })
 
                 smOpMethod(parse::TT_LESS_OR_EQUAL, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return makeInteger(0);
-                    return makeInteger(self.s_ptr->str <= args[0].s_ptr->str);
+                    return makeInteger(self->s_ptr->str <= args[0]->s_ptr->str);
                 })
 
                 smOpMethod(parse::TT_GREATER_OR_EQUAL, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return makeInteger(0);
-                    return makeInteger(self.s_ptr->str >= args[0].s_ptr->str);
+                    return makeInteger(self->s_ptr->str >= args[0]->s_ptr->str);
                 })
 
                 smOpMethod(parse::TT_PLUS, smLambda {
                     if(args.empty())
                         return Object();
-                    Object str0 = makeString(self.s_ptr->str);
+                    Object str0 = makeString(self->s_ptr->str);
                     Object str1 = runtime::implicitToString(intp, args[0]);
                     str0.s_ptr->str.insert(str0.s_ptr->str.end(), str1.s_ptr->str.begin(),
                         str1.s_ptr->str.end());
@@ -127,20 +115,20 @@ namespace sm{
 
                 smOpMethod(parse::TT_MINUS, smLambda {
                     integer_t i;
-                    if(args.empty() || args[0].type != ObjectType::INTEGER || (i = args[0].i) < 0)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER || (i = args[0]->i) < 0)
                         return Object();
-                    if(i >= static_cast<integer_t>(self.s_ptr->str.size()))
+                    if(i >= static_cast<integer_t>(self->s_ptr->str.size()))
                         return Object();
-                    return makeString(self.s_ptr->str.begin(), self.s_ptr->str.end() - i);
+                    return makeString(self->s_ptr->str.begin(), self->s_ptr->str.end() - i);
                 })
 
                 smOpMethod(parse::TT_MULT, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
 
-                    integer_t i = args[0].i;
+                    integer_t i = args[0]->i;
                     Object str0 = makeString();
-                    size_t sz = self.s_ptr->str.size();
+                    size_t sz = self->s_ptr->str.size();
 
                     if(i == 0) {
                         return str0;
@@ -148,8 +136,8 @@ namespace sm{
                         i *= -1;
                         str0.s_ptr->str.resize(sz * i);
 
-                        String::reverse_iterator beg = self.s_ptr->str.rbegin();
-                        String::reverse_iterator end = self.s_ptr->str.rend();
+                        String::reverse_iterator beg = self->s_ptr->str.rbegin();
+                        String::reverse_iterator end = self->s_ptr->str.rend();
                         String::iterator curr = str0.s_ptr->str.begin();
 
                         for(integer_t j = 0; j != i; ++j){
@@ -158,8 +146,8 @@ namespace sm{
                     } else {
                         str0.s_ptr->str.resize(sz * i);
 
-                        String::iterator beg = self.s_ptr->str.begin();
-                        String::iterator end = self.s_ptr->str.end();
+                        String::iterator beg = self->s_ptr->str.begin();
+                        String::iterator end = self->s_ptr->str.end();
                         String::iterator curr = str0.s_ptr->str.begin();
 
                         for(integer_t j = 0; j != i; ++j){
@@ -170,18 +158,18 @@ namespace sm{
                 })
 
                 smMethod(idx, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
 
-                    integer_t i = args[0].i;
-                    String::iterator begin = self.s_ptr->str.begin(),
-                        end = self.s_ptr->str.end();
+                    integer_t i = args[0]->i;
+                    String::iterator begin = self->s_ptr->str.begin(),
+                        end = self->s_ptr->str.end();
 
                     if(i > 0){
                         String::iterator ch_it = String::nthChar(begin, end, i);
                         return makeInteger(std::distance(begin, ch_it));
                     } else if(i < 0){
-                        integer_t n = self.s_ptr->str.uSize() + i;
+                        integer_t n = self->s_ptr->str.uSize() + i;
                         if(n <= 0)
                             return Object();
                         String::iterator ch_it = String::nthChar(begin, end, n);
@@ -191,28 +179,28 @@ namespace sm{
                 })
 
                 smMethod(len, smLambda {
-                    return makeInteger(self.s_ptr->str.size());
+                    return makeInteger(self->s_ptr->str.size());
                 })
 
                 smMethod(count, smLambda {
                     size_t argc = args.size();
 
                     integer_t start = 0;
-                    integer_t size = self.s_ptr->str.size();
+                    integer_t size = self->s_ptr->str.size();
                     integer_t end = size;
 
                     if(argc != 0){
-                        if(args[0].type == ObjectType::INTEGER){
-                            start = args[0].i;
+                        if(args[0]->type == ObjectType::INTEGER){
+                            start = args[0]->i;
                             if(!runtime::findIndex(start, start, size))
                                 return Object();
-                        } else if(args[0].type != ObjectType::NONE)
+                        } else if(args[0]->type != ObjectType::NONE)
                             return Object();
                     }
 
                     if(argc > 1){
-                        if(args[1].type == ObjectType::INTEGER){
-                            end = args[1].i;
+                        if(args[1]->type == ObjectType::INTEGER){
+                            end = args[1]->i;
                             if(end < 0){
                                 end += size;
                                 if(end < 0 || end < start)
@@ -221,55 +209,55 @@ namespace sm{
                                 end = size;
                             else if(end < start)
                                 return Object();
-                        } else if(args[1].type != ObjectType::NONE)
+                        } else if(args[1]->type != ObjectType::NONE)
                             return Object();
                     }
 
-                    String::const_iterator beg = self.s_ptr->str.begin();
+                    String::const_iterator beg = self->s_ptr->str.begin();
                     return makeInteger(String::uSize(beg + start, beg + end));
                 })
 
                 smMethod(empty, smLambda {
-                    return makeInteger(self.s_ptr->str.empty());
+                    return makeInteger(self->s_ptr->str.empty());
                 })
 
                 smMethod(compare, smLambda {
                     size_t argc = args.size();
-                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                    if(argc == 0 || args[0]->type != ObjectType::STRING){
                         return makeInteger(0);
                     } else if(argc >= 2 && runtime::implicitToBool(args[1])){
-                        return makeInteger(self.s_ptr->str.compareIgnoreCase(args[0].s_ptr->str));
+                        return makeInteger(self->s_ptr->str.compareIgnoreCase(args[0]->s_ptr->str));
                     }
-                    return makeInteger(self.s_ptr->str.compare(args[0].s_ptr->str));
+                    return makeInteger(self->s_ptr->str.compare(args[0]->s_ptr->str));
                 })
 
                 smMethod(u_compare, smLambda {
                     size_t argc = args.size();
-                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                    if(argc == 0 || args[0]->type != ObjectType::STRING){
                         return makeInteger(1);
                     } else if(argc >= 2 && runtime::implicitToBool(args[1])){
-                        return makeInteger(self.s_ptr->str.uCompareIgnoreCase(args[0].s_ptr->str));
+                        return makeInteger(self->s_ptr->str.uCompareIgnoreCase(args[0]->s_ptr->str));
                     }
-                    return makeInteger(self.s_ptr->str.compare(args[0].s_ptr->str));
+                    return makeInteger(self->s_ptr->str.compare(args[0]->s_ptr->str));
                 })
 
                 smMethod(get, smLambda {
-                    String::const_iterator begin = self.s_ptr->str.cbegin();
+                    String::const_iterator begin = self->s_ptr->str.cbegin();
 
-                    if(self.s_ptr->str.empty())
+                    if(self->s_ptr->str.empty())
                         return Object();
                     if(args.empty()){
                         return makeString(begin, begin+1);
-                    } else if(args[0].type == ObjectType::INTEGER){
-                        integer_t idx = args[0].i;
+                    } else if(args[0]->type == ObjectType::INTEGER){
+                        integer_t idx = args[0]->i;
                         if(idx >= 0){
                             size_t i = static_cast<size_t>(idx);
-                            if(i >= self.s_ptr->str.size())
+                            if(i >= self->s_ptr->str.size())
                                 return Object();
                             return makeString(begin+i, begin+i+1);
                         }
 
-                        idx += static_cast<integer_t>(self.s_ptr->str.size());
+                        idx += static_cast<integer_t>(self->s_ptr->str.size());
                         if(idx < 0)
                             return Object();
                         return makeString(begin+idx, begin+idx+1);
@@ -278,81 +266,81 @@ namespace sm{
                 })
 
                 smMethod(u_get, smLambda {
-                    if(self.s_ptr->str.empty())
+                    if(self->s_ptr->str.empty())
                         return Object();
-                    integer_t strSize = self.s_ptr->str.uSize();
+                    integer_t strSize = self->s_ptr->str.uSize();
                     if(args.empty()){
-                        return makeString(self.s_ptr->str.uCharAt(0));
-                    } else if(args[0].type == ObjectType::INTEGER){
-                        integer_t idx = args[0].i;
+                        return makeString(self->s_ptr->str.uCharAt(0));
+                    } else if(args[0]->type == ObjectType::INTEGER){
+                        integer_t idx = args[0]->i;
                         if(idx >= 0){
                             if(idx >= strSize)
                                 return Object();
-                            return makeString(self.s_ptr->str.uCharAt(idx));
+                            return makeString(self->s_ptr->str.uCharAt(idx));
                         }
 
                         idx += strSize;
                         if(idx < 0)
                             return Object();
-                        return makeString(self.s_ptr->str.uCharAt(idx));
+                        return makeString(self->s_ptr->str.uCharAt(idx));
                     }
                     return Object();
                 })
 
                 smMethod(getc, smLambda {
-                    if(self.s_ptr->str.empty())
+                    if(self->s_ptr->str.empty())
                         return Object();
                     if(args.empty()){
-                        return makeInteger(self.s_ptr->str[0]);
-                    } else if(args[0].type == ObjectType::INTEGER){
-                        integer_t idx = args[0].i;
+                        return makeInteger(self->s_ptr->str[0]);
+                    } else if(args[0]->type == ObjectType::INTEGER){
+                        integer_t idx = args[0]->i;
                         if(idx >= 0){
                             size_t i = static_cast<size_t>(idx);
-                            if(i >= self.s_ptr->str.size())
+                            if(i >= self->s_ptr->str.size())
                                 return Object();
-                            return makeInteger(self.s_ptr->str[i]);
+                            return makeInteger(self->s_ptr->str[i]);
                         }
 
-                        idx += static_cast<integer_t>(self.s_ptr->str.size());
+                        idx += static_cast<integer_t>(self->s_ptr->str.size());
                         if(idx < 0)
                             return Object();
-                        return makeInteger(self.s_ptr->str[static_cast<size_t>(idx)]);
+                        return makeInteger(self->s_ptr->str[static_cast<size_t>(idx)]);
                     }
                     return Object();
                 })
 
                 smMethod(u_getc, smLambda {
-                    if(self.s_ptr->str.empty())
+                    if(self->s_ptr->str.empty())
                         return Object();
-                    integer_t strSize = self.s_ptr->str.uSize();
+                    integer_t strSize = self->s_ptr->str.uSize();
                     if(args.empty()){
-                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(0)));
-                    } else if(args[0].type == ObjectType::INTEGER){
-                        integer_t idx = args[0].i;
+                        return makeInteger(uGetCodepoint(self->s_ptr->str.uCharAt(0)));
+                    } else if(args[0]->type == ObjectType::INTEGER){
+                        integer_t idx = args[0]->i;
                         if(idx >= 0){
                             if(idx >= strSize)
                                 return Object();
-                            return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
+                            return makeInteger(uGetCodepoint(self->s_ptr->str.uCharAt(idx)));
                         }
 
                         idx += strSize;
                         if(idx < 0)
                             return Object();
-                        return makeInteger(uGetCodepoint(self.s_ptr->str.uCharAt(idx)));
+                        return makeInteger(uGetCodepoint(self->s_ptr->str.uCharAt(idx)));
                     }
                     return Object();
                 })
 
                 smMethod(contains, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return Object();
-                    return makeInteger(self.s_ptr->str.contains(args[0].s_ptr->str));
+                    return makeInteger(self->s_ptr->str.contains(args[0]->s_ptr->str));
                 })
 
                 smMethod(bytes, smLambda {
-                    Object list = makeList(intp, ObjectVec_t(self.s_ptr->str.size()));
+                    RootObject list = makeList(intp, RootObjectVec_t(self->s_ptr->str.size()));
 
-                    String::const_iterator iit = self.s_ptr->str.begin();
+                    String::const_iterator iit = self->s_ptr->str.begin();
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);
                     ObjectVec_t::iterator oit = out.begin(), end = out.end();
 
@@ -363,10 +351,10 @@ namespace sm{
                 })
 
                 smMethod(chars, smLambda {
-                    Object list = makeList(intp);
+                    RootObject list = makeList(intp);
 
-                    String::const_iterator curr = self.s_ptr->str.begin();
-                    String::const_iterator end = self.s_ptr->str.end();
+                    String::const_iterator curr = self->s_ptr->str.begin();
+                    String::const_iterator end = self->s_ptr->str.end();
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);;
                     unicode_t ch;
 
@@ -391,52 +379,52 @@ namespace sm{
                             if(++curr == end)
                                 break;
                             else
-                                out.s_ptr->str.append(self.s_ptr->str);
+                                out.s_ptr->str.append(self->s_ptr->str);
                         }
                     }
                     return out;
                 })
 
                 smMethod(ends_with, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return Object();
-                    return makeInteger(self.s_ptr->str.endsWith(args[0].s_ptr->str));
+                    return makeInteger(self->s_ptr->str.endsWith(args[0]->s_ptr->str));
                 })
 
                 smMethod(starts_with, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return Object();
-                    return makeInteger(self.s_ptr->str.startsWith(args[0].s_ptr->str));
+                    return makeInteger(self->s_ptr->str.startsWith(args[0]->s_ptr->str));
                 })
 
                 smMethod(hash, smLambda {
-                    return makeInteger(self.s_ptr->str.hash());
+                    return makeInteger(self->s_ptr->str.hash());
                 })
 
                 smMethod(find, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return Object();
-                    return makeInteger(self.s_ptr->str.find(args[0].s_ptr->str)
-                        - self.s_ptr->str.begin());
+                    return makeInteger(self->s_ptr->str.find(args[0]->s_ptr->str)
+                        - self->s_ptr->str.begin());
                 })
 
                 smMethod(find_last, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return Object();
-                    return makeInteger(self.s_ptr->str.findLast(args[0].s_ptr->str)
-                        - self.s_ptr->str.begin());
+                    return makeInteger(self->s_ptr->str.findLast(args[0]->s_ptr->str)
+                        - self->s_ptr->str.begin());
                 })
 
                 smMethod(substr, smLambda {
                     size_t argc = args.size();
 
-                    if(argc == 0 || args[0].type != ObjectType::INTEGER){
+                    if(argc == 0 || args[0]->type != ObjectType::INTEGER){
                         return Object();
                     }
 
-                    integer_t size = self.s_ptr->str.size();
-                    integer_t start = args[0].i;
-                    String::iterator begin = self.s_ptr->str.begin();
+                    integer_t size = self->s_ptr->str.size();
+                    integer_t start = args[0]->i;
+                    String::iterator begin = self->s_ptr->str.begin();
 
                     if(start < 0){
                         start += size;
@@ -446,7 +434,7 @@ namespace sm{
                         return Object();
 
                     if(argc >= 2){
-                        integer_t end = args[1].i;
+                        integer_t end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -464,18 +452,18 @@ namespace sm{
                 smMethod(u_substr, smLambda {
                     size_t argc = args.size();
 
-                    if(argc == 0 || args[0].type != ObjectType::INTEGER){
+                    if(argc == 0 || args[0]->type != ObjectType::INTEGER){
                         return Object();
                     }
 
-                    integer_t size = self.s_ptr->str.uSize();
-                    integer_t start = args[0].i;
+                    integer_t size = self->s_ptr->str.uSize();
+                    integer_t start = args[0]->i;
 
                     if(!runtime::findIndex(start, start, size))
                         return Object();
 
                     if(argc >= 2){
-                        integer_t end = args[1].i;
+                        integer_t end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -484,38 +472,38 @@ namespace sm{
                             return Object();
                         else if(end < start)
                             return Object();
-                        return makeString(self.s_ptr->str.uSubstr(start, end));
+                        return makeString(self->s_ptr->str.uSubstr(start, end));
                     }
 
-                    return makeString(self.s_ptr->str.uSubstr(start));
+                    return makeString(self->s_ptr->str.uSubstr(start));
                 })
 
                 smMethod(replace_first, smLambda {
                     size_t argc = args.size();
-                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                    if(argc == 0 || args[0]->type != ObjectType::STRING){
                         return self;
                     } else if(argc >= 2){
-                        if(args[1].type != ObjectType::STRING)
+                        if(args[1]->type != ObjectType::STRING)
                             return Object();
-                        return makeString(self.s_ptr->str.replaceFirst(
-                                args[0].s_ptr->str, args[1].s_ptr->str
+                        return makeString(self->s_ptr->str.replaceFirst(
+                                args[0]->s_ptr->str, args[1]->s_ptr->str
                         ));
                     }
-                    return makeString(self.s_ptr->str.replaceFirst(args[0].s_ptr->str));
+                    return makeString(self->s_ptr->str.replaceFirst(args[0]->s_ptr->str));
                 })
 
                 smMethod(replace, smLambda {
                     size_t argc = args.size();
-                    if(argc == 0 || args[0].type != ObjectType::STRING){
+                    if(argc == 0 || args[0]->type != ObjectType::STRING){
                         return self;
                     } else if(argc >= 2){
-                        if(args[1].type != ObjectType::STRING)
+                        if(args[1]->type != ObjectType::STRING)
                             return Object();
-                        return makeString(self.s_ptr->str.replace(
-                                args[0].s_ptr->str, args[1].s_ptr->str
+                        return makeString(self->s_ptr->str.replace(
+                                args[0]->s_ptr->str, args[1]->s_ptr->str
                         ));
                     }
-                    return makeString(self.s_ptr->str.replace(args[0].s_ptr->str));
+                    return makeString(self->s_ptr->str.replace(args[0]->s_ptr->str));
                 })
 
                 smMethod(split, smLambda {
@@ -530,13 +518,13 @@ namespace sm{
                             skipEmpty = runtime::implicitToBool(args[1]);
                         }
 
-                        if(args[0].type != ObjectType::STRING)
+                        if(args[0]->type != ObjectType::STRING)
                             return Object();
                         sep = args[0];
                     }
 
-                    std::vector<String> strings = self.s_ptr->str.split(sep.s_ptr->str, skipEmpty);
-                    Object list = makeList(intp, ObjectVec_t(strings.size()));
+                    std::vector<String> strings = self->s_ptr->str.split(sep.s_ptr->str, skipEmpty);
+                    RootObject list = makeList(intp, RootObjectVec_t(strings.size()));
 
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, list);
                     ObjectVec_t::iterator beg = out.begin(), end = out.end();
@@ -549,27 +537,27 @@ namespace sm{
                 })
 
                 smMethod(trim, smLambda {
-                    return makeString(self.s_ptr->str.trim());
+                    return makeString(self->s_ptr->str.trim());
                 })
 
                 smMethod(upper, smLambda {
-                    return makeString(self.s_ptr->str.upper());
+                    return makeString(self->s_ptr->str.upper());
                 })
 
                 smMethod(lower, smLambda {
-                    return makeString(self.s_ptr->str.lower());
+                    return makeString(self->s_ptr->str.lower());
                 })
 
                 smMethod(u_upper, smLambda {
-                    return makeString(self.s_ptr->str.uUpper());
+                    return makeString(self->s_ptr->str.uUpper());
                 })
 
                 smMethod(u_lower, smLambda {
-                    return makeString(self.s_ptr->str.uLower());
+                    return makeString(self->s_ptr->str.uLower());
                 })
 
                 smMethod(clone, smLambda {
-                    return makeString(self.s_ptr->str);
+                    return makeString(self->s_ptr->str);
                 })
 
                 smMethod(to_string, smLambda {
@@ -606,27 +594,35 @@ namespace sm{
                     return Object();
                 })
 
+                smIdMethod(runtime::gcCollectId, smLambda {
+                    smDeleteData(ObjectVec_t);
+                    return Object();
+                })
+
+                smGCSearch(smSearchLambda {
+                    ObjectVec_t* ptr = data<ObjectVec_t>(self);
+                    if(ptr){
+                        out.insert(out.end(), ptr->begin(), ptr->end());
+                    }
+                })
+
                 smIdMethod(runtime::squareId, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    if(args.empty() || vec.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || vec.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t i = args[0].i;
+                    integer_t i = args[0]->i;
                     integer_t sz = vec.size();
 
                     if(!runtime::findIndex(i, i, sz))
                         return Object();
-
-                    Object ref;
-                    ref.type = ObjectType::STRONG_REFERENCE;
-                    ref.o_ptr = &vec[i];
-                    return ref;
+                    return makeRef<true>(vec[i]);
                 })
 
                 smMethod(get, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    if(args.empty() || vec.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || vec.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t i = args[0].i;
+                    integer_t i = args[0]->i;
                     integer_t sz = vec.size();
 
                     if(!runtime::findIndex(i, i, sz))
@@ -641,7 +637,7 @@ namespace sm{
                     if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
-                    Object newVec = makeList(intp, vec);
+                    RootObject newVec = makeList(intp, RootObjectVec_t(vec.begin(), vec.end()));
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     out.insert(out.end(), vec2->cbegin(), vec2->cend());
                     return newVec;
@@ -649,22 +645,22 @@ namespace sm{
 
                 smOpMethod(parse::TT_MINUS, smLambda {
                     integer_t i;
-                    if(args.empty() || args[0].type != ObjectType::INTEGER
-                            || (i = args[0].i) < 0)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER
+                            || (i = args[0]->i) < 0)
                         return Object();
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     size_t idx = i;
                     if(idx >= vec.size())
                         return makeList(intp);
-                    return makeList(intp, ObjectVec_t(vec.begin(), vec.end() - idx));
+                    return makeList(intp, RootObjectVec_t(vec.begin(), vec.end() - idx));
                 })
 
                 smOpMethod(parse::TT_MULT, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t i = args[0].i;
+                    integer_t i = args[0]->i;
 
-                    Object list = makeList(intp);
+                    RootObject list = makeList(intp);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t& newVec = *getData<ObjectVec_t>(intp, list);
                     size_t sz = vec.size();
@@ -702,7 +698,7 @@ namespace sm{
                         return Object();
 
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    Object newVec = makeList(intp, vec);
+                    RootObject newVec = makeList(intp, RootObjectVec_t(vec.begin(), vec.end()));
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
 
                     for(const Object& obj : *vec2){
@@ -718,7 +714,7 @@ namespace sm{
                     if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
-                    Object newVec = makeList(intp);
+                    RootObject newVec = makeList(intp);
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
 
@@ -760,8 +756,8 @@ namespace sm{
 
                 smMethod(reserve, smLambda {
                     integer_t i;
-                    if(args.empty() || args[0].type != ObjectType::INTEGER
-                            || (i = args[0].i) < 0)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER
+                            || (i = args[0]->i) < 0)
                         return Object();
                     smGetData(ObjectVec_t)->reserve(i);
                     return Object();
@@ -769,8 +765,8 @@ namespace sm{
 
                 smMethod(resize, smLambda {
                     integer_t i;
-                    if(args.empty() || args[0].type != ObjectType::INTEGER
-                            || (i = args[0].i) < 0)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER
+                            || (i = args[0]->i) < 0)
                         return Object();
                     smGetData(ObjectVec_t)->resize(i);
                     return Object();
@@ -779,7 +775,7 @@ namespace sm{
                 smMethod(pop, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     if(!vec.empty()){
-                        Object back = std::move(vec.back());
+                        RootObject back = std::move(vec.back());
                         vec.pop_back();
                         return back;
                     }
@@ -787,14 +783,14 @@ namespace sm{
                 })
 
                 smMethod(push, smLambda {
-                    smGetData(ObjectVec_t)->push_back(args.empty() ? Object() : args[0]);
+                    smGetData(ObjectVec_t)->push_back(args.empty() ? RootObject() : args[0]);
                     return Object();
                 })
 
                 smMethod(pop_front, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     if(!vec.empty()){
-                        Object back = std::move(vec.front());
+                        RootObject back = std::move(vec.front());
                         vec.erase(vec.begin());
                         return back;
                     }
@@ -803,7 +799,7 @@ namespace sm{
 
                 smMethod(push_front, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    vec.insert(vec.begin(), args.empty() ? Object() : args[0]);
+                    vec.insert(vec.begin(), args.empty() ? RootObject() : args[0]);
                     return Object();
                 })
 
@@ -814,18 +810,18 @@ namespace sm{
                     integer_t size = vec.size();
                     integer_t end = size;
 
-                    if(args.empty() || args[0].type == ObjectType::NONE);
+                    if(args.empty() || args[0]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[0].type == ObjectType::INTEGER){
-                        start = args[0].i;
+                    else if(args[0]->type == ObjectType::INTEGER){
+                        start = args[0]->i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
                     } else return Object();
 
-                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                    if(args.size() < 2 || args[1]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[1].type == ObjectType::INTEGER){
-                        end = args[1].i;
+                    else if(args[1]->type == ObjectType::INTEGER){
+                        end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -836,7 +832,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeList(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeList(intp, RootObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(tuple, smLambda {
@@ -846,18 +842,18 @@ namespace sm{
                     integer_t size = vec.size();
                     integer_t end = size;
 
-                    if(args.empty() || args[0].type == ObjectType::NONE);
+                    if(args.empty() || args[0]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[0].type == ObjectType::INTEGER){
-                        start = args[0].i;
+                    else if(args[0]->type == ObjectType::INTEGER){
+                        start = args[0]->i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
                     } else return Object();
 
-                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                    if(args.size() < 2 || args[1]->type == ObjectType::NONE);
                         // do nothing
-                    else if(args[1].type == ObjectType::INTEGER){
-                        end = args[1].i;
+                    else if(args[1]->type == ObjectType::INTEGER){
+                        end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -868,7 +864,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeTuple(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeTuple(intp, RootObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(append, smLambda {
@@ -882,9 +878,9 @@ namespace sm{
 
                 smMethod(insert, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    if(args[0].type != ObjectType::INTEGER)
+                    if(args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t idx = args[0].i;
+                    integer_t idx = args[0]->i;
                     if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                         return Object();
                     vec.insert(vec.begin() + idx, args[1]);
@@ -898,19 +894,19 @@ namespace sm{
                     integer_t start = 0;
                     integer_t end;
 
-                    if(args.empty() || args[0].type == ObjectType::NONE);
+                    if(args.empty() || args[0]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[0].type == ObjectType::INTEGER){
-                        start = args[0].i;
+                    else if(args[0]->type == ObjectType::INTEGER){
+                        start = args[0]->i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
                     } else return Object();
 
-                    if(args.size() < 2 || args[1].type == ObjectType::NONE) {
+                    if(args.size() < 2 || args[1]->type == ObjectType::NONE) {
                         vec.erase(vec.begin() + start);
                         return Object();
-                    } else if(args[1].type == ObjectType::INTEGER){
-                        end = args[1].i;
+                    } else if(args[1]->type == ObjectType::INTEGER){
+                        end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -930,11 +926,11 @@ namespace sm{
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t* toInsert;
 
-                    if(args.size() < 2 || args[0].type != ObjectType::INTEGER
+                    if(args.size() < 2 || args[0]->type != ObjectType::INTEGER
                             || !hasVector(intp, args[1], toInsert))
                         return Object();
 
-                    integer_t idx = args[0].i;
+                    integer_t idx = args[0]->i;
                     if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                         return Object();
                     vec.insert(vec.begin() + idx, toInsert->begin(), toInsert->end());
@@ -945,11 +941,11 @@ namespace sm{
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t* toCopy;
 
-                    if(args.size() < 2 || args[0].type != ObjectType::INTEGER
+                    if(args.size() < 2 || args[0]->type != ObjectType::INTEGER
                             || !hasVector(intp, args[1], toCopy))
                         return  makeFalse();
 
-                    integer_t idx = args[0].i;
+                    integer_t idx = args[0]->i;
                     if(!runtime::findIndex(idx, idx, vec.size()+1)) // vec.size() is a valid parameter.
                         return makeFalse();
 
@@ -964,7 +960,7 @@ namespace sm{
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t::iterator begin = vec.begin(), end = vec.end();
                     ObjectVec_t::iterator found = std::find_if(vec.begin(), vec.end(),
-                            runtime::Equal(intp, args.empty() ? Object() : args[0]));
+                            runtime::Equal(intp, args.empty() ? RootObject() : args[0]));
 
                     if(found == end)
                         return Object();
@@ -974,7 +970,7 @@ namespace sm{
                 smMethod(count, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     return makeInteger(std::count_if(vec.begin(), vec.end(),
-                        runtime::Equal(intp, args.empty() ? Object() : args[0])));
+                        runtime::Equal(intp, args.empty() ? RootObject() : args[0])));
                 })
 
                 smMethod(slice, smLambda {
@@ -983,18 +979,18 @@ namespace sm{
                     integer_t size = vec.size();
                     integer_t end = size;
 
-                    if(args.empty() || args[0].type == ObjectType::NONE);
+                    if(args.empty() || args[0]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[0].type == ObjectType::INTEGER){
-                        start = args[0].i;
+                    else if(args[0]->type == ObjectType::INTEGER){
+                        start = args[0]->i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
                     } else return Object();
 
-                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                    if(args.size() < 2 || args[1]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[1].type == ObjectType::INTEGER){
-                        end = args[1].i;
+                    else if(args[1]->type == ObjectType::INTEGER){
+                        end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -1005,7 +1001,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeList(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeList(intp, RootObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(reverse, smLambda {
@@ -1090,6 +1086,18 @@ namespace sm{
                     return Object();
                 })
 
+                smIdMethod(runtime::gcCollectId, smLambda {
+                    smDeleteData(ObjectVec_t);
+                    return Object();
+                })
+
+                smGCSearch(smSearchLambda {
+                    ObjectVec_t* ptr = data<ObjectVec_t>(self);
+                    if(ptr){
+                        out.insert(out.end(), ptr->begin(), ptr->end());
+                    }
+                })
+
                 smOpMethod(parse::TT_PLUS, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     ObjectVec_t* vec2;
@@ -1097,7 +1105,7 @@ namespace sm{
                     if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
-                    Object newVec = makeTuple(intp, vec);
+                    RootObject newVec = makeTuple(intp, RootObjectVec_t(vec.begin(), vec.end()));
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     out.insert(out.end(), vec2->cbegin(), vec2->cend());
 
@@ -1106,23 +1114,23 @@ namespace sm{
 
                 smOpMethod(parse::TT_MINUS, smLambda {
                     integer_t i;
-                    if(args.empty() || args[0].type != ObjectType::INTEGER
-                            || (i = args[0].i) < 0)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER
+                            || (i = args[0]->i) < 0)
                         return Object();
 
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     size_t idx = i;
                     if(idx >= vec.size())
                         return makeTuple(intp);
-                    return makeTuple(intp, ObjectVec_t(vec.begin(), vec.end() - idx));
+                    return makeTuple(intp, RootObjectVec_t(vec.begin(), vec.end() - idx));
                 })
 
                 smOpMethod(parse::TT_MULT, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
-                    integer_t i = args[0].i;
+                    integer_t i = args[0]->i;
 
-                    Object tuple = makeTuple(intp);
+                    RootObject tuple = makeTuple(intp);
                     ObjectVec_t& newVec = *getData<ObjectVec_t>(intp, tuple);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     size_t sz = vec.size();
@@ -1160,7 +1168,7 @@ namespace sm{
                         return Object();
 
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    Object newVec = makeTuple(intp, vec);
+                    RootObject newVec = makeTuple(intp, RootObjectVec_t(vec.begin(), vec.end()));
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
 
                     for(const Object& obj : *vec2){
@@ -1176,7 +1184,7 @@ namespace sm{
                     if(args.empty() || !hasVector(intp, args[0], vec2))
                         return Object();
 
-                    Object newVec = makeTuple(intp, {});
+                    RootObject newVec = makeTuple(intp, {});
                     ObjectVec_t& out = *getData<ObjectVec_t>(intp, newVec);
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
 
@@ -1221,18 +1229,18 @@ namespace sm{
                     integer_t size = vec.size();
                     integer_t end = size;
 
-                    if(args.empty() || args[0].type == ObjectType::NONE);
+                    if(args.empty() || args[0]->type == ObjectType::NONE);
                         // do nothing
-                    else if(args[0].type == ObjectType::INTEGER){
-                        start = args[0].i;
+                    else if(args[0]->type == ObjectType::INTEGER){
+                        start = args[0]->i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
                     } else return Object();
 
-                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                    if(args.size() < 2 || args[1]->type == ObjectType::NONE);
                         // do nothing
-                    else if(args[1].type == ObjectType::INTEGER){
-                        end = args[1].i;
+                    else if(args[1]->type == ObjectType::INTEGER){
+                        end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -1243,15 +1251,15 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeTuple(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeTuple(intp, RootObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(get, smLambda {
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
-                    if(vec.empty() || args.empty() || args[0].type != ObjectType::INTEGER)
+                    if(vec.empty() || args.empty() || args[0]->type != ObjectType::INTEGER)
                         return Object();
 
-                    integer_t i = args[0].i;
+                    integer_t i = args[0]->i;
                     integer_t sz = vec.size();
 
                     if(!runtime::findIndex(i, i, sz))
@@ -1266,18 +1274,18 @@ namespace sm{
                     integer_t size = vec.size();
                     integer_t end = size;
 
-                    if(args.empty() || args[0].type == ObjectType::NONE);
+                    if(args.empty() || args[0]->type == ObjectType::NONE);
                         // do nothing
-                    else if(args[0].type == ObjectType::INTEGER){
-                        start = args[0].i;
+                    else if(args[0]->type == ObjectType::INTEGER){
+                        start = args[0]->i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
                     } else return Object();
 
-                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                    if(args.size() < 2 || args[1]->type == ObjectType::NONE);
                         // do nothing
-                    else if(args[1].type == ObjectType::INTEGER){
-                        end = args[1].i;
+                    else if(args[1]->type == ObjectType::INTEGER){
+                        end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -1288,7 +1296,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeList(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeList(intp, RootObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(hash, smLambda {
@@ -1317,18 +1325,18 @@ namespace sm{
                     integer_t size = vec.size();
                     integer_t end = size;
 
-                    if(args.empty() || args[0].type == ObjectType::NONE);
+                    if(args.empty() || args[0]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[0].type == ObjectType::INTEGER){
-                        start = args[0].i;
+                    else if(args[0]->type == ObjectType::INTEGER){
+                        start = args[0]->i;
                         if(!runtime::findIndex(start, start, size))
                             return Object();
                     } else return Object();
 
-                    if(args.size() < 2 || args[1].type == ObjectType::NONE);
+                    if(args.size() < 2 || args[1]->type == ObjectType::NONE);
                         // do nothing!
-                    else if(args[1].type == ObjectType::INTEGER){
-                        end = args[1].i;
+                    else if(args[1]->type == ObjectType::INTEGER){
+                        end = args[1]->i;
                         if(end < 0){
                             end += size;
                             if(end < 0 || end < start)
@@ -1339,7 +1347,7 @@ namespace sm{
                             return Object();
                     } else return Object();
 
-                    return makeTuple(intp, ObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
+                    return makeTuple(intp, RootObjectVec_t(vec.cbegin() + start, vec.cbegin() + end));
                 })
 
                 smMethod(to_string, smLambda{
@@ -1384,25 +1392,39 @@ namespace sm{
                     if(args.empty() || !hasVector(intp, args[0], dummy))
                         return Object();
 
-                    smSetData(LIData) = new LIData { args[0], 0 };
+                    smRef(smId("list")) = args[0];
+                    smRef(smId("idx")) = makeInteger(0);
                     return Object();
                 })
 
                 smMethod(delete, smLambda {
-                    smDeleteData(LIData);
                     return Object();
                 })
 
                 smMethod(next, smLambda {
-                    Object obj;
-                    LIData* ptr = smGetData(LIData);
-                    ObjectVec_t& ref = *data<ObjectVec_t>(ptr->list);
-                    bool check = ptr->idx < ref.size();
+                    Object& list = smRef(smId("list"));
+                    Object& idx = smRef(smId("idx"));
+
+                    if(idx.type != ObjectType::INTEGER){
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                            "'idx' is not an integer inside ListIterator");
+                    }
+
+                    ObjectVec_t* ref;
+                    if(!hasVector(intp, list, ref)){
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                            "'list' is not an integer inside ListIterator");
+                    }
+
+                    integer_t& i = idx.i;
+                    bool check = i < static_cast<integer_t>(ref->size());
+                    RootObject obj;
 
                     if(check){
-                        obj = ref[ptr->idx++];
+                        obj = (*ref)[i++];
                     }
-                    return makeTuple(intp, {obj, makeBool(check)});
+
+                    return makeTuple(intp, RootObjectVec_t{obj, makeBool(check)});
                 })
             smEnd
 
@@ -1423,27 +1445,40 @@ namespace sm{
                 */
 
                 smMethod(new, smLambda {
-                    if(args.empty() || args[0].type != ObjectType::STRING)
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
                         return Object();
-                    smSetData(SIData) = new SIData { args[0], 0 };
+                    smRef(smId("str")) = args[0];
+                    smRef(smId("idx")) = makeInteger(0);
                     return Object();
                 })
 
                 smMethod(delete, smLambda {
-                    smDeleteData(SIData);
                     return Object();
                 })
 
                 smMethod(next, smLambda {
-                    SIData* ptr = smGetData(SIData);
-                    String& ref = ptr->str.s_ptr->str;
+                    Object& str = smRef(smId("str"));
+                    Object& idx = smRef(smId("idx"));
 
-                    String::const_iterator it = ref.begin() + ptr->idx;
+                    if(str.type != ObjectType::STRING){
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                            "'str' is not a string inside StringIterator");
+                    }
+
+                    if(idx.type != ObjectType::INTEGER){
+                        intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                            "'idx' is not an integer inside StringIterator");
+                    }
+
+                    String& ref = str.s_ptr->str;
+                    integer_t& i = idx.i;
+
+                    String::const_iterator it = ref.begin() + i;
                     unicode_t ch;
-                    bool check = ptr->idx < ref.size();
+                    bool check = i < static_cast<integer_t>(ref.size());
 
                     if(check && String::uNext(it, ref.end(), ch)){
-                        ptr->idx = it - ref.begin();
+                        i = it - ref.begin();
                         return makeTuple(intp, {
                             makeString(ch), makeTrue()
                         });
@@ -1457,18 +1492,17 @@ namespace sm{
         }
     }
 
-    Object makeList(exec::Interpreter& intp, ObjectVec_t vec) noexcept{
-        Object list = newInstance(intp, lib::cList);
-        *lib::getData<ObjectVec_t>(intp, list) = std::move(vec);
+    RootObject makeList(exec::Interpreter& intp, RootObjectVec_t vec) noexcept{
+        RootObject list = newInstance(intp, lib::cList);
+        lib::getData<ObjectVec_t>(intp, list)->assign(vec.begin(), vec.end());
         return list;
     }
 
-    Object makeTuple(exec::Interpreter& intp, ObjectVec_t vec) noexcept{
-        Object tuple = newInstance(intp, lib::cTuple);
-        *lib::getData<ObjectVec_t>(intp, tuple) = std::move(vec);
+    RootObject makeTuple(exec::Interpreter& intp, RootObjectVec_t vec) noexcept{
+        RootObject tuple = newInstance(intp, lib::cTuple);
+        lib::getData<ObjectVec_t>(intp, tuple)->assign(vec.begin(),vec.end());
         return tuple;
     }
-
 
     bool hasVector(exec::Interpreter& intp, const Object& obj, ObjectVec_t*& vecPtr) noexcept{
         if(runtime::of_type(obj, lib::cList) || runtime::of_type(obj, lib::cTuple)){
