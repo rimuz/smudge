@@ -600,10 +600,10 @@ namespace sm{
                                             Function* fn = new Function;
                                             fn->address = _rt->code.size();
                                             fn->fnName = runtime::initId;
-                                            fn->boxName = states.currBox->boxName;
+                                            fn->boxName = states.currBox->name;
 
                                             // inserting init code into bytecode and linking it to the class
-                                            states.currClass->objects.insert({runtime::initId, makeFunction(fn)});
+                                            states.currClass->objects.insert({runtime::initId, RootObject(makeFunction(fn))});
                                             _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
                                             _rt->code.push_back(RETURN_NULL);
                                             _classTemp.clear();
