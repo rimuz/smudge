@@ -101,14 +101,13 @@ namespace sm{
     void Sources::printStackTrace(exec::Interpreter& intp, enum_t errType, const std::string& msg) noexcept{
         std::cerr << errorMessages[errType] << msg << std::endl;
 
-        std::lock_guard<std::mutex> lock(intp.stacks_m);
         for(exec::CallStack_t::const_reverse_iterator it = intp.funcStack.rbegin();
                 it != intp.funcStack.rend(); ++it){
             std::cerr << "\tat ";
-            std::cerr << intp.rt->boxNames[it->box->boxName] << "::";
+            std::cerr << intp.rt->boxNames[it->box->name] << "::";
 
-            if(it->thisObject.type == ObjectType::CLASS_INSTANCE && it->thisObject.i_ptr->base)
-                std::cerr << intp.rt->nameFromId(it->thisObject.i_ptr->base->name) << "::";
+            if(it->thisObject->type == ObjectType::CLASS_INSTANCE && it->thisObject->i_ptr->base)
+                std::cerr << intp.rt->nameFromId(it->thisObject->i_ptr->base->name) << "::";
             std::cerr << intp.rt->nameFromId(it->function->fnName) << "()" << std::endl;
 
             if(it->inlined){
