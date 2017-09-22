@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <functional>
 #include <thread>
+#include <cmath>
 
 #include "sm/typedefs.h"
 #include "sm/runtime/casts.h"
@@ -63,10 +64,14 @@ namespace sm{
 
         namespace MutexClass{}
         namespace LockClass{}
+        namespace AtomicIntClass{}
+        namespace AtomicFloatClass{}
 
         Class* cThread;
         Class* cMutex;
         Class* cLock;
+        Class* cAtomicInt;
+        Class* cAtomicFloat;
 
         smLibDecl(thread){
             smInitBox
@@ -237,6 +242,409 @@ namespace sm{
                         return Object();
                     })
                 smEnd
+
+                smClass(AtomicInt)
+                    /*
+                     *
+                     *               d8888   8888888
+                     *              d88888     888
+                     *             d88P888     888
+                     *            d88P 888     888
+                     *           d88P  888     888
+                     *          d88P   888     888
+                     *         d8888888888     888
+                     *        d88P     888   8888888
+                     *
+                    */
+
+                    smMethod(new, smLambda {
+                        integer_t value = 0;
+                        if(!args.empty()){
+                            if(args[0]->type == ObjectType::INTEGER)
+                                value = args[0]->i;
+                            else if(args[0]->type == ObjectType::FLOAT)
+                                value = static_cast<integer_t>(args[0]->f);
+                            else if(runtime::of_type(args[0], cAtomicInt))
+                                value = data<std::atomic<integer_t>>(args[0])->load();
+                            else
+                                return Object();
+                        }
+
+                        smSetData(std::atomic<integer_t>) = new std::atomic<integer_t>(value);
+                        return Object();
+                    })
+
+                    smMethod(delete, smLambda {
+                        smDeleteData(std::atomic<integer_t>);
+                        return Object();
+                    })
+
+                    smIdMethod(runtime::gcCollectId, smLambda {
+                        smDeleteData(std::atomic<integer_t>);
+                        return Object();
+                    })
+
+                    smOpMethod(parse::TT_COMPL, smLambda {
+                        return newInstance(intp, cAtomicInt, {
+                            makeInteger(~smGetData(std::atomic<integer_t>)->load())
+                        });
+                    })
+
+                    #define __OP_PM(OpName, Op) \
+                        smOpMethod(OpName, smLambda { \
+                            if(args.empty()) \
+                                return Object(); \
+                            \
+                            integer_t value = smGetData(std::atomic<integer_t>)->load(); \
+                            bool is_unary = args.size() > 1 && runtime::implicitToBool(args[1]); \
+                            \
+                            if(is_unary) \
+                                return makeInteger(Op value); \
+                            \
+                            if(args[0]->type == ObjectType::INTEGER) \
+                                return newInstance(intp, cAtomicInt, { \
+                                    makeInteger(value Op args[0]->i) \
+                                }); \
+                            else if(args[0]->type == ObjectType::FLOAT) \
+                                return newInstance(intp, cAtomicInt, { \
+                                    makeInteger(value Op args[0]->f) \
+                                }); \
+                            else if(runtime::of_type(args[0], cAtomicInt)) \
+                                return newInstance(intp, cAtomicInt, { \
+                                    makeInteger(value Op data<std::atomic<integer_t>>(args[0])->load()) \
+                                }); \
+                            else \
+                                return Object(); \
+                        })
+
+                    __OP_PM(parse::TT_PLUS, +)
+                    __OP_PM(parse::TT_MINUS, -)
+
+                    #undef __OP_PM
+
+                    smOpMethod(parse::TT_MULT, smLambda {
+                        if(args.empty())
+                            return Object();
+
+                        integer_t value = smGetData(std::atomic<integer_t>)->load();
+                        if(args[0]->type == ObjectType::INTEGER)
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(value * args[0]->i)
+                            });
+                        else if(args[0]->type == ObjectType::FLOAT)
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(static_cast<integer_t>(value * args[0]->f))
+                            });
+                        else if(runtime::of_type(args[0], cAtomicInt))
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(value * data<std::atomic<integer_t>>(args[0])->load())
+                            });
+                        else
+                            return Object();
+                    })
+
+                    #define __OP_I(OpName, Op) \
+                        smOpMethod(OpName, smLambda { \
+                            if(args.empty()) \
+                                return Object(); \
+                            integer_t value = smGetData(std::atomic<integer_t>)->load(); \
+                            if(args[0]->type == ObjectType::INTEGER) \
+                                return newInstance(intp, cAtomicInt, {makeInteger(value Op args[0]->i)}); \
+                            else if(runtime::of_type(args[0], cAtomicInt)) \
+                                return newInstance(intp, cAtomicInt, \
+                                    {makeInteger(value Op data<std::atomic<integer_t>>(args[0])->load())}); \
+                            else \
+                                return Object(); \
+                        })
+
+                    __OP_I(parse::TT_LEFT_SHIFT, <<)
+                    __OP_I(parse::TT_RIGHT_SHIFT, >>)
+                    __OP_I(parse::TT_AND, &)
+                    __OP_I(parse::TT_OR, |)
+                    __OP_I(parse::TT_XOR, ^)
+
+                    #undef __OP_I
+
+                    smOpMethod(parse::TT_DIV, smLambda {
+                        if(args.empty())
+                            return Object();
+
+                        integer_t value = smGetData(std::atomic<integer_t>)->load();
+                        if(args[0]->type == ObjectType::INTEGER){
+                            if(!args[0]->i)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(value / args[0]->i)
+                            });
+                        } else if(args[0]->type == ObjectType::FLOAT){
+                            if(args[0]->f == 0.f)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(static_cast<integer_t>(value / args[0]->f))
+                            });
+                        } else if(runtime::of_type(args[0], cAtomicInt)){
+                            integer_t val2 = data<std::atomic<integer_t>>(args[0])->load();
+                            if(!val2)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(value / val2)
+                            });
+                        } else
+                            return Object();
+                    })
+
+                    smOpMethod(parse::TT_MOD, smLambda {
+                        if(args.empty())
+                            return Object();
+
+                        integer_t value = smGetData(std::atomic<integer_t>)->load();
+                        if(args[0]->type == ObjectType::INTEGER){
+                            if(!args[0]->i)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(value % args[0]->i)
+                            });
+                        } else if(args[0]->type == ObjectType::FLOAT){
+                            if(args[0]->f == 0.f)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(static_cast<integer_t>(std::fmod(static_cast<float_t>(value), args[0]->f)))
+                            });
+                        } else if(runtime::of_type(args[0], cAtomicInt)){
+                            integer_t val2 = data<std::atomic<integer_t>>(args[0])->load();
+                            if(!val2)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicInt, {
+                                makeInteger(value % val2)
+                            });
+                        } else
+                            return Object();
+                    })
+
+                    #define __OP_CMP(OpName, Op) \
+                        smOpMethod(OpName, smLambda { \
+                            if(args.empty()) \
+                                return Object(); \
+                            integer_t value = smGetData(std::atomic<integer_t>)->load(); \
+                            if(args[0]->type == ObjectType::INTEGER){ \
+                                return makeBool(value Op args[0]->i); \
+                            } else if(args[0]->type == ObjectType::FLOAT){ \
+                                return makeBool(value Op static_cast<integer_t>(args[0]->f)); \
+                            } else if(runtime::of_type(args[0], cAtomicInt)){ \
+                                return makeBool(value Op data<std::atomic<integer_t>>(args[0])->load()); \
+                            } else \
+                                return Object(); \
+                        })
+
+                    __OP_CMP(parse::TT_LESS, <)
+                    __OP_CMP(parse::TT_GREATER, >)
+                    __OP_CMP(parse::TT_LESS_OR_EQUAL, <=)
+                    __OP_CMP(parse::TT_GREATER_OR_EQUAL, >=)
+                    __OP_CMP(parse::TT_EQUAL, ==)
+                    __OP_CMP(parse::TT_NOT_EQUAL, ==)
+
+                    #undef __OP_CMP
+                smEnd
+
+                smClass(AtomicFloat)
+                    /*
+                     *
+                     *              d8888   8888888888
+                     *             d88888   888
+                     *            d88P888   888
+                     *           d88P 888   8888888
+                     *          d88P  888   888
+                     *         d88P   888   888
+                     *        d8888888888   888
+                     *       d88P     888   888
+                     *
+                    */
+
+                    smMethod(new, smLambda {
+                        float_t value = 0;
+                        if(!args.empty()){
+                            if(args[0]->type == ObjectType::INTEGER)
+                                value = static_cast<float_t>(args[0]->i);
+                            else if(args[0]->type == ObjectType::FLOAT)
+                                value = args[0]->f;
+                            else if(runtime::of_type(args[0], cAtomicFloat))
+                                value = data<std::atomic<float_t>>(args[0])->load();
+                            else
+                                return Object();
+                        }
+
+                        smSetData(std::atomic<float_t>) = new std::atomic<float_t>(value);
+                        return Object();
+                    })
+
+                    smMethod(delete, smLambda {
+                        smDeleteData(std::atomic<float_t>);
+                        return Object();
+                    })
+
+                    smIdMethod(runtime::gcCollectId, smLambda {
+                        smDeleteData(std::atomic<float_t>);
+                        return Object();
+                    })
+
+                    #define __OP_PM(OpName, Op) \
+                        smOpMethod(OpName, smLambda { \
+                            if(args.empty()) \
+                                return Object(); \
+                            \
+                            float_t value = smGetData(std::atomic<float_t>)->load(); \
+                            bool is_unary = args.size() > 1 && runtime::implicitToBool(args[1]); \
+                            \
+                            if(is_unary) \
+                                return makeFloat(Op value); \
+                            \
+                            if(args[0]->type == ObjectType::INTEGER) \
+                                return newInstance(intp, cAtomicFloat, { \
+                                    makeFloat(value Op args[0]->i) \
+                                }); \
+                            else if(args[0]->type == ObjectType::FLOAT) \
+                                return newInstance(intp, cAtomicFloat, { \
+                                    makeFloat(static_cast<integer_t>(value Op args[0]->f)) \
+                                }); \
+                            else if(runtime::of_type(args[0], cAtomicInt)) \
+                                return newInstance(intp, cAtomicFloat, { \
+                                    makeFloat(value Op data<std::atomic<float_t>>(args[0])->load()) \
+                                }); \
+                            else \
+                                return Object(); \
+                        })
+
+                    __OP_PM(parse::TT_PLUS, +)
+                    __OP_PM(parse::TT_MINUS, -)
+
+                    #undef __OP_PM
+
+                    smOpMethod(parse::TT_MULT, smLambda {
+                        if(args.empty())
+                            return Object();
+
+                        float_t value = smGetData(std::atomic<float_t>)->load();
+                        if(args[0]->type == ObjectType::INTEGER)
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(static_cast<integer_t>(value * args[0]->f))
+                            });
+                        else if(args[0]->type == ObjectType::FLOAT)
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(value * args[0]->i)
+                            });
+                        else if(runtime::of_type(args[0], cAtomicInt))
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(value * data<std::atomic<float_t>>(args[0])->load())
+                            });
+                        else
+                            return Object();
+                    })
+
+                    smOpMethod(parse::TT_DIV, smLambda {
+                        if(args.empty())
+                            return Object();
+
+                        float_t value = smGetData(std::atomic<float_t>)->load();
+                        if(args[0]->type == ObjectType::INTEGER){
+                            if(!args[0]->i)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(value / args[0]->i)
+                            });
+                        } else if(args[0]->type == ObjectType::FLOAT){
+                            if(args[0]->f == 0.f)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(static_cast<integer_t>(value / args[0]->f))
+                            });
+                        } else if(runtime::of_type(args[0], cAtomicFloat)){
+                            float_t val2 = data<std::atomic<float_t>>(args[0])->load();
+                            if(!val2)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(value / val2)
+                            });
+                        } else
+                            return Object();
+                    })
+
+                    smOpMethod(parse::TT_MOD, smLambda {
+                        if(args.empty())
+                            return Object();
+
+                        float_t value = smGetData(std::atomic<float_t>)->load();
+                        if(args[0]->type == ObjectType::INTEGER){
+                            if(!args[0]->i)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(std::fmod(value, args[0]->i))
+                            });
+                        } else if(args[0]->type == ObjectType::FLOAT){
+                            if(args[0]->f == 0.f)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(std::fmod(value, args[0]->f))
+                            });
+                        } else if(runtime::of_type(args[0], cAtomicFloat)){
+                            float_t val2 = data<std::atomic<float_t>>(args[0])->load();
+                            if(!val2)
+                                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                                "division by zero.");
+
+                            return newInstance(intp, cAtomicFloat, {
+                                makeFloat(std::fmod(value, val2))
+                            });
+                        } else
+                            return Object();
+                    })
+
+                    #define __OP_CMP(OpName, Op) \
+                        smOpMethod(OpName, smLambda { \
+                            if(args.empty()) \
+                                return Object(); \
+                            float_t value = smGetData(std::atomic<float_t>)->load(); \
+                            if(args[0]->type == ObjectType::INTEGER){ \
+                                return makeBool(value Op args[0]->i); \
+                            } else if(args[0]->type == ObjectType::FLOAT){ \
+                                return makeBool(value Op args[0]->f); \
+                            } else if(runtime::of_type(args[0], cAtomicFloat)){ \
+                                return makeBool(value Op data<std::atomic<float_t>>(args[0])->load()); \
+                            } else \
+                                return Object(); \
+                        })
+
+                    __OP_CMP(parse::TT_LESS, <)
+                    __OP_CMP(parse::TT_GREATER, >)
+                    __OP_CMP(parse::TT_LESS_OR_EQUAL, <=)
+                    __OP_CMP(parse::TT_GREATER_OR_EQUAL, >=)
+                    __OP_CMP(parse::TT_EQUAL, ==)
+                    __OP_CMP(parse::TT_NOT_EQUAL, ==)
+
+                    #undef __OP_CMP
+                smEnd
+
             smReturnBox
         }
     }
