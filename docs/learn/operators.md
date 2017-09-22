@@ -214,7 +214,7 @@ func () (args...);
 func [] (args...);
 
 // Other operators
-func ~ (rhs);
+func ~ ();
 func * (rhs);
 func / (rhs);
 func % (rhs);
