@@ -40,6 +40,7 @@
 */
 
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <cstdlib>
 #include <chrono>
@@ -53,6 +54,9 @@
 #include "sm/runtime/Object.h"
 #include "sm/runtime/id.h"
 #include "sm/runtime/casts.h"
+
+#include "sm/io/RW.h"
+#include "sm/io/smc.h"
 
 #include "sm/exec/Interpreter.h"
 #include "sm/utils/String.h"
@@ -70,6 +74,7 @@ int main(int argc, char** argv){
     runtime::Runtime_t rt;
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
+    std::string mainBox;
 
     rt.main_intp = &intp;
     runtime::Runtime_t::main_id = std::this_thread::get_id();
@@ -80,7 +85,9 @@ int main(int argc, char** argv){
     for(int i = 1; i != argc; ++i){
         if(*argv[i] == '-'){
             argv[i]++;
-            if(!std::strcmp(argv[i], "D")){
+            if(!std::strcmp(argv[i], "c")){
+                rt.compileOnly = true;
+            } else if(!std::strcmp(argv[i], "D")){
                 if(++i == argc || *argv[i] == '-'){
                     printUsage();
                 }
@@ -120,7 +127,8 @@ int main(int argc, char** argv){
                 return 0;
             }
         } else {
-            cp.source(argv[i]);
+            mainBox = argv[i];
+            cp.source(mainBox);
             firstArg = i+1;
             break;
         }
@@ -163,6 +171,17 @@ int main(int argc, char** argv){
     if(rt.showAll){
         runtime::test::print(rt);
         std::cout << ".. Output:" << std::endl;
+    }
+
+    if(rt.compileOnly){
+        if(mainBox.size() > 2 && std::equal(mainBox.end() - 3, mainBox.end(), ".sm"))
+            mainBox.push_back('k');
+        else
+            mainBox += ".smk";
+
+        sm::Writer<std::ofstream> wr (mainBox, std::ios_base::binary | std::ios_base::out);
+        wr << rt;
+        return 0;
     }
 
     if(callInit){ // call init function of the main box.
@@ -245,9 +264,11 @@ constexpr const char* license_str =
 constexpr const char* usage_str =
     "Usage: " _SM_EXECUTABLE_NAME " options... [File] arguments...\n"
     "Interpret code contained in [File] with arguments and options given.\n"
+    "[File] can contain bytecode instead of code (SMK file)"
     "Also, you can replace [File] with option -i to use stdin instead.\n\n"
 
     "Options:\n"
+    "  -c, --compile            Output bytecode to file an SMK file.\n"
     "  -D <directory>           Add <directory> to the search paths.\n"
     "  -h, --help               Display this information.\n"
     "  -i, --stdin              Get code to interpret from stdin.\n"
@@ -256,9 +277,9 @@ constexpr const char* usage_str =
     "  -s, --show-paths         Display search paths.\n"
     "  -S, --show-all           Show all outputs.\n"
     "  -t, --time               Show total execution time before exiting.\n"
-    "  -v, --version            Display version.\n\n"
-    "  -wi, --without-init      Do not run <init> function in main box.\n\n"
-    "  -wm, --without-main      Do not run main function in main box.\n\n"
+    "  -v, --version            Display version.\n"
+    "  -wi, --without-init      Do not run <init> function in main box.\n"
+    "  -wm, --without-main      Do not run main function in main box.\n"
     "  -wn, --without-new       Do not run new function in main box.\n\n"
 
     "Program '" _SM_EXECUTABLE_NAME "' is part of the Smudge Programming Language which "
