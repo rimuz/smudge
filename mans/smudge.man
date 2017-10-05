@@ -17,6 +17,11 @@ programming language written in pure C++11.
 
 .SH OPTIONS
 .TP
+\fB\-c\fR, \fB\-\-compile\fR
+.br
+Creates a \fBSMK\fR file which contains the compiled version of the program.
+The output file is named after the \fBmain box\fR plus the suffix \fB.smk\fR.
+.TP
 \fB\-D \fIdir\fR
 .br
 Add the directory \fIdir\fR to the \fBsearch paths\fR of the current runtime settings.
