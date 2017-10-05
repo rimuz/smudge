@@ -181,8 +181,10 @@ namespace sm{
 
             void Compiler::end(){
                 // import box std.lang
-                if(std::find(_rt->boxNames.begin(), _rt->boxNames.end(), "std.lang!") == _rt->boxNames.end())
+                if(std::find(_rt->boxNames.begin(), _rt->boxNames.end(), "std.lang!") == _rt->boxNames.end()){
+                    _rt->boxNames.emplace_back("std.lang!");
                     _rt->boxes.push_back(lib::import_lang(*_rt, _rt->boxNames.size()-1));
+                }
             }
 
             void Compiler::code(string_t name, string_t* code){
