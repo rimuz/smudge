@@ -18,6 +18,7 @@
 */
 
 #include <iostream>
+#include <utility>
 
 #include "sm/exec/interpreter/arithmeticOpCodes.h"
 #include "sm/exec/interpreter/assignOpCodes.h"
@@ -175,7 +176,7 @@ namespace sm{
                     return;
                 }
 
-                std::vector <std::tuple<Object, Function*>> inits;
+                std::vector <std::pair<Object, Function*>> inits;
                 RootObject clazz(self);
                 ObjectDict_t::iterator it;
                 Function* func_ptr;
