@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "sm/runtime/Object.h"
 #include "sm/typedefs.h"
@@ -38,7 +39,7 @@ namespace sm {
         using StringsMap_t = Map_t<std::string, uint16_t>;
         using IntsMap_t = Map_t<integer_t, uint16_t>;
         using FloatsMap_t = Map_t<float_t, uint16_t>;
-        using ImportedBox_t = std::tuple<unsigned, unsigned>;
+        using ImportedBox_t = std::pair<unsigned, unsigned>;
         using ImportsVec_t = std::vector<ImportedBox_t>;
     }
 }
