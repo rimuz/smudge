@@ -582,13 +582,12 @@ namespace sm{
         }
 
         void Runtime_t::freeLibraries() noexcept{
-            #ifdef _SM_OS_WINDOWS
-            for(HMODULE lib : sharedLibs)
-                FreeLibrary(lib);
-            #else
-            for(auto* lib : sharedLibs)
-                dlclose(lib);
-            #endif
+            for(LibHandle_t lib : sharedLibs)
+                #ifdef _SM_OS_WINDOWS
+                    FreeLibrary(lib);
+                #else
+                    dlclose(lib);
+                #endif
             sharedLibs.clear();
         }
 
