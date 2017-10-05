@@ -91,6 +91,14 @@ namespace sm{
             static std::chrono::steady_clock::time_point* execStart;
             static void exit() noexcept;
 
+            using LibHandle_t =
+                #ifdef _SM_OS_WINDOWS
+                    HANDLE
+                #else
+                    void*
+                #endif
+            ;
+
             GarbageCollector gc;
 
             BoxVec_t boxes;
@@ -106,20 +114,17 @@ namespace sm{
 
             exec::Interpreter* getCurrentThread() noexcept;
 
-            std::vector<integer_t>      intConstants;
-            std::vector<float_t>        floatConstants;
+            compile::NamesMap_t         nameIds;
             std::vector<string_t>       nameConstants;
             std::vector<string_t>       boxNames;
             std::vector<String>         stringConstants;
-            compile::NamesMap_t         nameIds;
 
-            bool showAll = false, noStd = false;
+            std::vector<integer_t>      intConstants;
+            std::vector<float_t>        floatConstants;
 
-            #ifdef _SM_OS_WINDOWS
-            static std::vector<HMODULE>        sharedLibs;
-            #else
-            static std::vector<void*>          sharedLibs;
-            #endif
+            bool showAll = false, callInit = false,
+                    callMain = false, callNew = false,
+                    noStd = false, compileOnly = false;
 
             Runtime_t() : gc(this), n_threads(0) {};
 
@@ -129,6 +134,8 @@ namespace sm{
             Runtime_t& operator=(Runtime_t&&) = default;
 
             string_t nameFromId(unsigned id) const;
+
+            static std::vector<LibHandle_t> sharedLibs;
             static void freeLibraries() noexcept;
             void freeData();
 
