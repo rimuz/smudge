@@ -211,13 +211,13 @@ namespace sm{
          * If the last argument is a VARARG, flags will have
          * value FF_VARARGS (see the above enum).
         */
-        std::vector<std::tuple<unsigned, size_t>> arguments;
+        std::vector<std::pair<unsigned, size_t>> arguments;
         union {
             NativeFuncPtr_t native_ptr;     // if native,
             size_t address = 0;             // if not.
         };
         unsigned boxName = 0, fnName = 0;
-        char flags = 0;
+        byte_t flags = 0;
     };
 
     struct Method {
