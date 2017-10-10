@@ -98,13 +98,18 @@ namespace sm{
             read_rev<sizeof(Tp)>(reinterpret_cast<byte_t*>(&out));
         }
 
+        template <typename Tp, typename Tp2>
+        inline void read_cast(Tp2& out) noexcept{
+            out = static_cast<Tp2>(read<Tp>());
+        }
+
         inline void read_str(byte_t* data, size_t size) noexcept{
-            is.read(data, size);
+            is.read(reinterpret_cast<char*>(data), size);
         }
 
         template <size_t size>
         inline void read_rev(byte_t* data) noexcept{
-            is.read(data, size);
+            is.read(reinterpret_cast<char*>(data), size);
             if(!isBigEndian())
                 std::reverse(data, data + size);
         }
