@@ -74,13 +74,14 @@ int main(int argc, char** argv){
     runtime::Runtime_t rt;
     exec::Interpreter intp(rt);
     compile::v1::Compiler cp(rt);
-    std::string mainBox;
+    std::string mainBox, precompiled;
 
     rt.main_intp = &intp;
     runtime::Runtime_t::main_id = std::this_thread::get_id();
 
     int firstArg = argc;
-    bool printPaths = false, callInit = true, callNew = true, callMain = true;
+    bool printPaths = false, callInit = true, callNew = true,
+        callMain = true, readPrecompiled = false;
 
     for(int i = 1; i != argc; ++i){
         if(*argv[i] == '-'){
@@ -101,6 +102,15 @@ int main(int argc, char** argv){
                 }
                 cp.code("<stdin>", code);
                 firstArg = i+1;
+                break;
+            } else if(!std::strcmp(argv[i], "I")){
+                if(++i == argc || *argv[i] == '-'){
+                    printUsage();
+                }
+
+                firstArg = i+1;
+                precompiled = argv[i];
+                readPrecompiled = true;
                 break;
             } else if(!std::strcmp(argv[i], "l") || !std::strcmp(argv[i], "-license")){
                 printLicense();
@@ -155,8 +165,8 @@ int main(int argc, char** argv){
 
         if(printPaths){
             std::cout << "Search paths:" << std::endl;
-            for(std::vector<std::string>::const_iterator it = cp.paths.begin();
-                    it != cp.paths.end(); ++it){
+            for(std::vector<std::string>::const_iterator it = rt.paths.begin();
+                    it != rt.paths.end(); ++it){
                 std::cout << "\t" << *it << "" << std::endl;
             }
         }
@@ -164,9 +174,19 @@ int main(int argc, char** argv){
 
     std::atexit(runtime::Runtime_t::exit);
 
-    cp.start();
-    while(cp.next()); // compile
-    cp.end();
+    if(readPrecompiled){
+        sm::Reader<std::ifstream> rd (precompiled, std::ios::in | std::ios::binary);
+        if(!rd.stream())
+            rt.sources.msg(error::ET_FATAL_ERROR,
+                std::string("failed reading from SMK file '")
+                + precompiled + "'.");
+        rd >> rt;
+        cp.start();
+    } else {
+        cp.start();
+        while(cp.next()); // compile
+        cp.end();
+    }
 
     if(rt.showAll){
         runtime::test::print(rt);
@@ -179,7 +199,7 @@ int main(int argc, char** argv){
         else
             mainBox += ".smk";
 
-        sm::Writer<std::ofstream> wr (mainBox, std::ios_base::binary | std::ios_base::out);
+        Writer<std::ofstream> wr (mainBox, std::ios_base::out | std::ios_base::binary);
         wr << rt;
         return 0;
     }
@@ -272,6 +292,7 @@ constexpr const char* usage_str =
     "  -D <directory>           Add <directory> to the search paths.\n"
     "  -h, --help               Display this information.\n"
     "  -i, --stdin              Get code to interpret from stdin.\n"
+    "  -I <File>                Read SMK file <File> and execute it.\n"
     "  -l, --license            Display license.\n"
     "  -n, --no-stdlib          Don't use native SSL (except for std.lang)\n"
     "  -s, --show-paths         Display search paths.\n"
