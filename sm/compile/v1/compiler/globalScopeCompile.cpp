@@ -150,7 +150,7 @@ namespace sm{
                                         unsigned id = _rt->boxNames.size()-1;
                                         bool found = false;
 
-                                        for(const string_t& dir : paths){
+                                        for(const string_t& dir : _rt->paths){
                                             std::string path = dir + imported;
                                             error::CodeSource* src = readf(path + ".sm");
                                             if(src){
@@ -161,7 +161,7 @@ namespace sm{
                                             } else {
                                                 Box* box;
                                                 path += _SM_DL_EXT;
-                                                if(load_native(path.c_str(), id, box)){
+                                                if(load_native(path.c_str(), *_rt, id, box)){
                                                     if(!box)
                                                         _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                             std::string("dynamic library '") + path + "' is not a Smudge native box.");
