@@ -61,9 +61,9 @@ namespace sm{
                 size_t sep = filePath.find_last_of(fileSeparator);
                 if(sep == std::string::npos){
                     sep = 0;
-                    paths.emplace_back("." _SM_FILE_SEPARATOR);
+                    _rt->paths.emplace_back("." _SM_FILE_SEPARATOR);
                 } else {
-                    paths.emplace_back(filePath.begin(), filePath.begin()+sep+1);
+                    _rt->paths.emplace_back(filePath.begin(), filePath.begin()+sep+1);
                     ++sep;
                 }
 
@@ -99,9 +99,9 @@ namespace sm{
             void Compiler::path(const string_t& path){
                 if(!path.empty()){
                     if(path.back() != fileSeparator)
-                        paths.emplace_back(path + fileSeparator);
+                        _rt->paths.emplace_back(path + fileSeparator);
                     else
-                        paths.emplace_back(path);
+                        _rt->paths.emplace_back(path);
                 }
             }
 
@@ -351,12 +351,12 @@ namespace sm{
                 }
             }
 
-            bool Compiler::load_native(const char* path, unsigned id, Box*& box) noexcept{
+            bool Compiler::load_native(const char* path, runtime::Runtime_t& rt, unsigned id, Box*& box) noexcept{
                 #ifdef _SM_OS_WINDOWS
                     HMODULE library = LoadLibrary(path);
                     if(!library)
                         return false;
-                    _rt->sharedLibs.emplace_back(library);
+                    rt.sharedLibs.emplace_back(library);
 
                     FARPROC func = GetProcAddress(library, "import_library");
                     if(!func){
@@ -364,13 +364,13 @@ namespace sm{
                         return true;
                     }
 
-                    box = reinterpret_cast<lib::DynInitFunc_t>(func)(*_rt, id);
+                    box = reinterpret_cast<lib::DynInitFunc_t>(func)(rt, id);
                     return true;
                 #else
                     void* library = dlopen(path, RTLD_LAZY);
                     if(!library)
                         return false;
-                    _rt->sharedLibs.emplace_back(library);
+                    rt.sharedLibs.emplace_back(library);
 
                     void* func = dlsym(library, "import_library");
                     if(!func){
@@ -378,7 +378,7 @@ namespace sm{
                         return true;
                     }
 
-                    box = reinterpret_cast<lib::DynInitFunc_t>(func)(*_rt, id);
+                    box = reinterpret_cast<lib::DynInitFunc_t>(func)(rt, id);
                     return true;
                 #endif
             }
