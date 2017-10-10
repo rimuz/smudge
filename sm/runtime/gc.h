@@ -122,6 +122,8 @@ namespace sm{
             std::vector<integer_t>      intConstants;
             std::vector<float_t>        floatConstants;
 
+            std::vector<string_t>       paths; // each path must be followed by slash ('/')
+
             bool showAll = false, callInit = false,
                     callMain = false, callNew = false,
                     noStd = false, compileOnly = false;
