@@ -203,8 +203,6 @@ namespace sm {
 
                 void _compile(const parse::TokenVec_t& tokens);
             public:
-                std::vector<string_t> paths; // each path must be followed by slash ('/')
-
                 Compiler(runtime::Runtime_t& rt);
 
                 /*
@@ -240,7 +238,8 @@ namespace sm {
                  * library doesn't contain the smLibDecl
                  * box will be set to nullptr
                 */
-                bool load_native(const char* path, unsigned id, Box*& box) noexcept;
+                static bool load_native(const char* path, runtime::Runtime_t& rt,
+                    unsigned id, Box*& box) noexcept;
                 static error::CodeSource* readf(const string_t& filePath);
             };
         }
