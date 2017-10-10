@@ -9,6 +9,7 @@ smudge \- a general\-purpose, interpreted and object-oriented programming langua
 \fBsmudge \fR[\fIOPTION\fR]... \fB\-\-stdin\fR [\fIARGUMENT\fR]...
 .br
 \fBsmudge \fR[\fIOPTION\fR]... \fB\-i\fR      [\fIARGUMENT\fR]...
+\fBsmudge \fR[\fIOPTION\fR]... \fB\-I File\fR      [\fIARGUMENT\fR]...
 
 .SH DESCRIPTION
 \fBsmudge\fR is a \fBS\fRimple, \fBM\fRulti platform, \fBU\fRser-friendly,
@@ -35,6 +36,10 @@ Show the list of options.
 \fB\-i\fR, \fB\-\-stdin\fR
 .br
 Use \fBstdin\fR instead of reading from \fBfile\fR;
+what comes next this option is given as argument to the program.
+.TP
+\fB\-I \fIfile\fR
+Read bytecode from \fBSMK\fR file and execute it instead of reading unprocessed code;
 what comes next this option is given as argument to the program.
 .TP
 \fB\-l\fR, \fB\-\-license\fR
