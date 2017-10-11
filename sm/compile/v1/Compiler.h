@@ -51,7 +51,7 @@ namespace sm {
                     _HEAD_END,
                     _ROUND_END,
 
-                    // SQUo install ARE:
+                    // SQUARE:
                     _SQUARE_START,
                     BRACING, LIST,
                     _SQUARE_END,
