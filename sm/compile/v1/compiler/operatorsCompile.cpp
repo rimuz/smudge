@@ -589,10 +589,9 @@ namespace sm{
                             if(popBack)
                                 states.parStack.pop_back();
                         } else if(closingSpecial){
-                            bool repeat = info.isCodeBlock() || info.parType == RETURN_STATEMENT;
+                            bool repeat = states.parStack.back().isCodeBlock() || states.parStack.back().parType == RETURN_STATEMENT;
                             do {
                                 ParInfo_t& info = states.parStack.back(); // overrides above info
-
                                 if(!closingSpecial){
                                     if(states.parStack.empty() && states.currClass
                                             && states.isClassStatement){
@@ -1219,8 +1218,11 @@ namespace sm{
                                     }
                                 }
                                 closingSpecial = 0;
-                            } while (repeat && ((!states.parStack.empty() && states.parStack.back().isSpecialStatement())
-                                    || (states.currClass && states.isClassStatement)));
+                            } while (repeat && (
+                                    ( !states.parStack.empty()
+                                      && states.parStack.back().isSpecialStatement() )
+                                    || (states.currClass && states.isClassStatement)
+                                ));
                         }
                     } else {
                         _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
