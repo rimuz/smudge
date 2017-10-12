@@ -30,6 +30,7 @@
 #include "sm/compile/Statement.h"
 #include "sm/compile/defs.h"
 #include "sm/exec/Interpreter.h"
+#include "sm/typedefs.h"
 
 #ifndef _SM_OS_WINDOWS
 #include <dlfcn.h>
@@ -404,11 +405,7 @@ namespace sm{
 
     namespace runtime{
         std::chrono::steady_clock::time_point* Runtime_t::execStart = nullptr;
-        #ifdef _SM_OS_WINDOWS
-        std::vector<HMODULE> Runtime_t::sharedLibs;
-        #else
-        std::vector<void*> Runtime_t::sharedLibs;
-        #endif
+        std::vector<LibHandle_t> Runtime_t::sharedLibs;
 
         // Instance Pointer's Vector  -> IPVec_t
         using IPVec_t = std::vector<Instance*>;
