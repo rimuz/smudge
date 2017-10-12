@@ -85,20 +85,19 @@ namespace sm{
             ~GarbageCollector() = default;
         };
 
+        using LibHandle_t =
+            #ifdef _SM_OS_WINDOWS
+                HMODULE
+            #else
+                void*
+            #endif
+        ;
+
         // one per Smudge process.
         class Runtime_t {
         public:
             static std::chrono::steady_clock::time_point* execStart;
             static void exit() noexcept;
-
-            using LibHandle_t =
-                #ifdef _SM_OS_WINDOWS
-                    HANDLE
-                #else
-                    void*
-                #endif
-            ;
-
             GarbageCollector gc;
 
             BoxVec_t boxes;
