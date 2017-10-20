@@ -68,8 +68,8 @@ namespace sm{
             return false;
 
         #ifdef _SM_OS_WINDOWS
-            WIN32_FIND_DATA data;
-            if(!FindNextFile(handle, &data))
+            WIN32_FIND_DATAW data;
+            if(!FindNextFileW(handle, &data))
                 return false;
 
             int req_size = WideCharToMultiByte(CP_UTF8, 0, data.cFileName, -1, NULL, 0, NULL, NULL);
@@ -237,7 +237,7 @@ namespace sm{
                     BOOL hasDacl = FALSE;
 
                     if(GetSecurityDescriptorDacl(sd_ptr, &hasDacl, &dacl, NULL)){
-                        EXPLICIT_ACCESS access;
+                        EXPLICIT_ACCESS_W access;
                         wchar_t everyone_str [] = L"EVERYONE";
                         wchar_t current [] = L"CURRENT_USER";
                         BuildExplicitAccessWithNameW(&access,
@@ -249,7 +249,7 @@ namespace sm{
                             SUB_CONTAINERS_AND_OBJECTS_INHERIT
                         );
 
-                        if(SetEntriesInAcl(1, &access, dacl, &dacl) == ERROR_SUCCESS){
+                        if(SetEntriesInAclW(1, &access, dacl, &dacl) == ERROR_SUCCESS){
                             if(SetNamedSecurityInfoW(&wname[0], SE_FILE_OBJECT,
                                     DACL_SECURITY_INFORMATION, NULL, NULL, dacl, NULL) == ERROR_SUCCESS)
                                 ret = true;
@@ -395,7 +395,7 @@ namespace sm{
 
     Directory File::list_dir(std::string& file) noexcept{
         #ifdef _SM_OS_WINDOWS
-            WIN32_FIND_DATA data;
+            WIN32_FIND_DATAW data;
             std::wstring copy(wname);
             copy += L"\\*";
 
@@ -423,7 +423,7 @@ namespace sm{
     std::string File::parent() noexcept {
         #ifdef _SM_OS_WINDOWS
             std::wstring copy(wname);
-            PathRemoveFileSpec(&copy[0]);
+            PathRemoveFileSpecW(&copy[0]);
 
             int req_size = WideCharToMultiByte(CP_UTF8, 0, copy.c_str(), -1, NULL, 0, NULL, NULL);
             std::string parent(req_size, 0);
