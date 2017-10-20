@@ -6,6 +6,7 @@ smudge_CFLAGS =
 
 if IS_WINDOWS
 smudge_CXXFLAGS += -Wl,--export-all-symbols,--out-implib,libsmudge.a
+smudge_LDADD = -lshlwapi
 else
 smudge_CXXFLAGS += -Wl,--export-dynamic
 smudge_LDFLAGS = -pthread
@@ -27,6 +28,7 @@ smudge_SOURCES = \
 			sm/lib/math.cpp \
 			sm/lib/system.cpp \
 			sm/lib/thread.cpp \
+			sm/osd/File.cpp \
 			sm/parse/Tokenizer.cpp \
 			sm/runtime/casts.cpp \
 			sm/runtime/gc.cpp \
