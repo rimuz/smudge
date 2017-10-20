@@ -353,7 +353,7 @@ namespace sm{
 
             bool Compiler::load_native(const char* path, runtime::Runtime_t& rt, unsigned id, Box*& box) noexcept{
                 #ifdef _SM_OS_WINDOWS
-                    HMODULE library = LoadLibrary(path);
+                    HMODULE library = LoadLibraryA(path);
                     if(!library)
                         return false;
                     rt.sharedLibs.emplace_back(library);
