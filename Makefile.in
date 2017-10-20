@@ -116,7 +116,7 @@ am_smudge_OBJECTS = sm/compile/v1/compiler/smudge-Compiler.$(OBJEXT) \
 	sm/lib/smudge-stdlib.$(OBJEXT) sm/lib/smudge-cast.$(OBJEXT) \
 	sm/lib/smudge-io.$(OBJEXT) sm/lib/smudge-lang.$(OBJEXT) \
 	sm/lib/smudge-math.$(OBJEXT) sm/lib/smudge-system.$(OBJEXT) \
-	sm/lib/smudge-thread.$(OBJEXT) \
+	sm/lib/smudge-thread.$(OBJEXT) sm/osd/smudge-File.$(OBJEXT) \
 	sm/parse/smudge-Tokenizer.$(OBJEXT) \
 	sm/runtime/smudge-casts.$(OBJEXT) \
 	sm/runtime/smudge-gc.$(OBJEXT) sm/runtime/smudge-id.$(OBJEXT) \
@@ -336,8 +336,9 @@ AUTOMAKE_OPTIONS = foreign
 smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS) \
 	$(am__append_1) $(am__append_2)
 smudge_CFLAGS = 
-@IS_WINDOWS_FALSE@smudge_LDFLAGS = -pthread
 @IS_WINDOWS_FALSE@smudge_LDADD = -ldl
+@IS_WINDOWS_TRUE@smudge_LDADD = -lshlwapi
+@IS_WINDOWS_FALSE@smudge_LDFLAGS = -pthread
 smudge_SOURCES = \
 			sm/compile/v1/compiler/Compiler.cpp \
 			sm/compile/v1/compiler/globalScopeCompile.cpp \
@@ -353,6 +354,7 @@ smudge_SOURCES = \
 			sm/lib/math.cpp \
 			sm/lib/system.cpp \
 			sm/lib/thread.cpp \
+			sm/osd/File.cpp \
 			sm/parse/Tokenizer.cpp \
 			sm/runtime/casts.cpp \
 			sm/runtime/gc.cpp \
@@ -505,6 +507,14 @@ sm/lib/smudge-system.$(OBJEXT): sm/lib/$(am__dirstamp) \
 	sm/lib/$(DEPDIR)/$(am__dirstamp)
 sm/lib/smudge-thread.$(OBJEXT): sm/lib/$(am__dirstamp) \
 	sm/lib/$(DEPDIR)/$(am__dirstamp)
+sm/osd/$(am__dirstamp):
+	@$(MKDIR_P) sm/osd
+	@: > sm/osd/$(am__dirstamp)
+sm/osd/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) sm/osd/$(DEPDIR)
+	@: > sm/osd/$(DEPDIR)/$(am__dirstamp)
+sm/osd/smudge-File.$(OBJEXT): sm/osd/$(am__dirstamp) \
+	sm/osd/$(DEPDIR)/$(am__dirstamp)
 sm/parse/$(am__dirstamp):
 	@$(MKDIR_P) sm/parse
 	@: > sm/parse/$(am__dirstamp)
@@ -555,6 +565,7 @@ mostlyclean-compile:
 	-rm -f sm/error/*.$(OBJEXT)
 	-rm -f sm/exec/interpreter/*.$(OBJEXT)
 	-rm -f sm/lib/*.$(OBJEXT)
+	-rm -f sm/osd/*.$(OBJEXT)
 	-rm -f sm/parse/*.$(OBJEXT)
 	-rm -f sm/runtime/*.$(OBJEXT)
 	-rm -f sm/utils/unicode/*.$(OBJEXT)
@@ -577,6 +588,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-stdlib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-system.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/lib/$(DEPDIR)/smudge-thread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sm/osd/$(DEPDIR)/smudge-File.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/parse/$(DEPDIR)/smudge-Tokenizer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-casts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sm/runtime/$(DEPDIR)/smudge-gc.Po@am__quote@
@@ -794,6 +806,20 @@ sm/lib/smudge-thread.obj: sm/lib/thread.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/lib/thread.cpp' object='sm/lib/smudge-thread.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/lib/smudge-thread.obj `if test -f 'sm/lib/thread.cpp'; then $(CYGPATH_W) 'sm/lib/thread.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/lib/thread.cpp'; fi`
+
+sm/osd/smudge-File.o: sm/osd/File.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/osd/smudge-File.o -MD -MP -MF sm/osd/$(DEPDIR)/smudge-File.Tpo -c -o sm/osd/smudge-File.o `test -f 'sm/osd/File.cpp' || echo '$(srcdir)/'`sm/osd/File.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/osd/$(DEPDIR)/smudge-File.Tpo sm/osd/$(DEPDIR)/smudge-File.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/osd/File.cpp' object='sm/osd/smudge-File.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/osd/smudge-File.o `test -f 'sm/osd/File.cpp' || echo '$(srcdir)/'`sm/osd/File.cpp
+
+sm/osd/smudge-File.obj: sm/osd/File.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/osd/smudge-File.obj -MD -MP -MF sm/osd/$(DEPDIR)/smudge-File.Tpo -c -o sm/osd/smudge-File.obj `if test -f 'sm/osd/File.cpp'; then $(CYGPATH_W) 'sm/osd/File.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/osd/File.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sm/osd/$(DEPDIR)/smudge-File.Tpo sm/osd/$(DEPDIR)/smudge-File.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sm/osd/File.cpp' object='sm/osd/smudge-File.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -c -o sm/osd/smudge-File.obj `if test -f 'sm/osd/File.cpp'; then $(CYGPATH_W) 'sm/osd/File.cpp'; else $(CYGPATH_W) '$(srcdir)/sm/osd/File.cpp'; fi`
 
 sm/parse/smudge-Tokenizer.o: sm/parse/Tokenizer.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(smudge_CXXFLAGS) $(CXXFLAGS) -MT sm/parse/smudge-Tokenizer.o -MD -MP -MF sm/parse/$(DEPDIR)/smudge-Tokenizer.Tpo -c -o sm/parse/smudge-Tokenizer.o `test -f 'sm/parse/Tokenizer.cpp' || echo '$(srcdir)/'`sm/parse/Tokenizer.cpp
@@ -1187,6 +1213,8 @@ distclean-generic:
 	-rm -f sm/exec/interpreter/$(am__dirstamp)
 	-rm -f sm/lib/$(DEPDIR)/$(am__dirstamp)
 	-rm -f sm/lib/$(am__dirstamp)
+	-rm -f sm/osd/$(DEPDIR)/$(am__dirstamp)
+	-rm -f sm/osd/$(am__dirstamp)
 	-rm -f sm/parse/$(DEPDIR)/$(am__dirstamp)
 	-rm -f sm/parse/$(am__dirstamp)
 	-rm -f sm/runtime/$(DEPDIR)/$(am__dirstamp)
@@ -1203,7 +1231,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
+	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/osd/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1251,7 +1279,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
+	-rm -rf sm/$(DEPDIR) sm/compile/$(DEPDIR) sm/compile/v1/compiler/$(DEPDIR) sm/error/$(DEPDIR) sm/exec/interpreter/$(DEPDIR) sm/lib/$(DEPDIR) sm/osd/$(DEPDIR) sm/parse/$(DEPDIR) sm/runtime/$(DEPDIR) sm/utils/unicode/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
