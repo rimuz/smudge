@@ -4,6 +4,7 @@ This is the **root** directory for all Smudge sources, and contains:
 - directory **`error`**: error handling
 - directory **`exec`**: code execution
 - directory **`lib`**: the native SSL
+- directory **`osd`**: OS-dependent libraries 
 - directory **`parse`**: the tokenizer
 - directory **`runtime`**: runtime utils
 - directory **`utils`**: miscellaneous utilities
