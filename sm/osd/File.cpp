@@ -27,6 +27,8 @@
     #include "accctrl.h"
     #include "aclapi.h"
     #include "shlwapi.h"
+#else
+    #include <libgen.h>
 #endif
 
 namespace sm{
@@ -261,23 +263,22 @@ namespace sm{
 
             return ret;
         #else
-            char perm [10];
             struct stat s;
             if(!stat(name.c_str(), &s))
                 return false;
 
-            perm[9] = '\0';
-            perm[0] = (!everyone ? read : (s.st_mode & S_IRUSR)) ? 'r' : '-';
-            perm[1] = (!everyone ? write : (s.st_mode & S_IWUSR)) ? 'w' : '-';
-            perm[2] = (!everyone ? exec : (s.st_mode & S_IXUSR)) ? 'w' : '-';
-
-            perm[3] = s.stmode & S_IRGRP ? 'r' : '-';
-            perm[4] = s.stmode & S_IWGRP ? 'w' : '-';
-            perm[5] = s.stmode & S_IXGRP ? 'x' : '-';
-
-            perm[6] = (everyone ? read : (s.st_mode & S_IROTH)) ? 'r' : '-';
-            perm[7] = (everyone ? write : (s.st_mode & S_IWOTH)) ? 'w' : '-';
-            perm[8] = (everyone ? exec : (s.st_mode & S_IXOTH)) ? 'x' : '-';
+            mode_t perm = s.st_mode;
+            if(everyone){
+                perm &= ~static_cast<mode_t>(S_IRWXO);
+                perm |= read ? S_IROTH : 0;
+                perm |= write ? S_IWOTH : 0;
+                perm |= exec ? S_IXOTH : 0;
+            } else {
+                perm &= ~static_cast<mode_t>(S_IRWXU);
+                perm |= read ? S_IRUSR : 0;
+                perm |= write ? S_IWUSR : 0;
+                perm |= exec ? S_IXUSR : 0;
+            }
 
             return !chmod(name.c_str(), perm);
         #endif
@@ -432,7 +433,7 @@ namespace sm{
             return parent;
         #else
             std::string copy(name);
-            return std::string(dirname(copy.c_str()));
+            return std::string(dirname(&copy[0]));
         #endif
     }
 
@@ -447,7 +448,7 @@ namespace sm{
             return file;
         #else
             std::string copy(name);
-            return std::string(basename(copy.c_str()));
+            return std::string(basename(&copy[0]));
         #endif
     }
 
@@ -464,7 +465,7 @@ namespace sm{
             file.pop_back();
             return file;
         #else
-            char* str realpath(name.c_str(), NULL);
+            char* str = realpath(name.c_str(), NULL);
             std::string real(str);
             free(str);
             return real;
