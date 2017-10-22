@@ -351,7 +351,6 @@ namespace sm{
             return;
         if(isGc){
             destroy(false);
-            std::lock_guard<std::mutex> lock(rt.gc.instances_m);
             rt.gc.instances.erase(it);
         } else {
             destroy(callDelete);
