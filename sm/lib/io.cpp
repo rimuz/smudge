@@ -26,6 +26,7 @@
 #include "sm/runtime/id.h"
 #include "sm/runtime/casts.h"
 #include "sm/runtime/Object.h"
+#include "sm/osd/File.h"
 
 namespace sm{
     namespace lib {
@@ -49,7 +50,10 @@ namespace sm{
             };
         }
 
+        namespace FileClass {}
+
         Class* cFileStream;
+        Class* cFile;
 
         smNativeFunc(print){
             for(const RootObject& obj : args){
@@ -72,6 +76,8 @@ namespace sm{
             smVar(BEG, makeInteger(BEG));
             smVar(CURR, makeInteger(CURR));
             smVar(END, makeInteger(END));
+            smVar(file_sep, makeString(_SM_FILE_SEPARATOR));
+            smVar(path_sep, makeString(_SM_FILE_SEPARATOR));
 
             smFunc(print, print);
             smOperator(parse::TT_LEFT_SHIFT, print);
@@ -203,6 +209,171 @@ namespace sm{
                 std::string newName (args[1]->s_ptr->str.begin(), args[1]->s_ptr->str.end());
                 return makeBool(!std::rename(oldName.c_str(), newName.c_str()));
             })
+
+            smClass(File)
+                /*
+                 *
+                 *      8888888888  d8b  888
+                 *      888         Y8P  888
+                 *      888              888
+                 *      8888888     888  888   .d88b.
+                 *      888         888  888  d8P  Y8b
+                 *      888         888  888  88888888
+                 *      888         888  888  Y8b.
+                 *      888         888  888   "Y8888
+                 *
+                */
+
+                smMethod(new, smLambda {
+                    std::string str(".");
+                    if(!args.empty() && args[0]->type == ObjectType::STRING)
+                        str.assign(
+                            args[0]->s_ptr->str.begin(),
+                            args[0]->s_ptr->str.end()
+                        );
+
+                    smSetData(File) = new File(std::move(str));
+                    return Object();
+                })
+
+                smMethod(delete, smLambda {
+                    smDeleteData(File);
+                    return Object();
+                })
+
+                smIdMethod(runtime::gcCollectId, smLambda{
+                    smDeleteData(File);
+                    return Object();
+                })
+
+                smMethod(reset, smLambda {
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
+                        return Object();
+
+                    std::string newPath(
+                        args[0]->s_ptr->str.begin(),
+                        args[0]->s_ptr->str.end()
+                    );
+                    smGetData(File)->set(std::move(newPath));
+                    return Object();
+                })
+
+                #define __BMETHOD(Name) \
+                    smMethod(Name, smLambda { \
+                        return makeBool(smGetData(File)->Name()); \
+                    })
+
+                __BMETHOD(exists)
+                __BMETHOD(is_dir)
+                __BMETHOD(is_file)
+                __BMETHOD(remove)
+                __BMETHOD(can_read)
+                __BMETHOD(can_write)
+                __BMETHOD(can_execute)
+                __BMETHOD(make_file)
+                __BMETHOD(make_dir)
+
+                #undef __BMETHOD
+
+                smMethod(move, smLambda {
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
+                        return Object();
+
+                    std::string newName(
+                        args[0]->s_ptr->str.begin(),
+                        args[0]->s_ptr->str.end()
+                    );
+
+                    return makeBool(smGetData(File)->move(std::move(newName)));
+                })
+
+                smMethod(copy, smLambda {
+                    if(args.empty() || args[0]->type != ObjectType::STRING)
+                        return Object();
+
+                    std::string newName(
+                        args[0]->s_ptr->str.begin(),
+                        args[0]->s_ptr->str.end()
+                    );
+
+                    return makeBool(smGetData(File)->copy(newName));
+                })
+
+                smMethod(last_access, smLambda {
+                    integer_t value;
+                    if(!smGetData(File)->last_access(value))
+                        return Object();
+                    return makeInteger(value);
+                })
+
+                smMethod(last_modified, smLambda {
+                    integer_t value;
+                    if(!smGetData(File)->last_modified(value))
+                        return Object();
+                    return makeInteger(value);
+                })
+
+                smMethod(is_empty, smLambda {
+                    bool value;
+                    if(!smGetData(File)->is_empty(value))
+                        return Object();
+                    return makeInteger(value);
+                })
+
+                smMethod(size, smLambda {
+                    size_t value;
+                    if(!smGetData(File)->size(value))
+                        return Object();
+                    return makeInteger(value);
+                })
+
+                smMethod(list, smLambda {
+                    std::string name;
+                    Directory dir = smGetData(File)->list_dir(name);
+
+                    if(!dir.is_valid())
+                        return makeList(intp);
+
+                    RootObjectVec_t names;
+
+                    do {
+                        if(name != "." && name != "..")
+                            names.emplace_back(makeString(name.begin(), name.end()));
+                    } while(dir.next(name));
+
+                    std::sort(names.begin(), names.end(),
+                        [](const RootObject& lhs, const RootObject& rhs) -> bool {
+                            return lhs->s_ptr->str < rhs->s_ptr->str;
+                        }
+                    );
+
+                    return makeList(intp, std::move(names));
+                })
+
+                smMethod(perm_recheck, smLambda {
+                    smGetData(File)->check_permissions();
+                    return Object();
+                })
+
+                smMethod(perm_valid, smLambda {
+                    return makeBool(smGetData(File)->valid_permissions());
+                })
+
+                #define __SMETHOD(Name) \
+                    smMethod(Name, smLambda { \
+                        std::string str = smGetData(File)->Name(); \
+                        return makeString( \
+                            std::make_move_iterator(str.begin()), \
+                            std::make_move_iterator(str.end()) \
+                        ); \
+                    })
+
+                __SMETHOD(get_parent)
+                __SMETHOD(get_name)
+                __SMETHOD(full_path)
+
+                #undef __SMETHOD
+            smEnd
 
             smClass(FileStream)
                 /*
