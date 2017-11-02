@@ -292,4 +292,4 @@ Here's the **priority table** (where **priority 0** is the **highest**):
 
 |||
 |--:|:---:|:--|
-| [Previous](if-and-loops.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
+| [Previous](if-and-loops.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](types.md) |
