@@ -62,7 +62,7 @@ namespace sm{
 
         _OcFunc(PushInteger){
             uint16_t id = (static_cast<uint16_t>(inst[1]) << 8) | inst[2];
-            intp.exprStack.emplace_back(makeFloat(intp.rt->intConstants[id]));
+            intp.exprStack.emplace_back(makeInteger(intp.rt->intConstants[id]));
         }
 
         _OcFunc(PushFloat){
