@@ -81,8 +81,16 @@ namespace sm{
                     return newInstance(intp, cThread, args);
                 })
 
-                smFunc(current, smLambda {
-                    return newInstance(intp, cThread);
+                smFunc(sleep, smLambda {
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER || args[0]->i <= 0)
+                        return makeFalse();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(args[0]->i));
+                    return makeTrue();
+                })
+
+                smFunc(yield, smLambda {
+                    std::this_thread::yield();
+                    return Object();
                 })
 
                 smClass(Thread)
