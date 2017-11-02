@@ -68,6 +68,12 @@ namespace sm{
         unsigned perm;
     public:
         File(std::string file) noexcept;
+        File(const File&) = default;
+        File(File&&) = default;
+
+        File& operator= (const File&) = default;
+        File& operator= (File&&) = default;
+        void set(std::string file) noexcept;
 
         bool exists() noexcept;
         bool remove() noexcept;
@@ -82,7 +88,6 @@ namespace sm{
         bool can_write() noexcept;
         bool can_execute() noexcept;
         bool valid_permissions() noexcept;
-        bool change_permissions(bool everyone, bool read, bool write, bool exec) noexcept;
 
         bool make_file() noexcept;
         bool make_dir() noexcept;
@@ -95,8 +100,10 @@ namespace sm{
 
         Directory list_dir(std::string& file) noexcept;
 
-        std::string parent() noexcept;
+        std::string get_parent() noexcept;
         std::string get_name() noexcept;
         std::string full_path() noexcept;
+
+        ~File() = default;
     };
 }
