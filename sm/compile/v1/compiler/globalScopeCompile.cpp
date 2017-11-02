@@ -44,6 +44,7 @@ namespace sm{
             void Compiler::_globalScopeCompile(CompilerStates& states){
                 TokenVec_t::const_iterator& it = states.it;
 
+                states.wasStatementEmpty = states.isStatementEmpty;
                 if(it->type != TT_SEMICOLON && it->type != TT_COMMA && it->type != TT_COLON
                         && it->type != TT_ROUND_CLOSE   && it->type != TT_SQUARE_CLOSE
                         && it->type != TT_CURLY_CLOSE){
