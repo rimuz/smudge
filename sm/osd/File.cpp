@@ -19,6 +19,7 @@
 
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
 
 #include "sm/osd/File.h"
 #include "sm/typedefs.h"
@@ -29,6 +30,11 @@
     #include "shlwapi.h"
 #else
     #include <libgen.h>
+    #include <stdio.h>
+    #include <unistd.h>
+    #include <sys/stat.h>
+    #include <sys/types.h>
+    #include <dirent.h>
 #endif
 
 namespace sm{
@@ -45,11 +51,6 @@ namespace sm{
                 return time;
             }
         }
-    #else
-        #include <unistd.h>
-        #include <sys/stat.h>
-        #include <sys/types.h>
-        #include <dirent.h>
     #endif
 
     Directory::Directory(Directory&& rhs) noexcept
@@ -76,7 +77,7 @@ namespace sm{
 
             int req_size = WideCharToMultiByte(CP_UTF8, 0, data.cFileName, -1, NULL, 0, NULL, NULL);
             file.resize(req_size);
-            WideCharToMultiByte(CP_UTF8, 0, data.cFileName, -1, &file[0], file.size(), NULL, NULL);
+            WideCharToMultiByte(CP_UTF8, 0, data.cFileName, -1, &file[0], req_size, NULL, NULL);
             file.pop_back();
         #else
             struct dirent* e = readdir(handle);
@@ -106,7 +107,17 @@ namespace sm{
             int sz = MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name.size(), NULL, 0);
             wname.resize(sz);
             MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name.size(), &wname[0], sz);
-            wname.pop_back(); // remove duplicated NUL
+        #endif
+
+        check_permissions();
+    }
+
+    void File::set(std::string file) noexcept{
+        name.swap(file);
+        #ifdef _SM_OS_WINDOWS
+            int sz = MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name.size(), NULL, 0);
+            wname.resize(sz);
+            MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name.size(), &wname[0], sz);
         #endif
 
         check_permissions();
@@ -121,15 +132,20 @@ namespace sm{
     }
 
     bool File::remove() noexcept {
+        bool ret;
         if(is_dir()){
             #ifdef _SM_OS_WINDOWS
-                return RemoveDirectoryW(wname.c_str());
+                ret = RemoveDirectoryW(wname.c_str());
             #else
-                return !rmdir(name.c_str());
+                ret = !rmdir(name.c_str());
             #endif
         } else {
-            return !std::remove(name.c_str());
+            ret = !std::remove(name.c_str());
         }
+
+        if(ret)
+            perm = PERM_INVALID;
+        return ret;
     }
 
     bool File::move(std::string newName) noexcept {
@@ -139,17 +155,10 @@ namespace sm{
             int sz = MultiByteToWideChar(CP_UTF8, 0, newName.data(), newName.size(), nullptr, 0);
             newNameW.resize(sz);
             MultiByteToWideChar(CP_UTF8, 0, newName.data(), newName.size(), &newNameW[0], sz);
-            newNameW.pop_back(); // remove duplicated NUL
 
             ret = MoveFileW(wname.c_str(), newNameW.c_str());
-            if(ret){
-                wname.swap(newNameW);
-                name.swap(newName);
-            }
         #else
-            ret = !std::rename(name.c_str(), newName.data());
-            if(ret)
-                name.swap(newName);
+            ret = !std::rename(name.c_str(), newName.c_str());
         #endif
 
         check_permissions();
@@ -191,30 +200,37 @@ namespace sm{
         perm = PERM_INVALID;
         #ifdef _SM_OS_WINDOWS
             DWORD req_size;
-            if(GetFileSecurityW(wname.c_str(), DACL_SECURITY_INFORMATION, NULL, 0, &req_size)){
-                PSECURITY_DESCRIPTOR sd_ptr = (PSECURITY_DESCRIPTOR) LocalAlloc(0, req_size);
-                if(sd_ptr){
-                    GetFileSecurityW(wname.c_str(), DACL_SECURITY_INFORMATION, sd_ptr, req_size, NULL);
+            GetFileSecurityW(wname.c_str(), DACL_SECURITY_INFORMATION, NULL, 0, &req_size);
+            PSECURITY_DESCRIPTOR sd_ptr = (PSECURITY_DESCRIPTOR) LocalAlloc(LMEM_ZEROINIT, req_size);
+
+            if(sd_ptr){
+                if(GetFileSecurityW(wname.c_str(), DACL_SECURITY_INFORMATION, sd_ptr, req_size, &req_size)){
                     PACL dacl = NULL;
-                    BOOL hasDacl = FALSE;
-                    if(GetSecurityDescriptorDacl(sd_ptr, &hasDacl, &dacl, NULL)){
+                    BOOL hasDacl = FALSE, defaulted = FALSE;
+                    if(GetSecurityDescriptorDacl(sd_ptr, &hasDacl, &dacl, &defaulted)){
                         if(hasDacl){
                             TRUSTEE_W trustee;
-                            wchar_t curr[] = L"CURRENT_USER";
-                            BuildTrusteeWithNameW(&trustee, curr);
+                            DWORD size = 0;
+                            wchar_t username[] = L"CURRENT_USER";
+                            BuildTrusteeWithNameW(&trustee, username);//&username[0]);
+
                             if(dacl){
                                 ACCESS_MASK mask = 0;
-                                GetEffectiveRightsFromAclW(dacl, &trustee, &mask);
-                                perm =  (mask & GENERIC_READ ? PERM_READABLE : 0)  |
-                                        (mask & GENERIC_WRITE ? PERM_WRITABLE : 0) |
-                                        (mask & GENERIC_EXECUTE ? PERM_EXECUTABLE : 0);
+                                if(GetEffectiveRightsFromAclW(dacl, &trustee, &mask) == ERROR_SUCCESS){
+                                    perm =
+                                        (mask & FILE_READ_DATA ? PERM_READABLE : 0) |
+                                        (mask & FILE_WRITE_DATA ? PERM_WRITABLE : 0) |
+                                        (mask & FILE_EXECUTE ? PERM_EXECUTABLE : 0);
+                                }
                             } else {
                                 perm = PERM_ALL;
                             }
+                        } else {
+                            perm = 0;
                         }
                     }
-                    LocalFree(sd_ptr);
                 }
+                LocalFree(sd_ptr);
             }
         #else
             struct stat s;
@@ -223,64 +239,6 @@ namespace sm{
                         (s.st_mode & S_IWUSR ? PERM_WRITABLE : 0)  |
                         (s.st_mode & S_IXUSR ? PERM_EXECUTABLE : 0);
             }
-        #endif
-    }
-
-    bool File::change_permissions(bool everyone, bool read, bool write, bool exec) noexcept{
-        #ifdef _SM_OS_WINDOWS
-            DWORD req_size;
-            bool ret = false;
-
-            if(GetFileSecurityW(wname.c_str(), DACL_SECURITY_INFORMATION, NULL, 0, &req_size)){
-                PSECURITY_DESCRIPTOR sd_ptr = (PSECURITY_DESCRIPTOR) LocalAlloc(0, req_size);
-                if(sd_ptr){
-                    GetFileSecurityW(wname.c_str(), DACL_SECURITY_INFORMATION, sd_ptr, req_size, NULL);
-                    PACL dacl = NULL;
-                    BOOL hasDacl = FALSE;
-
-                    if(GetSecurityDescriptorDacl(sd_ptr, &hasDacl, &dacl, NULL)){
-                        EXPLICIT_ACCESS_W access;
-                        wchar_t everyone_str [] = L"EVERYONE";
-                        wchar_t current [] = L"CURRENT_USER";
-                        BuildExplicitAccessWithNameW(&access,
-                            everyone ? everyone_str : current,
-                            (read ? GENERIC_READ : 0)   |
-                            (write ? GENERIC_WRITE : 0) |
-                            (exec ? GENERIC_EXECUTE : 0),
-                            GRANT_ACCESS,
-                            SUB_CONTAINERS_AND_OBJECTS_INHERIT
-                        );
-
-                        if(SetEntriesInAclW(1, &access, dacl, &dacl) == ERROR_SUCCESS){
-                            if(SetNamedSecurityInfoW(&wname[0], SE_FILE_OBJECT,
-                                    DACL_SECURITY_INFORMATION, NULL, NULL, dacl, NULL) == ERROR_SUCCESS)
-                                ret = true;
-                        }
-                    }
-                    LocalFree(sd_ptr);
-                }
-            }
-
-            return ret;
-        #else
-            struct stat s;
-            if(!stat(name.c_str(), &s))
-                return false;
-
-            mode_t perm = s.st_mode;
-            if(everyone){
-                perm &= ~static_cast<mode_t>(S_IRWXO);
-                perm |= read ? S_IROTH : 0;
-                perm |= write ? S_IWOTH : 0;
-                perm |= exec ? S_IXOTH : 0;
-            } else {
-                perm &= ~static_cast<mode_t>(S_IRWXU);
-                perm |= read ? S_IRUSR : 0;
-                perm |= write ? S_IWUSR : 0;
-                perm |= exec ? S_IXUSR : 0;
-            }
-
-            return !chmod(name.c_str(), perm);
         #endif
     }
 
@@ -319,12 +277,14 @@ namespace sm{
             HANDLE handle = CreateFileW(wname.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
             if(handle == INVALID_HANDLE_VALUE || !GetFileTime(handle, NULL, NULL, &ft))
                 return false;
+
             SYSTEMTIME st, local;
             FileTimeToSystemTime(&ft, &st);
             SystemTimeToTzSpecificLocalTime(NULL, &st, &local);
             SystemTimeToFileTime(&local, &localFt);
 
             out = getUnixTime(localFt);
+            CloseHandle(handle);
         #else
             struct stat s;
             if(stat(name.c_str(), &s))
@@ -340,12 +300,14 @@ namespace sm{
             HANDLE handle = CreateFileW(wname.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
             if(handle == INVALID_HANDLE_VALUE || !GetFileTime(handle, NULL, &ft, NULL))
                 return false;
+
             SYSTEMTIME st, local;
             FileTimeToSystemTime(&ft, &st);
             SystemTimeToTzSpecificLocalTime(NULL, &st, &local);
             SystemTimeToFileTime(&local, &localFt);
 
             out = getUnixTime(localFt);
+            CloseHandle(handle);
         #else
             struct stat s;
             if(stat(name.c_str(), &s))
@@ -410,6 +372,8 @@ namespace sm{
             file.pop_back();
         #else
             DIR* handle = opendir(name.c_str());
+            if(!handle)
+                return Directory(false);
             struct dirent* e = readdir(handle);
             if(!e)
                 return Directory(false);
@@ -421,7 +385,7 @@ namespace sm{
         return dir;
     }
 
-    std::string File::parent() noexcept {
+    std::string File::get_parent() noexcept {
         #ifdef _SM_OS_WINDOWS
             std::wstring copy(wname);
             PathRemoveFileSpecW(&copy[0]);
@@ -429,7 +393,6 @@ namespace sm{
             int req_size = WideCharToMultiByte(CP_UTF8, 0, copy.c_str(), -1, NULL, 0, NULL, NULL);
             std::string parent(req_size, 0);
             WideCharToMultiByte(CP_UTF8, 0, copy.c_str(), -1, &parent[0], parent.size(), NULL, NULL);
-            parent.pop_back();
             return parent;
         #else
             std::string copy(name);
@@ -444,7 +407,6 @@ namespace sm{
 
             std::string file(req_size, 0);
             WideCharToMultiByte(CP_UTF8, 0, str, -1, &file[0], file.size(), NULL, NULL);
-            file.pop_back();
             return file;
         #else
             std::string copy(name);
@@ -462,7 +424,6 @@ namespace sm{
 
             std::string file(req_size, 0);
             WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, &file[0], file.size(), NULL, NULL);
-            file.pop_back();
             return file;
         #else
             char* str = realpath(name.c_str(), NULL);
