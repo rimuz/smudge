@@ -64,7 +64,8 @@ Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
     - [Functions](learn/functions.md)
     - [Variables](learn/vars.md)
     - [If, switch and loops](learn/if-and-loops.md)
-    - [Operator](learn/operators.md)
+    - [Operators](learn/operators.md)
+    - [Types](learn/types.md)
     - Working in progress..
 - The **Smudge Standard Library** (the **SSL**)
     - [std.cast](ssl/stdcast.md)
