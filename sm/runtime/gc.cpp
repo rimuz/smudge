@@ -396,6 +396,8 @@ namespace sm{
                 intp.callFunction(func_ptr, {}, self, true);
             }
         }
+
+        objects.clear();
     }
 
     Instance::~Instance(){
