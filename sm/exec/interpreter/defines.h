@@ -21,6 +21,8 @@
 #define _SM__INTERPRETER__DEFINES_H
 
 #include <utility>
+#include <array>
+
 #include "sm/runtime/Object.h"
 #include "sm/exec/Interpreter.h"
 

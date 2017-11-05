@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <utility>
+#include <array>
 
 #include "sm/exec/interpreter/arithmeticOpCodes.h"
 #include "sm/exec/interpreter/assignOpCodes.h"

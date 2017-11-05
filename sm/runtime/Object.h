@@ -27,6 +27,7 @@
 #include <ostream>
 #include <iostream>
 #include <map>
+#include <array>
 
 #include "sm/typedefs.h"
 #include "sm/compile/Statement.h"

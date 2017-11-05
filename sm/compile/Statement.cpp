@@ -20,6 +20,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <array>
 
 #include "sm/typedefs.h"
 #include "sm/compile/Statement.h"
