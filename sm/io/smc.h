@@ -205,12 +205,12 @@ sm::Writer<Tp>& operator<<(sm::Writer<Tp>& out, sm::runtime::Runtime_t& rt) noex
 
     // ints
     out.template write<SzSize_t>(rt.intConstants.size());
-    for(integer_t i : rt.intConstants)
+    for(sm::integer_t i : rt.intConstants)
         out.write(i);
 
     // floats
     out.template write<SzSize_t>(rt.floatConstants.size());
-    for(float_t f : rt.floatConstants)
+    for(sm::float_t f : rt.floatConstants)
         out.write(f);
 
     // code
@@ -349,7 +349,7 @@ sm::Reader<Tp>& operator>>(sm::Reader<Tp>& in, sm::runtime::Runtime_t& rt) noexc
         SzSize_t size = in.template read<SzSize_t>();
         rt.floatConstants.reserve(size);
         while(size--)
-            rt.floatConstants.emplace_back(in.template read<float_t>());
+            rt.floatConstants.emplace_back(in.template read<sm::float_t>());
     }
 
     // code
