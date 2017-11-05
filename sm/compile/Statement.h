@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <array>
 
 #include "sm/typedefs.h"
 #include "sm/parse/Token.h"
