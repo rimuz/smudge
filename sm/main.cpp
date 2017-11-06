@@ -91,8 +91,21 @@ int main(int argc, char** argv){
             } else if(!std::strcmp(argv[i], "D")){
                 if(++i == argc || *argv[i] == '-'){
                     printUsage();
+                    return 0;
                 }
                 cp.path(argv[i]);
+            } else if(!std::strcmp(argv[i], "e")){
+                if(++i == argc){
+                    printUsage();
+                    return 0;
+                }
+
+                try {
+                    rt.stack_printed_elements = std::stoul(argv[i]);
+                } catch(...){
+                    printUsage();
+                    return 0;
+                }
             } else if(!std::strcmp(argv[i], "i") || !std::strcmp(argv[i], "-stdin")){
                 std::string* code = new std::string;
                 std::string line;
@@ -106,6 +119,7 @@ int main(int argc, char** argv){
             } else if(!std::strcmp(argv[i], "I")){
                 if(++i == argc || *argv[i] == '-'){
                     printUsage();
+                    return 0;
                 }
 
                 firstArg = i+1;
@@ -132,6 +146,39 @@ int main(int argc, char** argv){
                 callNew = false;
             } else if(!std::strcmp(argv[i], "wm") || !std::strcmp(argv[i], "-without-main")){
                 callMain = false;
+            } else if(!std::strcmp(argv[i], "x")){
+                if(++i == argc){
+                    printUsage();
+                    return 0;
+                }
+
+                try {
+                    unsigned long size = std::stoul(argv[i]);
+                    if(size){
+                        if(size <= rt.max_ss)
+                            rt.min_ss = size;
+                    }
+                } catch(...){
+                    printUsage();
+                    return 0;
+                }
+            } else if(!std::strcmp(argv[i], "X")){
+                if(++i == argc){
+                    printUsage();
+                    return 0;
+                }
+
+                try {
+                    unsigned long size = std::stoul(argv[i]);
+                    if(size){
+                        rt.max_ss = size;
+                        if(rt.min_ss > size)
+                            rt.min_ss = size / 4;
+                    }
+                } catch(...){
+                    printUsage();
+                    return 0;
+                }
             } else { // includes also -h & --help cases!
                 printUsage();
                 return 0;
@@ -290,6 +337,7 @@ constexpr const char* usage_str =
     "Options:\n"
     "  -c, --compile            Output bytecode to file an SMK file.\n"
     "  -D <directory>           Add <directory> to the search paths.\n"
+    "  -e <n>                   Display <n> elements when stack is printed.\n"
     "  -h, --help               Display this information.\n"
     "  -i, --stdin              Get code to interpret from stdin.\n"
     "  -I <File>                Read SMK file <File> and execute it.\n"
@@ -301,7 +349,9 @@ constexpr const char* usage_str =
     "  -v, --version            Display version.\n"
     "  -wi, --without-init      Do not run <init> function in main box.\n"
     "  -wm, --without-main      Do not run main function in main box.\n"
-    "  -wn, --without-new       Do not run new function in main box.\n\n"
+    "  -wn, --without-new       Do not run new function in main box.\n"
+    "  -x <size>                Set <size> as the stack min size.\n"
+    "  -X <size>                Set <size> as the stack max size.\n\n"
 
     "Program '" _SM_EXECUTABLE_NAME "' is part of the Smudge Programming Language which "
     "is distributed under the Apache License 2.0 (type option '-l' to see the full license).\n"
