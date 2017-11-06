@@ -127,6 +127,10 @@ namespace sm{
                     callMain = false, callNew = false,
                     noStd = false, compileOnly = false;
 
+            size_t max_ss = _SM_DEFAULT_MAX_SS,
+                    min_ss = _SM_DEFAULT_MIN_SS,
+                    stack_printed_elements = _SM_DEFAULT_STACK_PRINTED_ELEMENTS;
+
             Runtime_t() : gc(this), n_threads(0) {};
 
             Runtime_t(const Runtime_t&) = delete;
