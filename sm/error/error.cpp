@@ -101,8 +101,10 @@ namespace sm{
     void Sources::printStackTrace(exec::Interpreter& intp, enum_t errType, const std::string& msg) noexcept{
         std::cerr << errorMessages[errType] << msg << std::endl;
 
+        size_t count = 0;
         for(exec::CallStack_t::const_reverse_iterator it = intp.funcStack.rbegin();
-                it != intp.funcStack.rend(); ++it){
+                it != intp.funcStack.rend() && count != intp.rt->stack_printed_elements;
+                ++it, ++count){
             std::cerr << "\tat ";
             std::cerr << intp.rt->boxNames[it->box->name] << "::";
 
