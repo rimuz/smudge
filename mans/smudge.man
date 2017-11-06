@@ -20,8 +20,13 @@ programming language written in pure C++11.
 .TP
 \fB\-c\fR, \fB\-\-compile\fR
 .br
-Creates a \fBSMK\fR file which contains the compiled version of the program.
+Create a \fBSMK\fR file which contains the compiled version of the program.
 The output file is named after the \fBmain box\fR plus the suffix \fB.smk\fR.
+.TP
+\fB\-e \fIn\fR
+.br
+Set \fIn\fR as number of elements of the \fBstack\fR displayed when \fBerror messages\fR
+are printed. If \fIn\fR is \fB0\fR, no elements are listed.
 .TP
 \fB\-D \fIdir\fR
 .br
@@ -70,15 +75,28 @@ Useful for benchmarking.
 \fB\-v\fR, \fB\-\-version\fR
 .br
 Show the version of the interpreter.
+.TP
 \fB\-wi\fR, \fB\-\-without-init\fR
 .br
 Do not run function \fBinit\fR of the main box.
+.TP
 \fB\-wm\fR, \fB\-\-without-main\fR
 .br
 Do not run function \fBmain\fR of the main box.
+.TP
 \fB\-wn\fR, \fB\-\-without-new\fR
 .br
 Do not run function \fBnew\fR of the main box.
+.TP
+fB\-x \fIsize\fR
+.br
+Set \fIsize\fR as the initial allocated size, expressed in \fBitems\fR
+of the function-stack of each thread. Value \fB0\fR sets the default.
+.TP
+fB\-X \fIsize\fR
+.br
+Set \fIsize\fR as the maximum size, expressed in \fBitems\fR
+that the function-stack of each thread can reach. Value \fB0\fR sets the default.
 
 .SH AUTHOR
 Riccardo Musso \- smudge.language@gmail.com, musso.riccardo2001@gmail.com
