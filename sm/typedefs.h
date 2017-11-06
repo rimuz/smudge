@@ -30,6 +30,9 @@
 #define _SM_EXECUTABLE_NAME "smudge"
 
 #define _SM_PTR_SIZE sizeof(void*)
+#define _SM_DEFAULT_MAX_SS 100000
+#define _SM_DEFAULT_MIN_SS   1000
+#define _SM_DEFAULT_STACK_PRINTED_ELEMENTS 25
 
 #   if defined(_WIN32) || defined(__CYGWIN__)
 #       if defined(_WIN64)
