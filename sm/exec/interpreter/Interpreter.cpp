@@ -49,6 +49,11 @@ namespace sm{
     namespace exec{
         RootObject Interpreter::start(){
             while(!doReturn){
+                if(funcStack.size() > rt->max_ss){
+                    rt->sources.printStackTrace(*this, error::ET_FATAL_ERROR,
+                        "stack overflow");
+                }
+
                 std::array<uint8_t, 5> inst = fetch(pc);
                 switch(inst[0]){
                     _OcCase(NOP, Nop);
