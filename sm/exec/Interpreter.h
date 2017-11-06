@@ -55,7 +55,10 @@ namespace sm{
             unsigned pc;
             bool doReturn;
 
-            explicit Interpreter(runtime::Runtime_t& _rt) : rt(&_rt), pc(0), doReturn(false) {}
+            explicit Interpreter(runtime::Runtime_t& _rt) : rt(&_rt), pc(0), doReturn(false) {
+                exprStack.reserve(_rt.min_ss);
+            }
+
             Interpreter(const Interpreter&) = delete;
             Interpreter(Interpreter&&) = default;
 
