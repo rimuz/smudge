@@ -44,7 +44,7 @@ namespace sm{
                     enum_t closing = 0, closingSpecial = 0;
                     bool closed = false, doPop = false, doEndBlock = false,
                         resetOutput = false, doDeclareVar = false, doDeclareGlobalVar = false,
-                        logicOr = false, logicAnd = false;
+                        logicOr = false, logicAnd = false, closingClass = false;
 
                     if(it->type == TT_ROUND_CLOSE){
                         if(info.parType == EXPR_ROUND){
@@ -130,8 +130,12 @@ namespace sm{
                         }
 
                         doPop = !states.wasStatementEmpty && info.parType != FOR_HEAD2;
-                        for (ParStack_t::const_reverse_iterator it = states.parStack.rbegin();
-                                it != states.parStack.rend(); ++it){
+                        for (ParStack_t::const_reverse_iterator it = states.parStack.rbegin();; ++it){
+                            if(it == states.parStack.rend()){
+                                closingClass = states.currClass && states.isClassStatement;
+                                break;
+                            }
+
                             if(it->isDeclaration() || it->isRound()){
                                 continue;
                             } else if(it->parType == RETURN_STATEMENT){
@@ -149,7 +153,6 @@ namespace sm{
                                 closingSpecial = it->parType;
                                 break;
                             } else {
-                                states.isLastOperand = false;
                                 break;
                             }
                         }
@@ -588,7 +591,22 @@ namespace sm{
                             /* else if(info.parType == CODE_BLOCK); // do nothing. */
                             if(popBack)
                                 states.parStack.pop_back();
-                        } else if(closingSpecial){
+                        } else if(closingClass){
+                            if(!_classTemp.empty()){
+                                Function* fn = new Function;
+                                fn->address = _rt->code.size();
+                                fn->fnName = runtime::initId;
+                                fn->boxName = states.currBox->name;
+
+                                // inserting init code into bytecode and linking it to the class
+                                states.currClass->objects.insert({runtime::initId, RootObject(makeFunction(fn))});
+                                _rt->code.insert(_rt->code.end(), _classTemp.begin(), _classTemp.end());
+                                _rt->code.push_back(RETURN_NULL);
+                                _classTemp.clear();
+                            }
+                            states.currClass = nullptr;
+                            states.isClassStatement = false;
+                        } else if(closingSpecial) {
                             bool repeat = states.parStack.back().isCodeBlock() || states.parStack.back().parType == RETURN_STATEMENT;
                             do {
                                 ParInfo_t& info = states.parStack.back(); // overrides above info
