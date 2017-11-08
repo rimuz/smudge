@@ -1,3 +1,7 @@
+v0.3.1
+    - fixed several bugs
+    - implemented std.io::File
+
 v0.3.0
     - refactored GC with a new root-detection system. Intp/GC more stable.
     - implemented box std.thread
