@@ -210,7 +210,6 @@ namespace sm{
                     if(GetSecurityDescriptorDacl(sd_ptr, &hasDacl, &dacl, &defaulted)){
                         if(hasDacl){
                             TRUSTEE_W trustee;
-                            DWORD size = 0;
                             wchar_t username[] = L"CURRENT_USER";
                             BuildTrusteeWithNameW(&trustee, username);//&username[0]);
 
