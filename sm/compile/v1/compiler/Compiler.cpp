@@ -367,7 +367,7 @@ namespace sm{
                     box = reinterpret_cast<lib::DynInitFunc_t>(func)(rt, id);
                     return true;
                 #else
-                    void* library = dlopen(path, RTLD_LAZY);
+                    void* library = dlopen(path, RTLD_NOW);
                     if(!library)
                         return false;
                     rt.sharedLibs.emplace_back(library);
