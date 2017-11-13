@@ -62,15 +62,14 @@ namespace sm{
         }
 
         _OcFunc(ReturnNull){
-            RootObjectDictVec_t dictVec = std::move(intp.funcStack.back().codeBlocks);
-            bool wasInlined = intp.funcStack.back().inlined,
-                empty = intp.funcStack.size() == 1;
-            intp.funcStack.pop_back();
+            bool wasInlined = intp.funcStack.back().inlined, empty = intp.funcStack.size() == 1;
 
+            RootObjectDictVec_t dictVec = std::move(intp.funcStack.back().codeBlocks);
             for(RootObjectDictVec_t::iterator it = dictVec.begin(); it != dictVec.end(); ++it){
                 delete *it;
             }
 
+            intp.funcStack.pop_back();
             intp.exprStack.emplace_back(nullptr);
             intp.doReturn = wasInlined || empty;
 
