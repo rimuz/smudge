@@ -31,12 +31,16 @@ namespace sm{
         Class* cString = nullptr;
         Class* cList = nullptr;
         Class* cTuple = nullptr;
+        Class* cTable = nullptr;
         Class* cListIterator = nullptr;
         Class* cStringIterator = nullptr;
 
         namespace StringClass {}
         namespace ListClass {}
         namespace TupleClass {}
+        namespace TableClass {
+            using Table_t = std::unordered_map<RootObject, RootObject, ObjectHash, EqualTo>;
+        }
         namespace ListIteratorClass {}
         namespace StringIteratorClass {}
 
@@ -1303,9 +1307,10 @@ namespace sm{
                     // TODO implement a real hash algorithm instead of a sum!
                     ObjectVec_t& vec = *smGetData(ObjectVec_t);
                     size_t hash = 0;
+                    ObjectHash hasher(*intp.rt);
 
                     for(const Object& obj : vec){
-                        hash += objectHash(intp, obj);
+                        hash += hasher(obj);
                     }
                     return makeInteger(hash);
                 })
@@ -1371,6 +1376,151 @@ namespace sm{
                     return newInstance(intp, cListIterator, {self});
                 })
 
+            smEnd
+
+            smClass(Table)
+                /*
+                 *
+                 *        88888888888       888      888
+                 *            888           888      888
+                 *            888           888      888
+                 *            888   8888b.  88888b.  888  .d88b.
+                 *            888      "88b 888 "88b 888 d8P  Y8b
+                 *            888  .d888888 888  888 888 88888888
+                 *            888  888  888 888 d88P 888 Y8b.
+                 *            888  "Y888888 88888P"  888  "Y8888
+                 *
+                 *
+                */
+                smMethod(new, smLambda {
+                    smSetData(Table_t) = new Table_t(12, ObjectHash(*intp.rt), EqualTo(*intp.rt));
+                    return Object();
+                })
+
+                smMethod(delete, smLambda {
+                    smDeleteData(Table_t);
+                    return Object();
+                })
+
+                smIdMethod(runtime::gcCollectId, smLambda {
+                    smDeleteData(Table_t);
+                    return Object();
+                })
+
+                smIdMethod(runtime::squareId, smLambda {
+                    RootObject key = args.empty() ? RootObject() : args[0];
+                    return makeRef<true>(smGetData(Table_t)->operator[](key));
+                })
+
+                smMethod(get, smLambda {
+                    RootObject key = args.empty() ? RootObject() : args[0];
+                    return smGetData(Table_t)->operator[](key);
+                })
+
+                smMethod(set, smLambda {
+                    size_t sz = args.size();
+                    RootObject key, value;
+
+                    if(sz != 0){
+                        key = args[0];
+                        if(sz > 1)
+                            value = args[1];
+                    }
+
+                    smGetData(Table_t)->operator[](key) = value;
+                    return Object();
+                })
+
+                smMethod(erase, smLambda {
+                    RootObject key = args.empty() ? RootObject() : args[0];
+                    smGetData(Table_t)->erase(key);
+                    return Object();
+                })
+
+                smMethod(has, smLambda {
+                    Table_t* ptr = smGetData(Table_t);
+                    RootObject key = args.empty() ? RootObject() : args[0];
+                    return makeBool(ptr->find(key) != ptr->end());
+                })
+
+                smMethod(reserve, smLambda {
+                    Table_t* ptr = smGetData(Table_t);
+                    if(args.empty() || args[0]->type != ObjectType::INTEGER
+                            || args[0]->i <= static_cast<integer_t>(ptr->size()))
+                        return Object();
+                    ptr->reserve(args[0]->i);
+                    return Object();
+                })
+
+                smMethod(empty, smLambda {
+                    return makeBool(smGetData(Table_t)->empty());
+                })
+
+                smMethod(size, smLambda {
+                    return makeInteger(smGetData(Table_t)->size());
+                })
+
+                smOpMethod(parse::TT_EQUAL, smLambda {
+                    if(args.empty() || !runtime::of_type(args[0], cTable))
+                        return Object();
+
+                    Table_t* tableA = smGetData(Table_t),
+                        *tableB = data<Table_t>(args[0]);
+
+                    runtime::BinaryEqual comp (intp);
+                    return makeBool(tableA->size() == tableB->size() &&
+                        std::equal(tableA->begin(), tableA->end(), tableB->begin(),
+                            [comp](const Table_t::value_type& lhs, const Table_t::value_type& rhs) -> bool {
+                                return comp(lhs.first, rhs.first) && comp(lhs.second, rhs.second);
+                            }
+                        ));
+                })
+
+                smOpMethod(parse::TT_NOT_EQUAL, smLambda {
+                    if(args.empty() || !runtime::of_type(args[0], cTable))
+                        return Object();
+
+                    Table_t* tableA = smGetData(Table_t),
+                        *tableB = data<Table_t>(args[0]);
+
+                    runtime::BinaryEqual comp (intp);
+                    return makeBool(tableA->size() != tableB->size() ||
+                        !std::equal(tableA->begin(), tableA->end(), tableB->begin(),
+                            [comp](const Table_t::value_type& lhs, const Table_t::value_type& rhs) -> bool {
+                                return comp(lhs.first, rhs.first) && comp(lhs.second, rhs.second);
+                            }
+                        ));
+                })
+
+                smMethod(keys, smLambda {
+                    Table_t* ptr = smGetData(Table_t);
+                    RootObjectVec_t vec;
+                    vec.reserve(ptr->size());
+
+                    for(auto it = ptr->begin(); it != ptr->end(); ++it)
+                        vec.push_back(it->first);
+                    return makeList(intp, std::move(vec));
+                })
+
+                smMethod(values, smLambda {
+                    Table_t* ptr = smGetData(Table_t);
+                    RootObjectVec_t vec;
+                    vec.reserve(ptr->size());
+
+                    for(auto it = ptr->begin(); it != ptr->end(); ++it)
+                        vec.emplace_back(it->second);
+                    return makeList(intp, std::move(vec));
+                })
+
+                smMethod(list, smLambda {
+                    Table_t* ptr = smGetData(Table_t);
+                    RootObjectVec_t vec;
+                    vec.reserve(ptr->size());
+
+                    for(auto it = ptr->begin(); it != ptr->end(); ++it)
+                        vec.emplace_back(makeList(intp, RootObjectVec_t{it->first, it->second}));
+                    return makeList(intp, std::move(vec));
+                })
             smEnd
 
             smClass(ListIterator)
