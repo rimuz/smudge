@@ -47,16 +47,10 @@ namespace sm{
                 delete td.data;
 
                 if(wrapper->to_delete.test_and_set()){
-                    exec::ThreadVec_t& vec = rt->threads;
-                    exec::ThreadVec_t::iterator it = std::find_if(vec.begin(), vec.end(),
-                        [wrapper](exec::ThreadData& ref){
-                            return ref.wrapper == wrapper;
-                        }
-                    );
+                    rt->threads.erase(std::this_thread::get_id());
                     if(wrapper->th.joinable())
                         wrapper->th.detach();
                     delete wrapper;
-                    vec.erase(it);
                     --rt->n_threads;
                 }
             }
@@ -109,21 +103,23 @@ namespace sm{
                     smMethod(new, smLambda {
                         bool empty = args.empty();
 
-                        ++intp.rt->n_threads;
-                        std::lock_guard<std::mutex> lock(intp.rt->threads_m);
-                        intp.rt->threads.emplace_back();
-
-                        exec::ThreadData& back = intp.rt->threads.back();
-                        back.wrapper = new exec::TWrapper;
-
-                        back.data = new exec::IntpData (
+                        exec::ThreadData td;
+                        td.wrapper = new exec::TWrapper;
+                        td.data = new exec::IntpData (
                             *intp.rt,
                             empty ? Object() : Object(args.front().get()),
                             empty ? RootObjectVec_t() : RootObjectVec_t(args.begin() +1, args.end())
                         );
 
-                        smSetData(exec::TWrapper) = back.wrapper;
-                        back.wrapper->th = std::thread(wrapper_func, back);
+                        // we have to lock before spawning the new thread!
+                        std::lock_guard<std::mutex> lock(intp.rt->threads_m);
+                        ++intp.rt->n_threads;
+
+                        smSetData(exec::TWrapper) = td.wrapper;
+                        td.wrapper->th = std::thread(wrapper_func, td);
+
+                        // threads_m is not released yet, so:
+                        intp.rt->threads.insert({td.wrapper->th.get_id(), td});
                         return Object();
                     })
 
@@ -139,18 +135,12 @@ namespace sm{
                         exec::TWrapper* wrapper = smGetData(exec::TWrapper); \
                         if(wrapper->to_delete.test_and_set()){ \
                             std::lock_guard<std::mutex> lock(intp.rt->threads_m); \
-                            exec::ThreadVec_t& vec = intp.rt->threads; \
-                            exec::ThreadVec_t::iterator it = std::find_if(vec.begin(), vec.end(), \
-                                [wrapper](exec::ThreadData& ref){ \
-                                    return ref.wrapper == wrapper; \
-                                } \
-                            ); \
+                            intp.rt->threads.erase(wrapper->th.get_id()); \
                             if(wrapper->th.joinable()) \
                                 wrapper->th.detach(); \
                             delete wrapper; \
-                            vec.erase(it); \
                             --intp.rt->n_threads; \
-                        } \
+                        }
 
                     smMethod(delete, smLambda {
                         __DESTROY
