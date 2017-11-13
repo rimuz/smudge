@@ -272,7 +272,17 @@ namespace sm{
         ~Instance();
     };
 
-    size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept;
+    struct ObjectHash {
+        runtime::Runtime_t& rt;
+        ObjectHash(runtime::Runtime_t& ref);
+        size_t operator() (const RootObject& obj) const noexcept;
+    };
+
+    struct EqualTo {
+        runtime::Runtime_t& rt;
+        EqualTo(runtime::Runtime_t& ref);
+        bool operator() (const RootObject& lhs, const RootObject& rhs) const noexcept;
+    };
 
     Object makeFunction(Function*) noexcept;
     RootObject makeList(exec::Interpreter& intp, RootObjectVec_t vec = RootObjectVec_t()) noexcept;
