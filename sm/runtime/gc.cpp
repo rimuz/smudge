@@ -232,74 +232,151 @@ namespace sm{
             --obj.i_ptr->roots;
     }
 
-    size_t objectHash(exec::Interpreter& intp, const Object& obj) noexcept{
-        Object hashable = obj;
-        if(hashable.type == WEAK_REFERENCE
-                || hashable.type == STRONG_REFERENCE)
-            hashable = *hashable.o_ptr;
+    ObjectHash::ObjectHash(runtime::Runtime_t& ref) : rt(ref){}
 
-        switch(hashable.type){
+    size_t ObjectHash::operator() (const RootObject& hashable) const noexcept{
+        switch(hashable->type){
             case NONE:
                 return 0;
             case INTEGER:
-                return std::hash<integer_t>()(hashable.i);
+                return std::hash<integer_t>()(hashable->i);
             case FLOAT:
-                return std::hash<float_t>()(hashable.f);
+                return std::hash<float_t>()(hashable->f);
             case STRING:
-                return hashable.s_ptr->str.hash();
+                return hashable->s_ptr->str.hash();
             case CLASS_INSTANCE: {
-                Object func;
+                exec::Interpreter* intp = rt.getCurrentThread();
+                if(!intp)
+                    return 0;
+
+                Object func, self = hashable;
                 Function* f_ptr;
 
                 if(!runtime::find<CLASS_INSTANCE>(hashable, func, lib::idHash)){
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
                         std::string("function 'hash()' not found in ")
-                        + runtime::errorString(intp, hashable));
-                } else if(!runtime::callable(func, hashable, f_ptr)){
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                        + runtime::errorString(*intp, hashable));
+                } else if(!runtime::callable(func, self, f_ptr)){
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
                         std::string("'hash' is not a function in ")
-                        + runtime::errorString(intp, hashable));
+                        + runtime::errorString(*intp, hashable));
                 }
 
-                Object ret = intp.callFunction(f_ptr, {}, hashable, true);
-                if(ret.type != INTEGER){
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                RootObject ret = intp->callFunction(f_ptr, {}, self, true);
+                if(ret->type != INTEGER){
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
                         std::string("'hash()' must return an int value in ")
-                        + runtime::errorString(intp, hashable));
+                        + runtime::errorString(*intp, hashable));
                 }
 
-                return ret.i;
+                return ret->i;
             }
 
             case BOX: {
-                Object func;
-                Object self;
+                exec::Interpreter* intp = rt.getCurrentThread();
+                if(!intp)
+                    return 0;
+
+                Object func, self;
                 Function* f_ptr;
+
                 if(!runtime::find<BOX>(hashable, func, lib::idHash)){
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
                         std::string("function 'hash()' not found in ")
-                        + runtime::errorString(intp, hashable));
+                        + runtime::errorString(*intp, hashable));
                 } else if(!runtime::callable(func, self, f_ptr)){
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
                         std::string("'hash' is not a function in ")
-                        + runtime::errorString(intp, hashable));
+                        + runtime::errorString(*intp, hashable));
                 }
 
-                Object ret = intp.callFunction(f_ptr, {}, self, true);
-                if(ret.type != INTEGER){
-                    intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
+                RootObject ret = intp->callFunction(f_ptr, {}, self, true);
+                if(ret->type != INTEGER){
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
                         std::string("'hash()' must return an int value in ")
-                        + runtime::errorString(intp, hashable));
+                        + runtime::errorString(*intp, hashable));
                 }
 
-                return ret.i;
+                return ret->i;
             }
 
-            default:
-                intp.rt->sources.printStackTrace(intp, error::ET_ERROR,
-                    runtime::errorString(intp, hashable)
+            default:{
+                exec::Interpreter* intp = rt.getCurrentThread();
+                if(!intp)
+                    return 0;
+
+                intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
+                    runtime::errorString(*intp, hashable)
                     + " is not an hashable object.");
                 return 0;
+             }
+        }
+    }
+
+    EqualTo::EqualTo(runtime::Runtime_t& ref) : rt(ref) {}
+
+    bool EqualTo::operator() (const RootObject& lhs, const RootObject& rhs) const noexcept{
+        switch(lhs->type){
+            case NONE:
+                return rhs->type == NONE;
+            case INTEGER:
+                return rhs->type == INTEGER && lhs->i == rhs->i;
+            case FLOAT:
+                return rhs->type == FLOAT && lhs->f == rhs->f;
+            case STRING:
+                return rhs->type == STRING && lhs->s_ptr->str == rhs->s_ptr->str;
+            case CLASS_INSTANCE: {
+                exec::Interpreter* intp = rt.getCurrentThread();
+                if(!intp)
+                    return 0;
+
+                Object func, self = lhs;
+                Function* f_ptr;
+
+                if(!runtime::find<CLASS_INSTANCE>(lhs, func, runtime::operatorId(parse::TT_EQUAL))){
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
+                        std::string("'operator==' not found in ")
+                        + runtime::errorString(*intp, lhs));
+                } else if(!runtime::callable(func, self, f_ptr)){
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
+                        std::string("'operator==' is not a function in ")
+                        + runtime::errorString(*intp, lhs));
+                }
+
+                return runtime::implicitToBool(intp->callFunction(f_ptr, {rhs}, self, true));
+            }
+
+            case BOX: {
+                exec::Interpreter* intp = rt.getCurrentThread();
+                if(!intp)
+                    return 0;
+
+                Object func, self;
+                Function* f_ptr;
+
+                if(!runtime::find<BOX>(lhs, func, runtime::operatorId(parse::TT_EQUAL))){
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
+                        std::string("'operator==' not found in ")
+                        + runtime::errorString(*intp, lhs));
+                } else if(!runtime::callable(func, self, f_ptr)){
+                    intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
+                        std::string("'operator==' is not a function in ")
+                        + runtime::errorString(*intp, lhs));
+                }
+
+                return runtime::implicitToBool(intp->callFunction(f_ptr, {rhs}, self, true));
+            }
+
+            default: {
+                exec::Interpreter* intp = rt.getCurrentThread();
+                if(!intp)
+                    return 0;
+
+                intp->rt->sources.printStackTrace(*intp, error::ET_ERROR,
+                    runtime::errorString(*intp, lhs)
+                    + " is not an comparable object.");
+                return 0;
+            }
         }
     }
 
@@ -559,14 +636,15 @@ namespace sm{
             std::thread::id curr = std::this_thread::get_id();
             if(curr == Runtime_t::main_id)
                 return main_intp;
+
             std::lock_guard<std::mutex> lock(threads_m);
-            for(auto& th : threads){
-                if(th.wrapper->th.get_id() == curr)
-                    return &th.data->intp;
+            auto it = threads.find(curr);
+            if(it == threads.end()) {
+                sources.msg(error::ET_BUG, "current thread does not have an exec::Interpreter instance in 'Runtime_t::threads' (err #1)");
+                return nullptr; // should never return
             }
 
-            sources.msg(error::ET_BUG, "current thread does not have an exec::Interpreter instance in 'Runtime_t::threads' (err #1)");
-            return nullptr;
+            return &it->second.data->intp;
         }
 
         void Runtime_t::exit() noexcept{
