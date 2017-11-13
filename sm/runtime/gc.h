@@ -47,6 +47,7 @@ namespace sm{
         };
 
         using ThreadVec_t = std::vector<ThreadData>;
+        using ThreadMap_t = std::map<std::thread::id, ThreadData>;
     }
 
 
@@ -105,7 +106,7 @@ namespace sm{
             ByteCode_t code;
 
             std::mutex threads_m;
-            exec::ThreadVec_t threads;
+            exec::ThreadMap_t threads;
 
             exec::Interpreter* main_intp = nullptr;
             static std::thread::id main_id;
