@@ -1,3 +1,9 @@
+v0.3.2
+    - fixed many awful bugs
+    - implemented an hash table (std.lang::Table)
+    - added 'windows embedded mode'
+    - stack overflow detection
+
 v0.3.1
     - fixed several bugs
     - implemented std.io::File
