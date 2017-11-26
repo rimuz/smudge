@@ -88,7 +88,7 @@ namespace sm{
 
         template <typename Tp>
         Tp read(){
-            Tp val;
+            Tp val{};
             read(val);
             return val;
         }
@@ -115,6 +115,19 @@ namespace sm{
         }
 
         _IStream& stream() const noexcept { return is; }
+    };
+
+    template <typename Char>
+    class PtrInputStream {
+    private:
+        Char* data;
+    public:
+        PtrInputStream(Char* ptr) : data(ptr){}
+
+        void read(Char* out, size_t size){
+            while(size--)
+                *out++ = *data++;
+        }
     };
 
     using StdWriter = Writer<std::ostream>;
