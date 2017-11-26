@@ -333,8 +333,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-smudge_CXXFLAGS = -O3 -std=c++11 -Wall -I./src $(COMPILE_ARGS) \
-	$(am__append_1) $(am__append_2)
+smudge_CXXFLAGS = -O3 -std=c++11 -Wall $(COMPILE_ARGS) $(am__append_1) \
+	$(am__append_2)
 smudge_CFLAGS = 
 @IS_WINDOWS_FALSE@smudge_LDADD = -ldl
 @IS_WINDOWS_TRUE@smudge_LDADD = -lshlwapi
