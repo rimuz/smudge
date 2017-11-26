@@ -34,6 +34,22 @@
 #define _SM_DEFAULT_MIN_SS   1000
 #define _SM_DEFAULT_STACK_PRINTED_ELEMENTS 25
 
+/*
+ * On Windows you can build a special
+ * version of the Smudge Interpeter which
+ * reads the bytecode from the resources
+ * of the PE file. From now on, we'll
+ * call that feature 'Windows embedded mode'
+ *
+ * To enable it, you have to define the
+ * macro _SM_WIN_EMBED
+ *
+*/
+#ifdef _SM_WIN_EMBED
+#   define _SM_WINRES_CODE_ID 201
+#endif
+
+
 #   if defined(_WIN32) || defined(__CYGWIN__)
 #       if defined(_WIN64)
 #           define _SM_OS_WIN64
@@ -53,7 +69,6 @@
 #   else
 #       warning "Compiling for an unsupported Operating System."
 #   endif
-
 
 #   ifdef _SM_OS_WINDOWS
 #       define _SM_FILE_SEPARATOR "\\"
