@@ -1,4 +1,4 @@
-AC_INIT([smudge], [0.3.1], [smudge.language@gmail.com])
+AC_INIT([smudge], [0.3.2], [smudge.language@gmail.com])
 AC_PREFIX_DEFAULT(/usr)
 AC_CONFIG_AUX_DIR([scripts])
 AM_INIT_AUTOMAKE([subdir-objects])
