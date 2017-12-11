@@ -180,9 +180,9 @@ namespace sm {
 
             class Compiler{
                 friend void expect_next(Compiler& cp, CompilerStates& states,
-                    enum_t expected) noexcept;
+                    enum_t expected, const char* custom = nullptr) noexcept;
                 friend bool is_next(Compiler& cp, CompilerStates& states,
-                    enum_t expected) noexcept;
+                    enum_t expected, const char* custom = nullptr) noexcept;
             private:
                 runtime::Runtime_t* _rt;
                 ByteCode_t _temp; // Used for <init>
