@@ -66,137 +66,124 @@ namespace sm{
                             bool isAlredyImported = false;
                             repeat = false;
 
-                            if(++it != states.end){
-                                if(it->type == TT_TEXT){
-                                    bool dot = false, first = false, second = false;
-                                    states.toImport->emplace_back();
-                                    std::string imported(it->content);
+                            expect_next(*this, states, TT_TEXT, "identifier");
 
-                                    while(true){
-                                        if(++it == states.end){
-                                            --it;
-                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                "expected valid expression before 'eof'.");
-                                        }
+                            bool dot = false, first = false, second = false;
+                            states.toImport->emplace_back();
+                            std::string imported(it->content);
 
-                                        if(dot){
-                                            if(it->type == TT_TEXT){
-                                                imported += it->content;
-                                                dot = false;
-                                            } else {
-                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                    std::string("expected identifier before ") + representation(*it) + ".");
-                                            }
-                                        } else if(first){
-                                            if(it->type == TT_TEXT){
-                                                std::get<1>(states.toImport->back()) = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
-                                                first = false;
-                                                second = true;
-                                            } else {
-                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                    std::string("expected identifier before ") + representation(*it) + ".");
-                                            }
-                                        } else if(second){
-                                            if(it->type == TT_SEMICOLON){
-                                                break;
-                                            } else if(it->type == TT_COMMA){
-                                                repeat = true;
-                                                break;
-                                            } else {
-                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                    std::string("expected ';' before ") + representation(*it) + ".");
-                                            }
-                                        } else {
-                                            if(it->type == TT_DOT){
-                                                imported.push_back('.');
-                                                dot = true;
-                                            } else if(it->type == TT_SEMICOLON || it->type == TT_COMMA){
-                                                size_t dot_pos = imported.find_last_of('.');
-                                                unsigned id;
-                                                if(dot_pos == std::string::npos)
-                                                    id = runtime::genOrdinaryId(*_rt, imported)
-                                                        - runtime::idsStart;
-                                                else
-                                                    id = runtime::genOrdinaryId(*_rt, imported.substr(dot_pos+1))
-                                                        - runtime::idsStart;
-                                                std::get<1>(states.toImport->back()) = id;
-                                                repeat = it->type == TT_COMMA;
-                                                break;
-                                            } else if(it->type == TT_ASSIGN){
-                                                first = true;
-                                            } else {
-                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                    std::string("expected '.' before ") + representation(*it) + ".");
-                                            }
-                                        }
+                            while(true){
+                                is_next(*this, states, 0, "valid expression");
+
+                                if(dot){
+                                    if(it->type == TT_TEXT){
+                                        imported += it->content;
+                                        dot = false;
+                                    } else {
+                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
+                                            std::string("expected identifier before ") + representation(*it) + ".");
                                     }
-
-                                    {
-                                        size_t match = 0;
-                                        for(const string_t& imp : _rt->boxNames){
-                                            if(imp == imported || (!imp.empty()
-                                                    && imp.size() == imported.size()+1 && imp.back() == '!'
-                                                    && std::equal(imp.begin(), imp.end()-1, imported.begin()))){
-                                                isAlredyImported = true;
-                                                std::get<0>(states.toImport->back()) = match;
-                                                break;
-                                            }
-                                            match ++;
-                                        }
+                                } else if(first){
+                                    if(it->type == TT_TEXT){
+                                        std::get<1>(states.toImport->back()) = runtime::genOrdinaryId(*_rt, it->content) - runtime::idsStart;
+                                        first = false;
+                                        second = true;
+                                    } else {
+                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
+                                            std::string("expected identifier before ") + representation(*it) + ".");
                                     }
-
-                                    if(!isAlredyImported){
-                                        _rt->boxNames.emplace_back(imported);
-                                        std::replace(imported.begin(), imported.end(), '.', fileSeparator);
-                                        unsigned id = _rt->boxNames.size()-1;
-                                        bool found = false;
-
-                                        for(const string_t& dir : _rt->paths){
-                                            std::string path = dir + imported;
-                                            error::CodeSource* src = readf(path + ".sm");
-                                            if(src){
-                                                _rt->sources.newSource(src);
-                                                _rt->boxes.push_back(nullptr);
-                                                found = true;
-                                                break;
-                                            } else {
-                                                Box* box;
-                                                path += _SM_DL_EXT;
-                                                if(load_native(path.c_str(), *_rt, id, box)){
-                                                    if(!box)
-                                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                            std::string("dynamic library '") + path + "' is not a Smudge native box.");
-                                                    _rt->boxNames.back().push_back('!');
-                                                    _rt->boxes.push_back(box);
-                                                    _rt->sources.newSource(nullptr);
-                                                    found = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if(!found){
-                                            _rt->boxNames.back().push_back('!');
-                                            lib::LibDict_t::const_iterator cit = lib::libs.find(_rt->boxNames.back());
-                                            if(cit == lib::libs.end() || _rt->noStd){
-                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                    std::string("can't import '") + imported + "'. Make sure the file exists.");
-                                            } else {
-                                                Box* box = cit->second(*_rt, id);
-                                                _rt->boxes.push_back(box);
-                                                _rt->sources.newSource(nullptr);
-                                            }
-                                        }
-                                        std::get<0>(states.toImport->back()) = id;
+                                } else if(second){
+                                    if(it->type == TT_SEMICOLON){
+                                        break;
+                                    } else if(it->type == TT_COMMA){
+                                        repeat = true;
+                                        break;
+                                    } else {
+                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
+                                            std::string("expected ';' before ") + representation(*it) + ".");
                                     }
                                 } else {
-                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                        std::string("expected identifier before ") + representation(*it) + ".");
+                                    if(it->type == TT_DOT){
+                                        imported.push_back('.');
+                                        dot = true;
+                                    } else if(it->type == TT_SEMICOLON || it->type == TT_COMMA){
+                                        size_t dot_pos = imported.find_last_of('.');
+                                        unsigned id;
+                                        if(dot_pos == std::string::npos)
+                                            id = runtime::genOrdinaryId(*_rt, imported)
+                                                - runtime::idsStart;
+                                        else
+                                            id = runtime::genOrdinaryId(*_rt, imported.substr(dot_pos+1))
+                                                - runtime::idsStart;
+                                        std::get<1>(states.toImport->back()) = id;
+                                        repeat = it->type == TT_COMMA;
+                                        break;
+                                    } else if(it->type == TT_ASSIGN){
+                                        first = true;
+                                    } else {
+                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
+                                            std::string("expected '.' before ") + representation(*it) + ".");
+                                    }
                                 }
-                            } else {
-                                --it;
-                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                    "expected identifier before 'eof'.");
+                            }
+
+                            {
+                                size_t match = 0;
+                                for(const string_t& imp : _rt->boxNames){
+                                    if(imp == imported || (!imp.empty()
+                                            && imp.size() == imported.size()+1 && imp.back() == '!'
+                                            && std::equal(imp.begin(), imp.end()-1, imported.begin()))){
+                                        isAlredyImported = true;
+                                        std::get<0>(states.toImport->back()) = match;
+                                        break;
+                                    }
+                                    match ++;
+                                }
+                            }
+
+                            if(!isAlredyImported){
+                                _rt->boxNames.emplace_back(imported);
+                                std::replace(imported.begin(), imported.end(), '.', fileSeparator);
+                                unsigned id = _rt->boxNames.size()-1;
+                                bool found = false;
+
+                                for(const string_t& dir : _rt->paths){
+                                    std::string path = dir + imported;
+                                    error::CodeSource* src = readf(path + ".sm");
+                                    if(src){
+                                        _rt->sources.newSource(src);
+                                        _rt->boxes.push_back(nullptr);
+                                        found = true;
+                                        break;
+                                    } else {
+                                        Box* box;
+                                        path += _SM_DL_EXT;
+                                        if(load_native(path.c_str(), *_rt, id, box)){
+                                            if(!box)
+                                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
+                                                    std::string("dynamic library '") + path + "' is not a Smudge native box.");
+                                            _rt->boxNames.back().push_back('!');
+                                            _rt->boxes.push_back(box);
+                                            _rt->sources.newSource(nullptr);
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if(!found){
+                                    _rt->boxNames.back().push_back('!');
+                                    lib::LibDict_t::const_iterator cit = lib::libs.find(_rt->boxNames.back());
+                                    if(cit == lib::libs.end() || _rt->noStd){
+                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
+                                            std::string("can't import '") + imported + "'. Make sure the file exists.");
+                                    } else {
+                                        Box* box = cit->second(*_rt, id);
+                                        _rt->boxes.push_back(box);
+                                        _rt->sources.newSource(nullptr);
+                                    }
+                                }
+                                std::get<0>(states.toImport->back()) = id;
                             }
                         } while(repeat);
                         break;
@@ -206,11 +193,8 @@ namespace sm{
                         if(states.isLastOperand){
                             _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                 "expected operator before 'func'.");
-                        } else if(++it == states.end){
-                            --it;
-                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                "expected identifier, new, delete or overloadable operator before 'eof'.");
-                        }
+                        } else
+                            is_next(*this, states, 0, "identifier or overloadable operator");
 
                         unsigned id = 0;
 
@@ -231,34 +215,18 @@ namespace sm{
                                 break;
 
                             case TT_ROUND_OPEN:
-                                if(++it == states.end ){
-                                    --it;
-                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                        "expected ')' before 'eof'.");
-                                } else if(it->type != TT_ROUND_CLOSE){
-                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                        std::string("expected ')' before ")
-                                        + representation(*it) + ".");
-                                }
+                                expect_next(*this, states, TT_ROUND_CLOSE);
                                 id = runtime::roundId;
                                 break;
 
                             case TT_SQUARE_OPEN:
-                                if(++it == states.end ){
-                                    --it;
-                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                        "expected ']' before 'eof'.");
-                                } else if(it->type != TT_SQUARE_CLOSE){
-                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                        std::string("expected ']' before ")
-                                        + representation(*it) + ".");
-                                }
+                                expect_next(*this, states, TT_SQUARE_CLOSE);
                                 id = runtime::squareId;
                                 break;
 
                             default:
                                 _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                    std::string("expected identifier, new, delete or overloadable operator before ")
+                                    std::string("expected identifier or overloadable operator before ")
                                     + representation(*it) + ".");
                                 break;
                         }
@@ -273,13 +241,7 @@ namespace sm{
                         else
                             states.currBox->objects.insert({id, makeFunction(fn)});
 
-                        if(++it == states.end){
-                            --it;
-                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                "expected '(' or '{' before 'eof'.");
-                        }
-
-                        if(it->type != TT_ROUND_OPEN){
+                        if(!is_next(*this, states, TT_ROUND_OPEN, "'(' or '{'")){
                             if(it->type == TT_CURLY_OPEN){
                                 states.parStack.emplace_back(FUNCTION_BODY);
                             } else {
@@ -296,20 +258,16 @@ namespace sm{
                         bool roundClose = false;
 
                         while(1) {
-                            if(++it == states.end){
-                                --it;
-                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                    "expected ')' or identifier before 'eof'.");
-                            } else if(it->type == TT_ROUND_CLOSE){
+                            is_next(*this, states, 0, "')' or identifier");
+
+                            if(it->type == TT_ROUND_CLOSE){
                                 roundClose = true;
                                 break;
                             } else if(it->type == TT_TEXT){
                                 size_t arg_id = runtime::genOrdinaryId(*_rt, it->content);
-                                if(++it == states.end){
-                                    --it;
-                                    _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                        "expected ',' or '=' before 'eof'.");
-                                } else if(it->type == TT_COMMA || (roundClose = it->type == TT_ROUND_CLOSE)){
+                                is_next(*this, states, 0, "',' or '='");
+
+                                if(it->type == TT_COMMA || (roundClose = it->type == TT_ROUND_CLOSE)){
                                     size_t name_id = arg_id - runtime::idsStart;
                                     states.output->insert(states.output->end(), {
                                         ASSIGN_NULL_POP, bc(name_id >> 8), bc(name_id & 0xFF)
@@ -322,23 +280,11 @@ namespace sm{
                                     arg0 = arg_id;
                                     break;
                                 } else if(it->type == TT_DOT){
-                                    for (int i = 0; i != 2; ++i){ /* three varargs dots!*/
-                                        if(++it == states.end){
-                                            --it;
-                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                "expected '.' before 'eof'.");
-                                        } else if(it->type != TT_DOT){
-                                            _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                                std::string("expected '.' before ")
-                                                + representation(*it) + ".");
-                                        }
-                                    }
+                                        /* three varargs dots!*/
+                                    expect_next(*this, states, TT_DOT);
+                                    expect_next(*this, states, TT_DOT);
 
-                                    if(++it == states.end){
-                                        --it;
-                                        _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                            "expected ')' before 'eof'.");
-                                    } else if (it->type != TT_ROUND_CLOSE){
+                                    if (!is_next(*this, states, TT_ROUND_CLOSE)){
                                         if(it->type == TT_COMMA){
                                             _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
                                                 "VARARG argument must be the last argument"
@@ -370,11 +316,7 @@ namespace sm{
                         }
 
                         if(roundClose){
-                            if(++it == states.end){
-                                --it;
-                                _rt->sources.msg(error::ET_ERROR, _nfile, it->ln, it->ch,
-                                    "expected '{' before 'eof'.");
-                            } else if(it->type == TT_CURLY_OPEN) {
+                            if(is_next(*this, states, TT_CURLY_OPEN)) {
                                 states.parStack.emplace_back(FUNCTION_BODY);
                             } else {
                                 states.parStack.emplace_back(FUNCTION_STATEMENT);
