@@ -384,23 +384,29 @@ namespace sm{
             }
 
             void expect_next(Compiler& cp, CompilerStates& states,
-                    enum_t expected) noexcept{
+                    enum_t expected, const char* custom) noexcept{
                 if(++states.it == states.end)
                     cp._rt->sources.msg(error::ET_ERROR, cp._nfile, states.it->ln, states.it->ch,
-                        std::string("expected ") + parse::representations[expected]
+                        std::string("expected ")
+                        + (custom == nullptr ? parse::representations[expected] : custom)
                         + " before 'eof'.");
                 else if(states.it->type != expected)
                     cp._rt->sources.msg(error::ET_ERROR, cp._nfile, states.it->ln, states.it->ch,
-                        std::string("expected ") + parse::representations[expected]
+                        std::string("expected ")
+                        + (custom == nullptr ? parse::representations[expected] : custom)
                         + " before " + representation(*states.it));
             }
 
             bool is_next(Compiler& cp, CompilerStates& states,
-                    enum_t expected) noexcept{
-                if(++states.it == states.end)
+                    enum_t expected, const char* custom) noexcept{
+                if(++states.it == states.end){
+                    --states.it;
                     cp._rt->sources.msg(error::ET_ERROR, cp._nfile, states.it->ln, states.it->ch,
-                        std::string("expected ") + parse::representations[expected]
-                        + " before 'eof'.");
+                        std::string("expected ")
+                        + (custom == nullptr ? parse::representations[expected] : custom)
+                        + " before 'eof'."
+                    );
+                }
                 return states.it->type == expected;
             }
         }
