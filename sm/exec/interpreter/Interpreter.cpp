@@ -172,10 +172,6 @@ namespace sm{
 
         void Interpreter::makeCall(Function* fn, const RootObjectVec_t& args,
                 const RootObject& self, bool inlined){
-            if(!funcStack.empty()){
-                funcStack.back().pc = pc;
-            }
-
             if(self->type == ObjectType::INSTANCE_CREATOR){
                 if(self->c_ptr == lib::cString){
                     exprStack.emplace_back(makeString());
@@ -232,6 +228,10 @@ namespace sm{
                 exprStack.emplace_back(std::move(ret));
                 doReturn = inlined;
             } else {
+                if(!funcStack.empty()){
+                    funcStack.back().pc = pc;
+                }
+
                 RootObjectDict_t* dict = new RootObjectDict_t;
                 bool is_vararg = fn->flags & FF_VARARGS;
                 size_t n_args = args.size();
