@@ -47,3 +47,7 @@ the index given is greater than the string's size).
 
 ### Congratulations
 Now you're **ready** to surf the `SmudgeDocs`! Enjoy it!
+
+|||
+|--:|:---:|:--|
+| | [Home](https://smudgelang.github.io/smudge/) | |
