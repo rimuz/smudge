@@ -113,6 +113,19 @@ keys need to define:
 
 **Integer**s, **Float**s, **Tuple**s and **String**s can be used as keys, because their hashing and comparing functions are alredy defined.
 
+```
+ . . .
+var my_table = lg.Table();
+/* storing values */
+my_table[120] = (100, 20);
+my_table["Hello"] = "World";
+my_table[(1, 2)] = (3, 4);
+/* printing them */
+for(key : my_table.keys())
+    io.println(key, ": ", my_table[key]);
+ . . .
+```
+
 ### Other Classes
 The SSL consists of many boxes, most of which define classes ready 'out of the box'.
 However, very often we need to create and use our customized classes.
