@@ -104,6 +104,15 @@ To create a tuple with an element, you can use any of the following tricks:
 ()+[obj]
 ```
 
+### Tables
+Hashtable are associative containers of objects in which you can store **values** accessed
+with **keys**. Values and keys are both objects, but, while values don't have special requirements,
+keys need to define:
+- **function `hash ()`**, which returns an integer representing the hash code of the object
+- **operator `== (rhs)`**, which is used to compare the key with the given one.
+
+**Integer**s, **Float**s, **Tuple**s and **String**s can be used as keys, because their hashing and comparing functions are alredy defined.
+
 ### Other Classes
 The SSL consists of many boxes, most of which define classes ready 'out of the box'.
 However, very often we need to create and use our customized classes.
@@ -111,4 +120,4 @@ In the next page we'll find out how to define and implement them.
 
 |||
 |--:|:---:|:--|
-| [Previous](operators.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
+| [Previous](operators.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](classes.md) |
