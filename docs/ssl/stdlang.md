@@ -547,4 +547,4 @@ See [StringIterator](stdlang.md#class-stringiterator).
 
 ||
 |:---:|
-| [Home](https://smudgelang.github.io/smudge/) |
+| [Home](https://rimuz.github.io/smudge/) |

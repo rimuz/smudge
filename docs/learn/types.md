@@ -133,4 +133,4 @@ In the next page we'll find out how to define and implement them.
 
 |||
 |--:|:---:|:--|
-| [Previous](operators.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](classes.md) |
+| [Previous](operators.md) | [Home](https://rimuz.github.io/smudge/) | [Next](classes.md) |

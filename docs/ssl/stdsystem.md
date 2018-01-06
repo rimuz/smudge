@@ -98,4 +98,4 @@ Returns a tuple containing the pointed byte and an `int` (`true` if it's valid,
 
 ||
 |:---:|
-| [Home](https://smudgelang.github.io/smudge/) |
+| [Home](https://rimuz.github.io/smudge/) |

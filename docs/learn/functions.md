@@ -235,4 +235,4 @@ We'll call that feature **statement functions** to don't mix them up with in-lin
 
 |||
 |--:|:---:|:--|
-| [Previous](statements.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](vars.md) |
+| [Previous](statements.md) | [Home](https://rimuz.github.io/smudge/) | [Next](vars.md) |

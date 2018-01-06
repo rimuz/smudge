@@ -290,4 +290,4 @@ run the `iter_expr` (described above).
 
 |||
 |--:|:---:|:--|
-| [Previous](vars.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](operators.md) |
+| [Previous](vars.md) | [Home](https://rimuz.github.io/smudge/) | [Next](operators.md) |

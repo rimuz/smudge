@@ -319,4 +319,4 @@ Usually, **Slave**s are used just like **Interface**s in some other programming 
 
 |||
 |--:|:---:|:--|
-| [Previous](types.md) | [Home](https://smudgelang.github.io/smudge/) | Next |
+| [Previous](types.md) | [Home](https://rimuz.github.io/smudge/) | Next |

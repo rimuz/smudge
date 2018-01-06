@@ -163,4 +163,4 @@ Returns `true` if neither `EOF` nor errors occured, `false` otherwise.
 
 ||
 |:---:|
-| [Home](https://smudgelang.github.io/smudge/) |
+| [Home](https://rimuz.github.io/smudge/) |

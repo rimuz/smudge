@@ -20,7 +20,7 @@ On any OS you'll need to have a **copy** of the project somewhere on your PC,
 typically done with the command:
 
 ```
-git clone https://github.com/smudgelang/smudge
+git clone https://github.com/rimuz/smudge
 ```
 
 Now enter the newly created directory `smudge`.
@@ -80,8 +80,8 @@ Such as MinGW or Cygwin on Windows, this will generate a static library named `l
 useful to build Smudge native libraries.
 
 
-### [Getting Started](https://smudgelang.github.io/smudge/)
-Go to this [link](https://smudgelang.github.io/smudge/) to learn how to program in Smudge.
+### [Getting Started](https://rimuz.github.io/smudge/)
+Go to this [link](https://rimuz.github.io/smudge/) to learn how to program in Smudge.
 
 Also, run `man smudge` to see the meaning of all the options you can give to `smudge`.
 

@@ -75,4 +75,4 @@ Smudge error messages.
 
 ||
 |:---:|
-| [Home](https://smudgelang.github.io/smudge/) |
+| [Home](https://rimuz.github.io/smudge/) |

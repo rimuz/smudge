@@ -200,4 +200,4 @@ old value
 
 |||
 |--:|:---:|:--|
-| [Previous](functions.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](if-and-loops.md) |
+| [Previous](functions.md) | [Home](https://rimuz.github.io/smudge/) | [Next](if-and-loops.md) |

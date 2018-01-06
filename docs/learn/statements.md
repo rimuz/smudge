@@ -45,4 +45,4 @@ Next, we'll see how to define and use **functions**.
 
 |||
 |--:|:---:|:--|
-| [Previous](hello-world.md) | [Home](https://smudgelang.github.io/smudge/) | [Next](functions.md) |
+| [Previous](hello-world.md) | [Home](https://rimuz.github.io/smudge/) | [Next](functions.md) |
