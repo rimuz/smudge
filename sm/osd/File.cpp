@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 #include "sm/osd/File.h"
 #include "sm/typedefs.h"
@@ -390,8 +391,10 @@ namespace sm{
             PathRemoveFileSpecW(&copy[0]);
 
             int req_size = WideCharToMultiByte(CP_UTF8, 0, copy.c_str(), -1, NULL, 0, NULL, NULL);
-            std::string parent(req_size, 0);
+            std::string parent(req_size-1, 0);
             WideCharToMultiByte(CP_UTF8, 0, copy.c_str(), -1, &parent[0], parent.size(), NULL, NULL);
+            if(parent.empty())
+                return ".";
             return parent;
         #else
             std::string copy(name);
@@ -413,22 +416,41 @@ namespace sm{
         #endif
     }
 
-    std::string File::full_path() noexcept{
+    bool File::full_path(std::string& out) noexcept{
         #ifdef _SM_OS_WINDOWS
             int size = GetFullPathNameW(wname.c_str(), 0, NULL, NULL);
+            if(!size)
+                return false;
             std::wstring str(size, 0);
             GetFullPathNameW(wname.c_str(), size, &str[0], NULL);
 
             int req_size = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, NULL, 0, NULL, NULL);
-
             std::string file(req_size, 0);
             WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, &file[0], file.size(), NULL, NULL);
-            return file;
+            out = std::move(file);
         #else
             char* str = realpath(name.c_str(), NULL);
-            std::string real(str);
+            if(!str)
+                return false;
+            out = str;
             free(str);
-            return real;
         #endif
+        return true;
     }
+
+    std::string File::path() noexcept {
+        return name;
+    }
+
+    #if fileSeparator == '/'
+        const std::string& File::path(const std::string& str) noexcept{
+            return str;
+        }
+    #else
+        std::string File::path(std::string str) noexcept{
+            std::string copy (std::move(str));
+            std::replace(copy.begin(), copy.end(), '/', fileSeparator);
+            return copy;
+        }
+    #endif
 }

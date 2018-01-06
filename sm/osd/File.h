@@ -102,7 +102,14 @@ namespace sm{
 
         std::string get_parent() noexcept;
         std::string get_name() noexcept;
-        std::string full_path() noexcept;
+        bool full_path(std::string& str) noexcept;
+        std::string path() noexcept;
+
+        #if fileSeparator == '/'
+            static const std::string& path(const std::string&) noexcept;
+        #else
+            static std::string path(std::string) noexcept;
+        #endif
 
         ~File() = default;
     };
