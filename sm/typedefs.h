@@ -28,7 +28,8 @@
 #define _SM_STR_VERSION "0.3.2"
 #define _SM_DATE_VERSION "11.2017"
 #define _SM_EXECUTABLE_NAME "smudge"
-
+#define _SM_DEFAULT_BOX_NAME "main.sm"
+ 
 #define _SM_PTR_SIZE sizeof(void*)
 #define _SM_DEFAULT_MAX_SS 100000
 #define _SM_DEFAULT_MIN_SS   1000
