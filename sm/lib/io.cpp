@@ -232,7 +232,7 @@ namespace sm{
                             args[0]->s_ptr->str.end()
                         );
 
-                    smSetData(File) = new File(std::move(str));
+                    smSetData(File) = new File(File::path(str));
                     return Object();
                 })
 
@@ -254,7 +254,7 @@ namespace sm{
                         args[0]->s_ptr->str.begin(),
                         args[0]->s_ptr->str.end()
                     );
-                    smGetData(File)->set(std::move(newPath));
+                    smGetData(File)->set(File::path(newPath));
                     return Object();
                 })
 
@@ -284,7 +284,7 @@ namespace sm{
                         args[0]->s_ptr->str.end()
                     );
 
-                    return makeBool(smGetData(File)->move(std::move(newName)));
+                    return makeBool(smGetData(File)->move(File::path(newName)));
                 })
 
                 smMethod(copy, smLambda {
@@ -296,7 +296,7 @@ namespace sm{
                         args[0]->s_ptr->str.end()
                     );
 
-                    return makeBool(smGetData(File)->copy(newName));
+                    return makeBool(smGetData(File)->copy(File::path(newName)));
                 })
 
                 smMethod(last_access, smLambda {
@@ -335,7 +335,6 @@ namespace sm{
                         return makeList(intp);
 
                     RootObjectVec_t names;
-
                     do {
                         if(name != "." && name != "..")
                             names.emplace_back(makeString(name.begin(), name.end()));
@@ -359,18 +358,23 @@ namespace sm{
                     return makeBool(smGetData(File)->valid_permissions());
                 })
 
+                smMethod(full_path, smLambda {
+                    std::string str;
+                    return
+                        smGetData(File)->full_path(str) ?
+                        makeString(str.begin(), str.end()) :
+                        Object();
+                })
+
                 #define __SMETHOD(Name) \
                     smMethod(Name, smLambda { \
                         std::string str = smGetData(File)->Name(); \
-                        return makeString( \
-                            std::make_move_iterator(str.begin()), \
-                            std::make_move_iterator(str.end()) \
-                        ); \
+                        return makeString(str.begin(), str.end())); \
                     })
 
                 __SMETHOD(get_parent)
                 __SMETHOD(get_name)
-                __SMETHOD(full_path)
+                __SMETHOD(path)
 
                 #undef __SMETHOD
             smEnd
