@@ -369,7 +369,7 @@ namespace sm{
                 #define __SMETHOD(Name) \
                     smMethod(Name, smLambda { \
                         std::string str = smGetData(File)->Name(); \
-                        return makeString(str.begin(), str.end())); \
+                        return makeString(str.begin(), str.end()); \
                     })
 
                 __SMETHOD(get_parent)
